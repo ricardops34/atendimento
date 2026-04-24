@@ -15,6 +15,13 @@ O projeto **Sistema** é uma plataforma SaaS multi-tenant desenvolvida para alta
 - **API**: RESTful com documentação OpenAPI (Swagger)
 - **Autenticação**: JWT com suporte a Multi-tenant
 
+## 🎨 Padrões de Frontend (PO-UI)
+Para garantir a consistência visual e produtividade, o projeto segue obrigatoriamente o design system **PO-UI**:
+- **Componentes**: Utilizar exclusivamente componentes da biblioteca `@po-ui/ng-components`.
+- **Templates Dinâmicos**: Preferir sempre `PoPageDynamicTable` para listagens e `PoPageDynamicEdit` para formulários de CRUD.
+- **Estilização**: Utilizar as classes utilitárias do PO-UI (ex: `po-row`, `po-md-6`) em vez de CSS customizado sempre que possível.
+- **UX/UI**: Seguir o Guia de Estilo oficial para manter a experiência "Premium" da TOTVS.
+
 ### Banco de Dados & ORM
 - **Database**: PostgreSQL
 - **ORM**: Prisma
