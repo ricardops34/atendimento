@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # Banco Mestre: Controla os tenants, planos e strings de conexão
+  db_master:
+    image: postgres:16-alpine
+    container_name: saas_master
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: master_password
+      POSTGRES_DB: saas_control
+    ports:
+      - "5431:5432"
+    volumes:
+      - pgdata_master:/var/lib/postgresql/data
+
+  # Banco Compartilhado: Pool para clientes Standard/Pro
+  db_shared:
+    image: postgres:16-alpine
+    container_name: saas_shared
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: shared_password
+      POSTGRES_DB: saas_pool
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_shared:/var/lib/postgresql/data
+
+  # Cache e Filas
+  redis:
+    image: redis:7-alpine
+    container_name: saas_cache
+    restart: always
+    ports:
+      - "6379:6379"
+
+volumes:
+  pgdata_master:
+  pgdata_shared:
