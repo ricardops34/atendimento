@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit {
   customConfig: any = {
     title: 'Seu SaaS - Login',
     background: 'https://po-ui.io/assets/graphics/background-02.png',
-    logo: 'assets/logo.png',
+    logo: 'logo.png',
     secondaryLogo: ''
   };
 
