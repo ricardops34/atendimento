@@ -22,7 +22,7 @@ export class UsersComponent {
     const hostname = window.location.hostname;
     return hostname.includes('localhost') 
       ? 'http://localhost:3000/users' 
-      : 'https://api.sistema.bjsoft.com.br/users';
+      : '/api/users';
   }
 
   readonly fields: Array<any> = [

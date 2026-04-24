@@ -29,7 +29,7 @@ export class MainComponent implements OnInit {
     const hostname = window.location.hostname;
     return hostname.includes('localhost') 
       ? 'http://localhost:3000' 
-      : 'https://api.sistema.bjsoft.com.br';
+      : '/api';
   }
 
   ngOnInit() {

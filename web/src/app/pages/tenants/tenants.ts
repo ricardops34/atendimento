@@ -23,7 +23,7 @@ export class TenantsComponent {
     const hostname = window.location.hostname;
     return hostname.includes('localhost') 
       ? 'http://localhost:3000/tenants' 
-      : 'https://api.sistema.bjsoft.com.br/tenants';
+      : '/api/tenants';
   }
 
   readonly fields: Array<any> = [
