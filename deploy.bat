@@ -1,22 +1,18 @@
 @echo off
-echo 🐳 Iniciando Build das Imagens SaaS...
+echo 🐳 Iniciando Build das Imagens SaaS (bjsoftware)...
 
-:: 1. Login no Docker Hub (Certifique-se de estar logado no Docker Desktop)
 echo 🔐 Fazendo Login no Docker Hub...
 docker login
 
-:: 2. Build do Backend
 echo ⚙️ Construindo API...
-docker build -t ricardops34/saas-api:latest ./api
+docker build -t bjsoftware/saas-api:latest ./api
 
-:: 3. Build do Frontend
 echo 🎨 Construindo Web...
-docker build -t ricardops34/saas-web:latest ./web
+docker build -t bjsoftware/saas-web:latest ./web
 
-:: 4. Push para o Docker Hub
 echo 📤 Enviando imagens para a nuvem...
-docker push ricardops34/saas-api:latest
-docker push ricardops34/saas-web:latest
+docker push bjsoftware/saas-api:latest
+docker push bjsoftware/saas-web:latest
 
-echo ✅ Imagens enviadas com sucesso! Agora voce ja pode dar o Deploy no Portainer.
+echo ✅ Imagens enviadas com sucesso para bjsoftware!
 pause
