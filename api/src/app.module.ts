@@ -8,9 +8,10 @@ import { TenantsModule } from './modules/tenants/tenants.module';
 import { MetadataModule } from './modules/metadata/metadata.module';
 import { MenuModule } from './modules/menu/menu.module';
 import { AuditModule } from './modules/audit/audit.module';
+import { QuotasModule } from './modules/quotas/quotas.module';
 
 @Module({
-  imports: [UsersModule, AuthModule, PrismaModule, TenantsModule, MetadataModule, MenuModule, AuditModule],
+  imports: [UsersModule, AuthModule, PrismaModule, TenantsModule, MetadataModule, MenuModule, AuditModule, QuotasModule],
   controllers: [AppController],
   providers: [AppService],
 })
