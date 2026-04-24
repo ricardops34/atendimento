@@ -2,10 +2,16 @@
 
 Este documento define como o sistema controla o consumo de recursos por tenant, garantindo a monetização e a saúde da infraestrutura.
 
-## 1. Limite de Usuários (Cadastros)
-Cada plano possui um número máximo de usuários ativos permitidos.
-- **Mecanismo**: O `UsersService` realiza um `count()` antes de permitir novas criações.
-- **Feedback**: Retorno de erro `403 Forbidden` com mensagem de "Limite de plano atingido".
+## 1. Limite de Usuários e Filiais (Cadastros)
+Cada plano possui um número máximo de usuários e filiais permitidos.
+- **Mecanismo**: Os serviços realizam um `count()` antes de permitir novas criações.
+
+### Limites por Plano:
+| Recurso | Standard | Pro | Enterprise |
+| :--- | :--- | :--- | :--- |
+| **Usuários** | 5 | 20 | Ilimitado |
+| **Filiais** | 1 | 5 | Ilimitado |
+| **Registros p/ Tabela** | 5.000 | 50.000 | Ilimitado |
 
 ## 2. Acessos Simultâneos (Sessões)
 Controla quantos dispositivos um mesmo usuário pode usar ao mesmo tempo.

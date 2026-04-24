@@ -33,6 +33,28 @@ export class QuotasService {
   }
 
   /**
+   * Verifica se o tenant ainda pode criar novas filiais
+   */
+  async checkBranchLimit(tenantId: string) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { plan: true, _count: { select: { branches: true } } }
+    });
+
+    if (!tenant) throw new Error('Tenant não encontrado');
+
+    const limits = {
+      STANDARD: 1,
+      PRO: 5,
+      ENTERPRISE: 999
+    };
+
+    if (tenant._count.branches >= limits[tenant.plan]) {
+      throw new ForbiddenException(`Limite de filiais (${limits[tenant.plan]}) atingido para o seu plano.`);
+    }
+  }
+
+  /**
    * Controla e limita os acessos simultâneos por usuário
    */
   async trackSession(userId: string, tenantId: string, plan: string) {
