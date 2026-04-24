@@ -13,9 +13,7 @@ import { HttpClient } from '@angular/common/http';
     <div class="po-wrapper">
       <po-toolbar id="saas-main-toolbar" p-title="Sistema SaaS - Control Panel"></po-toolbar>
       <po-menu id="saas-main-menu" [p-menus]="menus"></po-menu>
-      <po-page-default>
-        <router-outlet></router-outlet>
-      </po-page-default>
+      <router-outlet></router-outlet>
     </div>
   `
 })
