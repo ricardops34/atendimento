@@ -2,7 +2,8 @@
 
 ## 📅 Fase 1: Fundação (Setup & Infra)
 - [ ] [BACKEND] Setup do projeto NestJS.
-- [ ] [DATABASE] Configuração do Docker com PostgreSQL e Redis.
+- [ ] [BACKEND] Implementação do **Dynamic Connection Router** (Híbrido: Shared/Dedicated).
+- [ ] [DATABASE] Configuração do Docker com instâncias de PostgreSQL (Mestre + Shared).
 - [ ] [DATABASE] Modelagem inicial do Prisma (Tenants, Users, Permissions).
 - [ ] [SECURITY] Implementação do Middleware de Extração de Tenant.
 - [ ] [FRONTEND] Setup do projeto Angular com PO-UI.

@@ -22,10 +22,24 @@ O projeto **Sistema** é uma plataforma SaaS multi-tenant desenvolvida para alta
 
 ---
 
-## 🏗️ Estratégia de Multi-tenancy
-Adotamos o modelo de **Shared Database / Shared Schema**.
-- Cada tabela possui uma coluna `tenant_id`.
-- O isolamento é garantido na camada de banco de dados via **RLS**, impedindo vazamento de dados mesmo em caso de falhas na aplicação.
+## 🏗️ Estratégia de Multi-tenancy (Modelo Híbrido)
+Adotamos uma abordagem híbrida para suportar diferentes planos de contratação:
+
+1. **Pool Compartilhado (Planos Standard/Pro)**:
+   - Shared Database / Shared Schema.
+   - Isolamento lógico via `tenant_id` + **PostgreSQL RLS**.
+   - Foco em baixo custo e alta densidade.
+
+2. **Instância Dedicada (Plano Enterprise)**:
+   - Database-per-tenant.
+   - Banco de dados físico isolado.
+   - Foco em conformidade, performance garantida e segurança física.
+
+---
+
+## ⚙️ Componentes de Engenharia SaaS
+- **Connection Router**: Serviço responsável por identificar o plano do tenant e rotear as queries para a instância correta (Shared ou Dedicated).
+- **Tenant Provisioner**: Automação para criação de novos bancos de dados e migração de dados entre modelos.
 
 ---
 
