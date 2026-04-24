@@ -7,20 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Transformamos o Enum em um Modelo para permitir manutenção via Admin
 model Plan {
   id                String   @id @default(uuid())
   name              String   @unique
   description       String?
-  
-  // Limites (Quotas)
   maxUsers          Int      @default(5)
   maxBranches       Int      @default(1)
   maxRecords        Int      @default(5000)
-  
-  // Funcionalidades (JSON com as chaves liberadas)
   features          Json     
-  
   tenants           Tenant[]
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -31,14 +25,11 @@ model Tenant {
   name              String
   domain            String   @unique
   connectionString  String?  
-  
   logoUrl           String?  
   themeConfig       Json?    
-  
-  // Relacionamento com o Plano Dinâmico
+  customLimits      Json?    
   planId            String
   plan              Plan     @relation(fields: [planId], references: [id])
-  
   isActive          Boolean  @default(true)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -49,6 +40,27 @@ model Tenant {
   metadata          EntityMetadata[]
   customEntities    DynamicEntity[]
   branches          Branch[]
+  customReports     CustomReport[] // Relacionamento com Relatórios
+}
+
+// Tabela de Relatórios Customizados por Cliente
+model CustomReport {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  entity      String   // ex: "PRODUCT", "VEHICLE"
+  
+  // Configuração do Relatório (Colunas, Filtros, Ordenação)
+  // Ex: {"columns": ["name", "price"], "filters": {"price": {">": 100}}}
+  config      Json     
+  
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tenantId])
 }
 
 model Branch {
