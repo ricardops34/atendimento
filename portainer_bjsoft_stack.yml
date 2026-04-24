@@ -1,15 +1,27 @@
 version: '3.8'
 
 services:
+  # Adicionamos o Redis para controle de quotas e sessões
+  redis_bjsoft:
+    image: redis:alpine
+    networks:
+      - network_db
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
   saas-api:
     image: bjsoftware/saas-api:latest
     networks:
       - network_db
       - network_public
     environment:
-      # Atualizado com seus dados reais de produção
       - DATABASE_URL=postgresql://saas_control:Saas#1256c0ntrol@db_bjsoft:5432/saas-sistema?schema=public
       - JWT_SECRET=${JWT_SECRET}
+      - REDIS_URL=redis://redis_bjsoft:6379
+    depends_on:
+      - redis_bjsoft
     deploy:
       replicas: 2
       update_config:
