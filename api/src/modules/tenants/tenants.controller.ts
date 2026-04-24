@@ -1,10 +1,15 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Patch, Delete, Body, Param, UseInterceptors, UploadedFile, Headers } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { TenantsService } from './tenants.service';
+import { StorageService } from '../storage/storage.service';
 import { Prisma } from '@prisma/client';
 
 @Controller('tenants')
 export class TenantsController {
-  constructor(private readonly tenantsService: TenantsService) {}
+  constructor(
+    private readonly tenantsService: TenantsService,
+    private readonly storageService: StorageService
+  ) {}
 
   @Post()
   create(@Body() data: Prisma.TenantCreateInput) {
@@ -24,5 +29,15 @@ export class TenantsController {
   @Put(':id')
   update(@Param('id') id: string, @Body() data: Prisma.TenantUpdateInput) {
     return this.tenantsService.update(id, data);
+  }
+
+  @Patch('logo')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadLogo(
+    @Headers('x-tenant-id') tenantId: string,
+    @UploadedFile() file: Express.Multer.File
+  ) {
+    const logoUrl = await this.storageService.saveLogo(tenantId, file);
+    return this.tenantsService.update(tenantId, { logoUrl });
   }
 }

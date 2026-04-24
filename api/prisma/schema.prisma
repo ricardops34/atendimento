@@ -19,7 +19,10 @@ model Tenant {
   plan              Plan     @default(STANDARD)
   domain            String   @unique
   connectionString  String?  
+  
   themeConfig       Json?    
+  logoUrl           String?  // Logo padrão do Cliente
+  
   isActive          Boolean  @default(true)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -29,45 +32,48 @@ model Tenant {
   roles             Role[]
   metadata          EntityMetadata[]
   customEntities    DynamicEntity[]
+  branches          Branch[] // Relacionamento com Filiais
 }
 
-// Definição de uma "Tabela Virtual" criada pelo cliente
-model DynamicEntity {
+model Branch {
   id          String   @id @default(uuid())
-  name        String   // ex: "Histórico de Lavagem", "Acessórios"
-  slug        String   // ex: "historico-lavagem"
+  name        String
+  logoUrl     String?  // Logo específica da Filial (Opcional)
+  
   tenantId    String
   tenant      Tenant   @relation(fields: [tenantId], references: [id])
   
-  fields      Json     // Definição das colunas dessa tabela virtual
-  
-  records     DynamicRecord[]
-  
+  users       User[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@index([tenantId])
+}
+
+model DynamicEntity {
+  id          String   @id @default(uuid())
+  name        String   
+  slug        String   
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  fields      Json     
+  records     DynamicRecord[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   @@unique([slug, tenantId])
   @@index([tenantId])
 }
 
-// Armazenamento dos dados de todas as tabelas virtuais
 model DynamicRecord {
   id                String   @id @default(uuid())
   entityId          String
   entity            DynamicEntity @relation(fields: [entityId], references: [id])
-  
   tenantId          String
-  
-  // O "Vínculo" com tabelas padrão (opcional)
-  // Pode ser o ID de um Veículo, Cliente, etc.
   parentId          String?  
-  parentEntity      String?  // ex: "VEHICLE", "SUPPLIER"
-
-  data              Json     // Os valores salvos pelo cliente
-
+  parentEntity      String?  
+  data              Json     
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
-
   @@index([entityId])
   @@index([tenantId])
   @@index([parentId])
@@ -82,7 +88,6 @@ model EntityMetadata {
   tabs        Json?    
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
   @@unique([entity, tenantId])
   @@index([tenantId])
 }
@@ -94,11 +99,16 @@ model User {
   name      String?
   tenantId  String
   tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  
+  branchId  String?
+  branch    Branch?  @relation(fields: [branchId], references: [id])
+  
   roleId    String?
   role      Role?    @relation(fields: [roleId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@index([tenantId])
+  @@index([branchId])
 }
 
 model Role {
