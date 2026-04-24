@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
     const domain = parts.length > 2 ? parts[0] : 'admin';
     
     // Determina a URL da API (Local vs Nuvem)
-    const apiUrl = hostname.includes('localhost') ? 'http://localhost:3000' : `https://api.sistema.bjsoft.com.br`;
+    const apiUrl = hostname.includes('localhost') ? 'http://localhost:3000' : '/api';
     
     this.http.get(`${apiUrl}/public/branding/${domain}`).subscribe({
       next: (res: any) => {
