@@ -27,7 +27,6 @@ services:
     volumes:
       - pgdata_shared:/var/lib/postgresql/data
 
-  # Banco de Logs: Isolado para alta performance de escrita
   db_logs:
     image: postgres:16-alpine
     container_name: saas_logs
@@ -47,6 +46,16 @@ services:
     restart: always
     ports:
       - "6379:6379"
+
+  # jsreport: O motor de relatórios profissionais (PDF/Excel)
+  jsreport:
+    image: jsreport/jsreport:4.3.0-full
+    container_name: saas_reports
+    restart: always
+    ports:
+      - "5488:5488"
+    environment:
+      - trustUserCode=true
 
 volumes:
   pgdata_master:
