@@ -19,7 +19,7 @@ model Tenant {
   plan              Plan     @default(STANDARD)
   domain            String   @unique
   connectionString  String?  
-  themeConfig       Json?    // Armazena as cores e logo do cliente
+  themeConfig       Json?    
   isActive          Boolean  @default(true)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -28,18 +28,58 @@ model Tenant {
   products          Product[]
   roles             Role[]
   metadata          EntityMetadata[]
+  customEntities    DynamicEntity[]
 }
 
-// Tabela de Metadados: Define como cada tela aparece para cada cliente
-model EntityMetadata {
+// Definição de uma "Tabela Virtual" criada pelo cliente
+model DynamicEntity {
   id          String   @id @default(uuid())
-  entity      String   // ex: "PRODUCT", "VEHICLE", "SUPPLIER"
+  name        String   // ex: "Histórico de Lavagem", "Acessórios"
+  slug        String   // ex: "historico-lavagem"
   tenantId    String
   tenant      Tenant   @relation(fields: [tenantId], references: [id])
   
-  fields      Json     // Array de definições de campos (ordem, labels, triggers)
-  tabs        Json?    // Definição de abas/pastas
+  fields      Json     // Definição das colunas dessa tabela virtual
   
+  records     DynamicRecord[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([slug, tenantId])
+  @@index([tenantId])
+}
+
+// Armazenamento dos dados de todas as tabelas virtuais
+model DynamicRecord {
+  id                String   @id @default(uuid())
+  entityId          String
+  entity            DynamicEntity @relation(fields: [entityId], references: [id])
+  
+  tenantId          String
+  
+  // O "Vínculo" com tabelas padrão (opcional)
+  // Pode ser o ID de um Veículo, Cliente, etc.
+  parentId          String?  
+  parentEntity      String?  // ex: "VEHICLE", "SUPPLIER"
+
+  data              Json     // Os valores salvos pelo cliente
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([entityId])
+  @@index([tenantId])
+  @@index([parentId])
+}
+
+model EntityMetadata {
+  id          String   @id @default(uuid())
+  entity      String   
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  fields      Json     
+  tabs        Json?    
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -52,16 +92,12 @@ model User {
   email     String   @unique
   password  String
   name      String?
-  isActive  Boolean  @default(true)
   tenantId  String
   tenant    Tenant   @relation(fields: [tenantId], references: [id])
-  
   roleId    String?
   role      Role?    @relation(fields: [roleId], references: [id])
-  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
   @@index([tenantId])
 }
 
@@ -74,9 +110,7 @@ model Role {
   permissions Permission[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
   @@unique([name, tenantId])
-  @@index([tenantId])
 }
 
 model Permission {
@@ -93,12 +127,8 @@ model Product {
   price           Decimal
   tenantId        String
   tenant          Tenant   @relation(fields: [tenantId], references: [id])
-  
-  // A "gaveta" de dados customizados
   additionalData  Json?    
-  
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-
   @@index([tenantId])
 }
