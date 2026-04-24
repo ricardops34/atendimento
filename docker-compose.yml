@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+  # Bancos de Dados
   db_master:
     image: postgres:16-alpine
     container_name: saas_master
@@ -40,6 +41,7 @@ services:
     volumes:
       - pgdata_logs:/var/lib/postgresql/data
 
+  # Cache e Filas
   redis:
     image: redis:7-alpine
     container_name: saas_cache
@@ -47,7 +49,7 @@ services:
     ports:
       - "6379:6379"
 
-  # jsreport: O motor de relatórios profissionais (PDF/Excel)
+  # Motor de Relatórios
   jsreport:
     image: jsreport/jsreport:4.3.0-full
     container_name: saas_reports
@@ -56,6 +58,32 @@ services:
       - "5488:5488"
     environment:
       - trustUserCode=true
+
+  # Backend (API)
+  api:
+    build: 
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: saas_api
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://admin:master_password@db_master:5432/saas_control
+      - REDIS_HOST=redis
+    depends_on:
+      - db_master
+      - redis
+
+  # Frontend (Web)
+  web:
+    build: 
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: saas_web
+    ports:
+      - "80:80"
+    depends_on:
+      - api
 
 volumes:
   pgdata_master:

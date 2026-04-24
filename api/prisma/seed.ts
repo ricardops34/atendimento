@@ -1,53 +1,62 @@
-import { PrismaClient, Plan } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Iniciando Seed...');
+  console.log('🌱 Iniciando semente de dados...');
 
-  // 1. Criar Tenant Master
-  const masterTenant = await prisma.tenant.upsert({
-    where: { domain: 'master.alvorada.com' },
+  // 1. Criar Planos Dinâmicos
+  const standard = await prisma.plan.upsert({
+    where: { name: 'Standard' },
     update: {},
     create: {
-      name: 'Alvorada Veículos - Admin',
-      domain: 'master.alvorada.com',
-      plan: Plan.ENTERPRISE,
+      name: 'Standard',
+      description: 'Plano básico para pequenas empresas',
+      maxUsers: 5,
+      maxBranches: 1,
+      maxRecords: 5000,
+      features: ['DASHBOARD_BASIC'],
     },
   });
 
-  // 2. Criar Role de Super Admin
-  const adminRole = await prisma.role.upsert({
-    where: { 
-      name_tenantId: { 
-        name: 'SUPER_ADMIN', 
-        tenantId: masterTenant.id 
-      } 
-    },
+  const enterprise = await prisma.plan.upsert({
+    where: { name: 'Enterprise' },
     update: {},
     create: {
-      name: 'SUPER_ADMIN',
-      description: 'Acesso total ao sistema SaaS',
-      tenantId: masterTenant.id,
+      name: 'Enterprise',
+      description: 'Plano ilimitado para grandes corporações',
+      maxUsers: 999,
+      maxBranches: 999,
+      maxRecords: 999999,
+      features: ['ALL'],
     },
   });
 
-  // 3. Criar Usuário Super Admin
-  const hashedPassword = await bcrypt.hash('admin123', 10);
+  // 2. Criar o Tenant Master (Seu Negócio)
+  const saasAdmin = await prisma.tenant.upsert({
+    where: { domain: 'admin' },
+    update: {},
+    create: {
+      name: 'Sistema Control Panel',
+      domain: 'admin',
+      planId: enterprise.id,
+      status: 'ACTIVE',
+    },
+  });
+
+  // 3. Criar Usuário Master
   await prisma.user.upsert({
-    where: { email: 'admin@alvorada.com' },
+    where: { email: 'admin@saas.com' },
     update: {},
     create: {
-      email: 'admin@alvorada.com',
-      password: hashedPassword,
-      name: 'Ricardo - Super Admin',
-      tenantId: masterTenant.id,
-      roleId: adminRole.id,
+      email: 'admin@saas.com',
+      password: 'admin_password', // Em produção usaríamos hash
+      name: 'Ricardo Admin',
+      tenantId: saasAdmin.id,
     },
   });
 
-  console.log('✅ Seed finalizado com sucesso!');
+  console.log('✅ Semente concluída! Planos e Usuário Master criados.');
 }
 
 main()
