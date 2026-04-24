@@ -25,33 +25,96 @@ body:has(app-login) .po-page-login,
 body:has(app-login) .po-page-login-container, 
 body:has(app-login) .po-page-login-secondary-container {
   background: transparent !important;
-  width: 100% !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
+  border: none !important;
 }
 
-/* Ajuste do PAINEL (O Cartão de Login) */
+/* AJUSTE DO PAINEL (O Cartão de Login Estilo TOTVS) */
 body:has(app-login) .po-page-login-panel {
-  background-color: rgba(255, 255, 255, 0.94) !important;
-  backdrop-filter: blur(12px) !important;
-  border-radius: 16px !important;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.5) !important;
-  
-  /* LIMITA A LARGURA PARA NÃO ESTICAR NA TELA TODA */
-  max-width: 480px !important; 
+  background-color: rgba(255, 255, 255, 0.98) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 15px 50px rgba(0,0,0,0.3) !important;
+  max-width: 400px !important; 
   width: 90% !important;
   margin: auto !important;
-  padding: 20px !important;
-  border: 1px solid rgba(255,255,255,0.3) !important;
+  padding: 40px 35px !important;
+  border: none !important;
+  min-height: 520px !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
-/* Centraliza o conteúdo dentro do painel */
-body:has(app-login) .po-page-login-header {
-  background: transparent !important;
+/* REMOVE O TÍTULO "Seu SaaS - Login" */
+body:has(app-login) .po-page-login-header-product {
+  display: none !important;
+}
+
+/* Estilização do Título "Boas-vindas" */
+body:has(app-login) .po-page-login-header-title {
+  font-size: 32px !important;
+  font-weight: 600 !important;
+  color: #333 !important;
+  text-align: left !important;
+  margin-bottom: 5px !important;
+  padding-top: 10px !important;
+}
+
+/* Texto de apoio abaixo do título */
+body:has(app-login) .po-page-login-header-description {
+  text-align: left !important;
+  font-size: 14px !important;
+  color: #666 !important;
+  margin-bottom: 30px !important;
+}
+
+/* Campos de Input */
+body:has(app-login) .po-field-container {
+    margin-bottom: 20px !important;
+}
+
+body:has(app-login) .po-input {
+  border: 1.5px solid #ccc !important;
+  border-radius: 6px !important;
+  height: 45px !important;
+}
+
+/* Botão Entrar (Estilo Cinza do Exemplo) */
+body:has(app-login) .po-button-primary {
+  background-color: #a3a3a3 !important;
+  border: none !important;
+  border-radius: 6px !important;
+  height: 48px !important;
+  font-weight: 600 !important;
+  color: #444 !important;
+  margin-top: 20px !important;
+}
+
+/* Alinhamento do Esqueci minha senha */
+body:has(app-login) .po-page-login-recovery {
+  text-align: right !important;
+  margin-top: -10px !important;
+  margin-bottom: 25px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: #0056b3 !important;
+  text-decoration: underline !important;
+}
+
+/* Checkbox "Manter-me conectado" no rodapé do card */
+body:has(app-login) .po-page-login-remember {
+  margin-top: 20px !important;
+}
+
+/* ESCONDE TODOS OS ÍCONES "i" E INFOS (LIMPEZA TOTAL) */
+body:has(app-login) .po-icon-info,
+body:has(app-login) .po-page-login-info,
+body:has(app-login) .po-page-login-footer-info,
+body:has(app-login) [class*="po-icon-info"],
+body:has(app-login) .po-field-help,
+body:has(app-login) .po-clickable.po-icon-info {
+  display: none !important;
+  visibility: hidden !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
   padding: 0 !important;
-}
-
-body:has(app-login) .po-page-login-footer {
-  background: transparent !important;
 }

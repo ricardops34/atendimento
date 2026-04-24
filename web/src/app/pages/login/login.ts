@@ -1,36 +1,36 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { PoModule } from '@po-ui/ng-components';
-import { PoPageLoginModule, PoPageLogin } from '@po-ui/ng-templates';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { PoPageLogin, PoPageLoginCustomConfig } from '@po-ui/ng-templates';
+import { PoNotificationService } from '@po-ui/ng-components';
 
 @Component({
   selector: 'app-login',
-  standalone: true,
-  imports: [CommonModule, PoModule, PoPageLoginModule],
-  template: `
-    <po-page-login
-      [p-product-name]="customConfig.title"
-      [p-logo]="customConfig.logo"
-      [p-secondary-logo]="customConfig.secondaryLogo"
-      (p-login-submit)="loginSubmit($event)"
-    >
-    </po-page-login>
-  `
+  templateUrl: './login.html',
+  styleUrls: ['./login.css']
 })
 export class LoginComponent implements OnInit {
-  // Configuração padrão do seu SaaS (Plano Básico)
-  customConfig: any = {
-    title: 'Seu SaaS - Login',
-    background: 'login-bg.png',
-    logo: 'logo.png',
+  
+  loading: boolean = false;
+  user: string = '';
+  password: string = '';
+  
+  // URL base dinâmica: Localhost (Dev) vs /api (Produção/VPN)
+  private readonly apiUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:3000' 
+    : '/api';
+
+  customConfig: PoPageLoginCustomConfig = {
+    title: 'Meu SaaS',
+    background: '/login-bg.png',
+    logo: '/assets/logo.png',
     secondaryLogo: ''
   };
 
   constructor(
     private router: Router,
-    private http: HttpClient
+    private http: HttpClient,
+    private poNotification: PoNotificationService
   ) {}
 
   ngOnInit() {
@@ -38,19 +38,13 @@ export class LoginComponent implements OnInit {
   }
 
   loadBranding() {
-    // Exemplo: 'cliente1.saas.bjsoft.com.br' -> ['cliente1', 'saas', 'bjsoft', 'com', 'br']
     const hostname = window.location.hostname;
     const parts = hostname.split('.');
-    // Pega a primeira parte se houver mais de 2 partes (ex: cliente1.saas...)
-    // Se for apenas localhost, usa 'admin' como padrão para testes
     const domain = parts.length > 2 ? parts[0] : 'admin';
     
-    // Determina a URL da API (Local vs Nuvem)
-    const apiUrl = hostname.includes('localhost') ? 'http://localhost:3000' : '/api';
-    
-    this.http.get(`${apiUrl}/public/branding/${domain}`).subscribe({
+    this.http.get(`${this.apiUrl}/public/branding/${domain}`).subscribe({
       next: (res: any) => {
-        if (res.loginConfig) {
+        if (res && res.loginConfig) {
           this.customConfig = {
             title: res.loginConfig.title || res.name,
             background: res.loginConfig.background || this.customConfig.background,
@@ -58,8 +52,9 @@ export class LoginComponent implements OnInit {
             secondaryLogo: res.loginConfig.secondaryLogo || ''
           };
         }
-        // Salva o ID do tenant detectado para as próximas requisições
-        localStorage.setItem('tenantId', res.id);
+        if (res && res.id) {
+          localStorage.setItem('tenantId', res.id);
+        }
       },
       error: () => {
         console.warn('Usando branding padrão do sistema.');
@@ -67,11 +62,34 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  loginSubmit(formData: PoPageLogin) {
-    console.log('Login solicitado:', formData);
-    // Simulação de login bem-sucedido
-    localStorage.setItem('token', 'fake-jwt-token');
-    localStorage.setItem('permissions', JSON.stringify(['SUPER_ADMIN']));
-    this.router.navigate(['/admin/dashboard']);
+  onLogin(formData: PoPageLogin) {
+    this.loading = true;
+    
+    const loginPayload = {
+      email: formData.login,
+      password: formData.password,
+      tenantId: localStorage.getItem('tenantId')
+    };
+
+    this.http.post(`${this.apiUrl}/auth/login`, loginPayload).subscribe({
+      next: (res: any) => {
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('user', JSON.stringify(res.user));
+        localStorage.setItem('permissions', JSON.stringify(res.permissions || []));
+        
+        this.poNotification.success(`Bem-vindo, ${res.user.name}!`);
+        
+        if (res.user.role === 'SUPER_ADMIN') {
+          this.router.navigate(['/admin/dashboard']);
+        } else {
+          this.router.navigate(['/app/dashboard']);
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        this.loading = false;
+        this.poNotification.error(err.error?.message || 'Erro ao realizar login. Verifique suas credenciais.');
+      }
+    });
   }
 }
