@@ -1,34 +1,39 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PoModule, PoTableColumn, PoPageAction } from '@po-ui/ng-components';
+import { PoPageDynamicTableModule } from '@po-ui/ng-templates';
+import { PoPageDynamicTableOptions } from '@po-ui/ng-templates';
 
 @Component({
   selector: 'app-tenants',
   standalone: true,
-  imports: [CommonModule, PoModule],
-  templateUrl: './tenants.html'
+  imports: [CommonModule, PoPageDynamicTableModule],
+  template: `
+    <po-page-dynamic-table
+      p-title="Gestão de Clientes (SaaS Admin)"
+      p-service-api="http://localhost:3000/tenants"
+      [p-fields]="fields"
+    >
+    </po-page-dynamic-table>
+  `
 })
 export class TenantsComponent {
-  readonly columns: Array<PoTableColumn> = [
-    { property: 'name', label: 'Nome do Cliente' },
-    { property: 'domain', label: 'Domínio' },
-    { property: 'plan', label: 'Plano', type: 'label', labels: [
-      { value: 'STANDARD', color: 'color-01', label: 'Standard' },
-      { value: 'PRO', color: 'color-07', label: 'Pro' },
-      { value: 'ENTERPRISE', color: 'color-10', label: 'Enterprise' }
-    ]},
-    { property: 'isActive', label: 'Status', type: 'boolean' },
-    { property: 'createdAt', label: 'Desde', type: 'date' }
-  ];
-
-  readonly actions: Array<PoPageAction> = [
-    { label: 'Novo Cliente', action: () => alert('Abrir formulário de novo tenant'), icon: 'po-icon-plus' },
-    { label: 'Exportar', action: () => {}, icon: 'po-icon-export' }
-  ];
-
-  items: Array<any> = [
-    { name: 'Alvorada Veículos', domain: 'alvorada.com', plan: 'ENTERPRISE', isActive: true, createdAt: '2024-01-01' },
-    { name: 'Oficina do João', domain: 'joao.com', plan: 'STANDARD', isActive: true, createdAt: '2024-03-15' },
-    { name: 'Transportadora XYZ', domain: 'xyz.com', plan: 'PRO', isActive: false, createdAt: '2024-02-10' },
+  readonly fields: Array<any> = [
+    { property: 'id', key: true, visible: false },
+    { property: 'name', label: 'Nome da Empresa', filter: true, gridColumns: 6 },
+    { property: 'domain', label: 'Domínio', filter: true, gridColumns: 6 },
+    { 
+      property: 'plan', 
+      label: 'Plano', 
+      type: 'label', 
+      options: [
+        { value: 'STANDARD', label: 'Standard', color: 'color-01' },
+        { value: 'PRO', label: 'Pro', color: 'color-07' },
+        { value: 'ENTERPRISE', label: 'Enterprise', color: 'color-10' }
+      ],
+      filter: true,
+      gridColumns: 6 
+    },
+    { property: 'isActive', label: 'Ativo', type: 'boolean', filter: true, gridColumns: 6 },
+    { property: 'createdAt', label: 'Data Cadastro', type: 'date', visible: true }
   ];
 }

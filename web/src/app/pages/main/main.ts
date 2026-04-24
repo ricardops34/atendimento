@@ -12,10 +12,20 @@ import { PoModule, PoMenuItem } from '@po-ui/ng-components';
 })
 export class MainComponent {
   readonly menus: Array<PoMenuItem> = [
-    { label: 'Home', link: '/dashboard', icon: 'po-icon-home', shortLabel: 'Home' },
-    { label: 'Clientes (Tenants)', link: '/tenants', icon: 'po-icon-company', shortLabel: 'Clientes' },
-    { label: 'Papéis e Acesso', link: '/roles', icon: 'po-icon-users', shortLabel: 'Acesso' },
-    { label: 'Configurações', icon: 'po-icon-settings', shortLabel: 'Config' },
-    { label: 'Sair', action: () => window.location.href = '/login', icon: 'po-icon-exit', shortLabel: 'Sair' },
+    { label: 'Dashboard', link: '/dashboard', icon: 'po-icon-home' },
+    
+    // Grupo Admin do SaaS
+    { label: 'SaaS Admin', icon: 'po-icon-settings', subItems: [
+      { label: 'Clientes (Tenants)', link: '/tenants', icon: 'po-icon-company' },
+      { label: 'Configurações Globais', icon: 'po-icon-world' }
+    ]},
+
+    // Grupo do Cliente
+    { label: 'Minha Empresa', icon: 'po-icon-company', subItems: [
+      { label: 'Usuários', link: '/users', icon: 'po-icon-users' },
+      { label: 'Papéis e Acesso', link: '/roles', icon: 'po-icon-lock' }
+    ]},
+
+    { label: 'Sair', action: () => window.location.href = '/login', icon: 'po-icon-exit' },
   ];
 }
