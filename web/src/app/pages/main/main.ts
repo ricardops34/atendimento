@@ -11,8 +11,8 @@ import { HttpClient } from '@angular/common/http';
   imports: [CommonModule, RouterOutlet, PoModule, PoToolbarModule, PoMenuModule],
   template: `
     <div class="po-wrapper">
-      <po-toolbar p-title="Seu SaaS - Control Panel"></po-toolbar>
-      <po-menu [p-menus]="menus"></po-menu>
+      <po-toolbar id="saas-main-toolbar" p-title="Sistema SaaS - Control Panel"></po-toolbar>
+      <po-menu id="saas-main-menu" [p-menus]="menus"></po-menu>
       <po-page-default>
         <router-outlet></router-outlet>
       </po-page-default>
@@ -24,6 +24,14 @@ export class MainComponent implements OnInit {
 
   constructor(private http: HttpClient) {}
 
+  // Getter para URL Dinâmica (Padrão AI-Ready)
+  get apiUrl() {
+    const hostname = window.location.hostname;
+    return hostname.includes('localhost') 
+      ? 'http://localhost:3000' 
+      : 'https://api.sistema.bjsoft.com.br';
+  }
+
   ngOnInit() {
     this.loadMenu();
   }
@@ -32,7 +40,6 @@ export class MainComponent implements OnInit {
     const tenantId = localStorage.getItem('tenantId');
     const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
     
-    // Se for um Administrador do SaaS, carrega o menu Master
     if (permissions.includes('SAAS_ADMIN') || permissions.includes('SUPER_ADMIN')) {
       this.menus = [
         { label: 'Dashboard Admin', link: '/admin/dashboard', icon: 'po-icon-chart-area' },
@@ -54,8 +61,8 @@ export class MainComponent implements OnInit {
         }
       ];
     } else {
-      // Caso contrário, carrega o menu dinâmico do cliente
-      this.http.get(`http://localhost:3000/menu`, {
+      // Chamada usando a URL dinâmica
+      this.http.get(`${this.apiUrl}/menu`, {
         headers: { 'x-tenant-id': tenantId || '' }
       }).subscribe((res: any) => {
         this.menus = res;

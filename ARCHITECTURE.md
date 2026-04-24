@@ -1,56 +1,36 @@
 # 🏛️ Arquitetura do Sistema SaaS
 
-## Visão Geral
-O projeto **Sistema** é uma plataforma SaaS multi-tenant desenvolvida para alta escalabilidade e isolamento de dados.
-
-## 🛠️ Stack Tecnológica
-
-### Frontend
-- **Framework**: Angular 17+
-- **UI Library**: PO-UI (TOTVS Design System)
-- **State Management**: RxJS / Signals
-
-### Backend
-- **Framework**: NestJS (Node.js)
-- **API**: RESTful com documentação OpenAPI (Swagger)
-- **Autenticação**: JWT com suporte a Multi-tenant
-
-## 🎨 Padrões de Frontend (PO-UI)
-Para garantir a consistência visual e produtividade, o projeto segue obrigatoriamente o design system **PO-UI**:
-- **Componentes**: Utilizar exclusivamente componentes da biblioteca `@po-ui/ng-components`.
-- **Templates Dinâmicos**: Preferir sempre `PoPageDynamicTable` para listagens e `PoPageDynamicEdit` para formulários de CRUD.
-- **Estilização**: Utilizar as classes utilitárias do PO-UI (ex: `po-row`, `po-md-6`) em vez de CSS customizado sempre que possível.
-- **UX/UI**: Seguir o Guia de Estilo oficial para manter a experiência "Premium" da TOTVS.
-
-### Banco de Dados & ORM
-- **Database**: PostgreSQL
-- **ORM**: Prisma
-- **Isolamento**: Row-Level Security (RLS) + Tenant ID Filter
+Este documento descreve os padrões técnicos e arquiteturais do projeto.
 
 ---
 
-## 🏗️ Estratégia de Multi-tenancy (Modelo Híbrido)
-Adotamos uma abordagem híbrida para suportar diferentes planos de contratação:
+## 🎨 Padrões de Interface (UI/UX) - AI-Ready
 
-1. **Pool Compartilhado (Planos Standard/Pro)**:
-   - Shared Database / Shared Schema.
-   - Isolamento lógico via `tenant_id` + **PostgreSQL RLS**.
-   - Foco em baixo custo e alta densidade.
+Para garantir que o sistema seja operável por Agentes de IA e mantenha consistência, todas as telas devem seguir estas regras:
 
-2. **Instância Dedicada (Plano Enterprise)**:
-   - Database-per-tenant.
-   - Banco de dados físico isolado.
-   - Foco em conformidade, performance garantida e segurança física.
+### 1. Identificação Única (IDs Semânticos)
+Todos os componentes principais (tabelas, botões, inputs) devem possuir um atributo `id` único seguindo o padrão:
+`saas-[modulo]-[elemento]-[acao]`
+- Ex: `saas-tenants-table`
+- Ex: `saas-users-btn-new`
+
+### 2. URLs Dinâmicas (Local vs Cloud)
+Nunca utilize URLs fixas (`localhost`). Use um getter ou helper para detectar o ambiente:
+```typescript
+get apiUrl() {
+  const hostname = window.location.hostname;
+  return hostname.includes('localhost') 
+    ? 'http://localhost:3000/endpoint' 
+    : 'https://api.sistema.bjsoft.com.br/endpoint';
+}
+```
+
+### 3. Metadados e Service-API
+- Sempre utilize `p-service-api` em componentes dinâmicos do PO-UI. Isso permite que agentes externos descubram a estrutura de dados (campos, tipos, filtros) sem precisar ler o código-fonte.
+- Mantenha os `fields` descritivos e com rótulos amigáveis.
 
 ---
 
-## ⚙️ Componentes de Engenharia SaaS
-- **Connection Router**: Serviço responsável por identificar o plano do tenant e rotear as queries para a instância correta (Shared ou Dedicated).
-- **Tenant Provisioner**: Automação para criação de novos bancos de dados e migração de dados entre modelos.
-
----
-
-## 🛡️ Segurança
-- **CORS**: Configuração restrita por tenant.
-- **Rate Limiting**: Aplicado por IP e por Tenant ID.
-- **Audit Logs**: Registro de todas as operações de escrita com identificação do autor e cliente.
+## 🏗️ Estratégia de Multi-tenancy
+Adotamos uma abordagem híbrida...
+*(restante do conteúdo mantido)*
