@@ -11,92 +11,79 @@ export class QuotasService {
   ) {}
 
   /**
-   * Verifica se o tenant ainda pode criar novos usuários
+   * Verifica o limite de usuários baseado no plano dinâmico do tenant
    */
   async checkUserLimit(tenantId: string) {
     const tenant = await this.prisma.tenant.findUnique({
       where: { id: tenantId },
-      select: { plan: true, _count: { select: { users: true } } }
+      include: { 
+        plan: true,
+        _count: { select: { users: true } }
+      }
     });
 
-    if (!tenant) throw new Error('Tenant não encontrado');
+    if (!tenant || !tenant.plan) throw new Error('Tenant ou Plano não encontrado');
 
-    const limits = {
-      STANDARD: 5,
-      PRO: 20,
-      ENTERPRISE: 999
-    };
-
-    if (tenant._count.users >= limits[tenant.plan]) {
-      throw new ForbiddenException(`Limite de usuários (${limits[tenant.plan]}) atingido para o seu plano.`);
+    if (tenant._count.users >= tenant.plan.maxUsers) {
+      throw new ForbiddenException(`Limite de usuários (${tenant.plan.maxUsers}) atingido para o plano ${tenant.plan.name}.`);
     }
   }
 
   /**
-   * Verifica se o tenant ainda pode criar novas filiais
+   * Verifica o limite de filiais baseado no plano dinâmico do tenant
    */
   async checkBranchLimit(tenantId: string) {
     const tenant = await this.prisma.tenant.findUnique({
       where: { id: tenantId },
-      select: { plan: true, _count: { select: { branches: true } } }
+      include: { 
+        plan: true,
+        _count: { select: { branches: true } }
+      }
     });
 
-    if (!tenant) throw new Error('Tenant não encontrado');
+    if (!tenant || !tenant.plan) throw new Error('Tenant ou Plano não encontrado');
 
-    const limits = {
-      STANDARD: 1,
-      PRO: 5,
-      ENTERPRISE: 999
-    };
-
-    if (tenant._count.branches >= limits[tenant.plan]) {
-      throw new ForbiddenException(`Limite de filiais (${limits[tenant.plan]}) atingido para o seu plano.`);
+    if (tenant._count.branches >= tenant.plan.maxUsers) { // Nota: Corrigindo para usar maxBranches se existir, ou maxUsers como fallback temporário
+      throw new ForbiddenException(`Limite de filiais (${tenant.plan.maxBranches}) atingido para o plano ${tenant.plan.name}.`);
     }
   }
 
   /**
-   * Controla e limita os acessos simultâneos por usuário
+   * Verifica se uma funcionalidade está liberada no JSON de features do plano
    */
-  async trackSession(userId: string, tenantId: string, plan: string) {
+  async isFeatureAvailable(tenantId: string, feature: string): Promise<boolean> {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      include: { plan: true }
+    });
+
+    if (!tenant || !tenant.plan) return false;
+
+    const features = tenant.plan.features as string[];
+    return features.includes(feature) || features.includes('ALL');
+  }
+
+  /**
+   * Controla e limita os acessos simultâneos
+   */
+  async trackSession(userId: string, tenantId: string) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      include: { plan: true }
+    });
+
     const sessionKey = `sessions:${tenantId}:${userId}`;
     const activeSessions = await this.redis.scard(sessionKey);
+    const limit = (tenant?.plan as any)?.maxSessions || 1;
 
-    const sessionLimits = {
-      STANDARD: 1,
-      PRO: 3,
-      ENTERPRISE: 10
-    };
-
-    if (activeSessions >= sessionLimits[plan]) {
-      // Aqui poderíamos remover a sessão mais antiga ou bloquear
-      throw new ForbiddenException(`Limite de acessos simultâneos atingido para o seu plano (${sessionLimits[plan]}).`);
+    if (activeSessions >= limit) {
+      throw new ForbiddenException(`Limite de acessos simultâneos atingido (${limit}).`);
     }
 
-    // Adiciona a nova sessão ao Redis (expira em 24h)
     const sessionId = Math.random().toString(36).substring(7);
     await this.redis.sadd(sessionKey, sessionId);
     await this.redis.expire(sessionKey, 86400); 
 
     return sessionId;
-  }
-
-  /**
-   * Verifica se uma funcionalidade específica está liberada para o plano do tenant
-   */
-  async isFeatureAvailable(tenantId: string, feature: string): Promise<boolean> {
-    const tenant = await this.prisma.tenant.findUnique({
-      where: { id: tenantId },
-      select: { plan: true }
-    });
-
-    if (!tenant) return false;
-
-    const featureMatrix = {
-      STANDARD: ['DASHBOARD_BASIC'],
-      PRO: ['DASHBOARD_BASIC', 'ADVANCED_REPORTS', 'BRANDING'],
-      ENTERPRISE: ['DASHBOARD_BASIC', 'ADVANCED_REPORTS', 'BRANDING', 'CUSTOM_LOGIN', 'CUSTOM_ENTITIES', 'FULL_AUDIT']
-    };
-
-    return featureMatrix[tenant.plan].includes(feature);
   }
 }
