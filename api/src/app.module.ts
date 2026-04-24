@@ -13,9 +13,10 @@ import { StorageModule } from './modules/storage/storage.module';
 import { BranchesModule } from './modules/branches/branches.module';
 import { PublicModule } from './modules/public/public.module';
 import { PlansModule } from './modules/plans/plans.module';
+import { CustomRoutinesModule } from './modules/custom-routines/custom-routines.module';
 
 @Module({
-  imports: [UsersModule, AuthModule, PrismaModule, TenantsModule, MetadataModule, MenuModule, AuditModule, QuotasModule, StorageModule, BranchesModule, PublicModule, PlansModule],
+  imports: [UsersModule, AuthModule, PrismaModule, TenantsModule, MetadataModule, MenuModule, AuditModule, QuotasModule, StorageModule, BranchesModule, PublicModule, PlansModule, CustomRoutinesModule],
   controllers: [AppController],
   providers: [AppService],
 })
