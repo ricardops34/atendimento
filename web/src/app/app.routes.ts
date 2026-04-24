@@ -10,7 +10,8 @@ export const routes: Routes = [
     children: [
       // Aqui entrarão os módulos de negócio depois
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', loadComponent: () => import('./pages/main/main').then(m => m.MainComponent) } // Temporário
+      { path: 'dashboard', loadComponent: () => import('./pages/main/main').then(m => m.MainComponent) },
+      { path: 'tenants', loadComponent: () => import('./pages/tenants/tenants').then(m => m.TenantsComponent) }
     ]
   }
 ];

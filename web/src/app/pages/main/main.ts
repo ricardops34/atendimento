@@ -12,8 +12,9 @@ import { PoModule, PoMenuItem } from '@po-ui/ng-components';
 })
 export class MainComponent {
   readonly menus: Array<PoMenuItem> = [
-    { label: 'Home', action: () => alert('Home Clicked'), icon: 'po-icon-home', shortLabel: 'Home' },
-    { label: 'Clientes (Tenants)', icon: 'po-icon-company', shortLabel: 'Clientes' },
+    { label: 'Home', link: '/dashboard', icon: 'po-icon-home', shortLabel: 'Home' },
+    { label: 'Clientes (Tenants)', link: '/tenants', icon: 'po-icon-company', shortLabel: 'Clientes' },
+    { label: 'Papéis e Acesso', link: '/roles', icon: 'po-icon-users', shortLabel: 'Acesso' },
     { label: 'Configurações', icon: 'po-icon-settings', shortLabel: 'Config' },
     { label: 'Sair', action: () => window.location.href = '/login', icon: 'po-icon-exit', shortLabel: 'Sair' },
   ];
