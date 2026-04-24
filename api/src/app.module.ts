@@ -11,9 +11,10 @@ import { AuditModule } from './modules/audit/audit.module';
 import { QuotasModule } from './modules/quotas/quotas.module';
 import { StorageModule } from './modules/storage/storage.module';
 import { BranchesModule } from './modules/branches/branches.module';
+import { PublicModule } from './modules/public/public.module';
 
 @Module({
-  imports: [UsersModule, AuthModule, PrismaModule, TenantsModule, MetadataModule, MenuModule, AuditModule, QuotasModule, StorageModule, BranchesModule],
+  imports: [UsersModule, AuthModule, PrismaModule, TenantsModule, MetadataModule, MenuModule, AuditModule, QuotasModule, StorageModule, BranchesModule, PublicModule],
   controllers: [AppController],
   providers: [AppService],
 })
