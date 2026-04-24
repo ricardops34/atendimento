@@ -5,7 +5,10 @@ body {
   margin: 0;
   font-family: 'Roboto', sans-serif;
   background-color: #f4f4f4;
-  /* Imagem de fundo global */
+}
+
+/* APLICA O FUNDO APENAS NA TELA DE LOGIN */
+body:has(app-login) {
   background-image: url('/login-bg.png') !important;
   background-size: cover !important;
   background-position: center !important;
@@ -13,16 +16,15 @@ body {
   background-repeat: no-repeat !important;
 }
 
-/* Força transparência absoluta em toda a estrutura do po-page-login */
-.po-page-login, 
-.po-page-login-container, 
-.po-page-login-secondary-container,
-.po-page-login-header {
+/* Transparência e Blur exclusivos para o login */
+body:has(app-login) .po-page-login, 
+body:has(app-login) .po-page-login-container, 
+body:has(app-login) .po-page-login-secondary-container,
+body:has(app-login) .po-page-login-header {
   background: transparent !important;
 }
 
-/* Garante que o painel de login tenha o efeito de vidro e contraste */
-.po-page-login-panel {
+body:has(app-login) .po-page-login-panel {
   background-color: rgba(255, 255, 255, 0.92) !important;
   backdrop-filter: blur(10px) !important;
   border-radius: 16px !important;
