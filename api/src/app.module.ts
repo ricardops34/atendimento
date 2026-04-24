@@ -14,13 +14,13 @@ import { BranchesModule } from './modules/branches/branches.module';
 import { PublicModule } from './modules/public/public.module';
 import { PlansModule } from './modules/plans/plans.module';
 import { CustomRoutinesModule } from './modules/custom-routines/custom-routines.module';
-import { IORedisModule } from '@nestjs-modules/ioredis';
+import { RedisModule } from '@nestjs-modules/ioredis';
 
 @Module({
   imports: [
-    IORedisModule.forRoot({
+    RedisModule.forRoot({
       type: 'single',
-      url: process.env.REDIS_URL || 'redis://redis_bjsoft:6379',
+      url: process.env.REDIS_URL || 'redis://redis:6379',
     }),
     UsersModule, 
     AuthModule, 
