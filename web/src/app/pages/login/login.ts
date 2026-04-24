@@ -39,10 +39,14 @@ export class LoginComponent implements OnInit {
   }
 
   loadBranding() {
-    // Detecta o domínio atual (ex: cliente-a.localhost)
-    const domain = window.location.hostname;
+    // Exemplo: 'cliente1.saas.bjsoft.com.br' -> ['cliente1', 'saas', 'bjsoft', 'com', 'br']
+    const hostname = window.location.hostname;
+    const parts = hostname.split('.');
     
-    this.http.get(`http://localhost:3000/public/branding/${domain}`).subscribe({
+    // Determina a URL da API (Local vs Nuvem)
+    const apiUrl = hostname.includes('localhost') ? 'http://localhost:3000' : `https://api.sistema.bjsoft.com.br`;
+    
+    this.http.get(`${apiUrl}/public/branding/${domain}`).subscribe({
       next: (res: any) => {
         if (res.loginConfig) {
           this.customConfig = {
