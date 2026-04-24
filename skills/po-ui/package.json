@@ -1,0 +1,26 @@
+{
+  "name": "skill-po-ui",
+  "version": "1.0.0",
+  "description": "MCP Server for PO-UI framework following Antigravity and EVO-METHOD standards",
+  "main": "build/index.js",
+  "type": "module",
+  "bin": {
+    "skill-po-ui": "build/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "start": "node build/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.1",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
