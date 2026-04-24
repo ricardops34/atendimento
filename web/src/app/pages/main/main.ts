@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { PoModule, PoMenuItem } from '@po-ui/ng-components';
+import { DataService } from '../../services/data';
 
 @Component({
   selector: 'app-main',
@@ -10,22 +11,32 @@ import { PoModule, PoMenuItem } from '@po-ui/ng-components';
   templateUrl: './main.html',
   styleUrls: ['./main.css']
 })
-export class MainComponent {
-  readonly menus: Array<PoMenuItem> = [
-    { label: 'Dashboard', link: '/dashboard', icon: 'po-icon-home' },
-    
-    // Grupo Admin do SaaS
-    { label: 'SaaS Admin', icon: 'po-icon-settings', subItems: [
-      { label: 'Clientes (Tenants)', link: '/tenants', icon: 'po-icon-company' },
-      { label: 'Configurações Globais', icon: 'po-icon-world' }
-    ]},
+export class MainComponent implements OnInit {
+  menus: Array<PoMenuItem> = [];
 
-    // Grupo do Cliente
-    { label: 'Minha Empresa', icon: 'po-icon-company', subItems: [
-      { label: 'Usuários', link: '/users', icon: 'po-icon-users' },
-      { label: 'Papéis e Acesso', link: '/roles', icon: 'po-icon-lock' }
-    ]},
+  constructor(private dataService: DataService) {}
 
-    { label: 'Sair', action: () => window.location.href = '/login', icon: 'po-icon-exit' },
-  ];
+  ngOnInit() {
+    this.loadMenu();
+  }
+
+  loadMenu() {
+    this.dataService.getMenu().subscribe({
+      next: (menuData) => {
+        // Adiciona a opção de Sair ao final do menu recebido da API
+        this.menus = [
+          ...menuData,
+          { label: 'Sair', action: () => this.logout(), icon: 'po-icon-exit', separator: true }
+        ];
+      },
+      error: (err) => {
+        console.error('Erro ao carregar menu dinâmico:', err);
+      }
+    });
+  }
+
+  logout() {
+    localStorage.clear();
+    window.location.href = '/login';
+  }
 }
