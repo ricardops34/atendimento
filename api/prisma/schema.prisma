@@ -7,6 +7,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum TenantStatus {
+  ACTIVE
+  OVERDUE
+  SUSPENDED
+  CANCELLED
+}
+
 model Plan {
   id                String   @id @default(uuid())
   name              String   @unique
@@ -28,8 +35,16 @@ model Tenant {
   logoUrl           String?  
   themeConfig       Json?    
   customLimits      Json?    
+  
+  // Dados de Cobrança
+  status            TenantStatus @default(ACTIVE)
+  lastPaymentDate   DateTime?
+  nextBillingDate   DateTime?
+  trialEndsAt       DateTime?
+  
   planId            String
   plan              Plan     @relation(fields: [planId], references: [id])
+  
   isActive          Boolean  @default(true)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -41,27 +56,20 @@ model Tenant {
   customEntities    DynamicEntity[]
   branches          Branch[]
   customReports     CustomReport[]
-  apiKeys           ApiKey[] // Chaves de Integração Externa
+  apiKeys           ApiKey[]
 }
 
-// Chaves para Integração Externa (Sistemas de Terceiros)
 model ApiKey {
   id          String   @id @default(uuid())
-  key         String   @unique // Chave de acesso (deve ser tratada como senha)
-  name        String   // Ex: "Integração Site Wordpress"
-  
+  key         String   @unique
+  name        String
   tenantId    String
   tenant      Tenant   @relation(fields: [tenantId], references: [id])
-  
-  // Permissões específicas da chave (ex: ["READ_PRODUCTS", "CREATE_ORDER"])
   permissions Json     
-  
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
   @@index([tenantId])
-  @@index([key])
 }
 
 model CustomReport {
@@ -173,7 +181,7 @@ model Product {
   name            String
   price           Decimal
   tenantId        String
-  tenant          Tenant   @relation(fields: [tenantId], references: [id])
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
   additionalData  Json?    
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
