@@ -7,9 +7,9 @@ services:
       - network_db
       - network_public
     environment:
-      - DATABASE_URL=postgresql://saas_control:Saas#1256c0ntrol@db_bjsoft:5432/saas-sistema?schema=public
+      # O caractere # foi substituído por %23 para que a URL seja lida corretamente pelo Prisma
+      - DATABASE_URL=postgresql://saas_control:Saas%231256c0ntrol@db_bjsoft:5432/saas-sistema?schema=public
       - JWT_SECRET=${JWT_SECRET}
-      # Usando o seu Redis existente na rede network_db
       - REDIS_URL=redis://redis:6379
     deploy:
       replicas: 2
