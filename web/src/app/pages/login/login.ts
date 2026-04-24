@@ -73,6 +73,6 @@ export class LoginComponent implements OnInit {
     // Simulação de login bem-sucedido
     localStorage.setItem('token', 'fake-jwt-token');
     localStorage.setItem('permissions', JSON.stringify(['SUPER_ADMIN']));
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/admin/dashboard']);
   }
 }
