@@ -1,41 +1,33 @@
-/* Força o container principal a ocupar a tela toda com a imagem de fundo */
+/* Centraliza o formulário no meio da tela */
 :host ::ng-deep .po-page-login {
-  display: grid !important;
-  place-items: center !important;
-  height: 100vh !important;
-  width: 100vw !important;
-  background-image: url('/login-bg.png') !important;
-  background-size: cover !important;
-  background-position: center !important;
-  background-attachment: fixed !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  min-height: 100vh !important;
+  width: 100% !important;
+  background: transparent !important; /* Deixa o fundo do body aparecer */
 }
 
-/* Remove o layout de "coluna" padrão do PO-UI */
+/* Painel com efeito de vidro */
 :host ::ng-deep .po-page-login-panel {
-  grid-column: 1 !important;
-  grid-row: 1 !important;
-  margin: 0 !important;
+  margin: auto !important;
   border-radius: 16px !important;
   box-shadow: 0 20px 50px rgba(0,0,0,0.5) !important;
-  background-color: rgba(255, 255, 255, 0.94) !important;
+  background-color: rgba(255, 255, 255, 0.92) !important;
   backdrop-filter: blur(10px) !important;
-  max-width: 480px !important;
-  width: 100% !important;
-  z-index: 10 !important;
+  max-width: 450px !important;
+  width: 90% !important;
 }
 
-/* Esconde a parte lateral branca que o PO-UI cria por padrão */
+/* Remove a coluna lateral branca padrão */
 :host ::ng-deep .po-page-login-secondary-container {
   display: none !important;
 }
 
-/* Ajusta o cabeçalho do form */
-:host ::ng-deep .po-page-login-header {
-  background-color: transparent !important;
-  padding-top: 20px !important;
-}
-
-/* Garante que o fundo não fique branco por baixo */
 :host ::ng-deep .po-page-login-container {
   background: transparent !important;
+}
+
+:host ::ng-deep .po-page-login-header {
+  background-color: transparent !important;
 }
