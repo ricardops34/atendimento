@@ -79,4 +79,24 @@ export class QuotasService {
 
     return sessionId;
   }
+
+  /**
+   * Verifica se uma funcionalidade específica está liberada para o plano do tenant
+   */
+  async isFeatureAvailable(tenantId: string, feature: string): Promise<boolean> {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: tenantId },
+      select: { plan: true }
+    });
+
+    if (!tenant) return false;
+
+    const featureMatrix = {
+      STANDARD: ['DASHBOARD_BASIC'],
+      PRO: ['DASHBOARD_BASIC', 'ADVANCED_REPORTS', 'BRANDING'],
+      ENTERPRISE: ['DASHBOARD_BASIC', 'ADVANCED_REPORTS', 'BRANDING', 'CUSTOM_LOGIN', 'CUSTOM_ENTITIES', 'FULL_AUDIT']
+    };
+
+    return featureMatrix[tenant.plan].includes(feature);
+  }
 }

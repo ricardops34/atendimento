@@ -13,6 +13,18 @@ Cada plano possui um número máximo de usuários e filiais permitidos.
 | **Filiais** | 1 | 5 | Ilimitado |
 | **Registros p/ Tabela** | 5.000 | 50.000 | Ilimitado |
 
+## 2. Funcionalidades por Plano (Feature Toggling)
+Além dos limites de volume, os planos liberam ferramentas exclusivas.
+
+| Funcionalidade | Standard | Pro | Enterprise |
+| :--- | :---: | :---: | :---: |
+| **Dashboard Básico** | ✅ | ✅ | ✅ |
+| **Relatórios Avançados** | ❌ | ✅ | ✅ |
+| **Customização (Logo/Cores)** | ❌ | ✅ | ✅ |
+| **Login Personalizado (Background)** | ❌ | ❌ | ✅ |
+| **Entidades Customizadas (No-code)**| ❌ | ❌ | ✅ |
+| **Audit Log Completo** | ❌ | ❌ | ✅ |
+
 ## 2. Acessos Simultâneos (Sessões)
 Controla quantos dispositivos um mesmo usuário pode usar ao mesmo tempo.
 - **Mecanismo**: Gerenciado via **Redis**. Cada login gera uma chave `session:user_id:tenant_id`.
