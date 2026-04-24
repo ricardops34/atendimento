@@ -7,13 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum TenantStatus {
-  ACTIVE
-  OVERDUE
-  SUSPENDED
-  CANCELLED
-}
-
 model Plan {
   id                String   @id @default(uuid())
   name              String   @unique
@@ -35,16 +28,12 @@ model Tenant {
   logoUrl           String?  
   themeConfig       Json?    
   customLimits      Json?    
-  
-  // Dados de Cobrança
   status            TenantStatus @default(ACTIVE)
   lastPaymentDate   DateTime?
   nextBillingDate   DateTime?
   trialEndsAt       DateTime?
-  
   planId            String
   plan              Plan     @relation(fields: [planId], references: [id])
-  
   isActive          Boolean  @default(true)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -57,6 +46,33 @@ model Tenant {
   branches          Branch[]
   customReports     CustomReport[]
   apiKeys           ApiKey[]
+  customRoutines    CustomRoutine[] // Histórico de Rotinas
+}
+
+enum TenantStatus {
+  ACTIVE
+  OVERDUE
+  SUSPENDED
+  CANCELLED
+}
+
+// Controle de Versão de Rotinas Customizadas
+model CustomRoutine {
+  id          String   @id @default(uuid())
+  hookName    String   // ex: "before_product_save"
+  version     Int      @default(1)
+  filePath    String   // ex: "v1.js"
+  description String?  // Motivo da alteração / Chamado de suporte
+  isActive    Boolean  @default(false)
+  
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  
+  author      String?  // Quem desenvolveu
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tenantId, hookName])
 }
 
 model ApiKey {

@@ -1,37 +1,49 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { join } from 'path';
 import { existsSync } from 'fs';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class CustomRoutinesService {
   private readonly logger = new Logger(CustomRoutinesService.name);
   private readonly routinesBaseDir = join(process.cwd(), 'custom_routines');
 
+  constructor(private prisma: PrismaService) {}
+
   /**
-   * Procura e executa um "Hook" customizado para o cliente
-   * @param tenantId ID do cliente
-   * @param hookName Nome da rotina (ex: 'calculo_comissao')
-   * @param data Dados para processamento
+   * Executa a rotina customizada VERSIONADA
    */
   async runHook(tenantId: string, hookName: string, data: any): Promise<any> {
-    const routinePath = join(this.routinesBaseDir, tenantId, `${hookName}.js`);
+    // 1. Busca no banco qual versão desta rotina está ATIVA para este cliente
+    const activeRoutine = await this.prisma.customRoutine.findFirst({
+      where: { 
+        tenantId, 
+        hookName, 
+        isActive: true 
+      },
+      orderBy: { version: 'desc' }
+    });
 
-    if (existsSync(routinePath)) {
-      try {
-        // Importa o arquivo dinamicamente
-        // Nota: Em produção, usaríamos uma sandbox (vm2) para segurança total
-        const routine = require(routinePath);
-        
-        if (typeof routine.execute === 'function') {
-          this.logger.log(`[PLUGIN] Executando rotina customizada para ${tenantId}: ${hookName}`);
-          return await routine.execute(data);
+    if (activeRoutine) {
+      // O caminho agora inclui a pasta do hook e o arquivo da versão (ex: custom_routines/ID/calculo/v2.js)
+      const routinePath = join(this.routinesBaseDir, tenantId, hookName, activeRoutine.filePath);
+
+      if (existsSync(routinePath)) {
+        try {
+          // IMPORTANTE: Limpa o cache do require para permitir atualizações a quente
+          delete require.cache[require.resolve(routinePath)];
+          const routine = require(routinePath);
+          
+          if (typeof routine.execute === 'function') {
+            this.logger.log(`[PLUGIN V${activeRoutine.version}] Executando ${hookName} para ${tenantId}`);
+            return await routine.execute(data);
+          }
+        } catch (error) {
+          this.logger.error(`[PLUGIN ERROR] V${activeRoutine.version} - ${error.message}`);
         }
-      } catch (error) {
-        this.logger.error(`[PLUGIN ERROR] Falha na rotina ${hookName} do cliente ${tenantId}: ${error.message}`);
       }
     }
 
-    // Se não houver rotina, retorna os dados originais sem alteração
     return data;
   }
 }
