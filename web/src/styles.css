@@ -14,19 +14,44 @@ body:has(app-login) {
   background-position: center !important;
   background-attachment: fixed !important;
   background-repeat: no-repeat !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  min-height: 100vh !important;
 }
 
-/* Transparência e Blur exclusivos para o login */
+/* Transparência absoluta para os containers do PO-UI */
 body:has(app-login) .po-page-login, 
 body:has(app-login) .po-page-login-container, 
-body:has(app-login) .po-page-login-secondary-container,
-body:has(app-login) .po-page-login-header {
+body:has(app-login) .po-page-login-secondary-container {
   background: transparent !important;
+  width: 100% !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
 }
 
+/* Ajuste do PAINEL (O Cartão de Login) */
 body:has(app-login) .po-page-login-panel {
-  background-color: rgba(255, 255, 255, 0.92) !important;
-  backdrop-filter: blur(10px) !important;
+  background-color: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(12px) !important;
   border-radius: 16px !important;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.5) !important;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.5) !important;
+  
+  /* LIMITA A LARGURA PARA NÃO ESTICAR NA TELA TODA */
+  max-width: 480px !important; 
+  width: 90% !important;
+  margin: auto !important;
+  padding: 20px !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
+}
+
+/* Centraliza o conteúdo dentro do painel */
+body:has(app-login) .po-page-login-header {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+body:has(app-login) .po-page-login-footer {
+  background: transparent !important;
 }
