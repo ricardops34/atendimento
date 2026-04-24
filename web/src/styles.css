@@ -1,5 +1,5 @@
 /* Import PO-UI Theme */
-@import "~@po-ui/style/css/po-theme-default.min.css";
+@import "@po-ui/style/css/po-theme-default.min.css";
 
 body {
   margin: 0;

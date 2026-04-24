@@ -12,7 +12,7 @@ import { HttpClient } from '@angular/common/http';
   template: `
     <po-page-login
       [p-background]="customConfig.background"
-      [p-title]="customConfig.title"
+      [p-product-name]="customConfig.title"
       [p-logo]="customConfig.logo"
       [p-secondary-logo]="customConfig.secondaryLogo"
       (p-login-submit)="loginSubmit($event)"
@@ -42,6 +42,9 @@ export class LoginComponent implements OnInit {
     // Exemplo: 'cliente1.saas.bjsoft.com.br' -> ['cliente1', 'saas', 'bjsoft', 'com', 'br']
     const hostname = window.location.hostname;
     const parts = hostname.split('.');
+    // Pega a primeira parte se houver mais de 2 partes (ex: cliente1.saas...)
+    // Se for apenas localhost, usa 'admin' como padrão para testes
+    const domain = parts.length > 2 ? parts[0] : 'admin';
     
     // Determina a URL da API (Local vs Nuvem)
     const apiUrl = hostname.includes('localhost') ? 'http://localhost:3000' : `https://api.sistema.bjsoft.com.br`;
