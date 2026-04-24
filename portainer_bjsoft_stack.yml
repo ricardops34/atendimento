@@ -7,7 +7,6 @@ services:
       - network_db
       - network_public
     environment:
-      # O host foi corrigido de db_bjsoft para postgres
       - DATABASE_URL=postgresql://saas_control:Saas%231256c0ntrol@postgres:5432/saas-sistema?schema=public
       - JWT_SECRET=${JWT_SECRET}
       - REDIS_URL=redis://redis:6379
@@ -22,6 +21,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.saas-api.rule=Host(`api.sistema.bjsoft.com.br`)"
       - "traefik.http.services.saas-api.loadbalancer.server.port=3000"
+      # Informa ao Traefik qual rede usar para evitar o erro 404
+      - "traefik.docker.network=network_public"
 
   saas-web:
     image: bjsoftware/saas-web:latest
@@ -33,6 +34,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.saas-web.rule=Host(`sistema.bjsoft.com.br`) || HostRegexp(`{subdomain:[a-z0-9]+}.sistema.bjsoft.com.br`)"
       - "traefik.http.services.saas-web.loadbalancer.server.port=80"
+      - "traefik.docker.network=network_public"
 
 networks:
   network_db:
