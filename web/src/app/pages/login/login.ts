@@ -1,31 +1,31 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { PoPageLogin, PoPageLoginCustomConfig } from '@po-ui/ng-templates';
+import { PoPageLoginModule, PoPageLogin } from '@po-ui/ng-templates';
 import { PoNotificationService } from '@po-ui/ng-components';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
+  standalone: true,
+  imports: [CommonModule, PoPageLoginModule],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
 export class LoginComponent implements OnInit {
   
   loading: boolean = false;
-  user: string = '';
-  password: string = '';
   
   // URL base dinâmica: Localhost (Dev) vs /api (Produção/VPN)
   private readonly apiUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:3000' 
     : '/api';
 
-  customConfig: PoPageLoginCustomConfig = {
-    title: 'Meu SaaS',
-    background: '/login-bg.png',
-    logo: '/assets/logo.png',
-    secondaryLogo: ''
-  };
+  // Propriedades individuais para o template
+  productName: string = 'Meu SaaS';
+  background: string = '/login-bg.png';
+  logo: string = '/assets/logo.png';
+  secondaryLogo: string = '';
 
   constructor(
     private router: Router,
@@ -45,12 +45,10 @@ export class LoginComponent implements OnInit {
     this.http.get(`${this.apiUrl}/public/branding/${domain}`).subscribe({
       next: (res: any) => {
         if (res && res.loginConfig) {
-          this.customConfig = {
-            title: res.loginConfig.title || res.name,
-            background: res.loginConfig.background || this.customConfig.background,
-            logo: res.logoUrl || this.customConfig.logo,
-            secondaryLogo: res.loginConfig.secondaryLogo || ''
-          };
+          this.productName = res.loginConfig.title || res.name;
+          this.background = res.loginConfig.background || this.background;
+          this.logo = res.logoUrl || this.logo;
+          this.secondaryLogo = res.loginConfig.secondaryLogo || '';
         }
         if (res && res.id) {
           localStorage.setItem('tenantId', res.id);
@@ -62,7 +60,7 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  onLogin(formData: PoPageLogin) {
+  loginSubmit(formData: PoPageLogin) {
     this.loading = true;
     
     const loginPayload = {

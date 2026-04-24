@@ -1,7 +1,9 @@
 <po-page-login
   (p-login-submit)="loginSubmit($event)"
-  p-recovery="/recovery"
-  p-register="/register"
+  [p-product-name]="productName"
+  [p-background]="background"
+  [p-logo]="logo"
+  [p-secondary-logo]="secondaryLogo"
   [p-loading]="loading"
 >
 </po-page-login>
