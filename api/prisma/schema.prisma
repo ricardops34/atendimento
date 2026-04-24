@@ -40,26 +40,40 @@ model Tenant {
   metadata          EntityMetadata[]
   customEntities    DynamicEntity[]
   branches          Branch[]
-  customReports     CustomReport[] // Relacionamento com Relatórios
+  customReports     CustomReport[]
+  apiKeys           ApiKey[] // Chaves de Integração Externa
 }
 
-// Tabela de Relatórios Customizados por Cliente
-model CustomReport {
+// Chaves para Integração Externa (Sistemas de Terceiros)
+model ApiKey {
   id          String   @id @default(uuid())
-  name        String
-  description String?
-  entity      String   // ex: "PRODUCT", "VEHICLE"
-  
-  // Configuração do Relatório (Colunas, Filtros, Ordenação)
-  // Ex: {"columns": ["name", "price"], "filters": {"price": {">": 100}}}
-  config      Json     
+  key         String   @unique // Chave de acesso (deve ser tratada como senha)
+  name        String   // Ex: "Integração Site Wordpress"
   
   tenantId    String
   tenant      Tenant   @relation(fields: [tenantId], references: [id])
   
+  // Permissões específicas da chave (ex: ["READ_PRODUCTS", "CREATE_ORDER"])
+  permissions Json     
+  
+  isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@index([tenantId])
+  @@index([key])
+}
+
+model CustomReport {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  entity      String   
+  config      Json     
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
   @@index([tenantId])
 }
 
