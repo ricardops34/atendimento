@@ -1,36 +1,44 @@
-# 🏛️ Arquitetura do Sistema SaaS
+# 🏛️ Arquitetura do Sistema SaaS Enterprise
 
-Este documento descreve os padrões técnicos e arquiteturais do projeto.
+Este documento é a referência técnica para todos os recursos implementados no sistema.
 
 ---
 
 ## 🎨 Padrões de Interface (UI/UX) - AI-Ready
-
-Para garantir que o sistema seja operável por Agentes de IA e mantenha consistência, todas as telas devem seguir estas regras:
-
-### 1. Identificação Única (IDs Semânticos)
-Todos os componentes principais (tabelas, botões, inputs) devem possuir um atributo `id` único seguindo o padrão:
-`saas-[modulo]-[elemento]-[acao]`
-- Ex: `saas-tenants-table`
-- Ex: `saas-users-btn-new`
-
-### 2. URLs Dinâmicas (Local vs Cloud)
-Nunca utilize URLs fixas (`localhost`). Use um getter ou helper para detectar o ambiente:
-```typescript
-get apiUrl() {
-  const hostname = window.location.hostname;
-  return hostname.includes('localhost') 
-    ? 'http://localhost:3000/endpoint' 
-    : 'https://api.sistema.bjsoft.com.br/endpoint';
-}
-```
-
-### 3. Metadados e Service-API
-- Sempre utilize `p-service-api` em componentes dinâmicos do PO-UI. Isso permite que agentes externos descubram a estrutura de dados (campos, tipos, filtros) sem precisar ler o código-fonte.
-- Mantenha os `fields` descritivos e com rótulos amigáveis.
+- **IDs Únicos**: Formato `saas-[modulo]-[elemento]-[acao]` para automação por IA.
+- **Service-API**: Uso de metadados dinâmicos para auto-descoberta de estruturas de dados.
+- **Ambiente Dinâmico**: Detecção automática entre Localhost e Produção (bjsoft.com.br).
 
 ---
 
-## 🏗️ Estratégia de Multi-tenancy
-Adotamos uma abordagem híbrida...
-*(restante do conteúdo mantido)*
+## 🏗️ Estratégia de Multi-tenancy (Modelo Híbrido)
+1. **Pool Compartilhado (Standard/Pro)**: Shared Database com isolamento lógico via `tenant_id`.
+2. **Instância Dedicada (Enterprise)**: Database-per-tenant para conformidade e performance.
+3. **Connection Router**: Roteamento inteligente de conexões baseado no plano do cliente.
+
+---
+
+## ⚙️ Componentes de Engenharia SaaS
+
+### 🔌 Custom Routines & Plugins (Versionamento)
+- **Extensibilidade**: Pontos de gancho (`hooks`) injetados no código padrão (ex: `before_product_save`).
+- **Versionamento**: Cada cliente pode ter múltiplas versões de um script JS. O sistema permite ativar/desativar versões via banco de dados sem reiniciar o servidor.
+- **Isolamento**: Códigos customizados são carregados apenas para o tenant específico.
+
+### 💳 Billing & Adimplência
+- **Interceptor de Cobrança**: Bloqueia automaticamente o acesso a módulos protegidos se o status do Tenant for `SUSPENDED`.
+- **Status de Ciclo de Vida**: `ACTIVE`, `OVERDUE` (Aviso), `SUSPENDED` (Bloqueio).
+
+### 📊 Relatórios e BI
+- **jsreport Integration**: Motor de renderização profissional para PDF/Excel.
+- **Custom Branding**: Cabeçalhos e logos de relatórios adaptados à marca do cliente.
+
+### 🤖 IA Discovery & Metadata
+- **AI Context API**: Endpoint `/metadata/ai-context` que fornece o "System Prompt" e capacidades do sistema para agentes inteligentes.
+
+---
+
+## 🛡️ Segurança e Integração
+- **API Keys**: Suporte a tokens de integração externa para clientes.
+- **Swagger/OpenAPI**: Documentação viva acessível em `/docs` para humanos e IAs.
+- **Audit Logs**: Rastreabilidade total de operações críticas.
