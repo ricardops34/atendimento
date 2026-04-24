@@ -20,6 +20,8 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.http.routers.saas-api.rule=Host(`api.sistema.bjsoft.com.br`)"
+        - "traefik.http.routers.saas-api.tls.certresolver=letsencryptresolver"
+        - "traefik.http.routers.saas-api.middlewares=sslheader@swarm"
         # Aceita tanto pela porta 80 quanto pela 443 (se configurado no Traefik)
         - "traefik.http.routers.saas-api.entrypoints=web,websecure"
         - "traefik.http.services.saas-api.loadbalancer.server.port=3000"
@@ -35,6 +37,8 @@ services:
         - "traefik.enable=true"
         - "traefik.http.routers.saas-web.rule=Host(`sistema.bjsoft.com.br`) || HostRegexp(`{subdomain:[a-z0-9]+}.sistema.bjsoft.com.br`)"
         - "traefik.http.routers.saas-web.entrypoints=web,websecure"
+        - "traefik.http.routers.saas-web.tls.certresolver=letsencryptresolver"
+        - "traefik.http.routers.saas-web.middlewares=sslheader@swarm"
         - "traefik.http.services.saas-web.loadbalancer.server.port=80"
         - "traefik.docker.network=network_public"
 
