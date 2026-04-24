@@ -11,7 +11,6 @@ import { HttpClient } from '@angular/common/http';
   imports: [CommonModule, PoModule, PoPageLoginModule],
   template: `
     <po-page-login
-      [p-background]="customConfig.background"
       [p-product-name]="customConfig.title"
       [p-logo]="customConfig.logo"
       [p-secondary-logo]="customConfig.secondaryLogo"

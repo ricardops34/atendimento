@@ -1,31 +1,41 @@
+/* Força o container principal a ocupar a tela toda com a imagem de fundo */
 :host ::ng-deep .po-page-login {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  background-size: cover !important;
-  background-position: center center !important;
-  background-repeat: no-repeat !important;
-  background-attachment: fixed !important;
-  min-height: 100vh !important;
+  display: grid !important;
+  place-items: center !important;
+  height: 100vh !important;
   width: 100vw !important;
+  background-image: url('/login-bg.png') !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-attachment: fixed !important;
 }
 
+/* Remove o layout de "coluna" padrão do PO-UI */
 :host ::ng-deep .po-page-login-panel {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
   margin: 0 !important;
-  border-radius: 12px !important;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.6) !important;
-  background-color: rgba(255, 255, 255, 0.92) !important;
-  backdrop-filter: blur(8px);
-  max-width: 450px !important;
-  width: 90% !important; /* Ajuste para telas pequenas */
+  border-radius: 16px !important;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5) !important;
+  background-color: rgba(255, 255, 255, 0.94) !important;
+  backdrop-filter: blur(10px) !important;
+  max-width: 480px !important;
+  width: 100% !important;
+  z-index: 10 !important;
 }
 
+/* Esconde a parte lateral branca que o PO-UI cria por padrão */
+:host ::ng-deep .po-page-login-secondary-container {
+  display: none !important;
+}
+
+/* Ajusta o cabeçalho do form */
 :host ::ng-deep .po-page-login-header {
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
+  background-color: transparent !important;
+  padding-top: 20px !important;
 }
 
-/* Esconder elementos desnecessários do PO-UI que podem quebrar o centro em telas pequenas */
-:host ::ng-deep .po-page-login-footer {
-    background: transparent !important;
+/* Garante que o fundo não fique branco por baixo */
+:host ::ng-deep .po-page-login-container {
+  background: transparent !important;
 }
