@@ -11,11 +11,7 @@ export class PublicService {
   async getTenantBranding(domain: string) {
     const tenant = await this.prisma.tenant.findUnique({
       where: { domain },
-      select: {
-        id: true,
-        name: true,
-        logoUrl: true,
-        themeConfig: true,
+      include: {
         plan: true
       }
     });
@@ -25,7 +21,8 @@ export class PublicService {
     }
 
     // Regra de Negócio: Customização de Login apenas para PRO e ENTERPRISE
-    const hasCustomLogin = tenant.plan !== 'STANDARD';
+    // O plano Standard não permite mudar imagem de fundo e textos do login
+    const hasCustomLogin = tenant.plan.name !== 'Standard';
 
     return {
       id: tenant.id,
@@ -33,7 +30,7 @@ export class PublicService {
       logoUrl: tenant.logoUrl,
       // Só envia as configurações de fundo e textos se o plano permitir
       loginConfig: hasCustomLogin ? tenant.themeConfig : null,
-      plan: tenant.plan
+      planName: tenant.plan.name
     };
   }
 }
