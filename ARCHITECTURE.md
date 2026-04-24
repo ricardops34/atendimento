@@ -1,44 +1,46 @@
-# 🏛️ Arquitetura do Sistema SaaS Enterprise
+# 🏛️ Arquitetura do Sistema SaaS Enterprise - BJSoft
 
-Este documento é a referência técnica para todos os recursos implementados no sistema.
-
----
-
-## 🎨 Padrões de Interface (UI/UX) - AI-Ready
-- **IDs Únicos**: Formato `saas-[modulo]-[elemento]-[acao]` para automação por IA.
-- **Service-API**: Uso de metadados dinâmicos para auto-descoberta de estruturas de dados.
-- **Ambiente Dinâmico**: Detecção automática entre Localhost e Produção (bjsoft.com.br).
+Este documento detalha o funcionamento técnico da plataforma.
 
 ---
 
-## 🏗️ Estratégia de Multi-tenancy (Modelo Híbrido)
-1. **Pool Compartilhado (Standard/Pro)**: Shared Database com isolamento lógico via `tenant_id`.
-2. **Instância Dedicada (Enterprise)**: Database-per-tenant para conformidade e performance.
-3. **Connection Router**: Roteamento inteligente de conexões baseado no plano do cliente.
+## 🎨 Dinamismo de Interface e Campos (Metadata-Driven)
+
+### 1. Telas Dinâmicas (Dynamic Pages)
+- **Motor**: Baseado nos templates `PoPageDynamicTable` e `PoPageDynamicEdit`.
+- **Funcionamento**: A interface não é "fixa". Ela consome o endpoint `/metadata/:entity`, que retorna quais campos devem ser exibidos, suas validações, ordens e tipos. Isso permite mudar a interface de um cliente sem mexer no código Angular.
+
+### 2. Campos Personalizados (Custom Fields)
+- **Persistência**: Armazenados como JSONB no PostgreSQL na tabela `EntityMetadata`.
+- **Flexibilidade**: Permite que o suporte adicione novos campos (ex: "CPF do Sócio" em Tenants) apenas atualizando o metadado, sem precisar de novas migrações de banco de dados.
 
 ---
 
-## ⚙️ Componentes de Engenharia SaaS
+## ⚙️ Extensibilidade de Negócio (Plugin System)
 
-### 🔌 Custom Routines & Plugins (Versionamento)
-- **Extensibilidade**: Pontos de gancho (`hooks`) injetados no código padrão (ex: `before_product_save`).
-- **Versionamento**: Cada cliente pode ter múltiplas versões de um script JS. O sistema permite ativar/desativar versões via banco de dados sem reiniciar o servidor.
-- **Isolamento**: Códigos customizados são carregados apenas para o tenant específico.
+### 1. Pontos de Interação (Hook Points)
+O código core do sistema possui "âncoras" onde rotinas customizadas podem ser injetadas:
+- `before_save`: Validações ou cálculos antes de persistir no banco.
+- `after_save`: Ações pós-processamento (ex: enviar um Zap, integrar com ERP externo).
+- `custom_calc`: Substituição de lógicas de cálculo padrão por regras específicas do cliente.
 
-### 💳 Billing & Adimplência
-- **Interceptor de Cobrança**: Bloqueia automaticamente o acesso a módulos protegidos se o status do Tenant for `SUSPENDED`.
-- **Status de Ciclo de Vida**: `ACTIVE`, `OVERDUE` (Aviso), `SUSPENDED` (Bloqueio).
-
-### 📊 Relatórios e BI
-- **jsreport Integration**: Motor de renderização profissional para PDF/Excel.
-- **Custom Branding**: Cabeçalhos e logos de relatórios adaptados à marca do cliente.
-
-### 🤖 IA Discovery & Metadata
-- **AI Context API**: Endpoint `/metadata/ai-context` que fornece o "System Prompt" e capacidades do sistema para agentes inteligentes.
+### 2. Rotinas Versionadas por Cliente
+- Cada tenant tem sua própria pasta em `custom_routines/[tenantId]`.
+- O suporte pode subir a `v1.js`, `v2.js`, etc., e escolher qual está ativa no banco de dados.
 
 ---
 
-## 🛡️ Segurança e Integração
-- **API Keys**: Suporte a tokens de integração externa para clientes.
-- **Swagger/OpenAPI**: Documentação viva acessível em `/docs` para humanos e IAs.
-- **Audit Logs**: Rastreabilidade total de operações críticas.
+## 📊 Relatórios Dinâmicos (BI)
+- **jsreport Engine**: Renderização via Docker de templates HTML/Handlebars para PDF/Excel.
+- **Data Injection**: A API injeta os dados do tenant em tempo real nos templates, garantindo que o relatório seja sempre atualizado e filtrado.
+
+---
+
+## 🤖 IA-Ready & Integração
+- **Semantic IDs**: IDs únicos em todos os elementos para navegação de agentes.
+- **AI Context API**: Fornece o mapeamento completo do sistema para assistentes virtuais.
+- **Swagger/OpenAPI**: Porta de entrada para integrações externas e Function Calling.
+
+---
+
+*(Demais seções de Multi-tenancy e Segurança mantidas)*
