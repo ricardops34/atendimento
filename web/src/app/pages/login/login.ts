@@ -1,10 +1,11 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { PoNotificationService, PoModule } from '@po-ui/ng-components';
+import { PoNotificationService, PoModule, PoI18nService } from '@po-ui/ng-components';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CoreService } from '../../core/services/core.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -18,26 +19,38 @@ export class LoginComponent implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
   private poNotification = inject(PoNotificationService);
+  private poI18n = inject(PoI18nService);
 
   loading: boolean = false;
   userEmail: string = '';
   userPassword: string = '';
   rememberMe: boolean = false;
   
-  productName: string = 'Acesse o sistema usando suas credenciais.';
+  // Literais que virão do arquivo de tradução
+  literals: any = {};
+  
+  productName: string = ''; // Virá do branding ou i18n
   background: string = 'login-bg.png';
   logo: string = 'logo.png';
-  welcome: string = 'Boas-vindas';
+  welcome: string = '';
 
   ngOnInit() {
+    this.loadLiterals();
     this.loadBranding();
+  }
+
+  loadLiterals() {
+    // Busca as traduções do contexto 'login'
+    this.poI18n.getLiterals({ context: 'login' }).subscribe(literals => {
+      this.literals = literals;
+      this.welcome = this.literals.welcome;
+    });
   }
 
   loadBranding() {
     const hostname = window.location.hostname;
     const parts = hostname.split('.');
     
-    // Se for localhost ou sistema.bjsoft, tenta buscar o 'admin' por padrão se não houver subdomínio claro
     let domain = 'admin';
     if (parts.length > 2 && parts[0] !== 'www' && parts[0] !== 'sistema') {
       domain = parts[0];
@@ -46,12 +59,14 @@ export class LoginComponent implements OnInit {
     this.http.get(`${this.coreService.apiUrl}/public/branding/${domain}`).subscribe({
       next: (res: any) => {
         if (res) {
-          this.productName = res.loginConfig?.title || this.productName;
+          // Se houver branding customizado, usa ele, senão usa o padrão do i18n
+          this.productName = res.loginConfig?.title || this.literals.description;
           this.logo = res.logoUrl || this.logo;
           if (res.id) localStorage.setItem('tenantId', res.id);
         }
       },
       error: () => {
+        this.productName = this.literals.description;
         console.warn('Tenant não encontrado pela URL. Usando configurações padrão.');
       }
     });
@@ -59,13 +74,12 @@ export class LoginComponent implements OnInit {
 
   loginSubmit() {
     if (!this.userEmail || !this.userPassword) {
-      this.poNotification.warning('Por favor, preencha e-mail e senha.');
+      this.poNotification.warning(this.literals.fillFields);
       return;
     }
 
     this.loading = true;
     
-    // Prepara o payload. Se o tenantId não existir no localStorage, o backend deve tratar o login global.
     const loginPayload: any = {
       email: this.userEmail,
       password: this.userPassword
@@ -84,7 +98,6 @@ export class LoginComponent implements OnInit {
         
         this.poNotification.success(`Bem-vindo, ${res.user.name}!`);
         
-        // Redirecionamento baseado na Role
         if (res.user.role === 'SUPER_ADMIN' || res.user.role === 'SAAS_ADMIN') {
           this.router.navigate(['/admin/dashboard']);
         } else {
@@ -94,13 +107,13 @@ export class LoginComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        const errorMsg = err.error?.message || 'Erro ao realizar login. Verifique suas credenciais.';
+        const errorMsg = err.error?.message || this.literals.loginError;
         this.poNotification.error(errorMsg);
       }
     });
   }
 
   forgotPassword() {
-    this.poNotification.information('Funcionalidade de recuperação de senha em desenvolvimento.');
+    this.poNotification.information('Recuperação de senha em desenvolvimento.');
   }
 }

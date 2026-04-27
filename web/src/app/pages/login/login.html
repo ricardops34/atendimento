@@ -1,6 +1,6 @@
 <div class="login-wrapper">
   <div class="login-card">
-    <!-- Logo Centralizada e Grande -->
+    <!-- Logo Centralizada -->
     <div class="login-header-centered">
       <img [src]="logo" alt="Logo" class="login-logo-large" *ngIf="logo">
     </div>
@@ -10,8 +10,8 @@
       <po-input 
         name="email" 
         [(ngModel)]="userEmail" 
-        p-label="Usuário" 
-        p-placeholder="Digite seu usuário"
+        [p-label]="literals.user" 
+        [p-placeholder]="literals.userPlaceholder"
         p-required>
       </po-input>
 
@@ -19,20 +19,20 @@
       <po-password 
         name="password" 
         [(ngModel)]="userPassword" 
-        p-label="Senha"
-        p-placeholder="Digite sua senha" 
+        [p-label]="literals.password"
+        [p-placeholder]="literals.passwordPlaceholder" 
         p-required>
       </po-password>
 
       <!-- Esqueci minha senha -->
       <div class="recovery-container">
-        <a (click)="forgotPassword()" class="forgot-password-link">Esqueci minha senha</a>
+        <a (click)="forgotPassword()" class="forgot-password-link">{{ literals.forgotPassword }}</a>
       </div>
 
-      <!-- Botão Entrar (Tamanho Padrão) -->
+      <!-- Botão Entrar -->
       <div class="button-container">
         <po-button 
-          p-label="Entrar" 
+          [p-label]="literals.enter" 
           p-kind="primary" 
           [p-loading]="loading"
           (p-click)="loginSubmit()">
@@ -44,7 +44,7 @@
         <po-checkbox 
           name="remember" 
           [(ngModel)]="rememberMe" 
-          p-label="Manter-me conectado">
+          [p-label]="literals.rememberMe">
         </po-checkbox>
       </div>
     </form>
