@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule, 
     FormsModule,
-    PoModule // Importa os componentes básicos (input, button, etc)
+    PoModule
   ],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
@@ -19,21 +19,18 @@ import { FormsModule } from '@angular/forms';
 export class LoginComponent implements OnInit {
   
   loading: boolean = false;
-  
-  // Campos do formulário
   userEmail: string = '';
   userPassword: string = '';
   rememberMe: boolean = false;
   
-  // URL base dinâmica
   private readonly apiUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:3000' 
     : '/api';
 
-  // Branding
+  // Branding com caminhos corrigidos
   productName: string = 'Acesse o sistema usando suas credenciais.';
-  background: string = '/login-bg.png';
-  logo: string = '/assets/logo.png';
+  background: string = 'login-bg.png';
+  logo: string = 'logo.png'; // Caminho corrigido (está na raiz do public)
   welcome: string = 'Boas-vindas';
 
   constructor(
@@ -84,7 +81,6 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('token', res.token);
         localStorage.setItem('user', JSON.stringify(res.user));
         localStorage.setItem('permissions', JSON.stringify(res.permissions || []));
-        
         this.poNotification.success(`Bem-vindo, ${res.user.name}!`);
         
         if (res.user.role === 'SUPER_ADMIN') {
