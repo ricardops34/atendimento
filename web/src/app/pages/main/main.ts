@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router } from '@angular/router';
-import { PoModule, PoMenuItem, PoToolbarAction } from '@po-ui/ng-components';
+import { PoModule, PoMenuItem, PoToolbarAction, PoI18nService } from '@po-ui/ng-components';
 import { HttpClient } from '@angular/common/http';
 import { CoreService } from '../../core/services/core.service';
 
@@ -30,24 +30,34 @@ export class MainComponent implements OnInit {
   private coreService = inject(CoreService);
   private router = inject(Router);
   private http = inject(HttpClient);
+  private poI18n = inject(PoI18nService);
 
   menus: Array<PoMenuItem> = [];
-  toolbarTitle = 'Sistema SaaS - Gestão Administrativa';
+  toolbarTitle = 'Sistema SaaS';
+  literals: any = {};
   
   user = JSON.parse(localStorage.getItem('user') || '{}');
   
   profile = {
     title: this.user.name || 'Usuário',
-    subtitle: this.user.role === 'SUPER_ADMIN' ? 'Administrador Master' : 'Colaborador'
+    subtitle: this.user.role === 'SUPER_ADMIN' ? 'Admin Master' : 'Colaborador'
   };
 
-  profileActions: Array<PoToolbarAction> = [
-    { label: 'Meu Perfil', icon: 'po-icon-user', action: () => {} },
-    { label: 'Sair do Sistema', icon: 'po-icon-exit', type: 'danger', action: () => this.logout() }
-  ];
+  profileActions: Array<PoToolbarAction> = [];
 
   ngOnInit() {
-    this.loadMenu();
+    this.poI18n.getLiterals({ context: 'admin' }).subscribe(literals => {
+      this.literals = literals.menu;
+      this.setupProfileActions();
+      this.loadMenu();
+    });
+  }
+
+  setupProfileActions() {
+    this.profileActions = [
+      { label: this.literals.profile, icon: 'po-icon-user', action: () => {} },
+      { label: this.literals.logout, icon: 'po-icon-exit', type: 'danger', action: () => this.logout() }
+    ];
   }
 
   loadMenu() {
@@ -55,21 +65,21 @@ export class MainComponent implements OnInit {
     
     if (role === 'SUPER_ADMIN') {
       this.menus = [
-        { label: 'Painel de Controle', link: '/admin/dashboard', icon: 'po-icon-chart-area' },
+        { label: this.literals.dashboard, link: '/admin/dashboard', icon: 'po-icon-chart-area' },
         { 
-          label: 'Gestão de Clientes', 
+          label: this.literals.business, 
           icon: 'po-icon-company',
           subItems: [
-            { label: 'Empresas (Tenants)', link: '/admin/tenants', icon: 'po-icon-users' },
-            { label: 'Planos e Preços', link: '/admin/plans', icon: 'po-icon-finance' },
+            { label: this.literals.tenants, link: '/admin/tenants', icon: 'po-icon-users' },
+            { label: this.literals.plans, link: '/admin/plans', icon: 'po-icon-finance' },
           ]
         },
         { 
-          label: 'Segurança e Acesso', 
+          label: this.literals.security, 
           icon: 'po-icon-security',
           subItems: [
-            { label: 'Usuários do Sistema', link: '/app/users', icon: 'po-icon-user' },
-            { label: 'Níveis de Permissão', link: '/app/roles', icon: 'po-icon-ok' },
+            { label: this.literals.users, link: '/app/users', icon: 'po-icon-user' },
+            { label: this.literals.roles, link: '/app/roles', icon: 'po-icon-ok' },
           ]
         }
       ];
@@ -80,7 +90,7 @@ export class MainComponent implements OnInit {
         },
         error: () => {
           this.menus = [
-            { label: 'Início', link: '/app/dashboard', icon: 'po-icon-chart-area' }
+            { label: 'Dashboard', link: '/app/dashboard', icon: 'po-icon-chart-area' }
           ];
         }
       });

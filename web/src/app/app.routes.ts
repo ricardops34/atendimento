@@ -10,17 +10,18 @@ export const routes: Routes = [
   { 
     path: 'admin', 
     component: MainComponent,
-    canActivate: [authGuard], // Proteção de login e role
+    canActivate: [authGuard], 
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
-      { path: 'tenants', loadComponent: () => import('./pages/tenants/tenants').then(m => m.TenantsComponent) },
+      { path: 'tenants', loadComponent: () => import('./pages/admin/tenants/tenants').then(m => m.TenantsComponent) },
+      { path: 'plans', loadComponent: () => import('./pages/admin/plans/plans').then(m => m.PlansComponent) },
     ]
   },
   {
     path: 'app',
     component: MainComponent,
-    canActivate: [authGuard], // Proteção de login
+    canActivate: [authGuard], 
     children: [
       { path: 'users', loadComponent: () => import('./pages/users/users').then(m => m.UsersComponent) },
       { path: 'roles', loadComponent: () => import('./pages/roles/roles').then(m => m.RolesComponent) }

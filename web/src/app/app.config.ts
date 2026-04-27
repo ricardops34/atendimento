@@ -19,6 +19,11 @@ const i18nConfig: PoI18nConfig = {
       'pt-br': './assets/i18n/login-pt.json',
       'en-us': './assets/i18n/login-en.json',
       'es-es': './assets/i18n/login-es.json'
+    },
+    admin: {
+      'pt-br': './assets/i18n/admin-pt.json',
+      'en-us': './assets/i18n/admin-en.json',
+      'es-es': './assets/i18n/admin-es.json'
     }
   }
 };
@@ -31,7 +36,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     importProvidersFrom([
       PoModule,
-      PoI18nModule.config(i18nConfig) // Ativando o multi-idioma
+      PoI18nModule.config(i18nConfig)
     ])
   ]
 };

@@ -1,0 +1,31 @@
+{
+  "menu": {
+    "dashboard": "Dashboard",
+    "business": "Business Management",
+    "tenants": "Companies (Tenants)",
+    "plans": "Plans and Pricing",
+    "security": "Security and Access",
+    "users": "System Users",
+    "roles": "Permission Levels",
+    "logout": "Sign Out",
+    "profile": "My Profile"
+  },
+  "plans": {
+    "title": "Plans Management",
+    "name": "Plan Name",
+    "description": "Description",
+    "maxUsers": "Users Limit",
+    "maxBranches": "Branches Limit",
+    "maxRecords": "Records Limit",
+    "features": "Features (JSON)",
+    "createdAt": "Created At"
+  },
+  "tenants": {
+    "title": "Tenants Management",
+    "name": "Company Name",
+    "domain": "Subdomain (URL)",
+    "plan": "Assigned Plan",
+    "status": "Active Status",
+    "createdAt": "Registration Date"
+  }
+}
