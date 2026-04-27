@@ -14,7 +14,7 @@ export class AuthService {
     const user = await this.usersService.findByEmail(email, tenantId);
     
     if (!user) {
-      throw new UnauthorizedException('Usuário não encontrado neste tenant.');
+      throw new UnauthorizedException('Usuário não encontrado.');
     }
 
     const isPasswordValid = await bcrypt.compare(pass, user.password);
@@ -32,18 +32,19 @@ export class AuthService {
       email: user.email, 
       sub: user.id, 
       tenantId: user.tenantId,
-      role: user.role,
+      role: user.role?.name || 'USER', // Pegando o nome da Role
       tenantName: user.tenant?.name
     };
     
     return {
-      access_token: this.jwtService.sign(payload),
+      token: this.jwtService.sign(payload), // Alterado para 'token' para facilitar
       user: {
         id: user.id,
         email: user.email,
         name: user.name,
         tenantId: user.tenantId,
-        tenantName: user.tenant?.name
+        tenantName: user.tenant?.name,
+        role: user.role?.name || 'USER' // Enviando a Role aqui também
       }
     };
   }

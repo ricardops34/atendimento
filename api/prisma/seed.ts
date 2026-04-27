@@ -9,26 +9,13 @@ async function main() {
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash('admin_password', saltRounds);
 
-  // 1. Criar Planos Dinâmicos
-  const standard = await prisma.plan.upsert({
-    where: { name: 'Standard' },
-    update: {},
-    create: {
-      name: 'Standard',
-      description: 'Plano básico para pequenas empresas',
-      maxUsers: 5,
-      maxBranches: 1,
-      maxRecords: 5000,
-      features: ['DASHBOARD_BASIC'],
-    },
-  });
-
+  // 1. Criar Planos
   const enterprise = await prisma.plan.upsert({
     where: { name: 'Enterprise' },
     update: {},
     create: {
       name: 'Enterprise',
-      description: 'Plano ilimitado para grandes corporações',
+      description: 'Plano ilimitado',
       maxUsers: 999,
       maxBranches: 999,
       maxRecords: 999999,
@@ -48,21 +35,38 @@ async function main() {
     },
   });
 
-  // 3. Criar Usuário Master com senha criptografada
+  // 3. Criar a Role de SUPER_ADMIN
+  const superAdminRole = await prisma.role.upsert({
+    where: { 
+      name_tenantId: {
+        name: 'SUPER_ADMIN',
+        tenantId: saasAdmin.id
+      }
+    },
+    update: {},
+    create: {
+      name: 'SUPER_ADMIN',
+      tenantId: saasAdmin.id
+    }
+  });
+
+  // 4. Criar Usuário Master com a Role vinculada
   await prisma.user.upsert({
     where: { email: 'ricardo@bjsoft.com.br' },
     update: {
-      password: hashedPassword
+      password: hashedPassword,
+      roleId: superAdminRole.id
     },
     create: {
       email: 'ricardo@bjsoft.com.br',
       password: hashedPassword,
       name: 'Ricardo Admin',
       tenantId: saasAdmin.id,
+      roleId: superAdminRole.id
     },
   });
 
-  console.log('✅ Semente concluída! Usuário ricardo@bjsoft.com.br criado com senha criptografada.');
+  console.log('✅ Semente concluída! Ricardo agora é SUPER_ADMIN.');
 }
 
 main()
