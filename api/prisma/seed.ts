@@ -44,19 +44,19 @@ async function main() {
     },
   });
 
-  // 3. Criar Usuário Master
+  // 3. Criar Usuário Master (Atualizado para Ricardo)
   await prisma.user.upsert({
-    where: { email: 'admin@saas.com' },
+    where: { email: 'ricardo@bjsoft.com.br' },
     update: {},
     create: {
-      email: 'admin@saas.com',
-      password: 'admin_password', // Em produção usaríamos hash
+      email: 'ricardo@bjsoft.com.br',
+      password: 'admin_password', // Recomendado trocar para algo seguro após o primeiro login
       name: 'Ricardo Admin',
       tenantId: saasAdmin.id,
     },
   });
 
-  console.log('✅ Semente concluída! Planos e Usuário Master criados.');
+  console.log('✅ Semente concluída! Planos e Usuário Master (ricardo@bjsoft.com.br) criados.');
 }
 
 main()
