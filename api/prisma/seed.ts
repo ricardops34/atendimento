@@ -28,7 +28,7 @@ async function main() {
     where: { domain: 'admin' },
     update: {},
     create: {
-      name: 'Sistema Control Panel',
+      name: 'Painel de Controle SaaS',
       domain: 'admin',
       planId: enterprise.id,
       status: 'ACTIVE',
@@ -50,7 +50,7 @@ async function main() {
     }
   });
 
-  // 4. Criar Usuário Master com a Role vinculada
+  // 4. Criar Usuário Master
   await prisma.user.upsert({
     where: { email: 'ricardo@bjsoft.com.br' },
     update: {

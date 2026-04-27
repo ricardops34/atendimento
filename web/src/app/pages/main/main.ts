@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router } from '@angular/router';
 import { PoModule, PoMenuItem, PoToolbarAction } from '@po-ui/ng-components';
 import { HttpClient } from '@angular/common/http';
-import { CoreService } from '../../core/services/core.service'; // Caminho correto
+import { CoreService } from '../../core/services/core.service';
 
 @Component({
   selector: 'app-main',
@@ -32,18 +32,18 @@ export class MainComponent implements OnInit {
   private http = inject(HttpClient);
 
   menus: Array<PoMenuItem> = [];
-  toolbarTitle = 'Sistema SaaS - Painel de Controle';
+  toolbarTitle = 'Sistema SaaS - Gestão Administrativa';
   
   user = JSON.parse(localStorage.getItem('user') || '{}');
   
   profile = {
     title: this.user.name || 'Usuário',
-    subtitle: this.user.role || 'Membro'
+    subtitle: this.user.role === 'SUPER_ADMIN' ? 'Administrador Master' : 'Colaborador'
   };
 
   profileActions: Array<PoToolbarAction> = [
-    { label: 'Perfil', icon: 'po-icon-user', action: () => {} },
-    { label: 'Sair', icon: 'po-icon-exit', type: 'danger', action: () => this.logout() }
+    { label: 'Meu Perfil', icon: 'po-icon-user', action: () => {} },
+    { label: 'Sair do Sistema', icon: 'po-icon-exit', type: 'danger', action: () => this.logout() }
   ];
 
   ngOnInit() {
@@ -55,21 +55,21 @@ export class MainComponent implements OnInit {
     
     if (role === 'SUPER_ADMIN') {
       this.menus = [
-        { label: 'Dashboard Admin', link: '/admin/dashboard', icon: 'po-icon-chart-area' },
+        { label: 'Painel de Controle', link: '/admin/dashboard', icon: 'po-icon-chart-area' },
         { 
-          label: 'Gestão de Negócio', 
+          label: 'Gestão de Clientes', 
           icon: 'po-icon-company',
           subItems: [
-            { label: 'Clientes (Tenants)', link: '/admin/tenants', icon: 'po-icon-users' },
+            { label: 'Empresas (Tenants)', link: '/admin/tenants', icon: 'po-icon-users' },
             { label: 'Planos e Preços', link: '/admin/plans', icon: 'po-icon-finance' },
           ]
         },
         { 
-          label: 'Segurança', 
+          label: 'Segurança e Acesso', 
           icon: 'po-icon-security',
           subItems: [
-            { label: 'Usuários Master', link: '/app/users', icon: 'po-icon-user' },
-            { label: 'Papéis e Permissões', link: '/app/roles', icon: 'po-icon-ok' },
+            { label: 'Usuários do Sistema', link: '/app/users', icon: 'po-icon-user' },
+            { label: 'Níveis de Permissão', link: '/app/roles', icon: 'po-icon-ok' },
           ]
         }
       ];
@@ -80,7 +80,7 @@ export class MainComponent implements OnInit {
         },
         error: () => {
           this.menus = [
-            { label: 'Dashboard', link: '/app/dashboard', icon: 'po-icon-chart-area' }
+            { label: 'Início', link: '/app/dashboard', icon: 'po-icon-chart-area' }
           ];
         }
       });

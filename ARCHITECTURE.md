@@ -1,46 +1,51 @@
-# 🏛️ Arquitetura do Sistema SaaS Enterprise - BJSoft
+# Diretrizes de Desenvolvimento - Sistema SaaS
 
-Este documento detalha o funcionamento técnico da plataforma.
+Este documento define os padrões de nomenclatura e linguagem para garantir a consistência do projeto.
 
----
+## 🌍 Padrão de Idioma
 
-## 🎨 Dinamismo de Interface e Campos (Metadata-Driven)
+Para manter o equilíbrio entre as melhores práticas de engenharia de software e a experiência do usuário final brasileiro, adotamos o seguinte padrão:
 
-### 1. Telas Dinâmicas (Dynamic Pages)
-- **Motor**: Baseado nos templates `PoPageDynamicTable` e `PoPageDynamicEdit`.
-- **Funcionamento**: A interface não é "fixa". Ela consome o endpoint `/metadata/:entity`, que retorna quais campos devem ser exibidos, suas validações, ordens e tipos. Isso permite mudar a interface de um cliente sem mexer no código Angular.
+### 1. Camada Técnica (Inglês)
+Toda a estrutura que não é visível ao usuário final deve ser mantida em **Inglês**. Isso inclui:
+- **Banco de Dados**: Nomes de tabelas (`User`, `Tenant`, `Plan`), nomes de colunas e Enums.
+- **Código Fonte**: Nomes de variáveis, funções, classes e comentários técnicos.
+- **Infraestrutura**: Configurações de Docker, CI/CD e variáveis de ambiente.
 
-### 2. Campos Personalizados (Custom Fields)
-- **Persistência**: Armazenados como JSONB no PostgreSQL na tabela `EntityMetadata`.
-- **Flexibilidade**: Permite que o suporte adicione novos campos (ex: "CPF do Sócio" em Tenants) apenas atualizando o metadado, sem precisar de novas migrações de banco de dados.
+*Raciocínio: Facilita a integração com bibliotecas externas e mantém o código compatível com padrões globais de desenvolvimento.*
 
----
-
-## ⚙️ Extensibilidade de Negócio (Plugin System)
-
-### 1. Pontos de Interação (Hook Points)
-O código core do sistema possui "âncoras" onde rotinas customizadas podem ser injetadas:
-- `before_save`: Validações ou cálculos antes de persistir no banco.
-- `after_save`: Ações pós-processamento (ex: enviar um Zap, integrar com ERP externo).
-- `custom_calc`: Substituição de lógicas de cálculo padrão por regras específicas do cliente.
-
-### 2. Rotinas Versionadas por Cliente
-- Cada tenant tem sua própria pasta em `custom_routines/[tenantId]`.
-- O suporte pode subir a `v1.js`, `v2.js`, etc., e escolher qual está ativa no banco de dados.
+### 2. Camada de Interface e Mensagens (Português-BR)
+Tudo o que o usuário interage deve estar em **Português do Brasil**. Isso inclui:
+- **Frontend (UI)**: Rótulos de campos (Labels), títulos de páginas, nomes de menus e textos informativos.
+- **Notificações**: Mensagens de sucesso, alertas e erros (ex: "Empresa cadastrada com sucesso!").
+- **Documentação de Negócio**: Manuais de usuário e descrições de funcionalidades.
 
 ---
 
-## 📊 Relatórios Dinâmicos (BI)
-- **jsreport Engine**: Renderização via Docker de templates HTML/Handlebars para PDF/Excel.
-- **Data Injection**: A API injeta os dados do tenant em tempo real nos templates, garantindo que o relatório seja sempre atualizado e filtrado.
+## 🛠️ Exemplo de Implementação
+
+**No Banco de Dados (Inglês):**
+```prisma
+model Tenant {
+  id    String @id
+  name  String
+}
+```
+
+**No Frontend (Português):**
+```typescript
+const fields = [
+  { property: 'name', label: 'Nome da Empresa' }
+];
+```
+
+**Nas Mensagens de Erro (Português):**
+```typescript
+throw new UnauthorizedException('Tenant ID é obrigatório para realizar o login.');
+```
 
 ---
 
-## 🤖 IA-Ready & Integração
-- **Semantic IDs**: IDs únicos em todos os elementos para navegação de agentes.
-- **AI Context API**: Fornece o mapeamento completo do sistema para assistentes virtuais.
-- **Swagger/OpenAPI**: Porta de entrada para integrações externas e Function Calling.
-
----
-
-*(Demais seções de Multi-tenancy e Segurança mantidas)*
+## 🔐 Segurança
+- Todas as rotas administrativas devem ser protegidas pelo `AuthGuard`.
+- O Token JWT deve ser gerenciado pelo `AuthInterceptor` no frontend.
