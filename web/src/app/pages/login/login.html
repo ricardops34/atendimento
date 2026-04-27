@@ -7,23 +7,46 @@
     </div>
 
     <form (submit)="loginSubmit()">
-      <po-input class="po-md-12" name="email" [(ngModel)]="userEmail" p-label="E-mail" p-placeholder="Digite seu e-mail"
-        p-icon="po-icon-user" p-required>
+      <!-- Usuário -->
+      <po-input 
+        name="email" 
+        [(ngModel)]="userEmail" 
+        p-label="Usuário" 
+        p-placeholder="Digite seu usuário"
+        p-required>
       </po-input>
 
-      <po-password class="po-md-12" name="password" [(ngModel)]="userPassword" p-label="Senha"
-        p-placeholder="Digite sua senha" p-required>
+      <!-- Senha -->
+      <po-password 
+        name="password" 
+        [(ngModel)]="userPassword" 
+        p-label="Senha"
+        p-placeholder="Digite sua senha" 
+        p-required>
       </po-password>
 
-      <div class="login-extras">
-        <po-checkbox name="remember" [(ngModel)]="rememberMe" p-label="Manter-me conectado">
-        </po-checkbox>
+      <!-- Esqueci minha senha (acima do botão, à direita) -->
+      <div class="recovery-container">
         <a (click)="forgotPassword()" class="forgot-password-link">Esqueci minha senha</a>
       </div>
 
-      <po-button class="po-md-12 login-button" p-label="ENTRAR" p-kind="primary" [p-loading]="loading"
+      <!-- Botão Entrar -->
+      <po-button 
+        class="login-button" 
+        p-label="Entrar" 
+        p-kind="primary" 
+        [p-loading]="loading"
         (p-click)="loginSubmit()">
       </po-button>
+
+      <!-- Manter conectado (abaixo do botão) -->
+      <div class="remember-container">
+        <po-checkbox 
+          name="remember" 
+          [(ngModel)]="rememberMe" 
+          p-label="Manter-me conectado">
+        </po-checkbox>
+      </div>
     </form>
   </div>
 </div>

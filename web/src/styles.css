@@ -6,22 +6,19 @@ html, body {
   padding: 0;
   width: 100%;
   height: 100%;
-  font-family: 'Roboto', sans-serif;
+  overflow: hidden;
 }
 
-/* LAYOUT GLOBAL DO LOGIN (Fora do encapsulamento) */
 .login-wrapper {
   width: 100vw;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  /* Usando caminho absoluto para evitar erro de build */
   background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4)), url('/login-bg.png');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  background-repeat: no-repeat;
 }
 
 .login-card {
@@ -31,40 +28,44 @@ html, body {
   max-width: 420px;
   width: 90%;
   padding: 40px 35px;
-  display: flex;
-  flex-direction: column;
+  box-sizing: border-box;
 }
 
 .login-header {
-  text-align: left;
   margin-bottom: 25px;
 }
 
 .login-logo {
   max-height: 45px;
-  margin-bottom: 25px;
-  display: block;
+  margin-bottom: 20px;
+  /* Se a logo for colorida, pode remover o filter abaixo */
 }
 
 .login-title {
-  font-size: 30px;
+  font-size: 28px;
   font-weight: 500;
-  color: #222;
-  margin-bottom: 10px;
+  color: #333;
+  margin: 0 0 8px 0;
 }
 
 .login-description {
-  font-size: 15px;
-  color: #444;
-  line-height: 1.5;
-  margin-bottom: 5px;
+  font-size: 14px;
+  color: #666;
+  line-height: 1.4;
 }
 
-.login-extras {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 10px 0 30px 0;
+/* Espaçamento dos inputs */
+.login-card po-input, 
+.login-card po-password {
+  display: block;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+/* Container do link Recuperar Senha */
+.recovery-container {
+  text-align: right;
+  margin: -5px 0 25px 0;
 }
 
 .forgot-password-link {
@@ -75,27 +76,42 @@ html, body {
   cursor: pointer;
 }
 
-/* Ajustes nos componentes PO-UI */
-.login-card .po-field-container {
-  margin-bottom: 20px;
+/* Botão de Login */
+.login-button {
+  width: 100% !important;
+  display: block !important;
+  margin-bottom: 20px !important;
 }
 
-.login-card .po-field-title {
-  font-weight: 700 !important;
-  color: #111 !important;
+/* Container do Checkbox */
+.remember-container {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
 }
 
-.login-card .po-input {
-  border: 1px solid #999 !important;
+/* FORÇAR CORES E ESTILOS DOS COMPONENTES PO-UI */
+::ng-deep .login-card .po-button-primary {
+  background-color: #a3a3a3 !important; /* Cinza TOTVS */
+  border: none !important;
+  height: 52px !important;
+  border-radius: 8px !important;
+  color: #333 !important;
+  font-weight: 600 !important;
+  width: 100% !important;
+}
+
+::ng-deep .login-card .po-input, 
+::ng-deep .login-card .po-password .po-input {
+  border: 1.5px solid #ccc !important;
   border-radius: 8px !important;
   height: 48px !important;
 }
 
-.login-card .po-button-primary {
-  background-color: #a3a3a3 !important;
-  border: none !important;
-  height: 52px !important;
-  border-radius: 8px !important;
-  font-size: 16px !important;
-  color: #333 !important;
+/* Remove ícone de usuário interno se existir */
+::ng-deep .login-card .po-input-icon-left {
+  display: none !important;
+}
+::ng-deep .login-card .po-input-container-icon-left {
+  padding-left: 12px !important;
 }
