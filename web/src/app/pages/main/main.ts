@@ -1,44 +1,59 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
-import { PoModule, PoMenuItem } from '@po-ui/ng-components';
-import { PoToolbarModule, PoMenuModule } from '@po-ui/ng-components';
+import { RouterOutlet, Router } from '@angular/router';
+import { PoModule, PoMenuItem, PoToolbarAction } from '@po-ui/ng-components';
 import { HttpClient } from '@angular/common/http';
+import { CoreService } from '../../core/services/core.service'; // Caminho correto
 
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, PoModule, PoToolbarModule, PoMenuModule],
+  imports: [CommonModule, RouterOutlet, PoModule],
   template: `
     <div class="po-wrapper">
-      <po-toolbar id="saas-main-toolbar" p-title="Sistema SaaS - Control Panel"></po-toolbar>
+      <po-toolbar 
+        id="saas-main-toolbar" 
+        [p-title]="toolbarTitle"
+        [p-profile]="profile"
+        [p-profile-actions]="profileActions">
+      </po-toolbar>
+      
       <po-menu id="saas-main-menu" [p-menus]="menus"></po-menu>
-      <router-outlet></router-outlet>
+      
+      <div class="po-main-container">
+        <router-outlet></router-outlet>
+      </div>
     </div>
   `
 })
 export class MainComponent implements OnInit {
+  private coreService = inject(CoreService);
+  private router = inject(Router);
+  private http = inject(HttpClient);
+
   menus: Array<PoMenuItem> = [];
+  toolbarTitle = 'Sistema SaaS - Painel de Controle';
+  
+  user = JSON.parse(localStorage.getItem('user') || '{}');
+  
+  profile = {
+    title: this.user.name || 'Usuário',
+    subtitle: this.user.role || 'Membro'
+  };
 
-  constructor(private http: HttpClient) {}
-
-  // Getter para URL Dinâmica (Padrão AI-Ready)
-  get apiUrl() {
-    const hostname = window.location.hostname;
-    return hostname.includes('localhost') 
-      ? 'http://localhost:3000' 
-      : '/api';
-  }
+  profileActions: Array<PoToolbarAction> = [
+    { label: 'Perfil', icon: 'po-icon-user', action: () => {} },
+    { label: 'Sair', icon: 'po-icon-exit', type: 'danger', action: () => this.logout() }
+  ];
 
   ngOnInit() {
     this.loadMenu();
   }
 
   loadMenu() {
-    const tenantId = localStorage.getItem('tenantId');
-    const permissions = JSON.parse(localStorage.getItem('permissions') || '[]');
+    const role = this.user.role;
     
-    if (permissions.includes('SAAS_ADMIN') || permissions.includes('SUPER_ADMIN')) {
+    if (role === 'SUPER_ADMIN') {
       this.menus = [
         { label: 'Dashboard Admin', link: '/admin/dashboard', icon: 'po-icon-chart-area' },
         { 
@@ -50,21 +65,30 @@ export class MainComponent implements OnInit {
           ]
         },
         { 
-          label: 'Infraestrutura', 
-          icon: 'po-icon-settings',
+          label: 'Segurança', 
+          icon: 'po-icon-security',
           subItems: [
-            { label: 'Logs Globais', link: '/admin/logs', icon: 'po-icon-list' },
-            { label: 'Saúde do Sistema', link: '/admin/health', icon: 'po-icon-gas' },
+            { label: 'Usuários Master', link: '/app/users', icon: 'po-icon-user' },
+            { label: 'Papéis e Permissões', link: '/app/roles', icon: 'po-icon-ok' },
           ]
         }
       ];
     } else {
-      // Chamada usando a URL dinâmica
-      this.http.get(`${this.apiUrl}/menu`, {
-        headers: { 'x-tenant-id': tenantId || '' }
-      }).subscribe((res: any) => {
-        this.menus = res;
+      this.http.get(`${this.coreService.apiUrl}/menu`).subscribe({
+        next: (res: any) => {
+          this.menus = res;
+        },
+        error: () => {
+          this.menus = [
+            { label: 'Dashboard', link: '/app/dashboard', icon: 'po-icon-chart-area' }
+          ];
+        }
       });
     }
+  }
+
+  logout() {
+    localStorage.clear();
+    this.router.navigate(['/login']);
   }
 }
