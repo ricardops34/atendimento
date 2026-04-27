@@ -1,43 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { PoNotificationService, PoModule } from '@po-ui/ng-components';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CoreService } from '../../core/services/core.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [
-    CommonModule, 
-    FormsModule,
-    PoModule
-  ],
+  imports: [CommonModule, FormsModule, PoModule],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
 export class LoginComponent implements OnInit {
-  
+  private coreService = inject(CoreService);
+  private router = inject(Router);
+  private http = inject(HttpClient);
+  private poNotification = inject(PoNotificationService);
+
   loading: boolean = false;
   userEmail: string = '';
   userPassword: string = '';
   rememberMe: boolean = false;
   
-  private readonly apiUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? 'http://localhost:3000' 
-    : '/api';
-
-  // Branding com caminhos corrigidos
   productName: string = 'Acesse o sistema usando suas credenciais.';
   background: string = 'login-bg.png';
-  logo: string = 'logo.png'; // Caminho corrigido (está na raiz do public)
+  logo: string = 'logo.png';
   welcome: string = 'Boas-vindas';
-
-  constructor(
-    private router: Router,
-    private http: HttpClient,
-    private poNotification: PoNotificationService
-  ) {}
 
   ngOnInit() {
     this.loadBranding();
@@ -46,18 +36,23 @@ export class LoginComponent implements OnInit {
   loadBranding() {
     const hostname = window.location.hostname;
     const parts = hostname.split('.');
-    const domain = parts.length > 2 ? parts[0] : 'admin';
     
-    this.http.get(`${this.apiUrl}/public/branding/${domain}`).subscribe({
+    // Se for localhost ou sistema.bjsoft, tenta buscar o 'admin' por padrão se não houver subdomínio claro
+    let domain = 'admin';
+    if (parts.length > 2 && parts[0] !== 'www' && parts[0] !== 'sistema') {
+      domain = parts[0];
+    }
+    
+    this.http.get(`${this.coreService.apiUrl}/public/branding/${domain}`).subscribe({
       next: (res: any) => {
         if (res) {
           this.productName = res.loginConfig?.title || this.productName;
           this.logo = res.logoUrl || this.logo;
-          localStorage.setItem('tenantId', res.id);
+          if (res.id) localStorage.setItem('tenantId', res.id);
         }
       },
       error: () => {
-        console.warn('Usando branding padrão do sistema.');
+        console.warn('Tenant não encontrado pela URL. Usando configurações padrão.');
       }
     });
   }
@@ -70,20 +65,27 @@ export class LoginComponent implements OnInit {
 
     this.loading = true;
     
-    const loginPayload = {
+    // Prepara o payload. Se o tenantId não existir no localStorage, o backend deve tratar o login global.
+    const loginPayload: any = {
       email: this.userEmail,
-      password: this.userPassword,
-      tenantId: localStorage.getItem('tenantId')
+      password: this.userPassword
     };
 
-    this.http.post(`${this.apiUrl}/auth/login`, loginPayload).subscribe({
+    const tenantId = localStorage.getItem('tenantId');
+    if (tenantId) {
+      loginPayload.tenantId = tenantId;
+    }
+
+    this.http.post(`${this.coreService.apiUrl}/auth/login`, loginPayload).subscribe({
       next: (res: any) => {
         localStorage.setItem('token', res.token);
         localStorage.setItem('user', JSON.stringify(res.user));
         localStorage.setItem('permissions', JSON.stringify(res.permissions || []));
+        
         this.poNotification.success(`Bem-vindo, ${res.user.name}!`);
         
-        if (res.user.role === 'SUPER_ADMIN') {
+        // Redirecionamento baseado na Role
+        if (res.user.role === 'SUPER_ADMIN' || res.user.role === 'SAAS_ADMIN') {
           this.router.navigate(['/admin/dashboard']);
         } else {
           this.router.navigate(['/app/dashboard']);
@@ -92,7 +94,8 @@ export class LoginComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        this.poNotification.error(err.error?.message || 'Erro ao realizar login. Verifique suas credenciais.');
+        const errorMsg = err.error?.message || 'Erro ao realizar login. Verifique suas credenciais.';
+        this.poNotification.error(errorMsg);
       }
     });
   }
