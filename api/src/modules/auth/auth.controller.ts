@@ -9,19 +9,22 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(
     @Body() loginDto: any,
-    @Headers('x-tenant-id') tenantId: string
+    @Headers('x-tenant-id') tenantIdFromHeader: string
   ) {
-    // Validamos se o Tenant ID foi fornecido
-    if (!tenantId) {
-      throw new UnauthorizedException('Tenant ID é obrigatório para realizar o login.');
-    }
+    // Prioriza o tenantId do corpo da requisição ou do Header
+    const tenantId = loginDto.tenantId || tenantIdFromHeader;
 
-    // Validamos o usuário dentro do contexto do Tenant
+    // Removemos o bloqueio obrigatório aqui para permitir login de Super Admin
+    // A validação real acontecerá dentro do validateUser
     const user = await this.authService.validateUser(
       loginDto.email,
       loginDto.password,
       tenantId
     );
+
+    if (!user) {
+      throw new UnauthorizedException('E-mail ou senha inválidos.');
+    }
 
     // Geramos o Token JWT
     return this.authService.login(user);

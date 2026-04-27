@@ -1,9 +1,13 @@
 import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log('🌱 Iniciando semente de dados...');
+
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash('admin_password', saltRounds);
 
   // 1. Criar Planos Dinâmicos
   const standard = await prisma.plan.upsert({
@@ -32,7 +36,7 @@ async function main() {
     },
   });
 
-  // 2. Criar o Tenant Master (Seu Negócio)
+  // 2. Criar o Tenant Master
   const saasAdmin = await prisma.tenant.upsert({
     where: { domain: 'admin' },
     update: {},
@@ -44,19 +48,21 @@ async function main() {
     },
   });
 
-  // 3. Criar Usuário Master (Atualizado para Ricardo)
+  // 3. Criar Usuário Master com senha criptografada
   await prisma.user.upsert({
     where: { email: 'ricardo@bjsoft.com.br' },
-    update: {},
+    update: {
+      password: hashedPassword
+    },
     create: {
       email: 'ricardo@bjsoft.com.br',
-      password: 'admin_password', // Recomendado trocar para algo seguro após o primeiro login
+      password: hashedPassword,
       name: 'Ricardo Admin',
       tenantId: saasAdmin.id,
     },
   });
 
-  console.log('✅ Semente concluída! Planos e Usuário Master (ricardo@bjsoft.com.br) criados.');
+  console.log('✅ Semente concluída! Usuário ricardo@bjsoft.com.br criado com senha criptografada.');
 }
 
 main()
