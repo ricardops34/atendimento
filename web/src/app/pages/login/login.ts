@@ -1,14 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { PoPageLoginModule, PoPageLogin } from '@po-ui/ng-templates';
-import { PoNotificationService } from '@po-ui/ng-components';
+import { PoNotificationService, PoModule } from '@po-ui/ng-components';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, PoPageLoginModule],
+  imports: [
+    CommonModule, 
+    FormsModule,
+    PoModule // Importa os componentes básicos (input, button, etc)
+  ],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })
@@ -16,16 +20,21 @@ export class LoginComponent implements OnInit {
   
   loading: boolean = false;
   
-  // URL base dinâmica: Localhost (Dev) vs /api (Produção/VPN)
+  // Campos do formulário
+  userEmail: string = '';
+  userPassword: string = '';
+  rememberMe: boolean = false;
+  
+  // URL base dinâmica
   private readonly apiUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:3000' 
     : '/api';
 
-  // Propriedades individuais para o template
-  productName: string = 'Meu SaaS';
+  // Branding
+  productName: string = 'Acesse o sistema usando suas credenciais.';
   background: string = '/login-bg.png';
   logo: string = '/assets/logo.png';
-  secondaryLogo: string = '';
+  welcome: string = 'Boas-vindas';
 
   constructor(
     private router: Router,
@@ -44,13 +53,9 @@ export class LoginComponent implements OnInit {
     
     this.http.get(`${this.apiUrl}/public/branding/${domain}`).subscribe({
       next: (res: any) => {
-        if (res && res.loginConfig) {
-          this.productName = res.loginConfig.title || res.name;
-          this.background = res.loginConfig.background || this.background;
+        if (res) {
+          this.productName = res.loginConfig?.title || this.productName;
           this.logo = res.logoUrl || this.logo;
-          this.secondaryLogo = res.loginConfig.secondaryLogo || '';
-        }
-        if (res && res.id) {
           localStorage.setItem('tenantId', res.id);
         }
       },
@@ -60,12 +65,17 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  loginSubmit(formData: PoPageLogin) {
+  loginSubmit() {
+    if (!this.userEmail || !this.userPassword) {
+      this.poNotification.warning('Por favor, preencha e-mail e senha.');
+      return;
+    }
+
     this.loading = true;
     
     const loginPayload = {
-      email: formData.login,
-      password: formData.password,
+      email: this.userEmail,
+      password: this.userPassword,
       tenantId: localStorage.getItem('tenantId')
     };
 
@@ -89,5 +99,9 @@ export class LoginComponent implements OnInit {
         this.poNotification.error(err.error?.message || 'Erro ao realizar login. Verifique suas credenciais.');
       }
     });
+  }
+
+  forgotPassword() {
+    this.poNotification.information('Funcionalidade de recuperação de senha em desenvolvimento.');
   }
 }

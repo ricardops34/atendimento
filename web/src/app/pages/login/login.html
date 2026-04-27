@@ -1,9 +1,29 @@
-<po-page-login
-  (p-login-submit)="loginSubmit($event)"
-  [p-product-name]="productName"
-  [p-background]="background"
-  [p-logo]="logo"
-  [p-secondary-logo]="secondaryLogo"
-  [p-loading]="loading"
->
-</po-page-login>
+<div class="login-wrapper">
+  <div class="login-card">
+    <div class="login-header">
+      <img [src]="logo" alt="Logo" class="login-logo" *ngIf="logo">
+      <h1 class="login-title">{{ welcome }}</h1>
+      <p class="login-description" *ngIf="productName">{{ productName }}</p>
+    </div>
+
+    <form (submit)="loginSubmit()">
+      <po-input class="po-md-12" name="email" [(ngModel)]="userEmail" p-label="E-mail" p-placeholder="Digite seu e-mail"
+        p-icon="po-icon-user" p-required>
+      </po-input>
+
+      <po-password class="po-md-12" name="password" [(ngModel)]="userPassword" p-label="Senha"
+        p-placeholder="Digite sua senha" p-required>
+      </po-password>
+
+      <div class="login-extras">
+        <po-checkbox name="remember" [(ngModel)]="rememberMe" p-label="Manter-me conectado">
+        </po-checkbox>
+        <a (click)="forgotPassword()" class="forgot-password-link">Esqueci minha senha</a>
+      </div>
+
+      <po-button class="po-md-12 login-button" p-label="ENTRAR" p-kind="primary" [p-loading]="loading"
+        (p-click)="loginSubmit()">
+      </po-button>
+    </form>
+  </div>
+</div>

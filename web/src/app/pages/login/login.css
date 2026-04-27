@@ -1,33 +1,139 @@
-/* Centraliza o formulário no meio da tela */
-:host ::ng-deep .po-page-login {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  min-height: 100vh !important;
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  padding: 20px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.login-panel {
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-header {
+  text-align: left;
+  margin-bottom: 32px;
+}
+
+.login-logo {
+  max-height: 32px;
+  margin-bottom: 32px;
+}
+
+.login-logo-placeholder {
+    font-size: 48px;
+    margin-bottom: 24px;
+    color: #666;
+}
+
+.login-title {
+  font-size: 32px;
+  font-weight: 500;
+  color: #1a1a1a;
+  margin: 0 0 12px 0;
+}
+
+.login-subtitle {
+  font-size: 14px;
+  color: #4a4a4a;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.field-container {
+  margin-bottom: 24px;
+}
+
+.password-container {
+  position: relative;
+}
+
+.forgot-link-container {
+  text-align: right;
+  margin-top: 4px;
+  margin-bottom: 24px;
+}
+
+.forgot-password {
+  font-size: 14px;
+  color: #0050b3;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.login-button {
+    width: 100%;
+}
+
+:host ::ng-deep .login-button .po-button {
   width: 100% !important;
-  background: transparent !important; /* Deixa o fundo do body aparecer */
+  height: 48px !important;
+  border-radius: 8px !important;
+  background-color: #a0a0a0 !important; /* Cor cinza desativada/neutra do exemplo */
+  border: none !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  color: #4a4a4a !important;
 }
 
-/* Painel com efeito de vidro */
-:host ::ng-deep .po-page-login-panel {
-  margin: auto !important;
-  border-radius: 16px !important;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.5) !important;
-  background-color: rgba(255, 255, 255, 0.92) !important;
-  backdrop-filter: blur(10px) !important;
-  max-width: 450px !important;
-  width: 90% !important;
+:host ::ng-deep .login-button .po-button-primary:not([disabled]) {
+    background-color: #0050b3 !important; /* Fica azul quando válido */
+    color: white !important;
 }
 
-/* Remove a coluna lateral branca padrão */
-:host ::ng-deep .po-page-login-secondary-container {
-  display: none !important;
+.remember-container {
+  margin-top: 24px;
 }
 
-:host ::ng-deep .po-page-login-container {
-  background: transparent !important;
+.footer-selector {
+  position: fixed;
+  bottom: 32px;
+  left: 32px;
 }
 
-:host ::ng-deep .po-page-login-header {
-  background-color: transparent !important;
+.language-button {
+  background: transparent;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  backdrop-filter: blur(5px);
+}
+
+/* Overriding PO-UI components to match the minimalist look */
+:host ::ng-deep .po-field-container-content {
+  border-radius: 8px !important;
+  border: 1px solid #000 !important; /* Borda preta fina como no exemplo */
+  background-color: white !important;
+}
+
+:host ::ng-deep .po-field-label {
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  color: #1a1a1a !important;
+  margin-bottom: 8px !important;
+}
+
+:host ::ng-deep .po-input:focus, 
+:host ::ng-deep .po-field-container-content:focus-within {
+    border-color: #0050b3 !important;
+    box-shadow: 0 0 0 3px rgba(0, 80, 179, 0.1) !important;
 }
