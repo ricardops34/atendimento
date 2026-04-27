@@ -31,27 +31,17 @@ html, body {
   box-sizing: border-box;
 }
 
-.login-header {
-  margin-bottom: 25px;
+/* Novo Cabeçalho Centralizado com Logo Grande */
+.login-header-centered {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 35px;
 }
 
-.login-logo {
-  max-height: 45px;
-  margin-bottom: 20px;
-  /* Se a logo for colorida, pode remover o filter abaixo */
-}
-
-.login-title {
-  font-size: 28px;
-  font-weight: 500;
-  color: #333;
-  margin: 0 0 8px 0;
-}
-
-.login-description {
-  font-size: 14px;
-  color: #666;
-  line-height: 1.4;
+.login-logo-large {
+  max-height: 140px; /* Logo maior como no print */
+  width: auto;
+  object-fit: contain;
 }
 
 /* Espaçamento dos inputs */
@@ -62,7 +52,6 @@ html, body {
   width: 100%;
 }
 
-/* Container do link Recuperar Senha */
 .recovery-container {
   text-align: right;
   margin: -5px 0 25px 0;
@@ -76,42 +65,30 @@ html, body {
   cursor: pointer;
 }
 
-/* Botão de Login */
-.login-button {
-  width: 100% !important;
-  display: block !important;
-  margin-bottom: 20px !important;
+/* Container do Botão (Alinhado à esquerda/padrão) */
+.button-container {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20px;
 }
 
-/* Container do Checkbox */
 .remember-container {
   display: flex;
   align-items: center;
   margin-top: 10px;
 }
 
-/* FORÇAR CORES E ESTILOS DOS COMPONENTES PO-UI */
-::ng-deep .login-card .po-button-primary {
-  background-color: #a3a3a3 !important; /* Cinza TOTVS */
-  border: none !important;
-  height: 52px !important;
-  border-radius: 8px !important;
-  color: #333 !important;
-  font-weight: 600 !important;
-  width: 100% !important;
-}
-
+/* FORÇAR ESTILOS DOS COMPONENTES PO-UI */
 ::ng-deep .login-card .po-input, 
 ::ng-deep .login-card .po-password .po-input {
   border: 1.5px solid #ccc !important;
-  border-radius: 8px !important;
+  border-radius: 4px !important; /* Cantos um pouco mais retos nos inputs */
   height: 48px !important;
 }
 
-/* Remove ícone de usuário interno se existir */
-::ng-deep .login-card .po-input-icon-left {
-  display: none !important;
-}
-::ng-deep .login-card .po-input-container-icon-left {
-  padding-left: 12px !important;
+/* Estilo do Botão (Roxo PO-UI mas com tamanho automático) */
+::ng-deep .login-card .po-button-primary {
+  height: 44px !important;
+  border-radius: 6px !important;
+  padding: 0 30px !important;
 }

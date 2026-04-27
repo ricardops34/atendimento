@@ -1,9 +1,8 @@
 <div class="login-wrapper">
   <div class="login-card">
-    <div class="login-header">
-      <img [src]="logo" alt="Logo" class="login-logo" *ngIf="logo">
-      <h1 class="login-title">{{ welcome }}</h1>
-      <p class="login-description" *ngIf="productName">{{ productName }}</p>
+    <!-- Logo Centralizada e Grande -->
+    <div class="login-header-centered">
+      <img [src]="logo" alt="Logo" class="login-logo-large" *ngIf="logo">
     </div>
 
     <form (submit)="loginSubmit()">
@@ -25,21 +24,22 @@
         p-required>
       </po-password>
 
-      <!-- Esqueci minha senha (acima do botão, à direita) -->
+      <!-- Esqueci minha senha -->
       <div class="recovery-container">
         <a (click)="forgotPassword()" class="forgot-password-link">Esqueci minha senha</a>
       </div>
 
-      <!-- Botão Entrar -->
-      <po-button 
-        class="login-button" 
-        p-label="Entrar" 
-        p-kind="primary" 
-        [p-loading]="loading"
-        (p-click)="loginSubmit()">
-      </po-button>
+      <!-- Botão Entrar (Tamanho Padrão) -->
+      <div class="button-container">
+        <po-button 
+          p-label="Entrar" 
+          p-kind="primary" 
+          [p-loading]="loading"
+          (p-click)="loginSubmit()">
+        </po-button>
+      </div>
 
-      <!-- Manter conectado (abaixo do botão) -->
+      <!-- Manter conectado -->
       <div class="remember-container">
         <po-checkbox 
           name="remember" 
