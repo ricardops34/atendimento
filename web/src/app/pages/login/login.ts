@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit {
   userEmail: string = '';
   userPassword: string = '';
   rememberMe: boolean = false;
-  
+
   // Iniciamos com chaves vazias para garantir que o sistema busque do JSON
   literals: any = {
     user: '',
@@ -42,8 +42,8 @@ export class LoginComponent implements OnInit {
     { label: 'English (US)', value: 'en-us' },
     { label: 'Español (ES)', value: 'es-es' }
   ];
-  
-  productName: string = 'Sistema SaaS';
+
+  productName: string = 'BJ Software';
   background: string = 'login-bg.png';
   logo: string = 'logo.png';
   welcome: string = '';
@@ -80,12 +80,12 @@ export class LoginComponent implements OnInit {
   loadBranding() {
     const hostname = window.location.hostname;
     const parts = hostname.split('.');
-    
+
     let domain = 'admin';
     if (parts.length > 2 && parts[0] !== 'www' && parts[0] !== 'sistema') {
       domain = parts[0];
     }
-    
+
     this.http.get(`${this.coreService.apiUrl}/public/branding/${domain}`).subscribe({
       next: (res: any) => {
         if (res) {
@@ -120,9 +120,9 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('token', res.token);
         localStorage.setItem('user', JSON.stringify(res.user));
         localStorage.setItem('permissions', JSON.stringify(res.permissions || []));
-        
+
         this.poNotification.success(`Bem-vindo, ${res.user.name}!`);
-        
+
         if (res.user.role === 'SUPER_ADMIN' || res.user.role === 'SAAS_ADMIN') {
           this.router.navigate(['/admin/dashboard']);
         } else {
