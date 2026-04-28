@@ -15,19 +15,26 @@ export const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: DashboardComponent },
       
-      // Tenants
+      // Gestão SaaS (Admin Master)
       { path: 'tenants', loadComponent: () => import('./pages/admin/tenants/tenants').then(m => m.TenantsComponent) },
       { path: 'tenants/new', loadComponent: () => import('./pages/admin/tenants/tenants-edit').then(m => m.TenantsEditComponent) },
       { path: 'tenants/edit/:id', loadComponent: () => import('./pages/admin/tenants/tenants-edit').then(m => m.TenantsEditComponent) },
       
-      // Plans
       { path: 'plans', loadComponent: () => import('./pages/admin/plans/plans').then(m => m.PlansComponent) },
       { path: 'plans/new', loadComponent: () => import('./pages/admin/plans/plans-edit').then(m => m.PlansEditComponent) },
       { path: 'plans/edit/:id', loadComponent: () => import('./pages/admin/plans/plans-edit').then(m => m.PlansEditComponent) },
       
-      // NOVO Metadata Editor (Lista -> Detalhes)
       { path: 'metadata-editor', loadComponent: () => import('./pages/admin/metadata-editor/metadata-list').then(m => m.MetadataListComponent) },
       { path: 'metadata-editor/edit/:entity', loadComponent: () => import('./pages/admin/metadata-editor/metadata-editor').then(m => m.MetadataEditorComponent) },
+
+      // Gestão da Empresa (Admin Local / Tenant)
+      { path: 'users', loadComponent: () => import('./pages/admin/users/users').then(m => m.UsersComponent) },
+      { path: 'users/new', loadComponent: () => import('./pages/admin/users/users-edit').then(m => m.UsersEditComponent) },
+      { path: 'users/edit/:id', loadComponent: () => import('./pages/admin/users/users-edit').then(m => m.UsersEditComponent) },
+      
+      { path: 'roles', loadComponent: () => import('./pages/admin/roles/roles').then(m => m.RolesComponent) },
+      { path: 'roles/new', loadComponent: () => import('./pages/admin/roles/roles-edit').then(m => m.RolesEditComponent) },
+      { path: 'roles/edit/:id', loadComponent: () => import('./pages/admin/roles/roles-edit').then(m => m.RolesEditComponent) },
     ]
   },
   {
@@ -36,13 +43,6 @@ export const routes: Routes = [
     canActivate: [authGuard], 
     children: [
       { path: 'dashboard', component: DashboardComponent },
-      
-      // Users
-      { path: 'users', loadComponent: () => import('./pages/users/users').then(m => m.UsersComponent) },
-      { path: 'users/new', loadComponent: () => import('./pages/users/users-edit').then(m => m.UsersEditComponent) },
-      { path: 'users/edit/:id', loadComponent: () => import('./pages/users/users-edit').then(m => m.UsersEditComponent) },
-      
-      { path: 'roles', loadComponent: () => import('./pages/roles/roles').then(m => m.RolesComponent) },
       { path: 'dynamic/:entity', loadComponent: () => import('./pages/dynamic/dynamic-page').then(m => m.DynamicPageComponent) }
     ]
   }

@@ -41,7 +41,8 @@ model Tenant {
   users             User[]
   products          Product[]
   roles             Role[]
-  metadata          EntityMetadata[]
+  entities          MetadataEntity[]
+  metadataFields    MetadataField[]
   customEntities    DynamicEntity[]
   branches          Branch[]
   customReports     CustomReport[]
@@ -57,11 +58,59 @@ enum TenantStatus {
   CANCELLED
 }
 
+// --- NOVAS TABELAS DE METADADOS ---
+
+model MetadataEntity {
+  id          String   @id @default(uuid())
+  name        String   // Nome técnico (slug)
+  label       String   // Nome amigável
+  type        String   @default("U") // S=Sistema, U=Usuário
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  fields      MetadataField[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([name, tenantId])
+  @@index([tenantId])
+}
+
+model MetadataField {
+  id                String   @id @default(uuid())
+  entityId          String
+  entity            MetadataEntity @relation(fields: [entityId], references: [id])
+  name              String   // Nome do campo (API/Banco)
+  type              String   // C=Caráter, D=Data, N=Numero, M=Memo, L=Logico, V=Virtual, S=Sistema
+  isSystem          String   @default("U") // S=Sistema, U=Usuário
+  
+  titleForm         String?  // Título Tela
+  titleList         String?  // Título Lista
+  helpText          String?  // Ajuda
+  order             Int      @default(0)
+  defaultValueForm  String?  // Valor Padrão Tela
+  defaultValueList  String?  // Valor Padrão Lista
+  trigger           String?  // Gatilho
+  mask              String?  // Mascara
+  
+  isActiveForm      String   @default("S") // S=Habilitado, N=Desabilitado
+  isActiveList      String   @default("S") // S=Habilitado, N=Desabilitado
+  
+  tenantId          String
+  tenant            Tenant   @relation(fields: [tenantId], references: [id])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([entityId])
+  @@index([tenantId])
+}
+
+// --- FIM NOVAS TABELAS ---
+
 model AuditLog {
   id          String   @id @default(uuid())
-  action      String   // Ex: "METADATA_UPDATE", "USER_LOGIN"
-  entity      String?  // Ex: "tenants"
-  details     Json     // Conteúdo da alteração (antes/depois)
+  action      String
+  entity      String?
+  details     Json
   userId      String
   user        User     @relation(fields: [userId], references: [id])
   tenantId    String
@@ -146,23 +195,10 @@ model DynamicRecord {
   parentEntity      String?  
   data              Json     
   createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  updatedAt   DateTime @updatedAt
   @@index([entityId])
   @@index([tenantId])
   @@index([parentId])
-}
-
-model EntityMetadata {
-  id          String   @id @default(uuid())
-  entity      String   
-  tenantId    String
-  tenant      Tenant   @relation(fields: [tenantId], references: [id])
-  fields      Json     
-  tabs        Json?    
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  @@unique([entity, tenantId])
-  @@index([tenantId])
 }
 
 model User {

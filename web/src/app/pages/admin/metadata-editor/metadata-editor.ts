@@ -1,9 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { 
-  PoModule, 
-  PoNotificationService, 
+import {
+  PoModule,
+  PoNotificationService,
   PoTableColumn
 } from '@po-ui/ng-components';
 import { HttpClient } from '@angular/common/http';
@@ -19,7 +19,7 @@ import { CoreService } from '../../../core/services/core.service';
       
       <div class="po-row">
         <po-info class="po-md-12" p-label="Gestão de Campos e Ordem de Exibição" 
-          p-value="Gerencie a ordem e as propriedades dos campos que aparecerão nas telas dinâmicas.">
+          p-value="Gerencie as propriedades da entidade">
         </po-info>
       </div>
 
@@ -35,7 +35,7 @@ import { CoreService } from '../../../core/services/core.service';
       <div class="po-row po-mt-2">
         <po-button
           class="po-md-3"
-          p-label="Salvar Arquitetura"
+          p-label="Salvar"
           p-kind="primary"
           p-icon="po-icon-ok"
           [p-loading]="loading"
@@ -70,11 +70,11 @@ export class MetadataEditorComponent implements OnInit {
     { property: 'type', label: 'Tipo', width: '10%' },
     { property: 'visible', label: 'Visível', type: 'boolean', width: '5%' },
     { property: 'required', label: 'Obrigatório', type: 'boolean', width: '5%' },
-    
+
     // Colunas de Ação
     { property: 'up', label: ' ', type: 'icon', icon: 'an an-caret-circle-up', action: (row: any) => this.moveUp(row), color: 'color-08', tooltip: 'Subir' },
     { property: 'down', label: ' ', type: 'icon', icon: 'an an-caret-circle-down', action: (row: any) => this.moveDown(row), color: 'color-08', tooltip: 'Descer' },
-    { property: 'edit', label: ' ', type: 'icon', icon: 'an an-pencil-simple', action: (row: any) => this.editField(row), color: 'color-07', tooltip: 'Editar Detalhes' },
+    { property: 'edit', label: ' ', type: 'icon', icon: 'an an-pencil-simple', action: (row: any) => this.editField(row), color: 'color-07', tooltip: 'Editar Campo' },
     { property: 'delete', label: ' ', type: 'icon', icon: 'an an-trash', action: (row: any) => this.removeField(row), color: 'color-01', tooltip: 'Remover' }
   ];
 

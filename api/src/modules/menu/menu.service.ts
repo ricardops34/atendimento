@@ -9,11 +9,11 @@ export class MenuService {
    * Gera a estrutura de menu filtrada pelas permissões do usuário e customizações do Tenant
    */
   async getTenantMenu(tenantId: string, userPermissions: string[]) {
-    // 1. Definição Base do Menu
+    // 1. Definição Base do Menu (Caminhos atualizados para /admin/...)
     const menuStructure: any[] = [
       { 
         label: 'Dashboard', 
-        link: '/app/dashboard', 
+        link: '/admin/dashboard', 
         icon: 'po-icon-home', 
         permission: 'VIEW_DASHBOARD' 
       },
@@ -32,13 +32,13 @@ export class MenuService {
         icon: 'po-icon-company', 
         permission: 'VIEW_COMPANY',
         subItems: [
-          { label: 'Usuários', link: '/app/users', icon: 'po-icon-users', permission: 'MANAGE_USERS' },
-          { label: 'Perfis de Acesso', link: '/app/roles', icon: 'po-icon-lock', permission: 'MANAGE_ROLES' }
+          { label: 'Usuários', link: '/admin/users', icon: 'po-icon-users', permission: 'MANAGE_USERS' },
+          { label: 'Perfis de Acesso', link: '/admin/roles', icon: 'po-icon-lock', permission: 'MANAGE_ROLES' }
         ]
       }
     ];
 
-    // 2. Busca Entidades Virtuais (Tabelas dinâmicas)
+    // 2. Busca Entidades Virtuais
     const customEntities = await this.prisma.dynamicEntity.findMany({
       where: { tenantId },
       orderBy: { name: 'asc' }
@@ -58,7 +58,7 @@ export class MenuService {
       });
     }
 
-    // 3. Busca Rotinas Customizadas (Scripts/Funcionalidades extras)
+    // 3. Busca Rotinas Customizadas
     const customRoutines = await this.prisma.customRoutine.findMany({
       where: { tenantId, isActive: true },
       orderBy: { hookName: 'asc' }
@@ -78,7 +78,6 @@ export class MenuService {
       });
     }
 
-    // 4. FILTRAGEM: Remove o que o usuário não tem permissão de ver
     return this.filterMenu(menuStructure, userPermissions);
   }
 
