@@ -42,35 +42,29 @@ html, body {
 
 .login-box {
   background: #ffffff;
-  padding: 50px 40px;
+  padding: 40px;
   border-radius: 12px;
   box-shadow: 0 10px 40px rgba(0,0,0,0.2);
   width: 100%;
   max-width: 440px;
   z-index: 10;
+  text-align: center;
 }
 
 .login-header {
-  margin-bottom: 30px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
 }
 
 .login-logo-brand {
-  max-height: 50px;
-  margin-bottom: 25px;
+  max-height: 120px; /* Logo maior e imponente */
+  width: auto;
+  object-fit: contain;
 }
 
-.welcome-title {
-  font-size: 28px;
-  font-weight: 600;
-  color: #333;
-  margin: 0 0 10px 0;
-}
-
-.welcome-subtitle {
-  font-size: 14px;
-  color: #666;
-  line-height: 1.5;
-  margin-bottom: 30px;
+.login-form {
+  text-align: left;
 }
 
 .field-group {
@@ -102,12 +96,10 @@ html, body {
   margin-bottom: 20px;
 }
 
-/* Forçar botão largo e cinza conforme o estilo solicitado */
+/* Botão largo */
 ::ng-deep .btn-login-full .po-button {
   width: 100% !important;
   height: 50px !important;
-  background-color: #999 !important; /* Cinza do print */
-  border-color: #999 !important;
   border-radius: 8px !important;
   font-size: 16px !important;
   font-weight: 600 !important;
@@ -128,7 +120,7 @@ html, body {
 ::ng-deep .footer-language .po-select {
   background-color: rgba(0, 0, 0, 0.7) !important;
   color: white !important;
-  border: 1px solid white !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
   border-radius: 8px !important;
   width: 160px !important;
 }
@@ -137,7 +129,7 @@ html, body {
   color: white !important;
 }
 
-/* Reset de alguns estilos PO-UI para bater com o print */
+/* Estilização dos inputs PO-UI */
 ::ng-deep .po-field-container-content {
   border-radius: 6px !important;
 }
