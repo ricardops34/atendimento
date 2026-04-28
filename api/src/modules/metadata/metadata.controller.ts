@@ -18,6 +18,12 @@ export class MetadataController {
     private readonly auditService: AuditService
   ) {}
 
+  @Get('entities')
+  @ApiOperation({ summary: 'Listar todas as entidades configuráveis (SaaS Admin)' })
+  async listEntities(@TenantId() tenantId: string) {
+    return this.metadataService.listEntities(tenantId);
+  }
+
   @Get('ai-context')
   @ApiOperation({ summary: 'Portal de Auto-Descoberta para Agentes de IA' })
   async getAiContext(@TenantId() tenantId: string) {
@@ -35,7 +41,7 @@ export class MetadataController {
   }
 
   @Post(':entity')
-  @Roles('SUPER_ADMIN') // Apenas Super Admin pode mudar metadados globais por enquanto
+  @Roles('SUPER_ADMIN')
   @ApiOperation({ summary: 'Salvar metadados de uma entidade' })
   async saveMetadata(
     @Param('entity') entity: string,
@@ -44,10 +50,8 @@ export class MetadataController {
     @Body() data: any,
     @Req() req: any
   ) {
-    // 1. Salva a alteração
     const result = await this.metadataService.saveMetadata(entity, tenantId, data);
 
-    // 2. Registra no Log de Auditoria
     await this.auditService.log({
       userId,
       tenantId,

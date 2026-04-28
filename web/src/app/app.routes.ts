@@ -25,7 +25,9 @@ export const routes: Routes = [
       { path: 'plans/new', loadComponent: () => import('./pages/admin/plans/plans-edit').then(m => m.PlansEditComponent) },
       { path: 'plans/edit/:id', loadComponent: () => import('./pages/admin/plans/plans-edit').then(m => m.PlansEditComponent) },
       
-      { path: 'metadata-editor', loadComponent: () => import('./pages/admin/metadata-editor/metadata-editor').then(m => m.MetadataEditorComponent) },
+      // NOVO Metadata Editor (Lista -> Detalhes)
+      { path: 'metadata-editor', loadComponent: () => import('./pages/admin/metadata-editor/metadata-list').then(m => m.MetadataListComponent) },
+      { path: 'metadata-editor/edit/:entity', loadComponent: () => import('./pages/admin/metadata-editor/metadata-editor').then(m => m.MetadataEditorComponent) },
     ]
   },
   {
