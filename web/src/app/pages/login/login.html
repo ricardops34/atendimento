@@ -9,11 +9,7 @@
       <!-- Campo Usuário -->
       <div class="field-group">
         <label class="field-label">{{ literals.user }}</label>
-        <po-input 
-          name="email" 
-          [(ngModel)]="userEmail" 
-          p-icon="po-icon-user"
-          [p-placeholder]="literals.userPlaceholder"
+        <po-input name="email" [(ngModel)]="userEmail" p-icon="an an-user" [p-placeholder]="literals.userPlaceholder"
           p-required>
         </po-input>
       </div>
@@ -21,10 +17,7 @@
       <!-- Campo Senha -->
       <div class="field-group">
         <label class="field-label">{{ literals.password }}</label>
-        <po-password 
-          name="password" 
-          [(ngModel)]="userPassword" 
-          [p-placeholder]="literals.passwordPlaceholder"
+        <po-password name="password" [(ngModel)]="userPassword" [p-placeholder]="literals.passwordPlaceholder"
           p-required>
         </po-password>
       </div>
@@ -35,21 +28,14 @@
 
       <!-- Botão Entrar Largo -->
       <div class="submit-container">
-        <po-button 
-          p-kind="primary" 
-          [p-label]="literals?.enter"
-          [p-loading]="loading"
-          (p-click)="loginSubmit()"
+        <po-button p-kind="primary" [p-label]="literals?.enter" [p-loading]="loading" (p-click)="loginSubmit()"
           class="po-button-block">
         </po-button>
       </div>
 
       <!-- Manter conectado -->
       <div class="keep-connected">
-        <po-checkbox 
-          name="remember" 
-          [(ngModel)]="rememberMe" 
-          [p-label]="literals.rememberMe">
+        <po-checkbox name="remember" [(ngModel)]="rememberMe" [p-label]="literals.rememberMe">
         </po-checkbox>
       </div>
     </form>
@@ -57,12 +43,8 @@
 
   <!-- Seletor de Idioma no Canto Inferior Esquerdo -->
   <div class="footer-language">
-    <po-select
-      name="language"
-      [p-options]="languageOptions"
-      [ngModel]="selectedLanguage"
-      (ngModelChange)="changeLanguage($event)"
-      p-icon="po-icon-world">
+    <po-select name="language" [p-options]="languageOptions" [ngModel]="selectedLanguage"
+      (ngModelChange)="changeLanguage($event)" p-icon="po-icon-world">
     </po-select>
   </div>
 </div>
