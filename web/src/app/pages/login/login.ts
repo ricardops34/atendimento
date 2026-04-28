@@ -25,7 +25,13 @@ export class LoginComponent implements OnInit {
   userPassword: string = '';
   rememberMe: boolean = false;
   
-  literals: any = {};
+  literals: any = {
+    email: 'E-mail',
+    password: 'Senha',
+    enter: 'Entrar',
+    forgotPassword: 'Esqueci minha senha',
+    rememberMe: 'Manter conectado'
+  };
   selectedLanguage: string = 'pt-br';
 
   languageOptions: Array<PoSelectOption> = [
@@ -34,10 +40,10 @@ export class LoginComponent implements OnInit {
     { label: 'Español (ES)', value: 'es-es' }
   ];
   
-  productName: string = '';
+  productName: string = 'Sistema SaaS';
   background: string = 'login-bg.png';
   logo: string = 'logo.png';
-  welcome: string = '';
+  welcome: string = 'Seja bem-vindo!';
 
   ngOnInit() {
     this.selectedLanguage = this.poI18n.getLanguage();
@@ -47,8 +53,8 @@ export class LoginComponent implements OnInit {
 
   loadLiterals() {
     this.poI18n.getLiterals({ context: 'login' }).subscribe(literals => {
-      this.literals = literals;
-      this.welcome = this.literals.welcome;
+      this.literals = { ...this.literals, ...literals };
+      this.welcome = this.literals.welcome || this.welcome;
     });
   }
 
@@ -70,20 +76,20 @@ export class LoginComponent implements OnInit {
     this.http.get(`${this.coreService.apiUrl}/public/branding/${domain}`).subscribe({
       next: (res: any) => {
         if (res) {
-          this.productName = res.loginConfig?.title || this.literals.description;
+          this.productName = res.loginConfig?.title || this.literals.description || this.productName;
           this.logo = res.logoUrl || this.logo;
           if (res.id) localStorage.setItem('tenantId', res.id);
         }
       },
       error: () => {
-        this.productName = this.literals.description;
+        console.warn('Tenant não encontrado pela URL. Usando padrão.');
       }
     });
   }
 
   loginSubmit() {
     if (!this.userEmail || !this.userPassword) {
-      this.poNotification.warning(this.literals.fillFields);
+      this.poNotification.warning(this.literals.fillFields || 'Preencha todos os campos');
       return;
     }
 
@@ -116,7 +122,7 @@ export class LoginComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        const errorMsg = err.error?.message || this.literals.loginError;
+        const errorMsg = err.error?.message || this.literals.loginError || 'Erro ao realizar login';
         this.poNotification.error(errorMsg);
       }
     });

@@ -1,71 +1,73 @@
-<div class="login-wrapper">
-  <!-- Fundo com Overlay -->
-  <div class="login-background" [style.backgroundImage]="'url(assets/images/' + background + ')'"></div>
+<div class="login-container">
+  <!-- Imagem de Fundo (Pessoa + Cidade) -->
+  <div class="login-bg-image"></div>
   <div class="login-overlay"></div>
 
-  <!-- Card de Login -->
-  <div class="login-card">
+  <!-- Card de Login Centralizado -->
+  <div class="login-box">
     <div class="login-header">
-      <img [src]="logo" alt="Logo" class="login-logo">
-      <h1>{{ productName }}</h1>
-      <p>{{ welcome }}</p>
+      <img [src]="logo" alt="Logo" class="login-logo-brand">
+      <h2 class="welcome-title">{{ welcome }}</h2>
+      <p class="welcome-subtitle">Acesse o sistema usando suas credenciais e facilite sua rotina.</p>
     </div>
 
-    <!-- Seletor de Idioma -->
-    <div class="language-selector po-mb-2">
-      <po-select
-        name="language"
-        [p-options]="languageOptions"
-        [ngModel]="selectedLanguage"
-        (ngModelChange)="changeLanguage($event)"
-        p-icon="po-icon-world">
-      </po-select>
-    </div>
-
-    <form #loginForm="ngForm">
-      <!-- Campo E-mail -->
-      <div class="input-container">
+    <form #loginForm="ngForm" class="login-form">
+      <!-- Campo Usuário -->
+      <div class="field-group">
+        <label class="field-label">Usuário</label>
         <po-input 
           name="email" 
           [(ngModel)]="userEmail" 
-          [p-label]="literals.email" 
-          p-icon="po-icon-user"
+          p-placeholder="Digite seu usuário"
           p-required>
         </po-input>
       </div>
 
       <!-- Campo Senha -->
-      <div class="input-container">
+      <div class="field-group">
+        <label class="field-label">Senha</label>
         <po-password 
           name="password" 
           [(ngModel)]="userPassword" 
-          [p-label]="literals.password"
+          p-placeholder="Digite sua senha"
           p-required>
         </po-password>
       </div>
 
-      <div class="action-container">
-        <a (click)="forgotPassword()">{{ literals.forgotPassword }}</a>
+      <div class="forgot-link">
+        <a (click)="forgotPassword()">Esqueci minha senha</a>
       </div>
 
-      <!-- Botão Entrar -->
-      <div class="button-container">
+      <!-- Botão Entrar Largo -->
+      <div class="submit-container">
         <po-button 
-          [p-label]="literals.enter" 
+          p-label="Entrar" 
           p-kind="primary" 
           [p-loading]="loading"
-          (p-click)="loginSubmit()">
+          (p-click)="loginSubmit()"
+          class="btn-login-full">
         </po-button>
       </div>
 
       <!-- Manter conectado -->
-      <div class="remember-container">
+      <div class="keep-connected">
         <po-checkbox 
           name="remember" 
           [(ngModel)]="rememberMe" 
-          [p-label]="literals.rememberMe">
+          p-label="Manter-me conectado">
         </po-checkbox>
       </div>
     </form>
+  </div>
+
+  <!-- Seletor de Idioma no Canto Inferior Esquerdo -->
+  <div class="footer-language">
+    <po-select
+      name="language"
+      [p-options]="languageOptions"
+      [ngModel]="selectedLanguage"
+      (ngModelChange)="changeLanguage($event)"
+      p-icon="po-icon-world">
+    </po-select>
   </div>
 </div>
