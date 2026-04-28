@@ -1,44 +1,31 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { 
-  PoPageDynamicTableModule, 
-  PoPageDynamicTableField, 
-  PoPageDynamicTableActions 
-} from '@po-ui/ng-templates';
+import { PoPageDynamicEditModule, PoPageDynamicEditField } from '@po-ui/ng-templates';
 import { HttpClient } from '@angular/common/http';
 import { CoreService } from '../../../core/services/core.service';
 
 @Component({
-  selector: 'app-tenants',
+  selector: 'app-tenants-edit',
   standalone: true,
-  imports: [CommonModule, PoPageDynamicTableModule],
+  imports: [CommonModule, PoPageDynamicEditModule],
   template: `
-    <po-page-dynamic-table
+    <po-page-dynamic-edit
       *ngIf="loaded"
       [p-title]="title"
       [p-service-api]="serviceApi"
       [p-fields]="fields"
-      [p-actions]="actions"
     >
-    </po-page-dynamic-table>
+    </po-page-dynamic-edit>
   `
 })
-export class TenantsComponent implements OnInit {
+export class TenantsEditComponent implements OnInit {
   private coreService = inject(CoreService);
   private http = inject(HttpClient);
   
   readonly serviceApi = `${this.coreService.apiUrl}/tenants`;
   
-  // Definição das Ações de CRUD
-  readonly actions: PoPageDynamicTableActions = {
-    new: '/admin/tenants/new',
-    edit: '/admin/tenants/edit/:id',
-    remove: true, // Habilita a exclusão direta
-    removeAll: true
-  };
-
   title: string = 'Carregando...';
-  fields: Array<PoPageDynamicTableField> = [];
+  fields: Array<PoPageDynamicEditField> = [];
   loaded: boolean = false;
 
   ngOnInit() {
@@ -48,12 +35,12 @@ export class TenantsComponent implements OnInit {
   loadMetadata() {
     this.http.get(`${this.coreService.apiUrl}/metadata/tenants`).subscribe({
       next: (meta: any) => {
-        this.title = meta.title || 'Empresas';
+        this.title = meta.title || 'Empresa';
         this.fields = meta.fields;
         this.loaded = true;
       },
       error: () => {
-        console.error('Falha ao carregar metadados de Empresas');
+        console.error('Falha ao carregar metadados de Edição');
       }
     });
   }
