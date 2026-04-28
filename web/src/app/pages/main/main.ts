@@ -46,8 +46,8 @@ export class MainComponent implements OnInit {
   profileActions: Array<PoToolbarAction> = [];
 
   ngOnInit() {
-    this.poI18n.getLiterals({ context: 'admin' }).subscribe(literals => {
-      this.literals = literals.menu;
+    this.poI18n.getLiterals({ context: 'admin' }).subscribe((literals: any) => {
+      this.literals = literals.menu || {};
       this.setupProfileActions();
       this.loadMenu();
     });
@@ -55,8 +55,8 @@ export class MainComponent implements OnInit {
 
   setupProfileActions() {
     this.profileActions = [
-      { label: this.literals.profile, icon: 'po-icon-user', action: () => {} },
-      { label: this.literals.logout, icon: 'po-icon-exit', type: 'danger', action: () => this.logout() }
+      { label: this.literals.profile || 'Perfil', icon: 'po-icon-user', action: () => {} },
+      { label: this.literals.logout || 'Sair', icon: 'po-icon-exit', type: 'danger', action: () => this.logout() }
     ];
   }
 
@@ -65,7 +65,7 @@ export class MainComponent implements OnInit {
     
     if (role === 'SUPER_ADMIN') {
       this.menus = [
-        { label: this.literals.dashboard, link: '/admin/dashboard', icon: 'po-icon-chart-area' },
+        { label: this.literals.dashboard || 'Painel', link: '/admin/dashboard', icon: 'po-icon-chart-area' },
         { 
           label: 'Módulos Dinâmicos', 
           icon: 'po-icon-document-filled',
@@ -74,19 +74,19 @@ export class MainComponent implements OnInit {
           ]
         },
         { 
-          label: this.literals.business, 
+          label: this.literals.business || 'Gestão', 
           icon: 'po-icon-company',
           subItems: [
-            { label: this.literals.tenants, link: '/admin/tenants', icon: 'po-icon-users' },
-            { label: this.literals.plans, link: '/admin/plans', icon: 'po-icon-finance' },
+            { label: this.literals.tenants || 'Empresas', link: '/admin/tenants', icon: 'po-icon-users' },
+            { label: this.literals.plans || 'Planos', link: '/admin/plans', icon: 'po-icon-finance' },
           ]
         },
         { 
-          label: this.literals.security, 
+          label: this.literals.security || 'Segurança', 
           icon: 'po-icon-security',
           subItems: [
-            { label: this.literals.users, link: '/app/users', icon: 'po-icon-user' },
-            { label: this.literals.roles, link: '/app/roles', icon: 'po-icon-ok' },
+            { label: this.literals.users || 'Usuários', link: '/app/users', icon: 'po-icon-user' },
+            { label: this.literals.roles || 'Permissões', link: '/app/roles', icon: 'po-icon-ok' },
           ]
         }
       ];

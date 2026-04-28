@@ -1,28 +1,26 @@
-# 🚀 Próximas Missões - BJSoft SaaS
+# Lista de Tarefas - Sistema SaaS
 
-Lista de tarefas prioritárias para a evolução do sistema e do negócio.
+## 🏁 Concluído
+- [x] Configuração base do Projeto (Angular + NestJS + Prisma).
+- [x] Login Customizado com visual Premium (Estilo TOTVS).
+- [x] Base de Segurança (AuthGuard e Interceptor JWT).
+- [x] Infraestrutura de API Dinâmica (Local vs Produção).
+- [x] Documentação de Arquitetura (Regras de Idioma e i18n).
 
----
+## 🚀 Em Andamento
+- [ ] **Módulo Admin (Gestão Master)**:
+    - [x] Configurar Contexto de i18n 'admin'.
+    - [ ] CRUD de Planos (Finalizar UI com i18n).
+    - [ ] CRUD de Empresas (Tenants) com **Lookup de Planos**.
+- [ ] **Infraestrutura Dinâmica (Metadata-Driven)**:
+    - [ ] Serviço de Metadados no Backend (Traduzir labels dinâmicos).
+    - [ ] Componente Genérico no Frontend para renderizar `JSONB`.
+    - [ ] Sistema de Temas Dinâmicos (CSS Variables).
 
-## 🛠️ Infraestrutura & Core
-- [x] Configuração de CI/CD (GitHub Actions)
-- [x] Docker Swarm + Traefik Deployment
-- [x] Padronização AI-Ready (IDs e Discovery API)
-- [ ] Implementação do Módulo de Dashboard Master (Visão Geral)
-- [ ] Finalização do CRUD de Planos e Preços
-
-## 🌐 Comercial & Marketing
-- [ ] **Desenvolvimento do Site de Vendas (Landing Page)**
-    - [ ] Design Premium (Dark Mode, Glassmorphism)
-    - [ ] Seção de Funcionalidades (Features)
-    - [ ] Tabela de Preços Dinâmica (conectada à API)
-    - [ ] Botão de "Testar Agora" com auto-provisionamento
-    - [ ] SEO Otimizado para conversão
-
-## 🤖 Inteligência Artificial
-- [ ] Criação de um Agente de Suporte integrado ao Portal
-- [ ] Automação de Onboarding via IA
-
-## 💳 Financeiro
-- [ ] Integração com Gateway de Pagamento (Asaas ou Stripe)
-- [ ] Geração automática de NF-e
+## 📋 Próximas Etapas
+- [ ] **Gestão de Acessos**:
+    - [ ] CRUD de Perfis (Roles).
+    - [ ] Atribuição de Permissões dinâmicas.
+- [ ] **Branding e Customização**:
+    - [ ] Upload de logo por Empresa.
+    - [ ] Seletor de cores para o Tema do Cliente.

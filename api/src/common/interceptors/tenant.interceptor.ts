@@ -1,26 +1,25 @@
-import {
-  Injectable,
-  NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler, BadRequestException } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
 @Injectable()
 export class TenantInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
-    const tenantId = request.headers['x-tenant-id'];
+    
+    // 1. Tenta pegar o Tenant ID do Header (enviado pelo nosso interceptor do Angular)
+    // 2. Se não houver no header, tenta pegar do usuário autenticado (JWT)
+    const tenantId = request.headers['x-tenant-id'] || request.user?.tenantId;
 
-    if (!tenantId) {
-      // Para rotas públicas (como login), poderíamos pular esta validação
-      // mas para o core do sistema, o tenantId é obrigatório.
-      return next.handle(); 
+    // Se não for uma rota pública e não houver tenantId, bloqueamos por segurança
+    const isPublic = request.url.includes('/auth') || request.url.includes('/public');
+    
+    if (!tenantId && !isPublic) {
+      throw new BadRequestException('Contexto de Empresa (Tenant ID) não identificado.');
     }
 
-    // Armazena o tenantId no objeto da requisição para ser usado pelos serviços
+    // Injeta o tenantId no request para que os serviços possam usá-lo facilmente
     request.tenantId = tenantId;
+
     return next.handle();
   }
 }

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './modules/users/users.module';
@@ -14,7 +15,9 @@ import { BranchesModule } from './modules/branches/branches.module';
 import { PublicModule } from './modules/public/public.module';
 import { PlansModule } from './modules/plans/plans.module';
 import { CustomRoutinesModule } from './modules/custom-routines/custom-routines.module';
+import { DynamicRecordsModule } from './modules/dynamic-records/dynamic-records.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
+import { TenantInterceptor } from './common/interceptors/tenant.interceptor';
 
 @Module({
   imports: [
@@ -34,9 +37,16 @@ import { RedisModule } from '@nestjs-modules/ioredis';
     BranchesModule, 
     PublicModule, 
     PlansModule, 
-    CustomRoutinesModule
+    CustomRoutinesModule,
+    DynamicRecordsModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: TenantInterceptor,
+    },
+  ],
 })
 export class AppModule {}

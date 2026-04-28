@@ -51,7 +51,7 @@ async function main() {
   });
 
   // 4. Criar Usuário Master
-  await prisma.user.upsert({
+  const user = await prisma.user.upsert({
     where: { email: 'ricardo@bjsoft.com.br' },
     update: {
       password: hashedPassword,
@@ -66,7 +66,35 @@ async function main() {
     },
   });
 
-  console.log('✅ Semente concluída! Ricardo agora é SUPER_ADMIN.');
+  // 5. EXEMPLO DINÂMICO: Criar Entidade "Veículos"
+  const veiculos = await prisma.dynamicEntity.upsert({
+    where: { slug_tenantId: { slug: 'veiculos', tenantId: saasAdmin.id } },
+    update: {},
+    create: {
+      name: 'Cadastro de Veículos',
+      slug: 'veiculos',
+      tenantId: saasAdmin.id,
+      fields: {} // Campos crus
+    }
+  });
+
+  // 6. Configurar Metadados da Tela (O que o PO-UI vai mostrar)
+  await prisma.entityMetadata.upsert({
+    where: { entity_tenantId: { entity: 'veiculos', tenantId: saasAdmin.id } },
+    update: {},
+    create: {
+      entity: 'veiculos',
+      tenantId: saasAdmin.id,
+      fields: [
+        { property: 'placa', label: 'Placa do Veículo', filter: true, gridColumns: 4 },
+        { property: 'modelo', label: 'Marca/Modelo', filter: true, gridColumns: 4 },
+        { property: 'cor', label: 'Cor Predominante', gridColumns: 4 },
+        { property: 'ano', label: 'Ano de Fabricação', type: 'number', gridColumns: 4 }
+      ]
+    }
+  });
+
+  console.log('✅ Semente concluída! Ricardo é Admin e a tela dinâmica de Veículos está pronta.');
 }
 
 main()
