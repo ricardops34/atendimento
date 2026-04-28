@@ -1,12 +1,16 @@
-import { Controller, Get, Post, Body, Param, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Req, UseGuards } from '@nestjs/common';
 import { MetadataService } from './metadata.service';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { TenantId } from '../../common/decorators/tenant-id.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { AuditService } from '../audit/audit.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
 
 @ApiTags('Metadata & Discovery')
 @ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('metadata')
 export class MetadataController {
   constructor(
@@ -21,6 +25,7 @@ export class MetadataController {
   }
 
   @Get(':entity')
+  @ApiOperation({ summary: 'Obter metadados de uma entidade' })
   async getMetadata(
     @Param('entity') entity: string,
     @TenantId() tenantId: string,
@@ -30,6 +35,8 @@ export class MetadataController {
   }
 
   @Post(':entity')
+  @Roles('SUPER_ADMIN') // Apenas Super Admin pode mudar metadados globais por enquanto
+  @ApiOperation({ summary: 'Salvar metadados de uma entidade' })
   async saveMetadata(
     @Param('entity') entity: string,
     @TenantId() tenantId: string,
