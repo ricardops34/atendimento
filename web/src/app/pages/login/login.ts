@@ -61,7 +61,12 @@ export class LoginComponent implements OnInit {
   changeLanguage(lang: string) {
     this.poI18n.setLanguage(lang);
     this.selectedLanguage = lang;
-    this.loadLiterals();
+    
+    // Forçamos a busca das literais passando o idioma explicitamente para o serviço
+    this.poI18n.getLiterals({ context: 'login', language: lang }).subscribe(literals => {
+      this.literals = { ...this.literals, ...literals };
+      this.welcome = this.literals.welcome || this.welcome;
+    });
   }
 
   loadBranding() {
