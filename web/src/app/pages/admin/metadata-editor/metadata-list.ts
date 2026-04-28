@@ -24,7 +24,6 @@ import { CoreService } from '../../../core/services/core.service';
         [p-items]="entities"
         [p-actions]="tableActions"
         p-sort="true"
-        p-filter-type="contains"
         p-container="shadow">
       </po-table>
 
@@ -89,11 +88,10 @@ export class MetadataListComponent implements OnInit {
   }
 
   createNewEntity() {
-    // Direcionar para criação de DynamicEntity
     this.router.navigate(['/admin/metadata-editor/new']);
   }
 
   deleteEntity(row: any) {
-    // Implementar exclusão de DynamicEntity
+    // Implementar exclusão
   }
 }
