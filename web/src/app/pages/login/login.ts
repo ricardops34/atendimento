@@ -1,11 +1,10 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { PoNotificationService, PoModule, PoI18nService } from '@po-ui/ng-components';
+import { PoNotificationService, PoModule, PoI18nService, PoSelectOption } from '@po-ui/ng-components';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CoreService } from '../../core/services/core.service';
-import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -26,25 +25,37 @@ export class LoginComponent implements OnInit {
   userPassword: string = '';
   rememberMe: boolean = false;
   
-  // Literais que virão do arquivo de tradução
   literals: any = {};
+  selectedLanguage: string = 'pt-br';
+
+  languageOptions: Array<PoSelectOption> = [
+    { label: 'Português (BR)', value: 'pt-br' },
+    { label: 'English (US)', value: 'en-us' },
+    { label: 'Español (ES)', value: 'es-es' }
+  ];
   
-  productName: string = ''; // Virá do branding ou i18n
+  productName: string = '';
   background: string = 'login-bg.png';
   logo: string = 'logo.png';
   welcome: string = '';
 
   ngOnInit() {
+    this.selectedLanguage = this.poI18n.getLanguage();
     this.loadLiterals();
     this.loadBranding();
   }
 
   loadLiterals() {
-    // Busca as traduções do contexto 'login'
     this.poI18n.getLiterals({ context: 'login' }).subscribe(literals => {
       this.literals = literals;
       this.welcome = this.literals.welcome;
     });
+  }
+
+  changeLanguage(lang: string) {
+    this.poI18n.setLanguage(lang);
+    this.selectedLanguage = lang;
+    this.loadLiterals();
   }
 
   loadBranding() {
@@ -59,7 +70,6 @@ export class LoginComponent implements OnInit {
     this.http.get(`${this.coreService.apiUrl}/public/branding/${domain}`).subscribe({
       next: (res: any) => {
         if (res) {
-          // Se houver branding customizado, usa ele, senão usa o padrão do i18n
           this.productName = res.loginConfig?.title || this.literals.description;
           this.logo = res.logoUrl || this.logo;
           if (res.id) localStorage.setItem('tenantId', res.id);
@@ -67,7 +77,6 @@ export class LoginComponent implements OnInit {
       },
       error: () => {
         this.productName = this.literals.description;
-        console.warn('Tenant não encontrado pela URL. Usando configurações padrão.');
       }
     });
   }

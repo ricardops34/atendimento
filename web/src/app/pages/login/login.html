@@ -1,32 +1,51 @@
 <div class="login-wrapper">
+  <!-- Fundo com Overlay -->
+  <div class="login-background" [style.backgroundImage]="'url(assets/images/' + background + ')'"></div>
+  <div class="login-overlay"></div>
+
+  <!-- Card de Login -->
   <div class="login-card">
-    <!-- Logo Centralizada -->
-    <div class="login-header-centered">
-      <img [src]="logo" alt="Logo" class="login-logo-large" *ngIf="logo">
+    <div class="login-header">
+      <img [src]="logo" alt="Logo" class="login-logo">
+      <h1>{{ productName }}</h1>
+      <p>{{ welcome }}</p>
     </div>
 
-    <form (submit)="loginSubmit()">
-      <!-- Usuário -->
-      <po-input 
-        name="email" 
-        [(ngModel)]="userEmail" 
-        [p-label]="literals.user" 
-        [p-placeholder]="literals.userPlaceholder"
-        p-required>
-      </po-input>
+    <!-- Seletor de Idioma -->
+    <div class="language-selector po-mb-2">
+      <po-select
+        name="language"
+        [p-options]="languageOptions"
+        [ngModel]="selectedLanguage"
+        (ngModelChange)="changeLanguage($event)"
+        p-icon="po-icon-world">
+      </po-select>
+    </div>
 
-      <!-- Senha -->
-      <po-password 
-        name="password" 
-        [(ngModel)]="userPassword" 
-        [p-label]="literals.password"
-        [p-placeholder]="literals.passwordPlaceholder" 
-        p-required>
-      </po-password>
+    <form #loginForm="ngForm">
+      <!-- Campo E-mail -->
+      <div class="input-container">
+        <po-input 
+          name="email" 
+          [(ngModel)]="userEmail" 
+          [p-label]="literals.email" 
+          p-icon="po-icon-user"
+          p-required>
+        </po-input>
+      </div>
 
-      <!-- Esqueci minha senha -->
-      <div class="recovery-container">
-        <a (click)="forgotPassword()" class="forgot-password-link">{{ literals.forgotPassword }}</a>
+      <!-- Campo Senha -->
+      <div class="input-container">
+        <po-password 
+          name="password" 
+          [(ngModel)]="userPassword" 
+          [p-label]="literals.password"
+          p-required>
+        </po-password>
+      </div>
+
+      <div class="action-container">
+        <a (click)="forgotPassword()">{{ literals.forgotPassword }}</a>
       </div>
 
       <!-- Botão Entrar -->
