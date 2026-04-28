@@ -40,7 +40,7 @@ export class MainComponent implements OnInit {
   
   profile = {
     title: this.user.name || 'Usuário',
-    subtitle: this.user.role === 'SUPER_ADMIN' ? 'Admin Master' : 'Colaborador'
+    subtitle: this.user.role === 'SUPER_ADMIN' ? 'Admin Master' : 'Administrador'
   };
 
   profileActions: Array<PoToolbarAction> = [];
@@ -62,45 +62,35 @@ export class MainComponent implements OnInit {
 
   loadMenu() {
     const role = this.user.role;
+    const level = this.user.level || 1;
     
+    // Menu Base Comum
+    this.menus = [
+      { label: 'Dashboard', link: '/app/dashboard', icon: 'po-icon-chart-area' }
+    ];
+
+    // Se for Nível 9 (Admin do Cliente ou Super Admin), libera as ferramentas de design
+    if (level >= 9) {
+      this.menus.push({ 
+        label: 'Configurações', 
+        icon: 'po-icon-settings',
+        subItems: [
+          { label: 'Editor de Telas', link: '/admin/metadata-editor', icon: 'po-icon-grid' },
+          { label: 'Usuários', link: '/app/users', icon: 'po-icon-user' },
+          { label: 'Perfis de Acesso', link: '/app/roles', icon: 'po-icon-ok' },
+        ]
+      });
+    }
+
+    // Menu Exclusivo do Super Admin (Dono do SaaS)
     if (role === 'SUPER_ADMIN') {
-      this.menus = [
-        { label: this.literals.dashboard || 'Painel', link: '/admin/dashboard', icon: 'po-icon-chart-area' },
-        { 
-          label: 'Ferramentas de Design', 
-          icon: 'po-icon-settings',
-          subItems: [
-            { label: 'Editor de Metadados', link: '/admin/metadata-editor', icon: 'po-icon-grid' },
-            { label: 'Telas Dinâmicas', link: '/app/dynamic/veiculos', icon: 'po-icon-steering-wheel' },
-          ]
-        },
-        { 
-          label: this.literals.business || 'Gestão', 
-          icon: 'po-icon-company',
-          subItems: [
-            { label: this.literals.tenants || 'Empresas', link: '/admin/tenants', icon: 'po-icon-users' },
-            { label: this.literals.plans || 'Planos', link: '/admin/plans', icon: 'po-icon-finance' },
-          ]
-        },
-        { 
-          label: this.literals.security || 'Segurança', 
-          icon: 'po-icon-security',
-          subItems: [
-            { label: this.literals.users || 'Usuários', link: '/app/users', icon: 'po-icon-user' },
-            { label: this.literals.roles || 'Permissões', link: '/app/roles', icon: 'po-icon-ok' },
-          ]
-        }
-      ];
-    } else {
-      this.http.get(`${this.coreService.apiUrl}/menu`).subscribe({
-        next: (res: any) => {
-          this.menus = res;
-        },
-        error: () => {
-          this.menus = [
-            { label: 'Dashboard', link: '/app/dashboard', icon: 'po-icon-chart-area' }
-          ];
-        }
+      this.menus.push({ 
+        label: 'Gestão SaaS', 
+        icon: 'po-icon-company',
+        subItems: [
+          { label: 'Empresas', link: '/admin/tenants', icon: 'po-icon-users' },
+          { label: 'Planos', link: '/admin/plans', icon: 'po-icon-finance' },
+        ]
       });
     }
   }

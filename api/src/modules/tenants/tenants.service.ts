@@ -1,12 +1,13 @@
 import { Injectable, ConflictException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Prisma, Plan } from '@prisma/client';
 
 @Injectable()
 export class TenantsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Prisma.TenantCreateInput) {
+  async create(data: any) {
+    const { planId, ...rest } = data;
+    
     const existing = await this.prisma.tenant.findUnique({
       where: { domain: data.domain },
     });
@@ -16,13 +17,17 @@ export class TenantsService {
     }
 
     return this.prisma.tenant.create({
-      data,
+      data: {
+        ...rest,
+        plan: { connect: { id: planId } }
+      },
     });
   }
 
   async findAll() {
     return this.prisma.tenant.findMany({
       include: {
+        plan: { select: { name: true } },
         _count: {
           select: { users: true }
         }
@@ -33,14 +38,28 @@ export class TenantsService {
   async findOne(id: string) {
     return this.prisma.tenant.findUnique({
       where: { id },
-      include: { users: true }
+      include: { 
+        plan: true,
+        users: true 
+      }
     });
   }
 
-  async update(id: string, data: Prisma.TenantUpdateInput) {
+  async update(id: string, data: any) {
+    const { planId, ...rest } = data;
+    
     return this.prisma.tenant.update({
       where: { id },
-      data,
+      data: {
+        ...rest,
+        ...(planId && { plan: { connect: { id: planId } } })
+      },
+    });
+  }
+
+  async remove(id: string) {
+    return this.prisma.tenant.delete({
+      where: { id }
     });
   }
 }

@@ -66,9 +66,9 @@ export class MetadataEditorComponent implements OnInit {
   ];
 
   columns: Array<PoTableColumn> = [
-    { property: 'property', label: 'Campo', readonly: true },
+    { property: 'property', label: 'Campo' },
     { property: 'label', label: 'Rótulo' },
-    { property: 'minLevel', label: 'Nível Mínimo (1-9)', type: 'number' }, // Nova Coluna de Segurança
+    { property: 'minLevel', label: 'Nível Mínimo (1-9)', type: 'number' },
     { property: 'gridColumns', label: 'Largura', type: 'number' },
     { property: 'required', label: 'Obrigatório', type: 'boolean' },
     { property: 'defaultValue', label: 'Valor Padrão' },

@@ -1,0 +1,218 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Plan {
+  id                String   @id @default(uuid())
+  name              String   @unique
+  description       String?
+  maxUsers          Int      @default(5)
+  maxBranches       Int      @default(1)
+  maxRecords        Int      @default(5000)
+  features          Json     
+  tenants           Tenant[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Tenant {
+  id                String   @id @default(uuid())
+  name              String
+  domain            String   @unique
+  connectionString  String?  
+  logoUrl           String?  
+  themeConfig       Json?    
+  customLimits      Json?    
+  status            TenantStatus @default(ACTIVE)
+  lastPaymentDate   DateTime?
+  nextBillingDate   DateTime?
+  trialEndsAt       DateTime?
+  planId            String
+  plan              Plan     @relation(fields: [planId], references: [id])
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  users             User[]
+  products          Product[]
+  roles             Role[]
+  metadata          EntityMetadata[]
+  customEntities    DynamicEntity[]
+  branches          Branch[]
+  customReports     CustomReport[]
+  apiKeys           ApiKey[]
+  customRoutines    CustomRoutine[] 
+  auditLogs         AuditLog[]
+}
+
+enum TenantStatus {
+  ACTIVE
+  OVERDUE
+  SUSPENDED
+  CANCELLED
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  action      String   // Ex: "METADATA_UPDATE", "USER_LOGIN"
+  entity      String?  // Ex: "tenants"
+  details     Json     // Conteúdo da alteração (antes/depois)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+}
+
+model CustomRoutine {
+  id          String   @id @default(uuid())
+  hookName    String   
+  version     Int      @default(1)
+  filePath    String   
+  description String?  
+  isActive    Boolean  @default(false)
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  author      String?  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@index([tenantId, hookName])
+}
+
+model ApiKey {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  name        String
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  permissions Json     
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@index([tenantId])
+}
+
+model CustomReport {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  entity      String   
+  config      Json     
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@index([tenantId])
+}
+
+model Branch {
+  id          String   @id @default(uuid())
+  name        String
+  logoUrl     String?  
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@index([tenantId])
+}
+
+model DynamicEntity {
+  id          String   @id @default(uuid())
+  name        String   
+  slug        String   
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  fields      Json     
+  records     DynamicRecord[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@unique([slug, tenantId])
+  @@index([tenantId])
+}
+
+model DynamicRecord {
+  id                String   @id @default(uuid())
+  entityId          String
+  entity            DynamicEntity @relation(fields: [entityId], references: [id])
+  tenantId          String
+  parentId          String?  
+  parentEntity      String?  
+  data              Json     
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  @@index([entityId])
+  @@index([tenantId])
+  @@index([parentId])
+}
+
+model EntityMetadata {
+  id          String   @id @default(uuid())
+  entity      String   
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  fields      Json     
+  tabs        Json?    
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@unique([entity, tenantId])
+  @@index([tenantId])
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  level     Int      @default(1)
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  branchId  String?
+  branch    Branch?  @relation(fields: [branchId], references: [id])
+  roleId    String?
+  role      Role?    @relation(fields: [roleId], references: [id])
+  auditLogs AuditLog[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([tenantId])
+  @@index([branchId])
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  columnsConfig Json?    
+  users       User[]
+  permissions Permission[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@unique([name, tenantId])
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  action      String
+  roles       Role[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Product {
+  id              String   @id @default(uuid())
+  name            String
+  price           Decimal
+  tenantId        String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  additionalData  Json?    
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  @@index([tenantId])
+}

@@ -3,41 +3,25 @@
 Este documento define os padrões de nomenclatura e linguagem para garantir a consistência do projeto.
 
 ## 🌍 Padrão de Idioma e Internacionalização (i18n)
+(Mantido...)
 
-Para manter o equilíbrio entre as melhores práticas de engenharia de software e a experiência do usuário global, adotamos o seguinte padrão:
+## 🧬 Arquitetura de Metadados e Segurança Granular
 
-### 1. Camada Técnica (Inglês)
-Toda a estrutura que não é visível ao usuário final deve ser mantida em **Inglês**. Isso inclui:
-- **Banco de Dados**: Nomes de tabelas (`User`, `Tenant`, `Plan`), nomes de colunas e Enums.
-- **Código Fonte**: Nomes de variáveis, funções, classes e comentários técnicos.
+### 1. Hierarquia de Níveis (1-9)
+Para controlar a visibilidade de dados sensíveis, o sistema utiliza uma escala de 1 a 9:
+- **Nível 1-8**: Usuários operacionais e gerentes com permissões crescentes.
+- **Nível 9**: Administrador Total (Admin).
 
-### 2. Camada de Interface (Multi-idioma via i18n)
-Toda a interface deve ser preparada para múltiplos idiomas desde o início.
-- **Dicionários**: Usar arquivos JSON em `src/assets/i18n/`.
-- **Idiomas Suportados**: Português-BR (Padrão), Inglês e Espanhol.
-- **Regra**: Nunca escrever texto diretamente no HTML ou TS. Sempre usar chaves de tradução.
+### 2. Segurança por Campo (`minLevel`)
+Cada campo nos metadados possui a propriedade `minLevel`:
+- Se o usuário logado tiver um nível **menor** que o exigido pelo campo, a API remove esse campo da resposta.
+- Isso impede que usuários de baixo nível sequer saibam da existência de campos como "Comissão", "Lucro" ou "Senhas".
 
----
-
-## 🛠️ Exemplo de Implementação i18n
-
-**Arquivo de Tradução (pt-br.json):**
-```json
-{
-  "login": {
-    "welcome": "Boas-vindas",
-    "user": "Usuário"
-  }
-}
-```
-
-**No HTML:**
-```html
-<h1>{{ literals.welcome }}</h1>
-```
+### 3. Governança e Campos Travados (`locked`)
+- **`locked: true`**: Impede que o administrador do Tenant altere a obrigatoriedade de campos vitais.
 
 ---
 
-## 🔐 Segurança
-- Todas as rotas administrativas devem ser protegidas pelo `authGuard`.
-- O Token JWT deve ser gerenciado pelo `AuthInterceptor`.
+## 🛠️ Ferramentas Administrativas
+- **Editor de Metadados**: Gerencia rótulos, níveis e validações.
+- **Configurador de Telas**: Arraste e solte para organizar a interface.

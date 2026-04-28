@@ -1,14 +1,18 @@
-import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Req } from '@nestjs/common';
 import { MetadataService } from './metadata.service';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { TenantId } from '../../common/decorators/tenant-id.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { AuditService } from '../audit/audit.service';
 
 @ApiTags('Metadata & Discovery')
 @ApiBearerAuth()
 @Controller('metadata')
 export class MetadataController {
-  constructor(private readonly metadataService: MetadataService) {}
+  constructor(
+    private readonly metadataService: MetadataService,
+    private readonly auditService: AuditService
+  ) {}
 
   @Get('ai-context')
   @ApiOperation({ summary: 'Portal de Auto-Descoberta para Agentes de IA' })
@@ -20,9 +24,8 @@ export class MetadataController {
   async getMetadata(
     @Param('entity') entity: string,
     @TenantId() tenantId: string,
-    @CurrentUser('level') userLevel: number // Pega o nível do usuário logado
+    @CurrentUser('level') userLevel: number
   ) {
-    // Passa o nível para o serviço filtrar os campos
     return this.metadataService.getEntityMetadata(entity, tenantId, userLevel || 1);
   }
 
@@ -30,8 +33,23 @@ export class MetadataController {
   async saveMetadata(
     @Param('entity') entity: string,
     @TenantId() tenantId: string,
-    @Body() data: any
+    @CurrentUser('id') userId: string,
+    @Body() data: any,
+    @Req() req: any
   ) {
-    return this.metadataService.saveMetadata(entity, tenantId, data);
+    // 1. Salva a alteração
+    const result = await this.metadataService.saveMetadata(entity, tenantId, data);
+
+    // 2. Registra no Log de Auditoria
+    await this.auditService.log({
+      userId,
+      tenantId,
+      action: 'METADATA_UPDATE',
+      entity: entity,
+      details: { fields: data.fields },
+      ipAddress: req.ip
+    });
+
+    return result;
   }
 }
