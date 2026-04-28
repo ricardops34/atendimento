@@ -1,20 +1,26 @@
-import { Controller, Get, Headers, UnauthorizedException, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 import { MenuService } from './menu.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiTags('Menu & Navigation')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
 @Controller('menu')
 export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
   @Get()
-  async getMenu(@Headers('x-tenant-id') tenantId: string, @Request() req: any) {
-    if (!tenantId) {
-      throw new UnauthorizedException('Tenant ID is required');
-    }
+  async getMenu(@Request() req: any) {
+    const user = req.user;
+    
+    // Pegamos o Tenant ID e a Role do usuário autenticado no JWT
+    const tenantId = user.tenantId;
+    
+    // Se for SUPER_ADMIN, passamos essa permissão especial para o serviço
+    const permissions = [user.role]; 
+    if (user.level >= 9) permissions.push('SAAS_ADMIN');
 
-    // Em uma implementação real, as permissões viriam do req.user (decodificado do JWT)
-    // Por enquanto, vamos simular que o usuário tem todas as permissões se estiver logado
-    const userPermissions = req.user?.permissions || ['SUPER_ADMIN']; 
-
-    return this.menuService.getTenantMenu(tenantId, userPermissions);
+    return this.menuService.getTenantMenu(tenantId, permissions);
   }
 }
