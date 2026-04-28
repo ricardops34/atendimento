@@ -61,17 +61,26 @@ export class LoginComponent implements OnInit {
     console.log(`Tentando carregar literais para o idioma: ${targetLang}`);
     
     this.poI18n.getLiterals({ context: 'login', language: targetLang }).subscribe({
-      next: (literals) => {
-        console.log('Literais carregadas com sucesso:', literals);
-        this.literals = { ...literals };
-        this.welcome = this.literals.welcome || '';
+      next: (literals: any) => {
+        // VACINA: Se o retorno for uma string (o caminho do arquivo), baixamos manualmente
+        if (typeof literals === 'string') {
+          console.warn('PO-UI retornou caminho em vez de objeto. Baixando manualmente:', literals);
+          this.http.get(`./${literals}`).subscribe({
+            next: (res: any) => {
+              console.log('Literais baixadas manualmente com sucesso:', res);
+              this.literals = { ...res };
+              this.welcome = this.literals.welcome || '';
+            },
+            error: (err) => console.error('Erro ao baixar JSON manualmente:', err)
+          });
+        } else {
+          console.log('Literais carregadas pelo PO-UI:', literals);
+          this.literals = { ...literals };
+          this.welcome = this.literals.welcome || '';
+        }
       },
       error: (err) => {
         console.error('ERRO CRÍTICO ao carregar literais:', err);
-        // Se houver erro, podemos carregar um padrão mínimo para não travar a tela
-        if (targetLang === 'pt-br') {
-          this.literals = { user: 'Usuário', password: 'Senha', enter: 'Entrar' };
-        }
       }
     });
   }
