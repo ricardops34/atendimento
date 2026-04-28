@@ -28,23 +28,31 @@ export class AuthService {
   }
 
   async login(user: any) {
+    // Se o usuário for ADMIN e não tiver nível definido, garantimos o Nível 9
+    const userRole = user.role?.name || 'USER';
+    const userLevel = (userRole === 'SUPER_ADMIN' || userRole === 'SAAS_ADMIN') 
+      ? (user.level || 9) 
+      : (user.level || 1);
+
     const payload = { 
       email: user.email, 
       sub: user.id, 
       tenantId: user.tenantId,
-      role: user.role?.name || 'USER', // Pegando o nome da Role
+      role: userRole,
+      level: userLevel,
       tenantName: user.tenant?.name
     };
     
     return {
-      token: this.jwtService.sign(payload), // Alterado para 'token' para facilitar
+      token: this.jwtService.sign(payload),
       user: {
         id: user.id,
         email: user.email,
         name: user.name,
         tenantId: user.tenantId,
         tenantName: user.tenant?.name,
-        role: user.role?.name || 'USER' // Enviando a Role aqui também
+        role: userRole,
+        level: userLevel
       }
     };
   }
