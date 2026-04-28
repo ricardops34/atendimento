@@ -12,14 +12,14 @@ const i18nConfig: PoI18nConfig = {
   },
   contexts: {
     'login': {
-      'pt-br': { url: './assets/i18n/login-pt.json' } as any,
-      'en-us': { url: './assets/i18n/login-en.json' } as any,
-      'es-es': { url: './assets/i18n/login-es.json' } as any
+      'pt-br': 'assets/i18n/login-pt.json',
+      'en-us': 'assets/i18n/login-en.json',
+      'es-es': 'assets/i18n/login-es.json'
     },
     'admin': {
-      'pt-br': { url: './assets/i18n/admin-pt.json' } as any,
-      'en-us': { url: './assets/i18n/admin-en.json' } as any,
-      'es-es': { url: './assets/i18n/admin-es.json' } as any
+      'pt-br': 'assets/i18n/admin-pt.json',
+      'en-us': 'assets/i18n/admin-en.json',
+      'es-es': 'assets/i18n/admin-es.json'
     }
   }
 };
