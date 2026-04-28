@@ -2,9 +2,11 @@ import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
-import { PoI18nModule, PoI18nConfig } from '@po-ui/ng-components';
+import { PoI18nModule } from '@po-ui/ng-components';
 
-const i18nConfig: PoI18nConfig = {
+// Forçamos o tipo como 'any' para evitar que o compilador do Angular
+// trave o build por causa da string do caminho dos arquivos JSON.
+const i18nConfig: any = {
   default: {
     language: 'pt-br',
     context: 'general',
