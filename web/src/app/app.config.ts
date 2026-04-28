@@ -12,14 +12,14 @@ const i18nConfig: any = {
   },
   contexts: {
     'login': {
-      'pt-br': 'i18n/login-pt.json',
-      'en-us': 'i18n/login-en.json',
-      'es-es': 'i18n/login-es.json'
+      'pt-br': './i18n/login-pt.json',
+      'en-us': './i18n/login-en.json',
+      'es-es': './i18n/login-es.json'
     },
     'admin': {
-      'pt-br': 'i18n/admin-pt.json',
-      'en-us': 'i18n/admin-en.json',
-      'es-es': 'i18n/admin-es.json'
+      'pt-br': './i18n/admin-pt.json',
+      'en-us': './i18n/admin-en.json',
+      'es-es': './i18n/admin-es.json'
     }
   }
 };
