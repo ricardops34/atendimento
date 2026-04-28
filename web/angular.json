@@ -22,7 +22,8 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+              "src/assets"
             ],
             "styles": [
               "node_modules/@po-ui/style/css/po-theme-default.min.css",
@@ -36,11 +37,6 @@
                   "type": "initial",
                   "maximumWarning": "5MB",
                   "maximumError": "10MB"
-                },
-                {
-                  "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
                 }
               ],
               "outputHashing": "all"

@@ -7,7 +7,7 @@
   "passwordPlaceholder": "Ingrese su contraseña",
   "forgotPassword": "Olvidé mi contraseña",
   "enter": "Entrar",
-  "rememberMe": "Mantente conectado",
-  "loginError": "Error ao realizar login. Verifique sus credenciales.",
-  "fillFields": "Por favor, complete el correo electrónico y la contraseña."
+  "rememberMe": "Mantener conectado",
+  "loginError": "Error al iniciar sesión. Verifique sus credenciais.",
+  "fillFields": "Por favor, complete usuario y contraseña."
 }

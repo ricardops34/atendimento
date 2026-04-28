@@ -7,19 +7,19 @@ import { PoI18nModule } from '@po-ui/ng-components';
 const i18nConfig: any = {
   default: {
     language: 'pt-br',
-    context: 'general',
+    context: 'login', // Mudado de 'general' para 'login'
     cache: true
   },
   contexts: {
     'login': {
-      'pt-br': './i18n/login-pt.json',
-      'en-us': './i18n/login-en.json',
-      'es-es': './i18n/login-es.json'
+      'pt-br': 'assets/i18n/login-pt.json',
+      'en-us': 'assets/i18n/login-en.json',
+      'es-es': 'assets/i18n/login-es.json'
     },
     'admin': {
-      'pt-br': './i18n/admin-pt.json',
-      'en-us': './i18n/admin-en.json',
-      'es-es': './i18n/admin-es.json'
+      'pt-br': 'assets/i18n/admin-pt.json',
+      'en-us': 'assets/i18n/admin-en.json',
+      'es-es': 'assets/i18n/admin-es.json'
     }
   }
 };

@@ -49,20 +49,25 @@ export class LoginComponent implements OnInit {
   welcome: string = '';
 
   ngOnInit() {
+    console.log('LoginComponent: ngOnInit iniciado');
     this.selectedLanguage = this.poI18n.getLanguage();
+    console.log('Idioma detectado:', this.selectedLanguage);
     this.loadLiterals(this.selectedLanguage);
     this.loadBranding();
   }
 
   loadLiterals(lang?: string) {
     const targetLang = lang || this.poI18n.getLanguage();
+    console.log(`Tentando carregar literais para o idioma: ${targetLang}`);
+    
     this.poI18n.getLiterals({ context: 'login', language: targetLang }).subscribe({
       next: (literals) => {
+        console.log('Literais carregadas com sucesso:', literals);
         this.literals = { ...literals };
         this.welcome = this.literals.welcome || '';
       },
       error: (err) => {
-        console.error('Erro ao carregar literais:', err);
+        console.error('ERRO CRÍTICO ao carregar literais:', err);
         // Se houver erro, podemos carregar um padrão mínimo para não travar a tela
         if (targetLang === 'pt-br') {
           this.literals = { user: 'Usuário', password: 'Senha', enter: 'Entrar' };
