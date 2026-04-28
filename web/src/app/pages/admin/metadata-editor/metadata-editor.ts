@@ -4,8 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { 
   PoModule, 
   PoNotificationService, 
-  PoTableColumn,
-  PoTableAction
+  PoTableColumn
 } from '@po-ui/ng-components';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,7 +19,7 @@ import { CoreService } from '../../../core/services/core.service';
       
       <div class="po-row">
         <po-info class="po-md-12" p-label="Gestão de Campos e Ordem de Exibição" 
-          p-value="Use as setas para definir a ordem em que os campos aparecerão nas tabelas e formulários.">
+          p-value="Gerencie a ordem e as propriedades dos campos que aparecerão nas telas dinâmicas.">
         </po-info>
       </div>
 
@@ -29,7 +28,6 @@ import { CoreService } from '../../../core/services/core.service';
           class="po-md-12"
           [p-columns]="columns"
           [p-items]="fields"
-          [p-actions]="tableActions"
           p-container="shadow">
         </po-table>
       </div>
@@ -45,7 +43,7 @@ import { CoreService } from '../../../core/services/core.service';
         </po-button>
 
         <po-button
-          class="po-md-3"
+          class="po-md-2"
           p-label="Voltar"
           (p-click)="goBack()">
         </po-button>
@@ -66,21 +64,18 @@ export class MetadataEditorComponent implements OnInit {
   fields: Array<any> = [];
 
   columns: Array<PoTableColumn> = [
-    { property: 'order', label: 'Ordem', width: '5%' },
-    { property: 'property', label: 'Campo (API)', width: '15%' },
+    { property: 'order', label: 'Pos', width: '3%' },
     { property: 'label', label: 'Rótulo (Tela)', width: '20%' },
+    { property: 'property', label: 'Campo (API)', width: '15%' },
     { property: 'type', label: 'Tipo', width: '10%' },
-    { property: 'gridColumns', label: 'Colunas (1-12)', type: 'number', width: '10%' },
-    { property: 'visible', label: 'Visível', type: 'boolean', width: '10%' },
-    { property: 'required', label: 'Obrigatório', type: 'boolean', width: '10%' },
-    { property: 'minLevel', label: 'Nível Mín.', type: 'number', width: '10%' }
-  ];
-
-  tableActions: Array<PoTableAction> = [
-    { label: 'Subir', icon: 'po-icon-arrow-up', action: (row: any) => this.moveUp(row) },
-    { label: 'Descer', icon: 'po-icon-arrow-down', action: (row: any) => this.moveDown(row) },
-    { label: 'Editar Detalhes', icon: 'po-icon-settings', action: (row: any) => this.editField(row) },
-    { label: 'Remover', icon: 'po-icon-delete', type: 'danger', action: (row: any) => this.removeField(row) }
+    { property: 'visible', label: 'Visível', type: 'boolean', width: '5%' },
+    { property: 'required', label: 'Obrigatório', type: 'boolean', width: '5%' },
+    
+    // Colunas de Ação
+    { property: 'up', label: ' ', type: 'icon', icon: 'an an-caret-circle-up', action: (row: any) => this.moveUp(row), color: 'color-08', tooltip: 'Subir' },
+    { property: 'down', label: ' ', type: 'icon', icon: 'an an-caret-circle-down', action: (row: any) => this.moveDown(row), color: 'color-08', tooltip: 'Descer' },
+    { property: 'edit', label: ' ', type: 'icon', icon: 'an an-pencil-simple', action: (row: any) => this.editField(row), color: 'color-07', tooltip: 'Editar Detalhes' },
+    { property: 'delete', label: ' ', type: 'icon', icon: 'an an-trash', action: (row: any) => this.removeField(row), color: 'color-01', tooltip: 'Remover' }
   ];
 
   ngOnInit() {
@@ -128,7 +123,7 @@ export class MetadataEditorComponent implements OnInit {
     this.loading = true;
     this.http.post(`${this.coreService.apiUrl}/metadata/${this.entity}`, { fields: this.fields }).subscribe({
       next: () => {
-        this.poNotification.success('Arquitetura da entidade salva com sucesso!');
+        this.poNotification.success('Arquitetura salva com sucesso!');
         this.loading = false;
       },
       error: () => {
@@ -142,6 +137,6 @@ export class MetadataEditorComponent implements OnInit {
     this.router.navigate(['/admin/metadata-editor']);
   }
 
-  editField(row: any) { /* Modal para editar detalhes do campo */ }
-  removeField(row: any) { /* Lógica para remover campo */ }
+  editField(row: any) { }
+  removeField(row: any) { }
 }

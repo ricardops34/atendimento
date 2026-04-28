@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { 
   PoModule, 
   PoTableColumn, 
-  PoTableAction,
   PoPageAction 
 } from '@po-ui/ng-components';
 import { HttpClient } from '@angular/common/http';
@@ -22,7 +21,6 @@ import { CoreService } from '../../../core/services/core.service';
       <po-table 
         [p-columns]="columns" 
         [p-items]="entities"
-        [p-actions]="tableActions"
         p-sort="true"
         p-container="shadow">
       </po-table>
@@ -38,7 +36,7 @@ export class MetadataListComponent implements OnInit {
   entities: Array<any> = [];
 
   pageActions: Array<PoPageAction> = [
-    { label: 'Nova Entidade (Usuário)', action: () => this.createNewEntity(), icon: 'po-icon-plus' }
+    { label: 'Nova Entidade (Usuário)', action: () => this.createNewEntity(), icon: 'an an-plus' }
   ];
 
   columns: Array<PoTableColumn> = [
@@ -49,22 +47,22 @@ export class MetadataListComponent implements OnInit {
       label: 'Tipo', 
       type: 'label',
       labels: [
-        { value: 'SISTEMA', label: 'Sistema', color: 'color-07', tooltip: 'Entidade nativa do core' },
-        { value: 'USUARIO', label: 'Usuário', color: 'color-10', tooltip: 'Entidade dinâmica' }
+        { value: 'SISTEMA', label: 'Sistema', color: 'color-07' },
+        { value: 'USUARIO', label: 'Usuário', color: 'color-10' }
       ]
     },
-    { property: 'description', label: 'Descrição' }
-  ];
-
-  tableActions: Array<PoTableAction> = [
-    { label: 'Configurar Campos', icon: 'po-icon-edit', action: (row: any) => this.editMetadata(row) },
-    { label: 'Visualizar Estrutura', icon: 'po-icon-eye', action: (row: any) => this.viewMetadata(row) },
+    // Colunas de Ação com Ícones
+    { property: 'view', label: ' ', type: 'icon', icon: 'an an-list', action: (row: any) => this.viewMetadata(row), color: 'color-08', tooltip: 'Visualizar' },
+    { property: 'edit', label: ' ', type: 'icon', icon: 'an an-pencil-simple', action: (row: any) => this.editMetadata(row), color: 'color-07', tooltip: 'Editar Arquitetura' },
     { 
-      label: 'Excluir Entidade', 
-      icon: 'po-icon-delete', 
-      type: 'danger', 
-      visible: (row: any) => row.type === 'USUARIO',
-      action: (row: any) => this.deleteEntity(row) 
+      property: 'delete', 
+      label: ' ', 
+      type: 'icon', 
+      icon: 'an an-trash', 
+      action: (row: any) => this.deleteEntity(row), 
+      color: 'color-01', 
+      tooltip: 'Excluir',
+      disabled: (row: any) => row.type === 'SISTEMA' 
     }
   ];
 
@@ -83,15 +81,7 @@ export class MetadataListComponent implements OnInit {
     this.router.navigate([`/admin/metadata-editor/edit/${row.name}`]);
   }
 
-  viewMetadata(row: any) {
-    // Implementar preview se necessário
-  }
-
-  createNewEntity() {
-    this.router.navigate(['/admin/metadata-editor/new']);
-  }
-
-  deleteEntity(row: any) {
-    // Implementar exclusão
-  }
+  viewMetadata(row: any) { }
+  createNewEntity() { }
+  deleteEntity(row: any) { }
 }
