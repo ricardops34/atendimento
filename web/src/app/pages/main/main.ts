@@ -67,6 +67,13 @@ export class MainComponent implements OnInit {
       this.menus = [
         { label: this.literals.dashboard, link: '/admin/dashboard', icon: 'po-icon-chart-area' },
         { 
+          label: 'Módulos Dinâmicos', 
+          icon: 'po-icon-document-filled',
+          subItems: [
+            { label: 'Veículos (Dinâmico)', link: '/app/dynamic/veiculos', icon: 'po-icon-steering-wheel' },
+          ]
+        },
+        { 
           label: this.literals.business, 
           icon: 'po-icon-company',
           subItems: [

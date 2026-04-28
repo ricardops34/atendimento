@@ -24,7 +24,9 @@ export const routes: Routes = [
     canActivate: [authGuard], 
     children: [
       { path: 'users', loadComponent: () => import('./pages/users/users').then(m => m.UsersComponent) },
-      { path: 'roles', loadComponent: () => import('./pages/roles/roles').then(m => m.RolesComponent) }
+      { path: 'roles', loadComponent: () => import('./pages/roles/roles').then(m => m.RolesComponent) },
+      // Rota Dinâmica que aceita qualquer entidade!
+      { path: 'dynamic/:entity', loadComponent: () => import('./pages/dynamic/dynamic-page').then(m => m.DynamicPageComponent) }
     ]
   }
 ];
