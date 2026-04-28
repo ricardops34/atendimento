@@ -23,8 +23,8 @@ import { CoreService } from '../../../core/services/core.service';
           class="po-md-6"
           p-label="Selecione a Entidade para Configurar"
           [p-options]="entityOptions"
-          [p-value]="selectedEntity"
-          (p-change)="onEntityChange($event)">
+          [ngModel]="selectedEntity"
+          (ngModelChange)="onEntityChange($event)">
         </po-select>
       </div>
 
@@ -80,7 +80,9 @@ export class MetadataEditorComponent implements OnInit {
 
   onEntityChange(value: string) {
     this.selectedEntity = value;
-    this.loadMetadata();
+    if (this.selectedEntity) {
+      this.loadMetadata();
+    }
   }
 
   loadMetadata() {
