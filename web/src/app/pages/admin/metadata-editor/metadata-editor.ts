@@ -23,8 +23,8 @@ import { CoreService } from '../../../core/services/core.service';
           class="po-md-6"
           p-label="Selecione a Entidade para Configurar"
           [p-options]="entityOptions"
-          [(ngModel)]="selectedEntity"
-          (p-change)="loadMetadata()">
+          [p-value]="selectedEntity"
+          (p-change)="onEntityChange($event)">
         </po-select>
       </div>
 
@@ -62,7 +62,8 @@ export class MetadataEditorComponent implements OnInit {
     { label: 'Empresas (Tenants)', value: 'tenants' },
     { label: 'Usuários', value: 'users' },
     { label: 'Planos', value: 'plans' },
-    { label: 'Veículos (Dinâmico)', value: 'veiculos' }
+    { label: 'Veículos (Dinâmico)', value: 'veiculos' },
+    { label: 'Perfis de Acesso (Roles)', value: 'roles' }
   ];
 
   columns: Array<PoTableColumn> = [
@@ -76,6 +77,11 @@ export class MetadataEditorComponent implements OnInit {
   ];
 
   ngOnInit() {}
+
+  onEntityChange(value: string) {
+    this.selectedEntity = value;
+    this.loadMetadata();
+  }
 
   loadMetadata() {
     this.loading = true;
