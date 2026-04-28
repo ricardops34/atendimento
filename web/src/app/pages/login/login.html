@@ -8,34 +8,34 @@
     <form #loginForm="ngForm" class="login-form">
       <!-- Campo Usuário -->
       <div class="field-group">
-        <label class="field-label">Usuário</label>
+        <label class="field-label">{{ literals.user || 'Usuário' }}</label>
         <po-input 
           name="email" 
           [(ngModel)]="userEmail" 
-          p-placeholder="Digite seu usuário"
+          [p-placeholder]="literals.userPlaceholder"
           p-required>
         </po-input>
       </div>
 
       <!-- Campo Senha -->
       <div class="field-group">
-        <label class="field-label">Senha</label>
+        <label class="field-label">{{ literals.password || 'Senha' }}</label>
         <po-password 
           name="password" 
           [(ngModel)]="userPassword" 
-          p-placeholder="Digite sua senha"
+          [p-placeholder]="literals.passwordPlaceholder"
           p-required>
         </po-password>
       </div>
 
       <div class="forgot-link">
-        <a (click)="forgotPassword()">Esqueci minha senha</a>
+        <a (click)="forgotPassword()">{{ literals.forgotPassword }}</a>
       </div>
 
       <!-- Botão Entrar Largo -->
       <div class="submit-container">
         <po-button 
-          p-label="Entrar" 
+          [p-label]="literals.enter" 
           p-kind="primary" 
           [p-loading]="loading"
           (p-click)="loginSubmit()"
@@ -48,7 +48,7 @@
         <po-checkbox 
           name="remember" 
           [(ngModel)]="rememberMe" 
-          p-label="Manter-me conectado">
+          [p-label]="literals.rememberMe">
         </po-checkbox>
       </div>
     </form>
