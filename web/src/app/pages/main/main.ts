@@ -40,6 +40,7 @@ export class MainComponent implements OnInit {
   
   profile = {
     title: this.user.name || 'Usuário',
+    avatar: '',
     subtitle: this.user.role === 'SUPER_ADMIN' ? 'Admin Master' : 'Administrador'
   };
 
@@ -49,7 +50,7 @@ export class MainComponent implements OnInit {
     this.poI18n.getLiterals({ context: 'admin' }).subscribe((literals: any) => {
       this.literals = literals.menu || {};
       this.setupProfileActions();
-      this.loadMenu();
+      this.loadDynamicMenu();
     });
   }
 
@@ -60,39 +61,17 @@ export class MainComponent implements OnInit {
     ];
   }
 
-  loadMenu() {
-    const role = this.user.role;
-    const level = this.user.level || 1;
-    
-    // Menu Base Comum
-    this.menus = [
-      { label: 'Dashboard', link: '/app/dashboard', icon: 'po-icon-chart-area' }
-    ];
-
-    // Se for Nível 9 (Admin do Cliente ou Super Admin), libera as ferramentas de design
-    if (level >= 9) {
-      this.menus.push({ 
-        label: 'Configurações', 
-        icon: 'po-icon-settings',
-        subItems: [
-          { label: 'Editor de Telas', link: '/admin/metadata-editor', icon: 'po-icon-grid' },
-          { label: 'Usuários', link: '/app/users', icon: 'po-icon-user' },
-          { label: 'Perfis de Acesso', link: '/app/roles', icon: 'po-icon-ok' },
-        ]
-      });
-    }
-
-    // Menu Exclusivo do Super Admin (Dono do SaaS)
-    if (role === 'SUPER_ADMIN') {
-      this.menus.push({ 
-        label: 'Gestão SaaS', 
-        icon: 'po-icon-company',
-        subItems: [
-          { label: 'Empresas', link: '/admin/tenants', icon: 'po-icon-users' },
-          { label: 'Planos', link: '/admin/plans', icon: 'po-icon-finance' },
-        ]
-      });
-    }
+  loadDynamicMenu() {
+    // Agora buscamos o menu do Backend para trazer as rotinas e entidades dinâmicas
+    this.http.get(`${this.coreService.apiUrl}/menu`).subscribe({
+      next: (menu: any) => {
+        this.menus = menu;
+      },
+      error: () => {
+        console.error('Falha ao carregar menu dinâmico, usando fallback básico.');
+        this.menus = [{ label: 'Dashboard', link: '/app/dashboard', icon: 'po-icon-chart-area' }];
+      }
+    });
   }
 
   logout() {

@@ -6,23 +6,25 @@ export class MenuService {
   constructor(private prisma: PrismaService) {}
 
   /**
-   * Gera a estrutura de menu filtrada pelas permissões do usuário
+   * Gera a estrutura de menu filtrada pelas permissões do usuário e customizações do Tenant
    */
   async getTenantMenu(tenantId: string, userPermissions: string[]) {
-    // 1. Definição Base do Menu com as permissões requeridas
-    const menuStructure = [
+    // 1. Definição Base do Menu
+    const menuStructure: any[] = [
       { 
         label: 'Dashboard', 
-        link: '/dashboard', 
+        link: '/app/dashboard', 
         icon: 'po-icon-home', 
         permission: 'VIEW_DASHBOARD' 
       },
       { 
-        label: 'SaaS Admin', 
+        label: 'Gestão SaaS', 
         icon: 'po-icon-settings', 
-        permission: 'SAAS_ADMIN', // Só para o dono do SaaS
+        permission: 'SAAS_ADMIN',
         subItems: [
-          { label: 'Clientes (Tenants)', link: '/tenants', icon: 'po-icon-company', permission: 'MANAGE_TENANTS' },
+          { label: 'Empresas', link: '/admin/tenants', icon: 'po-icon-company', permission: 'MANAGE_TENANTS' },
+          { label: 'Planos', link: '/admin/plans', icon: 'po-icon-finance', permission: 'MANAGE_PLANS' },
+          { label: 'Editor de Telas', link: '/admin/metadata-editor', icon: 'po-icon-grid', permission: 'MANAGE_METADATA' },
         ]
       },
       { 
@@ -30,34 +32,53 @@ export class MenuService {
         icon: 'po-icon-company', 
         permission: 'VIEW_COMPANY',
         subItems: [
-          { label: 'Usuários', link: '/users', icon: 'po-icon-users', permission: 'MANAGE_USERS' },
-          { label: 'Papéis e Acesso', link: '/roles', icon: 'po-icon-lock', permission: 'MANAGE_ROLES' }
+          { label: 'Usuários', link: '/app/users', icon: 'po-icon-users', permission: 'MANAGE_USERS' },
+          { label: 'Perfis de Acesso', link: '/app/roles', icon: 'po-icon-lock', permission: 'MANAGE_ROLES' }
         ]
       }
     ];
 
-    // 2. Busca Entidades Virtuais
+    // 2. Busca Entidades Virtuais (Tabelas dinâmicas)
     const customEntities = await this.prisma.dynamicEntity.findMany({
       where: { tenantId },
       orderBy: { name: 'asc' }
     });
 
     if (customEntities.length > 0) {
-      const dynamicGroup = {
+      menuStructure.push({
         label: 'Módulos Customizados',
         icon: 'po-icon-grid',
         permission: 'VIEW_CUSTOM_MODULES',
         subItems: customEntities.map(entity => ({
           label: entity.name,
-          link: `/dynamic/${entity.slug}`,
+          link: `/app/dynamic/${entity.slug}`,
           icon: 'po-icon-pushcart',
           permission: `VIEW_${entity.slug.toUpperCase()}`
         }))
-      };
-      menuStructure.push(dynamicGroup);
+      });
     }
 
-    // 3. FILTRAGEM: Remove o que o usuário não tem permissão de ver
+    // 3. Busca Rotinas Customizadas (Scripts/Funcionalidades extras)
+    const customRoutines = await this.prisma.customRoutine.findMany({
+      where: { tenantId, isActive: true },
+      orderBy: { hookName: 'asc' }
+    });
+
+    if (customRoutines.length > 0) {
+      menuStructure.push({
+        label: 'Rotinas Customizadas',
+        icon: 'po-icon-xml',
+        permission: 'VIEW_CUSTOM_ROUTINES',
+        subItems: customRoutines.map(routine => ({
+          label: routine.hookName,
+          link: `/app/routines/${routine.id}`,
+          icon: 'po-icon-execute',
+          permission: `EXEC_${routine.hookName.toUpperCase()}`
+        }))
+      });
+    }
+
+    // 4. FILTRAGEM: Remove o que o usuário não tem permissão de ver
     return this.filterMenu(menuStructure, userPermissions);
   }
 
@@ -70,6 +91,6 @@ export class MenuService {
         }
         return item;
       })
-      .filter(item => !item.subItems || item.subItems.length > 0); // Remove grupos vazios
+      .filter(item => !item.subItems || item.subItems.length > 0);
   }
 }
