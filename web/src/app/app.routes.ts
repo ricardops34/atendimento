@@ -16,6 +16,7 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'tenants', loadComponent: () => import('./pages/admin/tenants/tenants').then(m => m.TenantsComponent) },
       { path: 'plans', loadComponent: () => import('./pages/admin/plans/plans').then(m => m.PlansComponent) },
+      { path: 'metadata-editor', loadComponent: () => import('./pages/admin/metadata-editor/metadata-editor').then(m => m.MetadataEditorComponent) },
     ]
   },
   {
@@ -25,7 +26,6 @@ export const routes: Routes = [
     children: [
       { path: 'users', loadComponent: () => import('./pages/users/users').then(m => m.UsersComponent) },
       { path: 'roles', loadComponent: () => import('./pages/roles/roles').then(m => m.RolesComponent) },
-      // Rota Dinâmica que aceita qualquer entidade!
       { path: 'dynamic/:entity', loadComponent: () => import('./pages/dynamic/dynamic-page').then(m => m.DynamicPageComponent) }
     ]
   }

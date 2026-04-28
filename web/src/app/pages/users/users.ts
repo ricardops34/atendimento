@@ -1,6 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PoPageDynamicTableModule } from '@po-ui/ng-templates';
+import { PoPageDynamicTableModule, PoPageDynamicTableField } from '@po-ui/ng-templates';
+import { HttpClient } from '@angular/common/http';
 import { CoreService } from '../../core/services/core.service';
 
 @Component({
@@ -9,40 +10,38 @@ import { CoreService } from '../../core/services/core.service';
   imports: [CommonModule, PoPageDynamicTableModule],
   template: `
     <po-page-dynamic-table
-      id="saas-users-table"
-      p-title="Gestão de Usuários do Sistema"
-      [p-service-api]="apiUrl"
+      *ngIf="loaded"
+      [p-title]="title"
+      [p-service-api]="serviceApi"
       [p-fields]="fields"
     >
     </po-page-dynamic-table>
   `
 })
-export class UsersComponent {
+export class UsersComponent implements OnInit {
   private coreService = inject(CoreService);
+  private http = inject(HttpClient);
+  
+  readonly serviceApi = `${this.coreService.apiUrl}/users`;
+  
+  title: string = 'Carregando...';
+  fields: Array<PoPageDynamicTableField> = [];
+  loaded: boolean = false;
 
-  get apiUrl() {
-    return `${this.coreService.apiUrl}/users`;
+  ngOnInit() {
+    this.loadMetadata();
   }
 
-  // Rótulos e Opções em Português
-  readonly fields: Array<any> = [
-    { property: 'id', key: true, visible: false },
-    { property: 'name', label: 'Nome Completo', filter: true, gridColumns: 6, required: true },
-    { property: 'email', label: 'E-mail de Acesso', filter: true, gridColumns: 6, required: true },
-    { property: 'password', label: 'Senha Provisória', type: 'password', visible: false, allowEdit: true, required: true },
-    { 
-      property: 'role', 
-      label: 'Nível de Permissão', 
-      type: 'label', 
-      options: [
-        { value: 'SUPER_ADMIN', label: 'Administrador SaaS', color: 'color-07' },
-        { value: 'ADMIN', label: 'Administrador de Empresa', color: 'color-10' },
-        { value: 'USER', label: 'Usuário Operacional', color: 'color-01' }
-      ],
-      filter: true,
-      gridColumns: 6,
-      required: true
-    },
-    { property: 'status', label: 'Usuário Ativo', type: 'boolean', filter: true, gridColumns: 2 }
-  ];
+  loadMetadata() {
+    this.http.get(`${this.coreService.apiUrl}/metadata/users`).subscribe({
+      next: (meta: any) => {
+        this.title = meta.title || 'Usuários';
+        this.fields = meta.fields;
+        this.loaded = true;
+      },
+      error: () => {
+        console.error('Falha ao carregar metadados de Usuários');
+      }
+    });
+  }
 }

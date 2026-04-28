@@ -67,10 +67,11 @@ export class MainComponent implements OnInit {
       this.menus = [
         { label: this.literals.dashboard || 'Painel', link: '/admin/dashboard', icon: 'po-icon-chart-area' },
         { 
-          label: 'Módulos Dinâmicos', 
-          icon: 'po-icon-document-filled',
+          label: 'Ferramentas de Design', 
+          icon: 'po-icon-settings',
           subItems: [
-            { label: 'Veículos (Dinâmico)', link: '/app/dynamic/veiculos', icon: 'po-icon-steering-wheel' },
+            { label: 'Editor de Metadados', link: '/admin/metadata-editor', icon: 'po-icon-grid' },
+            { label: 'Telas Dinâmicas', link: '/app/dynamic/veiculos', icon: 'po-icon-steering-wheel' },
           ]
         },
         { 
