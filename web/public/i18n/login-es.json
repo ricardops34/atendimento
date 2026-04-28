@@ -1,0 +1,13 @@
+{
+  "welcome": "Bienvenido",
+  "description": "Acceda al sistema usando suas credenciales.",
+  "user": "Usuario",
+  "userPlaceholder": "Ingrese su usuario",
+  "password": "Contraseña",
+  "passwordPlaceholder": "Ingrese su contraseña",
+  "forgotPassword": "Olvidé mi contraseña",
+  "enter": "Entrar",
+  "rememberMe": "Mantener conectado",
+  "loginError": "Error al iniciar sesión. Verifique sus credenciales.",
+  "fillFields": "Por favor, complete usuario y contraseña."
+}

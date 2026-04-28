@@ -25,12 +25,15 @@ export class LoginComponent implements OnInit {
   userPassword: string = '';
   rememberMe: boolean = false;
   
+  // Iniciamos com chaves vazias para garantir que o sistema busque do JSON
   literals: any = {
-    email: 'E-mail',
-    password: 'Senha',
-    enter: 'Entrar',
-    forgotPassword: 'Esqueci minha senha',
-    rememberMe: 'Manter conectado'
+    user: '',
+    userPlaceholder: '',
+    password: '',
+    passwordPlaceholder: '',
+    enter: '',
+    forgotPassword: '',
+    rememberMe: ''
   };
   selectedLanguage: string = 'pt-br';
 
@@ -43,30 +46,35 @@ export class LoginComponent implements OnInit {
   productName: string = 'Sistema SaaS';
   background: string = 'login-bg.png';
   logo: string = 'logo.png';
-  welcome: string = 'Seja bem-vindo!';
+  welcome: string = '';
 
   ngOnInit() {
     this.selectedLanguage = this.poI18n.getLanguage();
-    this.loadLiterals();
+    this.loadLiterals(this.selectedLanguage);
     this.loadBranding();
   }
 
-  loadLiterals() {
-    this.poI18n.getLiterals({ context: 'login' }).subscribe(literals => {
-      this.literals = { ...this.literals, ...literals };
-      this.welcome = this.literals.welcome || this.welcome;
+  loadLiterals(lang?: string) {
+    const targetLang = lang || this.poI18n.getLanguage();
+    this.poI18n.getLiterals({ context: 'login', language: targetLang }).subscribe({
+      next: (literals) => {
+        this.literals = { ...literals };
+        this.welcome = this.literals.welcome || '';
+      },
+      error: (err) => {
+        console.error('Erro ao carregar literais:', err);
+        // Se houver erro, podemos carregar um padrão mínimo para não travar a tela
+        if (targetLang === 'pt-br') {
+          this.literals = { user: 'Usuário', password: 'Senha', enter: 'Entrar' };
+        }
+      }
     });
   }
 
   changeLanguage(lang: string) {
     this.poI18n.setLanguage(lang);
     this.selectedLanguage = lang;
-    
-    // Forçamos a busca das literais passando o idioma explicitamente para o serviço
-    this.poI18n.getLiterals({ context: 'login', language: lang }).subscribe(literals => {
-      this.literals = { ...this.literals, ...literals };
-      this.welcome = this.literals.welcome || this.welcome;
-    });
+    this.loadLiterals(lang);
   }
 
   loadBranding() {
@@ -81,34 +89,31 @@ export class LoginComponent implements OnInit {
     this.http.get(`${this.coreService.apiUrl}/public/branding/${domain}`).subscribe({
       next: (res: any) => {
         if (res) {
-          this.productName = res.loginConfig?.title || this.literals.description || this.productName;
+          this.productName = res.loginConfig?.title || this.productName;
           this.logo = res.logoUrl || this.logo;
           if (res.id) localStorage.setItem('tenantId', res.id);
         }
       },
       error: () => {
-        console.warn('Tenant não encontrado pela URL. Usando padrão.');
+        console.warn('Branding não carregado.');
       }
     });
   }
 
   loginSubmit() {
     if (!this.userEmail || !this.userPassword) {
-      this.poNotification.warning(this.literals.fillFields || 'Preencha todos os campos');
+      this.poNotification.warning(this.literals.fillFields || 'Preencha os campos');
       return;
     }
 
     this.loading = true;
-    
     const loginPayload: any = {
       email: this.userEmail,
       password: this.userPassword
     };
 
     const tenantId = localStorage.getItem('tenantId');
-    if (tenantId) {
-      loginPayload.tenantId = tenantId;
-    }
+    if (tenantId) loginPayload.tenantId = tenantId;
 
     this.http.post(`${this.coreService.apiUrl}/auth/login`, loginPayload).subscribe({
       next: (res: any) => {
@@ -127,7 +132,7 @@ export class LoginComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        const errorMsg = err.error?.message || this.literals.loginError || 'Erro ao realizar login';
+        const errorMsg = err.error?.message || this.literals.loginError || 'Erro de login';
         this.poNotification.error(errorMsg);
       }
     });
