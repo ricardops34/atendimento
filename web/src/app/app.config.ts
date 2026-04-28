@@ -1,13 +1,17 @@
-import { ApplicationConfig, importProvidersFrom } from '@angular/core';
+import { ApplicationConfig, importProvidersFrom, LOCALE_ID } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { routes } from './app.routes';
-import { provideHttpClient } from '@angular/common/http';
-import { PoI18nModule } from '@po-ui/ng-components';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { PoI18nModule, PoI18nConfig } from '@po-ui/ng-components';
+import { registerLocaleData } from '@angular/common';
+import localePt from '@angular/common/locales/pt';
 
-const i18nConfig: any = {
+registerLocaleData(localePt);
+
+const i18nConfig: PoI18nConfig = {
   default: {
     language: 'pt-br',
-    context: 'login', // Mudado de 'general' para 'login'
+    context: 'login',
     cache: true
   },
   contexts: {
@@ -27,7 +31,8 @@ const i18nConfig: any = {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(withInterceptorsFromDi()),
+    { provide: LOCALE_ID, useValue: 'pt-BR' },
     importProvidersFrom(PoI18nModule.config(i18nConfig))
   ]
 };

@@ -62,19 +62,32 @@ export class LoginComponent implements OnInit {
     
     this.poI18n.getLiterals({ context: 'login', language: targetLang }).subscribe({
       next: (literals: any) => {
-        // VACINA: Se o retorno for uma string (o caminho do arquivo), baixamos manualmente
-        if (typeof literals === 'string') {
-          console.warn('PO-UI retornou caminho em vez de objeto. Baixando manualmente:', literals);
-          this.http.get(`./${literals}`).subscribe({
+        console.log('Literais brutas recebidas:', literals);
+        
+        // Verifica se o objeto recebido é realmente um dicionário de traduções válido
+        // Se não tiver a chave 'user', algo está errado (provavelmente retornou o caminho do arquivo)
+        const isInvalid = !literals || typeof literals !== 'object' || !literals.hasOwnProperty('user');
+
+        if (isInvalid) {
+          const path = (typeof literals === 'string') ? literals : `assets/i18n/login-${targetLang.split('-')[0]}.json`;
+          console.warn('Objeto de literais inválido. Tentando carregamento direto de:', path);
+          
+          this.http.get(`./${path}`).subscribe({
             next: (res: any) => {
-              console.log('Literais baixadas manualmente com sucesso:', res);
+              console.log('Download direto concluído:', res);
               this.literals = { ...res };
               this.welcome = this.literals.welcome || '';
             },
-            error: (err) => console.error('Erro ao baixar JSON manualmente:', err)
+            error: (err) => {
+              console.error('Falha total no carregamento das traduções:', err);
+              // Fallback extremo para não deixar a tela vazia
+              if (targetLang.startsWith('pt')) {
+                this.literals = { user: 'Usuário', password: 'Senha', enter: 'Entrar', forgotPassword: 'Esqueci minha senha' };
+              }
+            }
           });
         } else {
-          console.log('Literais carregadas pelo PO-UI:', literals);
+          console.log('Objeto de literais validado e aplicado.');
           this.literals = { ...literals };
           this.welcome = this.literals.welcome || '';
         }
