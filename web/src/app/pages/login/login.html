@@ -8,7 +8,7 @@
     <form #loginForm="ngForm" class="login-form">
       <!-- Campo Usuário -->
       <div class="field-group">
-        <label class="field-label">{{ literals.user || 'Usuário' }}</label>
+        <label class="field-label">{{ literals.user }}</label>
         <po-input 
           name="email" 
           [(ngModel)]="userEmail" 
@@ -19,7 +19,7 @@
 
       <!-- Campo Senha -->
       <div class="field-group">
-        <label class="field-label">{{ literals.password || 'Senha' }}</label>
+        <label class="field-label">{{ literals.password }}</label>
         <po-password 
           name="password" 
           [(ngModel)]="userPassword" 
