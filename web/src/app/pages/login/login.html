@@ -28,12 +28,8 @@
 
       <!-- Botão Entrar Largo -->
       <div class="submit-container">
-        <po-button 
-          p-kind="primary" 
-          [p-label]="literals?.enter" 
-          [p-loading]="loading"
-          (p-click)="loginSubmit()" 
-          class="po-sm-12 po-button-block btn-login-full">
+        <po-button class="po-sm-12" [p-label]="literals?.enter" [p-size]="large" [p-kind]="primary"
+          (p-click)="buttonClick()" [p-type]="submit">
         </po-button>
       </div>
 
