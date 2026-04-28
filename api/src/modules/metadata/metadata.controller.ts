@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { MetadataService } from './metadata.service';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { TenantId } from '../../common/decorators/tenant-id.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('Metadata & Discovery')
 @ApiBearerAuth()
@@ -18,9 +19,11 @@ export class MetadataController {
   @Get(':entity')
   async getMetadata(
     @Param('entity') entity: string,
-    @TenantId() tenantId: string
+    @TenantId() tenantId: string,
+    @CurrentUser('level') userLevel: number // Pega o nível do usuário logado
   ) {
-    return this.metadataService.getEntityMetadata(entity, tenantId);
+    // Passa o nível para o serviço filtrar os campos
+    return this.metadataService.getEntityMetadata(entity, tenantId, userLevel || 1);
   }
 
   @Post(':entity')
