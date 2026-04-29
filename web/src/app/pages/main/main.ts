@@ -31,6 +31,7 @@ import { CoreService } from '../../core/services/core.service';
         [p-menus]="menus"
         [p-filter]="true"
         [p-collapsed]="isCollapsed"
+        [p-collapsed]="true"
         [p-automatic-toggle]="true">
         
         <div p-menu-header class="po-p-3 po-text-center">
@@ -108,7 +109,7 @@ export class MainComponent implements OnInit {
     this.http.get(`${this.coreService.apiUrl}/menu/user-menu`).subscribe({
       next: (res: any) => {
         this.menus = res.sidebar || [];
-        
+
         if (res.toolbar) {
           this.toolbarActions = res.toolbar.map((item: any) => ({
             label: item.label,
