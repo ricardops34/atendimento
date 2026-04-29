@@ -20,13 +20,15 @@ import { CoreService } from '../../core/services/core.service';
       <po-header 
         [p-brand]="brand"
         [p-actions-tools]="toolbarActions"
-        [p-header-user]="profile">
+        [p-header-user]="profile"
+        (p-collapsed-menu)="isCollapsed = !isCollapsed">
       </po-header>
       
       <po-menu 
         id="saas-main-menu" 
         [p-menus]="menus"
         [p-filter]="true"
+        [p-collapsed]="isCollapsed"
         [p-automatic-toggle]="true">
         
         <div p-menu-header class="po-p-3 po-text-center">
@@ -36,11 +38,18 @@ import { CoreService } from '../../core/services/core.service';
         </div>
       </po-menu>
       
-      <div class="po-main-container">
+      <div class="po-main-container" style="padding-top: 50px;">
         <router-outlet></router-outlet>
       </div>
     </div>
-  `
+  `,
+  styles: [`
+    .po-main-container {
+      padding-top: 50px;
+      height: calc(100vh - 50px);
+      overflow-y: auto;
+    }
+  `]
 })
 export class MainComponent implements OnInit {
   private coreService = inject(CoreService);
@@ -49,6 +58,7 @@ export class MainComponent implements OnInit {
   private poI18n = inject(PoI18nService);
 
   menus: Array<PoMenuItem> = [];
+  isCollapsed = false;
   toolbarTitle = 'Sistema SaaS';
   literals: any = {};
 
@@ -61,20 +71,28 @@ export class MainComponent implements OnInit {
   };
 
   profile: any = {
-    title: this.user.name || 'Usuário',
-    subtitle: this.user.role?.name || (this.user.role === 'SUPER_ADMIN' ? 'Admin Master' : 'Administrador'),
-    avatar: this.user.avatarUrl || this.defaultAvatar,
+    title: 'Usuário',
     actions: []
   };
 
   toolbarActions: Array<any> = [];
 
   ngOnInit() {
+    this.setupProfile();
     this.poI18n.getLiterals({ context: 'admin' }).subscribe((literals: any) => {
       this.literals = literals.menu || {};
       this.setupProfileActions();
       this.loadDynamicMenu();
     });
+  }
+
+  setupProfile() {
+    this.profile = {
+      title: this.user.name || 'Usuário',
+      subtitle: this.user.role?.name || (this.user.role === 'SUPER_ADMIN' ? 'Admin Master' : 'Administrador'),
+      avatar: this.user.avatarUrl || this.defaultAvatar,
+      actions: []
+    };
   }
 
   setupProfileActions() {
