@@ -22,7 +22,7 @@ import { CoreService } from '../../core/services/core.service';
         [p-title]="toolbarTitle"
         [p-actions]="toolbarActions"
         [p-profile]="profile"
-        [p-profile-actions]="profile.actions"
+        [p-profile-actions]="profileActions"
         (p-collapsed-menu)="isCollapsed = !isCollapsed">
       </po-toolbar>
       
@@ -98,7 +98,7 @@ export class MainComponent implements OnInit {
   }
 
   setupProfileActions() {
-    (this.profile as any).actions = [
+    this.profileActions = [
       { label: this.literals.profile || 'Perfil', icon: 'an an-user', action: () => { } },
       { label: this.literals.logout || 'Sair', icon: 'an an-sign-out', type: 'danger', action: () => this.logout() }
     ];
