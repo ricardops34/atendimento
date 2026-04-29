@@ -41,7 +41,7 @@ export class CnpjEstabelecimentosComponent {
       { label: 'Baixada', value: '08' }
     ]},
     { property: 'cnaeFiscalPrincipal', label: 'CNAE Principal', gridColumns: 2, filter: true },
-    { property: 'cidade', label: 'Município', gridColumns: 3, filter: true },
+    { property: 'municipio', label: 'Município', gridColumns: 3, filter: true },
     { property: 'uf', label: 'UF', gridColumns: 1, filter: true }
   ];
 }
