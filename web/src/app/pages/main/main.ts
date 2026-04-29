@@ -20,7 +20,6 @@ import { CoreService } from '../../core/services/core.service';
     <div class="po-wrapper">
       <po-toolbar 
         [p-title]="toolbarTitle"
-        [p-brand-logo]="brand.logo"
         [p-actions]="toolbarActions"
         [p-profile]="profile"
         [p-profile-actions]="profileActions"
