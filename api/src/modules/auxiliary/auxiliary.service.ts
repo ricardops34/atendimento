@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 import axios from 'axios';
 
 @Injectable()
@@ -65,25 +66,91 @@ export class AuxiliaryService {
     return null;
   }
 
-  // --- CRUDs Básicos para Tabelas Globais ---
+  // --- CRUDs Básicos para Tabelas Globais (PAGINADOS) ---
 
-  async findAllCountries() {
-    return this.prisma.country.findMany({ orderBy: { name: 'asc' } });
+  async findAllCountries(page: number = 1, pageSize: number = 10, filter?: string) {
+    const skip = (page - 1) * pageSize;
+    const where = filter ? { name: { contains: filter, mode: 'insensitive' as Prisma.QueryMode } } : {};
+    
+    const [items, total] = await Promise.all([
+      this.prisma.country.findMany({
+        where,
+        skip,
+        take: pageSize,
+        orderBy: { name: 'asc' }
+      }),
+      this.prisma.country.count({ where })
+    ]);
+
+    return { items, hasNext: skip + items.length < total };
   }
 
-  async findAllStates() {
-    return this.prisma.state.findMany({ orderBy: { uf: 'asc' } });
+  async findAllStates(page: number = 1, pageSize: number = 10, filter?: string) {
+    const skip = (page - 1) * pageSize;
+    const where = filter ? { 
+      OR: [
+        { name: { contains: filter, mode: 'insensitive' as Prisma.QueryMode } },
+        { uf: { contains: filter, mode: 'insensitive' as Prisma.QueryMode } }
+      ]
+    } : {};
+
+    const [items, total] = await Promise.all([
+      this.prisma.state.findMany({
+        where,
+        skip,
+        take: pageSize,
+        orderBy: { uf: 'asc' }
+      }),
+      this.prisma.state.count({ where })
+    ]);
+
+    return { items, hasNext: skip + items.length < total };
   }
 
-  async findAllCities(stateId?: string) {
-    return this.prisma.city.findMany({
-      where: stateId ? { stateId } : {},
-      include: { state: true },
-      orderBy: { name: 'asc' }
-    });
+  async findAllCities(page: number = 1, pageSize: number = 10, filter?: string, stateId?: string) {
+    const skip = (page - 1) * pageSize;
+    const where: any = {};
+    if (stateId) where.stateId = stateId;
+    if (filter) {
+      where.OR = [
+        { name: { contains: filter, mode: 'insensitive' as Prisma.QueryMode } },
+        { cnpjCode: { contains: filter } }
+      ];
+    }
+
+    const [items, total] = await Promise.all([
+      this.prisma.city.findMany({
+        where,
+        include: { state: true },
+        skip,
+        take: pageSize,
+        orderBy: { name: 'asc' }
+      }),
+      this.prisma.city.count({ where })
+    ]);
+
+    return { items, hasNext: skip + items.length < total };
   }
 
-  async findAllCnaes() {
-    return this.prisma.cnae.findMany({ orderBy: { code: 'asc' } });
+  async findAllCnaes(page: number = 1, pageSize: number = 10, filter?: string) {
+    const skip = (page - 1) * pageSize;
+    const where = filter ? { 
+      OR: [
+        { code: { contains: filter } },
+        { description: { contains: filter, mode: 'insensitive' as Prisma.QueryMode } }
+      ]
+    } : {};
+
+    const [items, total] = await Promise.all([
+      this.prisma.cnae.findMany({
+        where,
+        skip,
+        take: pageSize,
+        orderBy: { code: 'asc' }
+      }),
+      this.prisma.cnae.count({ where })
+    ]);
+
+    return { items, hasNext: skip + items.length < total };
   }
 }

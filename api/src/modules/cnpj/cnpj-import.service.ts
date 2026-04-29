@@ -133,18 +133,20 @@ export class CnpjImportService {
       const cols = line.split(';').map(c => c.replace(/"/g, ''));
       
       if (cols.length >= 2) {
-        batch.push({
-          type,
-          code: cols[0],
-          description: cols[1]
-        });
+        const code = cols[0];
+        const description = cols[1];
+
+        if (type === 'CNAE') {
+          batch.push({ code, description });
+        } else if (type === 'PAIS') {
+          batch.push({ code, name: description });
+        } else {
+          batch.push({ type, code, description });
+        }
       }
 
       if (batch.length >= 1000) {
-        await this.prisma.cnpjAuxiliary.createMany({
-          data: batch,
-          skipDuplicates: true
-        });
+        await this.saveAuxiliaryBatch(type, batch);
         count += batch.length;
         this.logger.log(`Importados ${count} registros auxiliares do tipo ${type}...`);
         batch = [];
@@ -152,9 +154,19 @@ export class CnpjImportService {
     }
 
     if (batch.length > 0) {
-      await this.prisma.cnpjAuxiliary.createMany({ data: batch, skipDuplicates: true });
+      await this.saveAuxiliaryBatch(type, batch);
     }
     
     return { imported: count + batch.length };
+  }
+
+  private async saveAuxiliaryBatch(type: string, data: any[]) {
+    if (type === 'CNAE') {
+      return this.prisma.cnae.createMany({ data, skipDuplicates: true });
+    } else if (type === 'PAIS') {
+      return this.prisma.country.createMany({ data, skipDuplicates: true });
+    } else {
+      return this.prisma.cnpjAuxiliary.createMany({ data, skipDuplicates: true });
+    }
   }
 }

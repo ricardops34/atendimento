@@ -80,6 +80,7 @@ model City {
   id        String   @id @default(uuid())
   code      Int      @unique // Código IBGE
   name      String   
+  cnpjCode  String?  // Código TOM (Receita Federal)
   stateId   String
   state     State    @relation(fields: [stateId], references: [id])
   ceps      Cep[]

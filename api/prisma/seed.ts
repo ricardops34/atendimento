@@ -37,7 +37,7 @@ async function main() {
 
   // 3. Criar a Role de SUPER_ADMIN
   const superAdminRole = await prisma.role.upsert({
-    where: { 
+    where: {
       name_tenantId: {
         name: 'SUPER_ADMIN',
         tenantId: saasAdmin.id
@@ -60,7 +60,7 @@ async function main() {
     create: {
       email: 'ricardo@bjsoft.com.br',
       password: hashedPassword,
-      name: 'Ricardo Admin',
+      name: 'Ricardo Patay Sotomayor',
       tenantId: saasAdmin.id,
       roleId: superAdminRole.id
     },

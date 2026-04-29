@@ -31,8 +31,9 @@ export class CitiesComponent {
   readonly fields: Array<PoPageDynamicTableField> = [
     { property: 'id', key: true, visible: false },
     { property: 'code', label: 'Código IBGE', gridColumns: 3, filter: true },
-    { property: 'name', label: 'Nome do Município', gridColumns: 5, filter: true },
+    { property: 'name', label: 'Nome do Município', gridColumns: 4, filter: true },
     { property: 'state.uf', label: 'UF', gridColumns: 2, filter: true },
+    { property: 'cnpjCode', label: 'Código RFB', gridColumns: 2, filter: true },
     { property: 'stateId', label: 'ID Estado', visible: false }
   ];
 }

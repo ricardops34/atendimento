@@ -17,22 +17,39 @@ export class AuxiliaryController {
   }
 
   @Get('countries')
-  async getCountries() {
-    return this.auxiliaryService.findAllCountries();
+  async getCountries(
+    @Query('page') page?: number,
+    @Query('pageSize') pageSize?: number,
+    @Query('filter') filter?: string
+  ) {
+    return this.auxiliaryService.findAllCountries(Number(page) || 1, Number(pageSize) || 10, filter);
   }
 
   @Get('states')
-  async getStates() {
-    return this.auxiliaryService.findAllStates();
+  async getStates(
+    @Query('page') page?: number,
+    @Query('pageSize') pageSize?: number,
+    @Query('filter') filter?: string
+  ) {
+    return this.auxiliaryService.findAllStates(Number(page) || 1, Number(pageSize) || 10, filter);
   }
 
   @Get('cities')
-  async getCities(@Query('stateId') stateId: string) {
-    return this.auxiliaryService.findAllCities(stateId);
+  async getCities(
+    @Query('page') page?: number,
+    @Query('pageSize') pageSize?: number,
+    @Query('filter') filter?: string,
+    @Query('stateId') stateId?: string
+  ) {
+    return this.auxiliaryService.findAllCities(Number(page) || 1, Number(pageSize) || 10, filter, stateId);
   }
 
   @Get('cnaes')
-  async getCnaes() {
-    return this.auxiliaryService.findAllCnaes();
+  async getCnaes(
+    @Query('page') page?: number,
+    @Query('pageSize') pageSize?: number,
+    @Query('filter') filter?: string
+  ) {
+    return this.auxiliaryService.findAllCnaes(Number(page) || 1, Number(pageSize) || 10, filter);
   }
 }
