@@ -1,7 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { PoPageDynamicTableModule, PoPageDynamicTableField, PoPageDynamicTableActions } from '@po-ui/ng-templates';
-import { PoBreadcrumb } from '@po-ui/ng-components';
+import { PoBreadcrumb, PoNotificationService } from '@po-ui/ng-components';
 import { CoreService } from '../../core/services/core.service';
 
 @Component({
@@ -62,8 +63,22 @@ export class CnpjEstabelecimentosComponent {
     { property: 'cep', label: 'Filtrar por CEP', visible: false, filter: true, mask: '99999-999' }
   ];
 
+  private http = inject(HttpClient);
+  private poNotification = inject(PoNotificationService);
+
   syncData() {
-    // Aqui chamaríamos o endpoint de importação
-    alert('Iniciando sincronização massiva com a RFB. Este processo roda em background.');
+    this.poNotification.information('Iniciando sincronização massiva com a RFB. Este processo pode levar alguns minutos e roda em background.');
+    
+    // Configuração de exemplo para a carga de 2024-05 (ajustável conforme necessidade)
+    const payload = {
+      type: 'ESTABELECIMENTOS',
+      folder: '2024-05',
+      files: ['Estabelecimentos0.zip', 'Estabelecimentos1.zip', 'Estabelecimentos2.zip']
+    };
+
+    this.http.post(`${this.coreService.apiUrl}/cnpj/import/start`, payload).subscribe({
+      next: () => this.poNotification.success('Tarefa de importação agendada com sucesso!'),
+      error: (err) => this.poNotification.error('Erro ao iniciar importação: ' + (err.message || 'Erro interno'))
+    });
   }
 }

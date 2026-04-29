@@ -22,6 +22,7 @@ import { TenantInterceptor } from './common/interceptors/tenant.interceptor';
 import { AuditInterceptor } from './common/interceptors/audit.interceptor';
 import { RoutinesModule } from './modules/routines/routines.module';
 import { CnpjModule } from './modules/cnpj/cnpj.module';
+import { CnpjImportModule } from './modules/cnpj-import/cnpj-import.module';
 
 @Module({
   imports: [
@@ -45,7 +46,8 @@ import { CnpjModule } from './modules/cnpj/cnpj.module';
     DynamicRecordsModule,
     RolesModule,
     RoutinesModule,
-    CnpjModule
+    CnpjModule,
+    CnpjImportModule
   ],
   controllers: [AppController],
   providers: [
