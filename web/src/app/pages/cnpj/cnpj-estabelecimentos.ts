@@ -11,7 +11,7 @@ import { CoreService } from '../../core/services/core.service';
   imports: [CommonModule, PoPageDynamicTableModule],
   template: `
     <po-page-dynamic-table
-      p-title="Busca Unificada: Dados Públicos CNPJ"
+      p-title="Dados Públicos: Empresas (RFB)"
       [p-breadcrumb]="breadcrumb"
       [p-service-api]="serviceApi"
       [p-fields]="fields"
@@ -29,8 +29,7 @@ export class CnpjEstabelecimentosComponent {
   readonly breadcrumb: PoBreadcrumb = {
     items: [
       { label: 'Home', link: '/' },
-      { label: 'Dados Públicos RFB', link: '/saas/cnpj/empresas' },
-      { label: 'Busca Unificada' }
+      { label: 'Dados Públicos RFB' }
     ]
   };
   

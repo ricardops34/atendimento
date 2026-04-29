@@ -96,9 +96,8 @@ export class MenuService implements OnModuleInit {
         { module: 'SISTEMA', type: 'TOOLBAR', name: 'Apps', link: null, icon: 'an an-grid-four', order: 2, roles: ['USER', 'ADMIN', 'SUPER_ADMIN'] },
         { module: 'SISTEMA', type: 'TOOLBAR', name: 'Notificações', link: '/notifications', icon: 'an an-bell', order: 3, roles: ['USER', 'ADMIN', 'SUPER_ADMIN'] },
 
-        // Dados Públicos
-        { module: 'SAAS', type: 'SIDEBAR', group: 'Dados Públicos RFB', name: 'Empresas (RFB)', link: '/saas/cnpj/empresas', icon: 'an an-building', order: 100, roles: ['SUPER_ADMIN'] },
-        { module: 'SAAS', type: 'SIDEBAR', group: 'Dados Públicos RFB', name: 'Estabelecimentos', link: '/saas/cnpj/estabelecimentos', icon: 'an an-storefront', order: 110, roles: ['SUPER_ADMIN'] },
+        // Dados Públicos (Unificados)
+        { module: 'SAAS', type: 'SIDEBAR', group: 'Dados Públicos RFB', name: 'Empresas (RFB)', link: '/saas/cnpj/estabelecimentos', icon: 'an an-building', order: 100, roles: ['SUPER_ADMIN'] },
       ]
     });
   }
