@@ -58,9 +58,15 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     console.log('LoginComponent: ngOnInit iniciado');
     this.selectedLanguage = this.poI18n.getLanguage();
-    console.log('Idioma detectado:', this.selectedLanguage);
     this.loadLiterals(this.selectedLanguage);
     this.loadBranding();
+
+    // Recuperar e-mail lembrado
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    if (savedEmail) {
+      this.userEmail = savedEmail;
+      this.rememberMe = true;
+    }
   }
 
   loadLiterals(lang?: string) {
@@ -154,6 +160,13 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('token', res.token);
         localStorage.setItem('user', JSON.stringify(res.user));
         localStorage.setItem('permissions', JSON.stringify(res.permissions || []));
+
+        // Lógica do Manter Conectado
+        if (this.rememberMe) {
+          localStorage.setItem('rememberedEmail', this.userEmail);
+        } else {
+          localStorage.removeItem('rememberedEmail');
+        }
 
         this.poNotification.success(`Bem-vindo, ${res.user.name}!`);
         this.router.navigate(['/dashboard']);
