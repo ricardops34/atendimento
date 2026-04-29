@@ -6,6 +6,7 @@ import {
   PoPageDynamicTableActions 
 } from '@po-ui/ng-templates';
 import { HttpClient } from '@angular/common/http';
+import { PoBreadcrumb } from '@po-ui/ng-components';
 import { CoreService } from '../../core/services/core.service';
 
 @Component({
@@ -15,7 +16,8 @@ import { CoreService } from '../../core/services/core.service';
   template: `
     <po-page-dynamic-table
       *ngIf="loaded"
-      [p-title]="title"
+      [p-title]="'Gestão SaaS: ' + title"
+      [p-breadcrumb]="breadcrumb"
       [p-service-api]="serviceApi"
       [p-fields]="fields"
       [p-actions]="actions"
@@ -28,6 +30,14 @@ export class TenantsComponent implements OnInit {
   private http = inject(HttpClient);
   
   readonly serviceApi = `${this.coreService.apiUrl}/tenants`;
+
+  readonly breadcrumb: PoBreadcrumb = {
+    items: [
+      { label: 'Home', link: '/' },
+      { label: 'Gestão SaaS' },
+      { label: 'Empresas (Tenants)' }
+    ]
+  };
   
   // Definição das Ações de CRUD
   readonly actions: PoPageDynamicTableActions = {

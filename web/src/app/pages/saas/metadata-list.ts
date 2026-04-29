@@ -5,7 +5,8 @@ import {
   PoTableModule, 
   PoComponentsModule, 
   PoTableColumn, 
-  PoPageAction 
+  PoPageAction,
+  PoBreadcrumb 
 } from '@po-ui/ng-components';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -17,7 +18,8 @@ import { CoreService } from '../../core/services/core.service';
   imports: [CommonModule, PoPageModule, PoTableModule, PoComponentsModule],
   template: `
     <po-page-default 
-      p-title="Arquitetura do Sistema e Metadados"
+      p-title="Gestão SaaS: Metadados e Arquitetura"
+      [p-breadcrumb]="breadcrumb"
       [p-actions]="pageActions">
       
       <po-table 
@@ -36,6 +38,14 @@ export class MetadataListComponent implements OnInit {
   private router = inject(Router);
 
   entities: Array<any> = [];
+
+  readonly breadcrumb: PoBreadcrumb = {
+    items: [
+      { label: 'Home', link: '/' },
+      { label: 'Gestão SaaS' },
+      { label: 'Metadados' }
+    ]
+  };
 
   pageActions: Array<PoPageAction> = [
     { label: 'Nova Entidade (Usuário)', action: () => this.createNewEntity(), icon: 'an an-plus' }
