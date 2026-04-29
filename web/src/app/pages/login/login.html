@@ -7,34 +7,34 @@
 
     <form #loginForm="ngForm" class="login-form">
       <!-- Campo Usuário -->
-      <div class="field-group">
-        <label class="field-label">{{ literals.user }}</label>
-        <po-input name="email" [(ngModel)]="userEmail" p-icon="an an-user" [p-placeholder]="literals.userPlaceholder"
-          p-required>
+      <div class="po-row">
+        <po-input name="email" class="po-md-12" [(ngModel)]="userEmail" p-icon="an an-user" 
+          [p-label]="literals.user" [p-placeholder]="literals.userPlaceholder" p-required>
         </po-input>
       </div>
 
       <!-- Campo Senha -->
-      <div class="field-group">
-        <label class="field-label">{{ literals.password }}</label>
-        <po-password name="password" [(ngModel)]="userPassword" [p-placeholder]="literals.passwordPlaceholder"
-          p-required>
+      <div class="po-row">
+        <po-password name="password" class="po-md-12" [(ngModel)]="userPassword" 
+          [p-label]="literals.password" [p-placeholder]="literals.passwordPlaceholder" p-required>
         </po-password>
       </div>
 
-      <div class="forgot-link">
-        <a (click)="forgotPassword()">{{ literals.forgotPassword }}</a>
+      <div class="po-row">
+        <div class="po-md-12 forgot-link">
+          <a (click)="forgotPassword()">{{ literals.forgotPassword }}</a>
+        </div>
       </div>
 
-      <!-- Botão Entrar Largo -->
-      <div class="submit-container">
-        <po-button class="po-sm-12" [p-label]="literals?.enter" p-kind="primary" (p-click)="loginSubmit()">
+      <!-- Botão Entrar -->
+      <div class="po-row">
+        <po-button class="po-md-12" [p-label]="literals?.enter" p-kind="primary" (p-click)="loginSubmit()">
         </po-button>
       </div>
 
       <!-- Manter conectado -->
-      <div class="keep-connected">
-        <po-checkbox class="po-sm-12" name="remember" [(ngModel)]="rememberMe" [p-label]="literals.rememberMe">
+      <div class="po-row">
+        <po-checkbox class="po-md-12" name="remember" [(ngModel)]="rememberMe" [p-label]="literals.rememberMe">
         </po-checkbox>
       </div>
     </form>

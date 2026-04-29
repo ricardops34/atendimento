@@ -156,12 +156,7 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('permissions', JSON.stringify(res.permissions || []));
 
         this.poNotification.success(`Bem-vindo, ${res.user.name}!`);
-
-        if (res.user.role === 'SUPER_ADMIN' || res.user.role === 'SAAS_ADMIN') {
-          this.router.navigate(['/admin/dashboard']);
-        } else {
-          this.router.navigate(['/app/dashboard']);
-        }
+        this.router.navigate(['/dashboard']);
         this.loading = false;
       },
       error: (err) => {

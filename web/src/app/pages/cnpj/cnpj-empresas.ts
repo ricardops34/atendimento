@@ -23,10 +23,9 @@ export class CnpjEmpresasComponent {
   readonly serviceApi = `${this.coreService.apiUrl}/cnpj/empresas`;
   
   readonly actions: PoPageDynamicTableActions = {
-    new: '/app/cnpj/empresas/new',
-    edit: '/app/cnpj/empresas/edit/:id',
-    remove: true,
-    removeAll: true
+    edit: '/saas/cnpj/empresas/edit/:id',
+    remove: false,
+    removeAll: false
   };
 
   readonly fields: Array<PoPageDynamicTableField> = [

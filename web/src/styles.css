@@ -81,13 +81,7 @@ body {
   font-weight: 600;
 }
 
-.submit-container {
-  margin-bottom: 20px;
-}
-
-.keep-connected {
-  margin-top: 15px;
-}
+/* Espaçamentos controlados pelo Grid do PO-UI */
 
 /* Seletor de Idioma no Rodapé */
 .footer-language {
