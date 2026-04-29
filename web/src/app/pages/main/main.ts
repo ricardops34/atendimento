@@ -19,25 +19,15 @@ import { CoreService } from '../../core/services/core.service';
   template: `
     <div class="po-wrapper">
       <po-toolbar 
-        [p-title]="toolbarTitle"
+        p-title="Sistema SaaS"
         [p-actions]="toolbarActions"
         [p-profile]="profile"
-        [p-profile-actions]="profileActions"
-        (p-collapsed-menu)="isCollapsed = !isCollapsed">
+        [p-profile-actions]="profileActions">
       </po-toolbar>
       
       <po-menu 
-        id="saas-main-menu" 
         [p-menus]="menus"
-        [p-filter]="true"
-        [p-collapsed]="isCollapsed"
-        [p-automatic-toggle]="true">
-        
-        <div p-menu-header class="po-p-3 po-text-center">
-          <div class="po-font-subtitle po-text-color-01">Bem-vindo,</div>
-          <div class="po-font-title po-text-primary po-mb-2">{{ user.name }}</div>
-          <hr class="po-hr" />
-        </div>
+        [p-filter]="true">
       </po-menu>
       
       <div class="po-main-container">
@@ -46,15 +36,8 @@ import { CoreService } from '../../core/services/core.service';
     </div>
   `,
   styles: [`
-    po-toolbar {
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      z-index: 10;
-    }
     .po-main-container {
-      padding-top: 64px;
-      height: calc(100vh - 64px);
-      overflow-y: auto;
-      background-color: #f5f5f5;
+      background-color: #f5f7fa;
     }
   `]
 })

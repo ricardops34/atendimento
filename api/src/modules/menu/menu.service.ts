@@ -119,37 +119,21 @@ export class MenuService implements OnModuleInit {
   }
 
   async seedInitialMenus() {
-    // Limpa menus do CNPJ para garantir unificação
-    await this.prisma.menu.deleteMany({
-      where: { group: 'Dados Públicos RFB' }
-    });
+    const menus = [
+      { module: 'SISTEMA', type: 'SIDEBAR', group: null, name: 'Dashboard', link: '/dashboard', icon: 'an an-chart-line', order: 1, roles: ['USER', 'ADMIN', 'ADMIN_SAAS'] },
+      { module: 'SISTEMA', type: 'TOOLBAR', name: 'Configurações', link: '/settings', icon: 'an an-gear', order: 1, roles: ['ADMIN', 'ADMIN_SAAS'] },
+      { module: 'SISTEMA', type: 'TOOLBAR', name: 'Apps', link: null, icon: 'an an-grid-four', order: 2, roles: ['USER', 'ADMIN', 'ADMIN_SAAS'] },
+      { module: 'SAAS', type: 'SIDEBAR', group: 'Gestão SaaS', name: 'Metadados', link: '/saas/metadata-editor', icon: 'an an-database', order: 10, roles: ['ADMIN_SAAS'] },
+      { module: 'SAAS', type: 'SIDEBAR', group: 'Gestão SaaS', name: 'Menus', link: '/saas/menu', icon: 'an an-list', order: 11, roles: ['ADMIN_SAAS'] },
+      { module: 'SAAS', type: 'SIDEBAR', group: 'Dados Públicos RFB', name: 'Empresas (RFB)', link: '/saas/cnpj/estabelecimentos', icon: 'an an-building', order: 100, roles: ['USER', 'ADMIN', 'ADMIN_SAAS'] },
+    ];
 
-    const count = await this.prisma.menu.count();
-    
-    // Se já existem outros menus, apenas garante o unificado do CNPJ (evitando duplicidade)
-    if (count > 0) {
-      const exists = await this.prisma.menu.findFirst({
-        where: { name: 'Empresas (RFB)', group: 'Dados Públicos RFB' }
+    for (const m of menus) {
+      await this.prisma.menu.upsert({
+        where: { name_module_type: { name: m.name, module: m.module, type: m.type } },
+        update: m,
+        create: m
       });
-
-      if (!exists) {
-        await this.prisma.menu.create({
-          data: { module: 'SAAS', type: 'SIDEBAR', group: 'Dados Públicos RFB', name: 'Empresas (RFB)', link: '/saas/cnpj/estabelecimentos', icon: 'an an-building', order: 100, roles: ['USER', 'ADMIN', 'ADMIN_SAAS'] }
-        });
-      }
-      return;
     }
-
-    // Se estiver vazio, cria tudo
-    await this.prisma.menu.createMany({
-      data: [
-        { module: 'SISTEMA', type: 'SIDEBAR', group: null, name: 'Dashboard', link: '/dashboard', icon: 'an an-chart-line', order: 1, roles: ['USER', 'ADMIN', 'ADMIN_SAAS'] },
-        { module: 'SISTEMA', type: 'TOOLBAR', name: 'Configurações', link: '/settings', icon: 'an an-gear', order: 1, roles: ['ADMIN', 'ADMIN_SAAS'] },
-        { module: 'SISTEMA', type: 'TOOLBAR', name: 'Apps', link: null, icon: 'an an-grid-four', order: 2, roles: ['USER', 'ADMIN', 'ADMIN_SAAS'] },
-        { module: 'SAAS', type: 'SIDEBAR', group: 'Gestão SaaS', name: 'Metadados', link: '/saas/metadata-editor', icon: 'an an-database', order: 10, roles: ['ADMIN_SAAS'] },
-        { module: 'SAAS', type: 'SIDEBAR', group: 'Gestão SaaS', name: 'Menus', link: '/saas/menu', icon: 'an an-list', order: 11, roles: ['ADMIN_SAAS'] },
-        { module: 'SAAS', type: 'SIDEBAR', group: 'Dados Públicos RFB', name: 'Empresas (RFB)', link: '/saas/cnpj/estabelecimentos', icon: 'an an-building', order: 100, roles: ['USER', 'ADMIN', 'ADMIN_SAAS'] },
-      ]
-    });
   }
 }
