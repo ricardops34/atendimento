@@ -19,7 +19,7 @@ import { PoNotificationService } from '@po-ui/ng-components';
       [p-service-api]="serviceApi"
       [p-fields]="fields"
       [p-actions]="actions"
-      [p-custom-actions]="customActions"
+      [p-page-custom-actions]="customActions"
       [p-quick-search-width]="400"
     >
     </po-page-dynamic-table>
