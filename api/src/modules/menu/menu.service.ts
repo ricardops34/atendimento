@@ -102,11 +102,17 @@ export class MenuService implements OnModuleInit {
 
     const count = await this.prisma.menu.count();
     
-    // Se já existem outros menus, apenas garante o unificado do CNPJ
+    // Se já existem outros menus, apenas garante o unificado do CNPJ (evitando duplicidade)
     if (count > 0) {
-      await this.prisma.menu.create({
-        data: { module: 'SAAS', type: 'SIDEBAR', group: 'Dados Públicos RFB', name: 'Empresas (RFB)', link: '/saas/cnpj/estabelecimentos', icon: 'an an-building', order: 100, roles: ['SUPER_ADMIN'] }
+      const exists = await this.prisma.menu.findFirst({
+        where: { name: 'Empresas (RFB)', group: 'Dados Públicos RFB' }
       });
+
+      if (!exists) {
+        await this.prisma.menu.create({
+          data: { module: 'SAAS', type: 'SIDEBAR', group: 'Dados Públicos RFB', name: 'Empresas (RFB)', link: '/saas/cnpj/estabelecimentos', icon: 'an an-building', order: 100, roles: ['SUPER_ADMIN'] }
+        });
+      }
       return;
     }
 

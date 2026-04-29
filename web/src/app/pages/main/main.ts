@@ -20,6 +20,7 @@ import { CoreService } from '../../core/services/core.service';
     <div class="po-wrapper">
       <po-toolbar 
         [p-title]="toolbarTitle"
+        [p-logo]="brand.logo"
         [p-actions]="toolbarActions"
         [p-profile]="profile"
         [p-profile-actions]="profileActions"
@@ -31,7 +32,6 @@ import { CoreService } from '../../core/services/core.service';
         [p-menus]="menus"
         [p-filter]="true"
         [p-collapsed]="isCollapsed"
-        [p-collapsed]="true"
         [p-automatic-toggle]="true">
         
         <div p-menu-header class="po-p-3 po-text-center">
@@ -47,10 +47,15 @@ import { CoreService } from '../../core/services/core.service';
     </div>
   `,
   styles: [`
+    po-toolbar {
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      z-index: 10;
+    }
     .po-main-container {
       padding-top: 64px;
       height: calc(100vh - 64px);
       overflow-y: auto;
+      background-color: #f5f5f5;
     }
   `]
 })
