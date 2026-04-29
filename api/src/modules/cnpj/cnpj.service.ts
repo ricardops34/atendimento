@@ -28,16 +28,48 @@ export class CnpjService {
     return { items, total };
   }
 
-  async findAllEstabelecimentos(params: { skip?: number; take?: number; filter?: string }) {
-    const { skip, take, filter } = params;
+  async findAllEstabelecimentos(params: { 
+    skip?: number; 
+    take?: number; 
+    filter?: string;
+    situacao?: string;
+    uf?: string;
+    municipio?: string;
+    cnae?: string;
+    cep?: string;
+  }) {
+    const { skip, take, filter, situacao, uf, municipio, cnae, cep } = params;
     
-    const where = filter ? {
-      OR: [
-        { cnpjBasico: { contains: filter, mode: 'insensitive' as const } },
-        { nomeFantasia: { contains: filter, mode: 'insensitive' as const } },
-        { cep: { contains: filter } }
-      ]
-    } : {};
+    const where: any = { AND: [] };
+
+    // Filtros Fixos
+    if (situacao) where.AND.push({ situacaoCadastral: situacao });
+    if (uf) where.AND.push({ uf });
+    if (municipio) where.AND.push({ municipio: { contains: municipio, mode: 'insensitive' } });
+    if (cep) where.AND.push({ cep: { contains: cep.replace(/\D/g, '') } });
+    if (cnae) {
+      where.AND.push({
+        OR: [
+          { cnaeFiscalPrincipal: { contains: cnae } },
+          { cnaeFiscalSecundario: { contains: cnae } }
+        ]
+      });
+    }
+
+    // Busca Global (OR)
+    if (filter) {
+      where.AND.push({
+        OR: [
+          { cnpjFull: { contains: filter } },
+          { nomeFantasia: { contains: filter, mode: 'insensitive' } },
+          { logradouro: { contains: filter, mode: 'insensitive' } },
+          { bairro: { contains: filter, mode: 'insensitive' } },
+          { empresa: { razaoSocial: { contains: filter, mode: 'insensitive' } } }
+        ]
+      });
+    }
+
+    if (where.AND.length === 0) delete where.AND;
 
     const [items, total] = await Promise.all([
       this.prisma.cnpjEstabelecimento.findMany({
@@ -50,13 +82,7 @@ export class CnpjService {
       this.prisma.cnpjEstabelecimento.count({ where })
     ]);
 
-    // Format for PO-UI (add cnpjFull)
-    const formattedItems = items.map(item => ({
-      ...item,
-      cnpjFull: `${item.cnpjBasico}${item.cnpjOrdem}${item.cnpjDv}`
-    }));
-
-    return { items: formattedItems, total };
+    return { items, total };
   }
 
   async findOne(cnpjBasico: string) {

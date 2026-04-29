@@ -1,12 +1,12 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router } from '@angular/router';
-import { 
-  PoMenuItem, 
-  PoToolbarAction, 
-  PoI18nService, 
-  PoComponentsModule, 
-  PoPageModule 
+import {
+  PoMenuItem,
+  PoToolbarAction,
+  PoI18nService,
+  PoComponentsModule,
+  PoPageModule
 } from '@po-ui/ng-components';
 import { HttpClient } from '@angular/common/http';
 import { CoreService } from '../../core/services/core.service';
@@ -17,18 +17,24 @@ import { CoreService } from '../../core/services/core.service';
   imports: [CommonModule, RouterOutlet, PoComponentsModule, PoPageModule],
   template: `
     <div class="po-wrapper">
-      <po-toolbar 
-        id="saas-main-toolbar" 
+      <po-header 
         [p-title]="toolbarTitle"
-        [p-profile]="profile"
-        [p-profile-actions]="profileActions">
-      </po-toolbar>
+        [p-logo]="logo"
+        [p-actions-tools]="toolbarActions"
+        [p-header-user]="profile">
+      </po-header>
       
       <po-menu 
         id="saas-main-menu" 
         [p-menus]="menus"
         [p-filter]="true"
         [p-automatic-toggle]="true">
+        
+        <div p-menu-header class="po-p-3 po-text-center">
+          <div class="po-font-subtitle po-text-color-01">Bem-vindo,</div>
+          <div class="po-font-title po-text-primary po-mb-2">{{ user.name }}</div>
+          <hr class="po-hr" />
+        </div>
       </po-menu>
       
       <div class="po-main-container">
@@ -46,16 +52,19 @@ export class MainComponent implements OnInit {
   menus: Array<PoMenuItem> = [];
   toolbarTitle = 'Sistema SaaS';
   literals: any = {};
-  
+
   user = JSON.parse(localStorage.getItem('user') || '{}');
-  
-  profile = {
+  defaultAvatar = 'avatar-default.png';
+  logo = 'logo.png';
+
+  profile: any = {
     title: this.user.name || 'Usuário',
-    avatar: '',
-    subtitle: this.user.role === 'SUPER_ADMIN' ? 'Admin Master' : 'Administrador'
+    subtitle: this.user.role?.name || (this.user.role === 'SUPER_ADMIN' ? 'Admin Master' : 'Administrador'),
+    avatar: this.user.avatarUrl || this.defaultAvatar,
+    actions: []
   };
 
-  profileActions: Array<PoToolbarAction> = [];
+  toolbarActions: Array<any> = [];
 
   ngOnInit() {
     this.poI18n.getLiterals({ context: 'admin' }).subscribe((literals: any) => {
@@ -66,16 +75,45 @@ export class MainComponent implements OnInit {
   }
 
   setupProfileActions() {
-    this.profileActions = [
-      { label: this.literals.profile || 'Perfil', icon: 'an an-user', action: () => {} },
+    this.profile.actions = [
+      { label: this.literals.profile || 'Perfil', icon: 'an an-user', action: () => { } },
       { label: this.literals.logout || 'Sair', icon: 'an an-sign-out', type: 'danger', action: () => this.logout() }
     ];
   }
 
   loadDynamicMenu() {
     this.http.get(`${this.coreService.apiUrl}/menu`).subscribe({
-      next: (menu: any) => {
-        this.menus = menu;
+      next: (res: any) => {
+        this.menus = res.menus;
+        
+        // No po-header, as ferramentas são dinâmicas. 
+        // Vamos reservar o primeiro item para o "App Launcher" (Grid de Apps)
+        const apps = res.actions.filter((a: any) => a.icon === 'an an-grid-four');
+        const tools = res.actions.filter((a: any) => a.icon !== 'an an-grid-four');
+
+        this.toolbarActions = [];
+
+        // Se houver apps, cria o lançador (Grid)
+        if (apps.length > 0) {
+          this.toolbarActions.push({
+            label: 'Apps',
+            icon: 'an an-grid-four',
+            items: apps.map((app: any) => ({
+              label: app.label,
+              action: () => { if (app.url) this.router.navigate([app.url]); }
+            }))
+          });
+        }
+
+        // Adiciona as outras ferramentas (Notificações, Configurações, etc)
+        tools.forEach((tool: any) => {
+          this.toolbarActions.push({
+            label: tool.label,
+            icon: tool.icon,
+            action: () => { if (tool.url) this.router.navigate([tool.url]); }
+          });
+        });
+
         this.checkMasterMenu();
       },
       error: () => {
@@ -101,28 +139,28 @@ export class MainComponent implements OnInit {
           { label: 'Matriz de Recursos', link: '/saas/plans/matrix' },
           { label: 'Catálogo de Rotinas', link: '/saas/routines' },
           { label: 'Arquitetura / Metadados', link: '/saas/metadata-editor' },
-          {
-            label: 'Dados Públicos CNPJ',
-            subItems: [
-              { label: 'Empresas (RFB)', link: '/saas/cnpj/empresas' },
-              { label: 'Estabelecimentos', link: '/saas/cnpj/estabelecimentos' }
-            ]
-          },
-          {
-            label: 'Cadastros Auxiliares',
-            subItems: [
-              { label: 'Países (BACEN)', link: '/app/auxiliary/countries' },
-              { label: 'Estados (IBGE)', link: '/app/auxiliary/states' },
-              { label: 'Municípios (IBGE)', link: '/app/auxiliary/cities' },
-              { label: 'CNAEs (Fiscal)', link: '/app/auxiliary/cnaes' },
-              { label: 'CEPs (Cache)', link: '/app/auxiliary/ceps' }
-            ]
-          }
+        ]
+      };
+
+      const publicDataMenu: PoMenuItem = {
+        label: 'Dados Públicos RFB',
+        icon: 'an an-share-nodes',
+        subItems: [
+          { label: 'Empresas (RFB)', link: '/saas/cnpj/empresas' },
+          { label: 'Estabelecimentos', link: '/saas/cnpj/estabelecimentos' },
+          { label: 'CNAEs (Fiscal)', link: '/app/auxiliary/cnaes' },
+          { label: 'Países (BACEN)', link: '/app/auxiliary/countries' },
+          { label: 'Estados (IBGE)', link: '/app/auxiliary/states' },
+          { label: 'Municípios (IBGE)', link: '/app/auxiliary/cities' },
+          { label: 'CEPs (Cache)', link: '/app/auxiliary/ceps' }
         ]
       };
 
       if (!this.menus.find(m => m.label === masterMenu.label)) {
         this.menus.push(masterMenu);
+      }
+      if (!this.menus.find(m => m.label === publicDataMenu.label)) {
+        this.menus.push(publicDataMenu);
       }
     }
   }

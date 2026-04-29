@@ -32,20 +32,33 @@ export class CnpjController {
 
   @Get('estabelecimentos')
   async getEstabelecimentos(
-    @Query('page') page: number = 1,
-    @Query('pageSize') pageSize: number = 10,
-    @Query('filter') filter?: string
+    @Query('page') page?: number,
+    @Query('pageSize') pageSize?: number,
+    @Query('filter') filter?: string,
+    @Query('situacao') situacao?: string,
+    @Query('uf') uf?: string,
+    @Query('municipio') municipio?: string,
+    @Query('cnae') cnae?: string,
+    @Query('cep') cep?: string
   ) {
-    const skip = (page - 1) * pageSize;
-    const { items, total } = await this.cnpjService.findAllEstabelecimentos({ 
-      skip: Number(skip), 
-      take: Number(pageSize), 
-      filter 
+    const p = Number(page) || 1;
+    const ps = Number(pageSize) || 10;
+    const skip = (p - 1) * ps;
+    
+    const { items, total } = await this.cnpjService.findAllEstabelecimentos({
+      skip,
+      take: ps,
+      filter,
+      situacao,
+      uf,
+      municipio,
+      cnae,
+      cep
     });
 
     return {
       items,
-      hasNext: total > page * pageSize
+      hasNext: skip + items.length < total
     };
   }
 

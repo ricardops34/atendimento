@@ -252,6 +252,7 @@ model User {
   email     String   @unique
   password  String
   name      String?
+  avatarUrl String?  // Foto do perfil
   level     Int      @default(1)
   tenantId  String
   tenant    Tenant   @relation(fields: [tenantId], references: [id])
@@ -429,4 +430,27 @@ model Product {
   tenant      Tenant   @relation(fields: [tenantId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+enum MenuType {
+  SIDEBAR
+  TOOLBAR
+}
+
+model Menu {
+  id        String   @id @default(uuid())
+  module    String   // Ex: 'SAAS', 'SISTEMA'
+  type      MenuType @default(SIDEBAR)
+  group     String?  // Ex: 'Cadastros', 'Dados Públicos'
+  subGroup  String?  // Ex: 'Auxiliares'
+  name      String   // Nome que aparece no menu (Label)
+  link      String?  // URL/Rota
+  icon      String?  // Ícone (an an-...)
+  isCloud   Boolean  @default(false) // Campo 'nuvem'
+  order     Int      @default(0)     // Ordenação
+  roles     String[] @default(["ADMIN"]) // Quem pode ver
+  active    Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

@@ -5,74 +5,97 @@ import { PrismaService } from '../../prisma/prisma.service';
 export class MenuService {
   constructor(private prisma: PrismaService) {}
 
-  /**
-   * Gera a estrutura de menu filtrada pelas permissões do usuário e customizações do Tenant
-   */
-  async getTenantMenu(tenantId: string, userPermissions: string[]) {
-    // 1. Definição Base do Menu
-    const menuStructure: any[] = [
-      { 
-        label: 'Dashboard', 
-        link: '/dashboard', 
-        icon: 'po-icon-home', 
-        permission: 'VIEW_DASHBOARD' 
+  async getMenuByRole(role: string) {
+    const allItems = await this.prisma.menu.findMany({
+      where: {
+        active: true,
+        roles: { has: role }
       },
-      { 
-        label: 'Administração SaaS', 
-        icon: 'po-icon-settings', 
-        permission: 'SAAS_ADMIN',
-        subItems: [
-          { label: 'Empresas', link: '/saas/tenants', icon: 'po-icon-company', permission: 'MANAGE_TENANTS' },
-          { label: 'Planos', link: '/saas/plans', icon: 'po-icon-finance', permission: 'MANAGE_PLANS' },
-          { label: 'Matriz de Recursos', link: '/saas/plans/matrix', icon: 'po-icon-grid', permission: 'MANAGE_PLANS' },
-          { label: 'Catálogo de Rotinas', link: '/saas/routines', icon: 'po-icon-xml', permission: 'MANAGE_ROUTINES' },
-          { label: 'Editor de Telas', link: '/saas/metadata-editor', icon: 'po-icon-grid', permission: 'MANAGE_METADATA' },
-        ]
-      },
-      { 
-        label: 'Minha Empresa', 
-        icon: 'po-icon-company', 
-        permission: 'VIEW_COMPANY',
-        subItems: [
-          { label: 'Unidades / Filiais', link: '/app/branches', icon: 'po-icon-company', permission: 'MANAGE_BRANCHES' },
-          { label: 'Usuários', link: '/app/users', icon: 'po-icon-users', permission: 'MANAGE_USERS' },
-          { label: 'Perfis de Acesso', link: '/app/roles', icon: 'po-icon-lock', permission: 'MANAGE_ROLES' }
-        ]
-      }
-    ];
-
-    // 2. Busca Entidades Virtuais
-    const customEntities = await this.prisma.metadataEntity.findMany({
-      where: { tenantId },
-      orderBy: { label: 'asc' }
+      orderBy: { order: 'asc' }
     });
 
-    if (customEntities.length > 0) {
-      menuStructure.push({
-        label: 'Módulos de Negócio',
-        icon: 'po-icon-grid',
-        permission: 'VIEW_CUSTOM_MODULES',
-        subItems: customEntities.map(entity => ({
-          label: entity.label || entity.name,
-          link: `/app/dynamic/${entity.name}`,
-          icon: 'po-icon-pushcart',
-          permission: `VIEW_${entity.name.toUpperCase()}`
-        }))
-      });
-    }
+    const sidebarItems = allItems.filter(i => i.type === 'SIDEBAR');
+    const toolbarItems = allItems.filter(i => i.type === 'TOOLBAR');
 
-    return this.filterMenu(menuStructure, userPermissions);
+    return {
+      menus: this.buildMenuTree(sidebarItems),
+      actions: toolbarItems.map(i => ({
+        label: i.name,
+        icon: i.icon,
+        action: i.link ? () => {} : undefined, // No front trataremos o link
+        url: i.link
+      }))
+    };
   }
 
-  private filterMenu(items: any[], permissions: string[]) {
-    return items
-      .filter(item => !item.permission || permissions.includes(item.permission) || permissions.includes('SUPER_ADMIN'))
-      .map(item => {
-        if (item.subItems) {
-          return { ...item, subItems: this.filterMenu(item.subItems, permissions) };
+  private buildMenuTree(items: any[]) {
+    const menuTree: any[] = [];
+    const groups: { [key: string]: any } = {};
+
+    items.forEach(item => {
+      // Se não tem grupo, é um item raiz
+      if (!item.group) {
+        menuTree.push({
+          label: item.name,
+          link: item.link,
+          icon: item.icon,
+          badge: item.isCloud ? { value: 'Nuvem', color: 'color-01' } : undefined
+        });
+        return;
+      }
+
+      // Se tem grupo, organiza em sub-itens
+      if (!groups[item.group]) {
+        groups[item.group] = {
+          label: item.group,
+          icon: 'an an-folder',
+          subItems: []
+        };
+        menuTree.push(groups[item.group]);
+      }
+
+      // Suporte básico a subgrupo (nível 3)
+      if (item.subGroup) {
+        let subGroup = groups[item.group].subItems.find(s => s.label === item.subGroup);
+        if (!subGroup) {
+          subGroup = { label: item.subGroup, subItems: [] };
+          groups[item.group].subItems.push(subGroup);
         }
-        return item;
-      })
-      .filter(item => !item.subItems || item.subItems.length > 0);
+        subGroup.subItems.push({
+          label: item.name,
+          link: item.link,
+          icon: item.icon
+        });
+      } else {
+        groups[item.group].subItems.push({
+          label: item.name,
+          link: item.link,
+          icon: item.icon
+        });
+      }
+    });
+
+    return menuTree;
+  }
+
+  async seedInitialMenus() {
+    const count = await this.prisma.menu.count();
+    if (count > 0) return;
+
+    await this.prisma.menu.createMany({
+      data: [
+        // Sidebar
+        { module: 'SISTEMA', type: 'SIDEBAR', group: null, name: 'Dashboard', link: '/dashboard', icon: 'an an-chart-line', order: 1, roles: ['USER', 'ADMIN', 'SUPER_ADMIN'] },
+        
+        // Toolbar (Header Moderno)
+        { module: 'SISTEMA', type: 'TOOLBAR', name: 'Configurações', link: '/settings', icon: 'an an-gear', order: 1, roles: ['ADMIN', 'SUPER_ADMIN'] },
+        { module: 'SISTEMA', type: 'TOOLBAR', name: 'Apps', link: null, icon: 'an an-grid-four', order: 2, roles: ['USER', 'ADMIN', 'SUPER_ADMIN'] },
+        { module: 'SISTEMA', type: 'TOOLBAR', name: 'Notificações', link: '/notifications', icon: 'an an-bell', order: 3, roles: ['USER', 'ADMIN', 'SUPER_ADMIN'] },
+
+        // Dados Públicos
+        { module: 'SAAS', type: 'SIDEBAR', group: 'Dados Públicos RFB', name: 'Empresas (RFB)', link: '/saas/cnpj/empresas', icon: 'an an-building', order: 100, roles: ['SUPER_ADMIN'] },
+        { module: 'SAAS', type: 'SIDEBAR', group: 'Dados Públicos RFB', name: 'Estabelecimentos', link: '/saas/cnpj/estabelecimentos', icon: 'an an-storefront', order: 110, roles: ['SUPER_ADMIN'] },
+      ]
+    });
   }
 }
