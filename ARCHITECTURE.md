@@ -1,45 +1,42 @@
 # Diretrizes de Desenvolvimento - Sistema SaaS
 
-Este documento define os padrões de nomenclatura e linguagem para garantir a consistência do projeto.
+Este documento define os padrões de nomenclatura, linguagem e arquitetura para garantir a consistência do projeto.
 
 ## 🌍 Padrão de Idioma e Internacionalização (i18n)
-(Mantido...)
+O sistema utiliza o português como idioma principal para a interface e documentação, garantindo clareza para o público-alvo brasileiro.
 
-## 🧬 Arquitetura de Metadados e Segurança Granular
+## 🧬 Arquitetura Metadata-Driven (UI Dinâmica)
+A interface não é "hardcoded". Ela é renderizada com base em um dicionário de metadados recuperado do banco de dados (tabelas `MetadataEntity` e `MetadataField`).
 
-### 1. Hierarquia de Níveis (1-9)
-Para controlar a visibilidade de dados sensíveis, o sistema utiliza uma escala de 1 a 9:
+### 1. Hierarquia de Níveis de Acesso
 - **Nível 1-8**: Usuários operacionais e gerentes com permissões crescentes.
-- **Nível 9**: Administrador Total (Admin).
+- **Nível 9 (ADMIN_SAAS)**: Administrador Total do sistema, com visibilidade global.
 
 ### 2. Segurança por Campo (`minLevel`)
-Cada campo nos metadados possui a propriedade `minLevel`:
-- Se o usuário logado tiver um nível **menor** que o exigido pelo campo, a API remove esse campo da resposta.
-- Isso impede que usuários de baixo nível sequer saibam da existência de campos como "Comissão", "Lucro" ou "Senhas".
+Cada campo nos metadados possui a propriedade `minLevel`. Se o nível do usuário for inferior, o campo é omitido da resposta da API.
 
-### 3. Governança e Campos Travados (`locked`)
-- **`locked: true`**: Impede que o administrador do Tenant altere a obrigatoriedade de campos vitais.
+### 3. Governança e Campos Travados
+- **`locked: true`**: Impede alterações em campos vitais.
+- **Campos JSONB**: Dados customizados por tenant são armazenados em colunas `JSONB` no PostgreSQL para flexibilidade sem migrações de esquema.
 
 ---
 
 ## ⚖️ Política de Governança e Customização
 
-O sistema segue uma política rígida de separação entre o que é customizável pelo usuário e o que é fixo por segurança:
-
 ### 🟢 Customizável (Via Metadados)
 *   **Cadastros Auxiliares**: CNAEs, Países, Estados, Cidades.
-*   **Dados Públicos**: Tabelas RFB (Empresas, Sócios, etc.).
+*   **Dados Públicos**: Tabelas RFB (Empresas, Sócios).
 *   **Negócio**: Tabelas operacionais específicas do cliente.
 
 ### 🔴 Fixo / Protegido (Hardcoded)
-Os itens abaixo **não** podem ser editados ou personalizados via interface:
-*   **Segurança**: Cadastro de Usuários, Papéis e Permissões.
-*   **Faturamento**: Controle de mensalidades, planos e cobranças.
-*   **Logs**: Auditoria e logs de processamento.
-*   **Configuração**: Parâmetros de sistema/usuário, Gatilhos (Triggers) e Relatórios.
+Os itens abaixo são estruturais e imutáveis via interface para garantir segurança e integridade:
+*   **Segurança**: Usuários, Papéis (Roles) e Permissões.
+*   **Faturamento**: Planos, Mensalidades e Cobranças.
+*   **Logs**: Auditoria e Status de Importação.
+*   **Configuração**: Parâmetros de sistema, Gatilhos e Relatórios.
 
 ---
 
 ## 🛠️ Ferramentas Administrativas
-- **Editor de Metadados**: Gerencia rótulos, níveis e validações.
-- **Configurador de Telas**: Arraste e solte para organizar a interface.
+- **Editor de Metadados**: Gerencia rótulos, níveis e validações (exclusivo para áreas customizáveis).
+- **Configurador de Temas**: Utiliza CSS Custom Properties injetadas dinamicamente via `ThemeService` para branding por tenant.
