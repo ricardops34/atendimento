@@ -20,7 +20,7 @@ import { CoreService } from '../../core/services/core.service';
       <po-header 
         [p-brand]="brand"
         [p-actions-tools]="toolbarActions"
-        [p-header-user]="profile"
+        [p-user]="profile"
         (p-collapsed-menu)="isCollapsed = !isCollapsed">
       </po-header>
       
@@ -63,10 +63,10 @@ export class MainComponent implements OnInit {
   literals: any = {};
 
   user = JSON.parse(localStorage.getItem('user') || '{}');
-  defaultAvatar = 'avatar-default.png';
+  defaultAvatar = 'https://ui-avatars.com/api/?name=' + (this.user.name || 'User') + '&background=0054a6&color=fff';
 
   brand: any = {
-    logo: 'logo.png',
+    logo: 'https://po-ui.io/assets/po-logos/po_logo_white.svg',
     title: 'Sistema SaaS'
   };
 
