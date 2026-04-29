@@ -27,9 +27,9 @@ import { CoreService } from '../../core/services/core.service';
       <po-menu 
         id="saas-main-menu" 
         [p-menus]="menus"
-        p-filter
+        [p-filter]="true"
         [p-collapsed]="isCollapsed"
-        p-automatic-toggle>
+        [p-automatic-toggle]="true">
         
         <div p-menu-header class="po-p-3 po-text-center">
           <div class="po-font-subtitle po-text-color-01">Bem-vindo,</div>
