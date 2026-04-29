@@ -1,14 +1,20 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router } from '@angular/router';
-import { PoModule, PoMenuItem, PoToolbarAction, PoI18nService } from '@po-ui/ng-components';
+import { 
+  PoMenuItem, 
+  PoToolbarAction, 
+  PoI18nService, 
+  PoComponentsModule, 
+  PoPageModule 
+} from '@po-ui/ng-components';
 import { HttpClient } from '@angular/common/http';
 import { CoreService } from '../../core/services/core.service';
 
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, PoModule],
+  imports: [CommonModule, RouterOutlet, PoComponentsModule, PoPageModule],
   template: `
     <div class="po-wrapper">
       <po-toolbar 
@@ -61,8 +67,8 @@ export class MainComponent implements OnInit {
 
   setupProfileActions() {
     this.profileActions = [
-      { label: this.literals.profile || 'Perfil', icon: 'po-icon-user', action: () => {} },
-      { label: this.literals.logout || 'Sair', icon: 'po-icon-exit', type: 'danger', action: () => this.logout() }
+      { label: this.literals.profile || 'Perfil', icon: 'an an-user', action: () => {} },
+      { label: this.literals.logout || 'Sair', icon: 'an an-sign-out', type: 'danger', action: () => this.logout() }
     ];
   }
 
@@ -75,9 +81,9 @@ export class MainComponent implements OnInit {
       error: () => {
         console.error('Falha ao carregar menu dinâmico');
         this.menus = [
-          { label: 'Dashboard', link: '/dashboard', icon: 'po-icon-chart-area' },
-          { label: 'Usuários', link: '/app/users', icon: 'po-icon-users' },
-          { label: 'Filiais', link: '/app/branches', icon: 'po-icon-company' }
+          { label: 'Dashboard', link: '/dashboard', icon: 'an an-chart-line' },
+          { label: 'Usuários', link: '/app/users', icon: 'an an-users' },
+          { label: 'Filiais', link: '/app/branches', icon: 'an an-building' }
         ];
         this.checkMasterMenu();
       }
@@ -88,7 +94,7 @@ export class MainComponent implements OnInit {
     if (this.user.role === 'SUPER_ADMIN') {
       const masterMenu: PoMenuItem = {
         label: 'Gestão SaaS Master',
-        icon: 'po-icon-settings',
+        icon: 'an an-gear',
         subItems: [
           { label: 'Empresas (Tenants)', link: '/saas/tenants' },
           { label: 'Planos de Assinatura', link: '/saas/plans' },

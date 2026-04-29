@@ -2,7 +2,9 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
-  PoModule,
+  PoPageModule,
+  PoComponentsModule,
+  PoTableModule,
   PoNotificationService,
   PoTableColumn
 } from '@po-ui/ng-components';
@@ -13,7 +15,7 @@ import { CoreService } from '../../core/services/core.service';
 @Component({
   selector: 'app-metadata-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule, PoModule],
+  imports: [CommonModule, FormsModule, PoPageModule, PoComponentsModule, PoTableModule],
   template: `
     <po-page-default [p-title]="'Configurando: ' + entity">
       
@@ -37,7 +39,7 @@ import { CoreService } from '../../core/services/core.service';
           class="po-md-3"
           p-label="Salvar"
           p-kind="primary"
-          p-icon="po-icon-ok"
+          p-icon="an an-check"
           [p-loading]="loading"
           (p-click)="saveMetadata()">
         </po-button>
@@ -77,7 +79,7 @@ export class MetadataEditorComponent implements OnInit {
       label: ' ', 
       type: 'icon', 
       icons: [
-        { icon: 'an an-caret-circle-up', action: (row: any) => this.moveUp(row), color: 'color-08', tooltip: 'Subir' }
+        { value: 'up', icon: 'an an-caret-circle-up', action: (row: any) => this.moveUp(row), color: 'color-08', tooltip: 'Subir' }
       ]
     },
     { 
@@ -85,7 +87,7 @@ export class MetadataEditorComponent implements OnInit {
       label: ' ', 
       type: 'icon', 
       icons: [
-        { icon: 'an an-caret-circle-down', action: (row: any) => this.moveDown(row), color: 'color-08', tooltip: 'Descer' }
+        { value: 'down', icon: 'an an-caret-circle-down', action: (row: any) => this.moveDown(row), color: 'color-08', tooltip: 'Descer' }
       ]
     },
     { 
@@ -93,7 +95,7 @@ export class MetadataEditorComponent implements OnInit {
       label: ' ', 
       type: 'icon', 
       icons: [
-        { icon: 'an an-pencil-simple', action: (row: any) => this.editField(row), color: 'color-07', tooltip: 'Editar Campo' }
+        { value: 'edit', icon: 'an an-pencil-simple', action: (row: any) => this.editField(row), color: 'color-07', tooltip: 'Editar Campo' }
       ]
     },
     { 
@@ -101,7 +103,7 @@ export class MetadataEditorComponent implements OnInit {
       label: ' ', 
       type: 'icon', 
       icons: [
-        { icon: 'an an-trash', action: (row: any) => this.removeField(row), color: 'color-01', tooltip: 'Remover' }
+        { value: 'delete', icon: 'an an-trash', action: (row: any) => this.removeField(row), color: 'color-01', tooltip: 'Remover' }
       ]
     }
   ];
@@ -117,7 +119,7 @@ export class MetadataEditorComponent implements OnInit {
     this.loading = true;
     this.http.get(`${this.coreService.apiUrl}/metadata/${this.entity}`).subscribe({
       next: (res: any) => {
-        this.fields = res.fields || [];
+        this.fields = (res.fields || []).map((f: any) => ({ ...f, up: 'up', down: 'down', edit: 'edit', delete: 'delete' }));
         this.loading = false;
       },
       error: () => {

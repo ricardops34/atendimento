@@ -87,7 +87,7 @@ export class BranchesEditComponent implements OnInit {
   ];
 
   fieldsFiscal: Array<PoDynamicFormField> = [
-    { property: 'zipCode', label: 'CEP Fiscal', gridColumns: 3, mask: '99999-999', change: () => this.searchCep('fiscal') },
+    { property: 'zipCode', label: 'CEP Fiscal', gridColumns: 3, mask: '99999-999', validate: () => { this.searchCep('fiscal'); return {}; } },
     { property: 'address', label: 'Logradouro', gridColumns: 6 },
     { property: 'number', label: 'Número', gridColumns: 3 },
     { property: 'complement', label: 'Complemento', gridColumns: 6 },
@@ -98,7 +98,7 @@ export class BranchesEditComponent implements OnInit {
   ];
 
   fieldsBilling: Array<PoDynamicFormField> = [
-    { property: 'billingZipCode', label: 'CEP Cobrança', gridColumns: 3, mask: '99999-999', change: () => this.searchCep('billing') },
+    { property: 'billingZipCode', label: 'CEP Cobrança', gridColumns: 3, mask: '99999-999', validate: () => { this.searchCep('billing'); return {}; } },
     { property: 'billingAddress', label: 'Logradouro', gridColumns: 6 },
     { property: 'billingNumber', label: 'Número', gridColumns: 3 },
     { property: 'billingComplement', label: 'Complemento', gridColumns: 6 },

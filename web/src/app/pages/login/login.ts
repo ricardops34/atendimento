@@ -1,7 +1,14 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { PoNotificationService, PoModule, PoI18nService, PoSelectOption } from '@po-ui/ng-components';
+import { 
+  PoNotificationService, 
+  PoI18nService, 
+  PoSelectOption, 
+  PoFieldModule, 
+  PoComponentsModule, 
+  PoPageModule 
+} from '@po-ui/ng-components';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CoreService } from '../../core/services/core.service';
@@ -9,7 +16,7 @@ import { CoreService } from '../../core/services/core.service';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, PoModule],
+  imports: [CommonModule, FormsModule, PoFieldModule, PoComponentsModule, PoPageModule],
   templateUrl: './login.html',
   styleUrls: ['./login.css']
 })

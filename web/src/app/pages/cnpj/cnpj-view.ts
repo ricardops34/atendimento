@@ -20,26 +20,26 @@ import { CoreService } from '../../core/services/core.service';
     <po-page-default [p-title]="title" [p-breadcrumb]="breadcrumb">
       
       <po-tabs>
-        <po-tab p-label="Dados da Empresa" p-icon="po-icon-company" [p-active]="true">
+        <po-tab p-label="Dados da Empresa" p-icon="an an-building" [p-active]="true">
           <div class="po-row">
             <po-info class="po-md-4" p-label="CNPJ Básico" [p-value]="data?.cnpjBasico"></po-info>
             <po-info class="po-md-8" p-label="Razão Social" [p-value]="data?.razaoSocial"></po-info>
           </div>
           <div class="po-row">
-            <po-info class="po-md-4" p-label="Capital Social" [p-value]="data?.capitalSocial | currency:'BRL'"></po-info>
+            <po-info class="po-md-4" p-label="Capital Social" [p-value]="(data?.capitalSocial | currency:'BRL') ?? ''"></po-info>
             <po-info class="po-md-4" p-label="Natureza Jurídica" [p-value]="data?.naturezaJuridica"></po-info>
             <po-info class="po-md-4" p-label="Porte" [p-value]="data?.porteEmpresa"></po-info>
           </div>
         </po-tab>
 
-        <po-tab p-label="Estabelecimentos" p-icon="po-icon-users">
+        <po-tab p-label="Estabelecimentos" p-icon="an an-users">
           <po-table 
             [p-columns]="colEstabelecimentos" 
             [p-items]="data?.estabelecimentos">
           </po-table>
         </po-tab>
 
-        <po-tab p-label="Quadro de Sócios" p-icon="po-icon-user">
+        <po-tab p-label="Quadro de Sócios" p-icon="an an-user">
           <po-table 
             [p-columns]="colSocios" 
             [p-items]="data?.socios">

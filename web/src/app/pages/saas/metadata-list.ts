@@ -1,7 +1,9 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { 
-  PoModule, 
+  PoPageModule, 
+  PoTableModule, 
+  PoComponentsModule, 
   PoTableColumn, 
   PoPageAction 
 } from '@po-ui/ng-components';
@@ -12,7 +14,7 @@ import { CoreService } from '../../core/services/core.service';
 @Component({
   selector: 'app-metadata-list',
   standalone: true,
-  imports: [CommonModule, PoModule],
+  imports: [CommonModule, PoPageModule, PoTableModule, PoComponentsModule],
   template: `
     <po-page-default 
       p-title="Arquitetura do Sistema e Metadados"
@@ -57,7 +59,7 @@ export class MetadataListComponent implements OnInit {
       label: ' ', 
       type: 'icon', 
       icons: [
-        { icon: 'an an-list', action: (row: any) => this.viewMetadata(row), color: 'color-08', tooltip: 'Visualizar' }
+        { value: 'view', icon: 'an an-list', action: (row: any) => this.viewMetadata(row), color: 'color-08', tooltip: 'Visualizar' }
       ]
     },
     { 
@@ -65,7 +67,7 @@ export class MetadataListComponent implements OnInit {
       label: ' ', 
       type: 'icon', 
       icons: [
-        { icon: 'an an-pencil-simple', action: (row: any) => this.editMetadata(row), color: 'color-07', tooltip: 'Editar Arquitetura' }
+        { value: 'edit', icon: 'an an-pencil-simple', action: (row: any) => this.editMetadata(row), color: 'color-07', tooltip: 'Editar Arquitetura' }
       ]
     },
     { 
@@ -74,6 +76,7 @@ export class MetadataListComponent implements OnInit {
       type: 'icon', 
       icons: [
         { 
+          value: 'delete',
           icon: 'an an-trash', 
           action: (row: any) => this.deleteEntity(row), 
           color: 'color-01', 
@@ -90,7 +93,7 @@ export class MetadataListComponent implements OnInit {
 
   loadEntities() {
     this.http.get(`${this.coreService.apiUrl}/metadata/entities`).subscribe({
-      next: (res: any) => this.entities = res,
+      next: (res: any) => this.entities = (res || []).map((e: any) => ({ ...e, view: 'view', edit: 'edit', delete: 'delete' })),
       error: () => console.error('Falha ao listar entidades')
     });
   }
