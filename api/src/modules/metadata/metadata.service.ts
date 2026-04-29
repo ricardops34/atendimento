@@ -5,11 +5,20 @@ import { PrismaService } from '../../prisma/prisma.service';
 export class MetadataService {
   constructor(private prisma: PrismaService) {}
 
+  private readonly PROTECTED_ENTITIES = [
+    'users', 'roles', 'permissions', 'plans', 'tenants', 'branches', 
+    'auditLogs', 'importStatus', 'accessControls', 'routines',
+    'parameters', 'triggers', 'reports', 'billing'
+  ];
+
   async listEntities(tenantId: string) {
-    return this.prisma.metadataEntity.findMany({
+    const entities = await this.prisma.metadataEntity.findMany({
       where: { tenantId },
       orderBy: { label: 'asc' }
     });
+
+    // Filtra para remover entidades protegidas que possam estar no banco
+    return entities.filter(e => !this.PROTECTED_ENTITIES.includes(e.name));
   }
 
   async getAiContext(tenantId: string) {
@@ -74,6 +83,9 @@ export class MetadataService {
   }
 
   async saveMetadata(entityName: string, tenantId: string, data: any) {
+    if (this.PROTECTED_ENTITIES.includes(entityName)) {
+      throw new Error(`A entidade ${entityName} é protegida pelo sistema e não pode ser customizada.`);
+    }
     const entity = await this.prisma.metadataEntity.upsert({
       where: { name_tenantId: { name: entityName, tenantId } },
       update: { label: data.title || entityName },

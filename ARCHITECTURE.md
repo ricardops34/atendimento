@@ -22,6 +22,24 @@ Cada campo nos metadados possui a propriedade `minLevel`:
 
 ---
 
+## ⚖️ Política de Governança e Customização
+
+O sistema segue uma política rígida de separação entre o que é customizável pelo usuário e o que é fixo por segurança:
+
+### 🟢 Customizável (Via Metadados)
+*   **Cadastros Auxiliares**: CNAEs, Países, Estados, Cidades.
+*   **Dados Públicos**: Tabelas RFB (Empresas, Sócios, etc.).
+*   **Negócio**: Tabelas operacionais específicas do cliente.
+
+### 🔴 Fixo / Protegido (Hardcoded)
+Os itens abaixo **não** podem ser editados ou personalizados via interface:
+*   **Segurança**: Cadastro de Usuários, Papéis e Permissões.
+*   **Faturamento**: Controle de mensalidades, planos e cobranças.
+*   **Logs**: Auditoria e logs de processamento.
+*   **Configuração**: Parâmetros de sistema/usuário, Gatilhos (Triggers) e Relatórios.
+
+---
+
 ## 🛠️ Ferramentas Administrativas
 - **Editor de Metadados**: Gerencia rótulos, níveis e validações.
 - **Configurador de Telas**: Arraste e solte para organizar a interface.
