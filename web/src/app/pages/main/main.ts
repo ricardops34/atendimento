@@ -6,7 +6,8 @@ import {
   PoToolbarAction,
   PoI18nService,
   PoComponentsModule,
-  PoPageModule
+  PoPageModule,
+  PoToolbarProfile
 } from '@po-ui/ng-components';
 import { HttpClient } from '@angular/common/http';
 import { CoreService } from '../../core/services/core.service';
@@ -39,7 +40,7 @@ import { CoreService } from '../../core/services/core.service';
         </div>
       </po-menu>
       
-      <div class="po-main-container" style="padding-top: 50px;">
+      <div class="po-main-container">
         <router-outlet></router-outlet>
       </div>
     </div>
@@ -71,12 +72,13 @@ export class MainComponent implements OnInit {
     title: 'Sistema SaaS'
   };
 
-  profile: any = {
+  profile: PoToolbarProfile = {
     title: 'Usuário',
-    actions: []
+    avatar: this.defaultAvatar,
   };
 
-  toolbarActions: Array<any> = [];
+  profileActions: Array<any> = [];
+  toolbarActions: Array<PoToolbarAction> = [];
 
   ngOnInit() {
     this.setupProfile();
@@ -90,14 +92,13 @@ export class MainComponent implements OnInit {
   setupProfile() {
     this.profile = {
       title: this.user.name || 'Usuário',
-      subtitle: this.user.role?.name || (this.user.role === 'SUPER_ADMIN' ? 'Admin Master' : 'Administrador'),
+      subtitle: this.user.role?.name || (this.user.level === 9 ? 'Admin Master' : 'Administrador'),
       avatar: this.user.avatarUrl || this.defaultAvatar,
-      actions: []
     };
   }
 
   setupProfileActions() {
-    this.profile.actions = [
+    (this.profile as any).actions = [
       { label: this.literals.profile || 'Perfil', icon: 'an an-user', action: () => { } },
       { label: this.literals.logout || 'Sair', icon: 'an an-sign-out', type: 'danger', action: () => this.logout() }
     ];
@@ -106,85 +107,22 @@ export class MainComponent implements OnInit {
   loadDynamicMenu() {
     this.http.get(`${this.coreService.apiUrl}/menu/user-menu`).subscribe({
       next: (res: any) => {
-        this.menus = res.menus;
+        this.menus = res.sidebar || [];
         
-        // No po-header, as ferramentas são dinâmicas. 
-        // Vamos reservar o primeiro item para o "App Launcher" (Grid de Apps)
-        const apps = res.actions.filter((a: any) => a.icon === 'an an-grid-four');
-        const tools = res.actions.filter((a: any) => a.icon !== 'an an-grid-four');
-
-        this.toolbarActions = [];
-
-        // Se houver apps, cria o lançador (Grid)
-        if (apps.length > 0) {
-          this.toolbarActions.push({
-            label: 'Apps',
-            icon: 'an an-grid-four',
-            items: apps.map((app: any) => ({
-              label: app.label,
-              action: () => { if (app.url) this.router.navigate([app.url]); }
-            }))
-          });
+        if (res.toolbar) {
+          this.toolbarActions = res.toolbar.map((item: any) => ({
+            label: item.label,
+            icon: item.icon,
+            action: (action: PoToolbarAction) => {
+              if (item.link) this.router.navigate([item.link]);
+            }
+          }));
         }
-
-        // Adiciona as outras ferramentas (Notificações, Configurações, etc)
-        tools.forEach((tool: any) => {
-          this.toolbarActions.push({
-            label: tool.label,
-            icon: tool.icon,
-            action: () => { if (tool.url) this.router.navigate([tool.url]); }
-          });
-        });
-
-        this.checkMasterMenu();
       },
       error: () => {
-        console.error('Falha ao carregar menu dinâmico');
-        this.menus = [
-          { label: 'Dashboard', link: '/dashboard', icon: 'an an-chart-line' },
-          { label: 'Usuários', link: '/app/users', icon: 'an an-users' },
-          { label: 'Filiais', link: '/app/branches', icon: 'an an-building' }
-        ];
-        this.checkMasterMenu();
+        console.error('Falha ao carregar menus dinâmicos');
       }
     });
-  }
-
-  checkMasterMenu() {
-    if (this.user.role === 'SUPER_ADMIN') {
-      const masterMenu: PoMenuItem = {
-        label: 'Gestão SaaS Master',
-        icon: 'an an-gear',
-        subItems: [
-          { label: 'Empresas (Tenants)', link: '/saas/tenants' },
-          { label: 'Planos de Assinatura', link: '/saas/plans' },
-          { label: 'Matriz de Recursos', link: '/saas/plans/matrix' },
-          { label: 'Catálogo de Rotinas', link: '/saas/routines' },
-          { label: 'Arquitetura / Metadados', link: '/saas/metadata-editor' },
-        ]
-      };
-
-      const publicDataMenu: PoMenuItem = {
-        label: 'Dados Públicos RFB',
-        icon: 'an an-share-nodes',
-        subItems: [
-          { label: 'Empresas (RFB)', link: '/saas/cnpj/empresas' },
-          { label: 'Estabelecimentos', link: '/saas/cnpj/estabelecimentos' },
-          { label: 'CNAEs (Fiscal)', link: '/app/auxiliary/cnaes' },
-          { label: 'Países (BACEN)', link: '/app/auxiliary/countries' },
-          { label: 'Estados (IBGE)', link: '/app/auxiliary/states' },
-          { label: 'Municípios (IBGE)', link: '/app/auxiliary/cities' },
-          { label: 'CEPs (Cache)', link: '/app/auxiliary/ceps' }
-        ]
-      };
-
-      if (!this.menus.find(m => m.label === masterMenu.label)) {
-        this.menus.push(masterMenu);
-      }
-      if (!this.menus.find(m => m.label === publicDataMenu.label)) {
-        this.menus.push(publicDataMenu);
-      }
-    }
   }
 
   logout() {
