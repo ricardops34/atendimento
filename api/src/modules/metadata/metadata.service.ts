@@ -34,12 +34,23 @@ export class MetadataService {
   }
 
   async getEntityMetadata(entityName: string, tenantId: string, userLevel: number = 1) {
-    const entity = await this.prisma.metadataEntity.findUnique({
+    // 1. Tenta buscar metadados específicos do Tenant
+    let entity = await this.prisma.metadataEntity.findUnique({
       where: { name_tenantId: { name: entityName, tenantId } },
       include: {
         fields: { orderBy: { order: 'asc' } }
       }
     });
+
+    // 2. Se não encontrar, tenta buscar metadados "Globais" (Tenant Mestre ou sem tenantId se permitido)
+    if (!entity) {
+      entity = await this.prisma.metadataEntity.findFirst({
+        where: { name: entityName, type: 'S' }, // 'S' de System/Global
+        include: {
+          fields: { orderBy: { order: 'asc' } }
+        }
+      });
+    }
 
     if (!entity) return this.generateDefaultMetadata(entityName);
 
@@ -56,7 +67,8 @@ export class MetadataService {
         visible: f.isActiveList === 'S',
         required: f.isActiveForm === 'S',
         help: f.helpText,
-        mask: f.mask
+        mask: f.mask,
+        filter: true // Habilita filtro por padrão para metadados de sistema
       }))
     };
   }
@@ -98,6 +110,44 @@ export class MetadataService {
   }
 
   private generateDefaultMetadata(entityName: string) {
-    return { name: entityName, title: entityName.toUpperCase(), fields: [], isDefault: true };
+    const defaults: any = {
+      users: [
+        { property: 'id', key: true, visible: false },
+        { property: 'name', label: 'Nome', filter: true, gridColumns: 6 },
+        { property: 'email', label: 'E-mail', filter: true, gridColumns: 6 },
+        { property: 'level', label: 'Nível', type: 'number', filter: true },
+        { property: 'createdAt', label: 'Criado em', type: 'date' }
+      ],
+      plans: [
+        { property: 'id', key: true, visible: false },
+        { property: 'name', label: 'Nome do Plano', filter: true },
+        { property: 'maxUsers', label: 'Limite Usuários', type: 'number' },
+        { property: 'maxBranches', label: 'Limite Filiais', type: 'number' },
+        { property: 'createdAt', label: 'Criado em', type: 'date' }
+      ],
+      tenants: [
+        { property: 'id', key: true, visible: false },
+        { property: 'name', label: 'Nome da Organização', filter: true },
+        { property: 'domain', label: 'Domínio', filter: true },
+        { property: 'status', label: 'Status', filter: true },
+        { property: 'createdAt', label: 'Desde', type: 'date' }
+      ],
+      cnaes: [
+        { property: 'code', label: 'Código CNAE', filter: true, key: true },
+        { property: 'description', label: 'Descrição da Atividade', filter: true }
+      ],
+      countries: [
+        { property: 'code', label: 'Código BACEN', filter: true, key: true },
+        { property: 'name', label: 'Nome do País', filter: true },
+        { property: 'isoCode', label: 'ISO (Alpha-3)', filter: true }
+      ]
+    };
+
+    return {
+      name: entityName,
+      title: entityName.toUpperCase(),
+      fields: defaults[entityName] || [],
+      isDefault: true
+    };
   }
 }

@@ -47,8 +47,8 @@ import { CoreService } from '../../core/services/core.service';
   `,
   styles: [`
     .po-main-container {
-      padding-top: 50px;
-      height: calc(100vh - 50px);
+      padding-top: 64px;
+      height: calc(100vh - 64px);
       overflow-y: auto;
     }
   `]

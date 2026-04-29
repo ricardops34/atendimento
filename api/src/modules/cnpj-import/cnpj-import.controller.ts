@@ -1,13 +1,19 @@
-import { Controller, Post, Get, Body } from '@nestjs/common';
+import { Controller, Post, Get, Body, UseGuards } from '@nestjs/common';
 import { CnpjImportService } from './cnpj-import.service';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
 
 @ApiTags('CNPJ Import')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('cnpj/import')
 export class CnpjImportController {
   constructor(private readonly importService: CnpjImportService) {}
 
   @Post('start')
+  @Roles('SUPER_ADMIN')
   @ApiOperation({ summary: 'Inicia importação de dados da RFB' })
   async startImport(
     @Body() body: { type: 'EMPRESAS' | 'ESTABELECIMENTOS', folder: string, files: string[] }

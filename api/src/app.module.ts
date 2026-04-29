@@ -23,6 +23,7 @@ import { AuditInterceptor } from './common/interceptors/audit.interceptor';
 import { RoutinesModule } from './modules/routines/routines.module';
 import { CnpjModule } from './modules/cnpj/cnpj.module';
 import { CnpjImportModule } from './modules/cnpj-import/cnpj-import.module';
+import { SystemSeedService } from './modules/system-seed.service';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { CnpjImportModule } from './modules/cnpj-import/cnpj-import.module';
       provide: APP_INTERCEPTOR,
       useClass: AuditInterceptor,
     },
+    SystemSeedService,
   ],
 })
 export class AppModule {}

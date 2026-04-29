@@ -14,22 +14,29 @@ export class CnpjImportService {
   constructor(private prisma: PrismaService) {}
 
   async startImport(type: 'EMPRESAS' | 'ESTABELECIMENTOS', folder: string, files: string[]) {
-    const importTask = await this.prisma.importStatus.create({
-      data: {
-        type: `RFB_${type}`,
-        status: 'PROCESSING',
-        totalFiles: files.length,
-        currentFile: 0,
-        message: `Iniciando importação de ${type}...`,
-      },
-    });
+    this.logger.log(`Solicitação de importação: ${type} - Pasta: ${folder} - Arquivos: ${files.length}`);
+    
+    try {
+      const importTask = await this.prisma.importStatus.create({
+        data: {
+          type: `RFB_${type}`,
+          status: 'PROCESSING',
+          totalFiles: files.length,
+          currentFile: 0,
+          message: `Iniciando importação de ${type}...`,
+        },
+      });
 
-    // Roda em background sem dar await no processo total
-    this.runImportTask(importTask.id, type, folder, files).catch(err => {
-      this.logger.error(`Erro na tarefa de importação ${importTask.id}: ${err.message}`);
-    });
+      // Roda em background sem dar await no processo total
+      this.runImportTask(importTask.id, type, folder, files).catch(err => {
+        this.logger.error(`Erro na tarefa de importação ${importTask.id}: ${err.message}`);
+      });
 
-    return importTask;
+      return importTask;
+    } catch (error) {
+      this.logger.error(`Falha ao criar tarefa de importação: ${error.message}`);
+      throw new Error(`Erro interno ao registrar tarefa: ${error.message}`);
+    }
   }
 
   private async runImportTask(taskId: string, type: string, folder: string, files: string[]) {

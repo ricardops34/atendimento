@@ -9,72 +9,61 @@ export class MenuService implements OnModuleInit {
     await this.seedInitialMenus();
   }
 
-  async getMenuByRole(role: string) {
-    const allItems = await this.prisma.menu.findMany({
-      where: {
-        active: true,
-        roles: { has: role }
-      },
-      orderBy: { order: 'asc' }
+  async getMenu(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { role: true },
     });
 
-    const sidebarItems = allItems.filter(i => i.type === 'SIDEBAR');
-    const toolbarItems = allItems.filter(i => i.type === 'TOOLBAR');
+    if (!user) return [];
 
-    return {
-      menus: this.buildMenuTree(sidebarItems),
-      actions: toolbarItems.map(i => ({
-        label: i.name,
-        icon: i.icon,
-        action: i.link ? () => {} : undefined, // No front trataremos o link
-        url: i.link
-      }))
-    };
+    const userRole = user.role?.name || (user.level === 9 ? 'SUPER_ADMIN' : 'USER');
+
+    const menus = await this.prisma.menu.findMany({
+      where: { active: true },
+      orderBy: { order: 'asc' },
+    });
+
+    // Filtra por permissão
+    const filteredMenus = menus.filter((menu) => 
+      menu.roles.includes(userRole) || menu.roles.includes('USER')
+    );
+
+    // Agrupa por módulo e grupos
+    return this.buildMenuTree(filteredMenus);
   }
 
-  private buildMenuTree(items: any[]) {
-    const menuTree: any[] = [];
-    const groups: { [key: string]: any } = {};
+  private buildMenuTree(menus: any[]) {
+    const menuTree: any = {
+      sidebar: [],
+      toolbar: []
+    };
 
-    items.forEach(item => {
-      // Se não tem grupo, é um item raiz
-      if (!item.group) {
-        menuTree.push({
-          label: item.name,
-          link: item.link,
-          icon: item.icon,
-          badge: item.isCloud ? { value: 'Nuvem', color: 'color-01' } : undefined
-        });
-        return;
-      }
-
-      // Se tem grupo, organiza em sub-itens
-      if (!groups[item.group]) {
-        groups[item.group] = {
-          label: item.group,
-          icon: 'an an-folder',
-          subItems: []
-        };
-        menuTree.push(groups[item.group]);
-      }
-
-      // Suporte básico a subgrupo (nível 3)
-      if (item.subGroup) {
-        let subGroup = groups[item.group].subItems.find(s => s.label === item.subGroup);
-        if (!subGroup) {
-          subGroup = { label: item.subGroup, subItems: [] };
-          groups[item.group].subItems.push(subGroup);
+    menus.forEach(menu => {
+      if (menu.type === 'SIDEBAR') {
+        if (menu.group) {
+          let group = menuTree.sidebar.find((i: any) => i.label === menu.group);
+          if (!group) {
+            group = { label: menu.group, icon: 'an an-folder', subItems: [] };
+            menuTree.sidebar.push(group);
+          }
+          group.subItems.push({
+            label: menu.name,
+            link: menu.link,
+            icon: menu.icon
+          });
+        } else {
+          menuTree.sidebar.push({
+            label: menu.name,
+            link: menu.link,
+            icon: menu.icon
+          });
         }
-        subGroup.subItems.push({
-          label: item.name,
-          link: item.link,
-          icon: item.icon
-        });
       } else {
-        groups[item.group].subItems.push({
-          label: item.name,
-          link: item.link,
-          icon: item.icon
+        menuTree.toolbar.push({
+          label: menu.name,
+          link: menu.link,
+          icon: menu.icon
         });
       }
     });
@@ -82,21 +71,53 @@ export class MenuService implements OnModuleInit {
     return menuTree;
   }
 
-  async seedInitialMenus() {
-    const count = await this.prisma.menu.count();
-    if (count > 0) return;
+  async findAll() {
+    return this.prisma.menu.findMany({
+      orderBy: { order: 'asc' }
+    });
+  }
 
+  async create(data: any) {
+    return this.prisma.menu.create({ data });
+  }
+
+  async update(id: string, data: any) {
+    return this.prisma.menu.update({
+      where: { id },
+      data
+    });
+  }
+
+  async remove(id: string) {
+    return this.prisma.menu.delete({
+      where: { id }
+    });
+  }
+
+  async seedInitialMenus() {
+    // Limpa menus do CNPJ para garantir unificação
+    await this.prisma.menu.deleteMany({
+      where: { group: 'Dados Públicos RFB' }
+    });
+
+    const count = await this.prisma.menu.count();
+    
+    // Se já existem outros menus, apenas garante o unificado do CNPJ
+    if (count > 0) {
+      await this.prisma.menu.create({
+        data: { module: 'SAAS', type: 'SIDEBAR', group: 'Dados Públicos RFB', name: 'Empresas (RFB)', link: '/saas/cnpj/estabelecimentos', icon: 'an an-building', order: 100, roles: ['SUPER_ADMIN'] }
+      });
+      return;
+    }
+
+    // Se estiver vazio, cria tudo
     await this.prisma.menu.createMany({
       data: [
-        // Sidebar
         { module: 'SISTEMA', type: 'SIDEBAR', group: null, name: 'Dashboard', link: '/dashboard', icon: 'an an-chart-line', order: 1, roles: ['USER', 'ADMIN', 'SUPER_ADMIN'] },
-        
-        // Toolbar (Header Moderno)
         { module: 'SISTEMA', type: 'TOOLBAR', name: 'Configurações', link: '/settings', icon: 'an an-gear', order: 1, roles: ['ADMIN', 'SUPER_ADMIN'] },
         { module: 'SISTEMA', type: 'TOOLBAR', name: 'Apps', link: null, icon: 'an an-grid-four', order: 2, roles: ['USER', 'ADMIN', 'SUPER_ADMIN'] },
-        { module: 'SISTEMA', type: 'TOOLBAR', name: 'Notificações', link: '/notifications', icon: 'an an-bell', order: 3, roles: ['USER', 'ADMIN', 'SUPER_ADMIN'] },
-
-        // Dados Públicos (Unificados)
+        { module: 'SAAS', type: 'SIDEBAR', group: 'Gestão SaaS', name: 'Metadados', link: '/saas/metadata-editor', icon: 'an an-database', order: 10, roles: ['SUPER_ADMIN'] },
+        { module: 'SAAS', type: 'SIDEBAR', group: 'Gestão SaaS', name: 'Menus', link: '/saas/menu', icon: 'an an-list', order: 11, roles: ['SUPER_ADMIN'] },
         { module: 'SAAS', type: 'SIDEBAR', group: 'Dados Públicos RFB', name: 'Empresas (RFB)', link: '/saas/cnpj/estabelecimentos', icon: 'an an-building', order: 100, roles: ['SUPER_ADMIN'] },
       ]
     });

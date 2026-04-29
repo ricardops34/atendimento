@@ -18,9 +18,11 @@ import { CoreService } from '../../../core/services/core.service';
           [p-striped]="true"
           p-container="light"
         >
-          <ng-template po-table-column-template [p-property]="'routine'" let-value>
-            <strong>{{ value.label }}</strong><br>
-            <small class="po-text-color-07">{{ value.module }}</small>
+          <ng-template po-table-column-template p-property="routine" let-value>
+            <div class="po-p-1">
+              <strong>{{ value?.label || 'Sem Nome' }}</strong><br>
+              <small class="po-text-color-07">{{ value?.module || 'Global' }}</small>
+            </div>
           </ng-template>
 
           <!-- Template dinâmico para os planos será injetado via colunas -->
