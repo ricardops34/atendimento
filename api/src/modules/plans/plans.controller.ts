@@ -1,10 +1,10 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { PlansService } from './plans.service';
-import { Prisma } from '@prisma/client';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @ApiTags('Plans (SaaS Admin)')
 @ApiBearerAuth()
@@ -17,9 +17,9 @@ export class PlansController {
   ) {}
 
   @Post()
-  @Roles('SUPER_ADMIN')
+  @Roles('ADMIN_SAAS')
   @ApiOperation({ summary: 'Criar novo plano' })
-  create(@Body() data: Prisma.PlanCreateInput) {
+  async create(@Body() data: any) {
     return this.plansService.create(data);
   }
 

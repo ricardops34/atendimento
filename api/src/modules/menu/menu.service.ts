@@ -47,7 +47,7 @@ export class MenuService implements OnModuleInit {
 
       // Se o menu tem um link, verifica se esse link está no catálogo de rotinas do Plano
       if (menu.link && menu.link !== '/dashboard') {
-        return allowedRoutineLinks.some(link => menu.link.startsWith(link));
+        return allowedRoutineLinks.some(link => link && menu.link!.startsWith(link));
       }
 
       return true;
