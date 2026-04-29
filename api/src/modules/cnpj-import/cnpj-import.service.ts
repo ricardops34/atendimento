@@ -2,9 +2,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import axios from 'axios';
 import * as unzipper from 'unzipper';
-import * as csv from 'csv-parser';
 import * as iconv from 'iconv-lite';
 import { Readable } from 'stream';
+const csv = require('csv-parser');
 
 @Injectable()
 export class CnpjImportService {
@@ -83,7 +83,7 @@ export class CnpjImportService {
           const fileName = entry.path;
           this.logger.log(`Processando arquivo interno: ${fileName}`);
 
-          let buffer = [];
+          let buffer: any[] = [];
           const batchSize = 1000;
 
           entry
