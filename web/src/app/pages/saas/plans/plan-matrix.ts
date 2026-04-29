@@ -78,8 +78,12 @@ export class PlanMatrixComponent implements OnInit {
         routineId: r.id
       };
 
-      // Marca se a rotina está no plano (Lógica precisa vir do backend em uma rota de matrix)
-      // Por enquanto simulando
+      // Verifica para cada plano se a rotina está presente
+      this.plans.forEach(plan => {
+        const hasRoutine = plan.routines.some((pr: any) => pr.routineId === r.id);
+        row[`plan_${plan.id}`] = hasRoutine;
+      });
+
       return row;
     });
   }

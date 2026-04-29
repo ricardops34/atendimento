@@ -64,7 +64,30 @@ export class SystemSeedService implements OnModuleInit {
         }
       });
 
-      // 4. Criar CNAEs Globais da Matriz
+      // 4. Criar Rotinas Core
+      const routines = [
+        { name: 'DASHBOARD', label: 'Dashboard', module: 'SISTEMA', link: '/dashboard', icon: 'an an-chart-line' },
+        { name: 'CNPJ_RFB', label: 'Dados Públicos RFB', module: 'SAAS', link: '/saas/cnpj/estabelecimentos', icon: 'an an-building' },
+        { name: 'METADATA_ADMIN', label: 'Metadados', module: 'SAAS', link: '/saas/metadata-editor', icon: 'an an-database' },
+        { name: 'MENU_ADMIN', label: 'Menus', module: 'SAAS', link: '/saas/menu', icon: 'an an-list' },
+      ];
+
+      for (const r of routines) {
+        const routine = await this.prisma.routine.upsert({
+          where: { name: r.name },
+          update: r,
+          create: r
+        });
+
+        // Vincula a rotina ao Plano Pro
+        await this.prisma.planRoutine.upsert({
+          where: { planId_routineId: { planId: plan.id, routineId: routine.id } },
+          update: {},
+          create: { planId: plan.id, routineId: routine.id }
+        });
+      }
+
+      // 5. Criar CNAEs Globais da Matriz
       const cnaes = [
         { code: '6209100', description: 'Suporte técnico, manutenção e outros serviços em tecnologia da informação' },
         { code: '6201501', description: 'Desenvolvimento de programas de computador sob encomenda' },

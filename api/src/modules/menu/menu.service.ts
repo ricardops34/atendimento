@@ -19,15 +19,39 @@ export class MenuService implements OnModuleInit {
 
     const userRole = user.level === 9 ? 'ADMIN_SAAS' : (user.role?.name || 'USER');
 
+    // Busca o plano do tenant e suas rotinas ativas
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id: user.tenantId },
+      include: {
+        plan: {
+          include: { routines: { include: { routine: true } } }
+        }
+      }
+    });
+
+    const allowedRoutineLinks = tenant?.plan.routines.map(pr => pr.routine.link) || [];
+
     const menus = await this.prisma.menu.findMany({
       where: { active: true },
       orderBy: { order: 'asc' },
     });
 
-    // Filtra por permissão (ADMIN_SAAS vê tudo, outros conforme o banco)
-    const filteredMenus = menus.filter((menu) => 
-      userRole === 'ADMIN_SAAS' || menu.roles.includes(userRole) || menu.roles.includes('USER')
-    );
+    // Filtra por permissão e por disponibilidade no Plano
+    const filteredMenus = menus.filter((menu) => {
+      // ADMIN_SAAS sempre vê tudo
+      if (userRole === 'ADMIN_SAAS') return true;
+
+      // Verifica se o perfil tem acesso
+      const hasRoleAccess = menu.roles.includes(userRole) || menu.roles.includes('USER');
+      if (!hasRoleAccess) return false;
+
+      // Se o menu tem um link, verifica se esse link está no catálogo de rotinas do Plano
+      if (menu.link && menu.link !== '/dashboard') {
+        return allowedRoutineLinks.some(link => menu.link.startsWith(link));
+      }
+
+      return true;
+    });
 
     // Agrupa por módulo e grupos
     return this.buildMenuTree(filteredMenus);

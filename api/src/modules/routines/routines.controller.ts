@@ -13,7 +13,7 @@ export class RoutinesController {
   constructor(private readonly routinesService: RoutinesService) {}
 
   @Get('catalog')
-  @Roles('SUPER_ADMIN')
+  @Roles('ADMIN_SAAS')
   @ApiOperation({ summary: 'Listar catálogo global de rotinas (SaaS Admin)' })
   async getCatalog() {
     return this.routinesService.findAll();
@@ -26,14 +26,14 @@ export class RoutinesController {
   }
 
   @Post('access-control')
-  @Roles('ADMIN', 'SUPER_ADMIN')
+  @Roles('ADMIN', 'ADMIN_SAAS')
   @ApiOperation({ summary: 'Salvar regras de acesso granular' })
   async saveAccess(@Body() data: any, @Request() req: any) {
     return this.routinesService.saveAccessControl(req.user.tenantId, data);
   }
 
   @Post('seed')
-  @Roles('SUPER_ADMIN')
+  @Roles('ADMIN_SAAS')
   @ApiOperation({ summary: 'Sincronizar rotinas nativas do sistema' })
   async seed() {
     await this.routinesService.seedSystemRoutines();
