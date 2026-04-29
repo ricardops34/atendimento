@@ -13,7 +13,6 @@ import { CoreService } from '../../../core/services/core.service';
       [p-title]="'Cadastro de Rotina do Sistema'"
       [p-service-api]="serviceApi"
       [p-fields]="fields"
-      [p-value]="routine"
     >
     </po-page-dynamic-edit>
   `

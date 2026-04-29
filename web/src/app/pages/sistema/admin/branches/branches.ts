@@ -30,7 +30,8 @@ export class BranchesComponent implements OnInit {
   readonly actions: PoPageDynamicTableActions = {
     new: '/app/branches/new',
     edit: '/app/branches/edit/:id',
-    remove: true
+    remove: true,
+    removeAll: true
   };
 
   readonly fields: Array<PoPageDynamicTableField> = [

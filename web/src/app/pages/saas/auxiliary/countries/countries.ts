@@ -24,7 +24,8 @@ export class CountriesComponent {
   readonly actions: PoPageDynamicTableActions = {
     new: '/saas/auxiliary/countries/new',
     edit: '/saas/auxiliary/countries/edit/:id',
-    remove: true
+    remove: true,
+    removeAll: true
   };
 
   readonly fields: Array<PoPageDynamicTableField> = [

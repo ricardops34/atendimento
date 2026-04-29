@@ -31,9 +31,9 @@ export class TenantsComponent implements OnInit {
   
   // Definição das Ações de CRUD
   readonly actions: PoPageDynamicTableActions = {
-    new: '/admin/tenants/new',
-    edit: '/admin/tenants/edit/:id',
-    remove: true, // Habilita a exclusão direta
+    new: '/saas/tenants/new',
+    edit: '/saas/tenants/edit/:id',
+    remove: true,
     removeAll: true
   };
 

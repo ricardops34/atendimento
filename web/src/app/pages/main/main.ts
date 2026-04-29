@@ -70,12 +70,55 @@ export class MainComponent implements OnInit {
     this.http.get(`${this.coreService.apiUrl}/menu`).subscribe({
       next: (menu: any) => {
         this.menus = menu;
+        this.checkMasterMenu();
       },
       error: () => {
         console.error('Falha ao carregar menu dinâmico');
-        this.menus = [{ label: 'Dashboard', link: '/admin/dashboard', icon: 'po-icon-chart-area' }];
+        this.menus = [
+          { label: 'Dashboard', link: '/dashboard', icon: 'po-icon-chart-area' },
+          { label: 'Usuários', link: '/app/users', icon: 'po-icon-users' },
+          { label: 'Filiais', link: '/app/branches', icon: 'po-icon-company' }
+        ];
+        this.checkMasterMenu();
       }
     });
+  }
+
+  checkMasterMenu() {
+    if (this.user.role === 'SUPER_ADMIN') {
+      const masterMenu: PoMenuItem = {
+        label: 'Gestão SaaS Master',
+        icon: 'po-icon-settings',
+        subItems: [
+          { label: 'Empresas (Tenants)', link: '/saas/tenants' },
+          { label: 'Planos de Assinatura', link: '/saas/plans' },
+          { label: 'Matriz de Recursos', link: '/saas/plans/matrix' },
+          { label: 'Catálogo de Rotinas', link: '/saas/routines' },
+          { label: 'Arquitetura / Metadados', link: '/saas/metadata-editor' },
+          {
+            label: 'Dados Públicos CNPJ',
+            subItems: [
+              { label: 'Empresas (RFB)', link: '/saas/cnpj/empresas' },
+              { label: 'Estabelecimentos', link: '/saas/cnpj/estabelecimentos' }
+            ]
+          },
+          {
+            label: 'Cadastros Auxiliares',
+            subItems: [
+              { label: 'Países (BACEN)', link: '/app/auxiliary/countries' },
+              { label: 'Estados (IBGE)', link: '/app/auxiliary/states' },
+              { label: 'Municípios (IBGE)', link: '/app/auxiliary/cities' },
+              { label: 'CNAEs (Fiscal)', link: '/app/auxiliary/cnaes' },
+              { label: 'CEPs (Cache)', link: '/app/auxiliary/ceps' }
+            ]
+          }
+        ]
+      };
+
+      if (!this.menus.find(m => m.label === masterMenu.label)) {
+        this.menus.push(masterMenu);
+      }
+    }
   }
 
   logout() {

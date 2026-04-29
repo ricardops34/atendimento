@@ -4,12 +4,12 @@ import { PoPageDynamicTableModule, PoPageDynamicTableField, PoPageDynamicTableAc
 import { CoreService } from '../../../../core/services/core.service';
 
 @Component({
-  selector: 'app-cnaes',
+  selector: 'app-cities',
   standalone: true,
   imports: [CommonModule, PoPageDynamicTableModule],
   template: `
     <po-page-dynamic-table
-      p-title="Catálogo Global: CNAEs"
+      p-title="Cadastro Global: Municípios (IBGE)"
       [p-service-api]="serviceApi"
       [p-fields]="fields"
       [p-actions]="actions"
@@ -17,20 +17,22 @@ import { CoreService } from '../../../../core/services/core.service';
     </po-page-dynamic-table>
   `
 })
-export class CnaesComponent {
+export class CitiesComponent {
   private coreService = inject(CoreService);
-  readonly serviceApi = `${this.coreService.apiUrl}/auxiliary/cnaes`;
+  readonly serviceApi = `${this.coreService.apiUrl}/auxiliary/cities`;
   
   readonly actions: PoPageDynamicTableActions = {
-    new: '/saas/auxiliary/cnaes/new',
-    edit: '/saas/auxiliary/cnaes/edit/:id',
+    new: '/app/auxiliary/cities/new',
+    edit: '/app/auxiliary/cities/edit/:id',
     remove: true,
     removeAll: true
   };
 
   readonly fields: Array<PoPageDynamicTableField> = [
     { property: 'id', key: true, visible: false },
-    { property: 'code', label: 'Código CNAE', gridColumns: 3, filter: true },
-    { property: 'description', label: 'Descrição da Atividade', gridColumns: 9, filter: true }
+    { property: 'code', label: 'Código IBGE', gridColumns: 3, filter: true },
+    { property: 'name', label: 'Nome do Município', gridColumns: 5, filter: true },
+    { property: 'state.uf', label: 'UF', gridColumns: 2, filter: true },
+    { property: 'stateId', label: 'ID Estado', visible: false }
   ];
 }

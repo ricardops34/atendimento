@@ -87,7 +87,7 @@ export class BranchesEditComponent implements OnInit {
   ];
 
   fieldsFiscal: Array<PoDynamicFormField> = [
-    { property: 'zipCode', label: 'CEP Fiscal', gridColumns: 3, mask: '99999-999' },
+    { property: 'zipCode', label: 'CEP Fiscal', gridColumns: 3, mask: '99999-999', change: () => this.searchCep('fiscal') },
     { property: 'address', label: 'Logradouro', gridColumns: 6 },
     { property: 'number', label: 'Número', gridColumns: 3 },
     { property: 'complement', label: 'Complemento', gridColumns: 6 },
@@ -98,7 +98,7 @@ export class BranchesEditComponent implements OnInit {
   ];
 
   fieldsBilling: Array<PoDynamicFormField> = [
-    { property: 'billingZipCode', label: 'CEP Cobrança', gridColumns: 3, mask: '99999-999' },
+    { property: 'billingZipCode', label: 'CEP Cobrança', gridColumns: 3, mask: '99999-999', change: () => this.searchCep('billing') },
     { property: 'billingAddress', label: 'Logradouro', gridColumns: 6 },
     { property: 'billingNumber', label: 'Número', gridColumns: 3 },
     { property: 'billingComplement', label: 'Complemento', gridColumns: 6 },
@@ -127,6 +127,31 @@ export class BranchesEditComponent implements OnInit {
     this.http.get(`${this.coreService.apiUrl}/branches/${this.id}`).subscribe((data: any) => {
       this.branch = data;
     });
+  }
+
+  searchCep(type: 'fiscal' | 'billing') {
+    const cep = (type === 'fiscal' ? this.branch.zipCode : this.branch.billingZipCode)?.replace(/\D/g, '');
+    
+    if (cep && cep.length === 8) {
+      this.http.get(`${this.coreService.apiUrl}/auxiliary/cep/${cep}`).subscribe({
+        next: (data: any) => {
+          if (type === 'fiscal') {
+            this.branch.address = data.address;
+            this.branch.neighborhood = data.neighborhood;
+            this.branch.city = data.city?.name || data.cityName;
+            this.branch.state = data.state?.uf || data.stateUf;
+          } else {
+            this.branch.billingAddress = data.address;
+            this.branch.billingNeighborhood = data.neighborhood;
+            this.branch.billingCity = data.city?.name || data.cityName;
+            this.branch.billingState = data.state?.uf || data.stateUf;
+          }
+          // Forçar atualização do objeto para o po-dynamic-form refletir as mudanças
+          this.branch = { ...this.branch };
+        },
+        error: () => this.notification.warning('CEP não encontrado ou erro na busca.')
+      });
+    }
   }
 
   save() {

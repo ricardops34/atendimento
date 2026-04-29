@@ -21,6 +21,7 @@ import { RedisModule } from '@nestjs-modules/ioredis';
 import { TenantInterceptor } from './common/interceptors/tenant.interceptor';
 import { AuditInterceptor } from './common/interceptors/audit.interceptor';
 import { RoutinesModule } from './modules/routines/routines.module';
+import { CnpjModule } from './modules/cnpj/cnpj.module';
 
 @Module({
   imports: [
@@ -43,7 +44,8 @@ import { RoutinesModule } from './modules/routines/routines.module';
     CustomRoutinesModule,
     DynamicRecordsModule,
     RolesModule,
-    RoutinesModule
+    RoutinesModule,
+    CnpjModule
   ],
   controllers: [AppController],
   providers: [

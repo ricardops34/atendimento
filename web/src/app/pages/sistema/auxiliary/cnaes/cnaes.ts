@@ -22,8 +22,8 @@ export class CnaesComponent {
   readonly serviceApi = `${this.coreService.apiUrl}/auxiliary/cnaes`;
   
   readonly actions: PoPageDynamicTableActions = {
-    new: '/saas/auxiliary/cnaes/new',
-    edit: '/saas/auxiliary/cnaes/edit/:id',
+    new: '/app/auxiliary/cnaes/new',
+    edit: '/app/auxiliary/cnaes/edit/:id',
     remove: true,
     removeAll: true
   };

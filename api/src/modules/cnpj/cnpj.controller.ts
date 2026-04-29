@@ -1,0 +1,56 @@
+import { Controller, Get, Post, Query, Param, Body, UseGuards } from '@nestjs/common';
+import { CnpjService } from './cnpj.service';
+import { CnpjImportService } from './cnpj-import.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+
+@Controller('cnpj')
+@UseGuards(JwtAuthGuard)
+export class CnpjController {
+  constructor(
+    private readonly cnpjService: CnpjService,
+    private readonly importService: CnpjImportService
+  ) {}
+
+  @Get('empresas')
+  async getEmpresas(
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 10,
+    @Query('filter') filter?: string
+  ) {
+    const skip = (page - 1) * pageSize;
+    const { items, total } = await this.cnpjService.findAllEmpresas({ 
+      skip: Number(skip), 
+      take: Number(pageSize), 
+      filter 
+    });
+
+    return {
+      items,
+      hasNext: total > page * pageSize
+    };
+  }
+
+  @Get('estabelecimentos')
+  async getEstabelecimentos(
+    @Query('page') page: number = 1,
+    @Query('pageSize') pageSize: number = 10,
+    @Query('filter') filter?: string
+  ) {
+    const skip = (page - 1) * pageSize;
+    const { items, total } = await this.cnpjService.findAllEstabelecimentos({ 
+      skip: Number(skip), 
+      take: Number(pageSize), 
+      filter 
+    });
+
+    return {
+      items,
+      hasNext: total > page * pageSize
+    };
+  }
+
+  @Get('detalhes/:cnpjBasico')
+  async getDetalhes(@Param('cnpjBasico') cnpjBasico: string) {
+    return this.cnpjService.findOne(cnpjBasico);
+  }
+}

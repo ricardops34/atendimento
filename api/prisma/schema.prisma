@@ -273,3 +273,90 @@ model AuditLog {
   tenant      Tenant   @relation(fields: [tenantId], references: [id])
   createdAt   DateTime @default(now())
 }
+
+// --- DADOS PÚBLICOS CNPJ (RFB) ---
+
+model CnpjEmpresa {
+  cnpjBasico         String   @id
+  razaoSocial        String
+  naturezaJuridica   String
+  qualificacaoResp   String
+  capitalSocial      Float
+  porteEmpresa       String
+  enteFederativo     String?
+  estabelecimentos   CnpjEstabelecimento[]
+  socios             CnpjSocio[]
+  createdAt          DateTime @default(now())
+  @@index([razaoSocial])
+}
+
+model CnpjEstabelecimento {
+  id                    String   @id @default(uuid())
+  cnpjBasico           String
+  cnpjOrdem            String
+  cnpjDv               String
+  identificadorMatriz  Int      // 1-Matriz, 2-Filial
+  nomeFantasia         String?
+  situacaoCadastral    String
+  dataSituacao         String?
+  motivoSituacao       String?
+  nomeCidadeExterior   String?
+  paisId               String?
+  dataInicioAtividade  String?
+  cnaeFiscalPrincipal  String
+  cnaeFiscalSecundaria String?
+  tipoLogradouro       String?
+  logradouro           String?
+  numero               String?
+  complemento          String?
+  bairro               String?
+  cep                  String?
+  uf                   String?
+  municipio            String?
+  ddd1                 String?
+  telefone1            String?
+  ddd2                 String?
+  telefone2            String?
+  dddFax               String?
+  fax                  String?
+  email                String?
+  situacaoEspecial     String?
+  dataSituacaoEspecial String?
+  empresa              CnpjEmpresa @relation(fields: [cnpjBasico], references: [cnpjBasico])
+  createdAt          DateTime @default(now())
+
+  @@index([cnpjBasico])
+  @@index([nomeFantasia])
+  @@index([cep])
+}
+
+model CnpjSocio {
+  id                    String   @id @default(uuid())
+  cnpjBasico           String
+  identificadorSocio   Int
+  nomeSocio            String
+  cnpjCpfSocio         String?
+  qualificacaoSocio    String?
+  dataEntradaSociedade String?
+  paisId               String?
+  representanteLegal   String?
+  nomeRepresentante    String?
+  qualificacaoRepLegal String?
+  faixaEtaria          String?
+  empresa              CnpjEmpresa @relation(fields: [cnpjBasico], references: [cnpjBasico])
+  createdAt          DateTime @default(now())
+
+  @@index([cnpjBasico])
+  @@index([nomeSocio])
+}
+
+model CnpjAuxiliary {
+  id          String   @id @default(uuid())
+  type        String   // CNAE, MUNIC, PAIS, NATU, QUAL, MOTI
+  code        String
+  description String
+  createdAt   DateTime @default(now())
+
+  @@unique([type, code])
+  @@index([type])
+}

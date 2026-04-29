@@ -52,17 +52,35 @@ export class MetadataListComponent implements OnInit {
       ]
     },
     // Colunas de Ação com Ícones
-    { property: 'view', label: ' ', type: 'icon', icon: 'an an-list', action: (row: any) => this.viewMetadata(row), color: 'color-08', tooltip: 'Visualizar' },
-    { property: 'edit', label: ' ', type: 'icon', icon: 'an an-pencil-simple', action: (row: any) => this.editMetadata(row), color: 'color-07', tooltip: 'Editar Arquitetura' },
+    { 
+      property: 'view', 
+      label: ' ', 
+      type: 'icon', 
+      icons: [
+        { icon: 'an an-list', action: (row: any) => this.viewMetadata(row), color: 'color-08', tooltip: 'Visualizar' }
+      ]
+    },
+    { 
+      property: 'edit', 
+      label: ' ', 
+      type: 'icon', 
+      icons: [
+        { icon: 'an an-pencil-simple', action: (row: any) => this.editMetadata(row), color: 'color-07', tooltip: 'Editar Arquitetura' }
+      ]
+    },
     { 
       property: 'delete', 
       label: ' ', 
       type: 'icon', 
-      icon: 'an an-trash', 
-      action: (row: any) => this.deleteEntity(row), 
-      color: 'color-01', 
-      tooltip: 'Excluir',
-      disabled: (row: any) => row.type === 'SISTEMA' 
+      icons: [
+        { 
+          icon: 'an an-trash', 
+          action: (row: any) => this.deleteEntity(row), 
+          color: 'color-01', 
+          tooltip: 'Excluir',
+          disabled: (row: any) => row.type === 'SISTEMA' 
+        }
+      ]
     }
   ];
 
@@ -78,7 +96,7 @@ export class MetadataListComponent implements OnInit {
   }
 
   editMetadata(row: any) {
-    this.router.navigate([`/admin/metadata-editor/edit/${row.name}`]);
+    this.router.navigate([`/saas/metadata-editor/edit/${row.name}`]);
   }
 
   viewMetadata(row: any) { }

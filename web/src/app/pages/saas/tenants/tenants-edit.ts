@@ -13,7 +13,6 @@ import { CoreService } from '../../../core/services/core.service';
       [p-title]="'Gestão de Empresa (Grupo)'"
       [p-service-api]="serviceApi"
       [p-fields]="fields"
-      [p-value]="tenant"
     >
     </po-page-dynamic-edit>
   `

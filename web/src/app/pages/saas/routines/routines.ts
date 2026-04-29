@@ -35,11 +35,11 @@ export class RoutinesComponent implements OnInit {
     new: '/saas/routines/new',
     edit: '/saas/routines/edit/:id',
     remove: true,
+    removeAll: true,
     custom: [
       { 
         label: 'Sincronizar Sistema', 
-        action: () => this.syncSystem(), 
-        icon: 'po-icon-sync' 
+        action: () => this.syncSystem()
       }
     ]
   };

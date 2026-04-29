@@ -72,10 +72,38 @@ export class MetadataEditorComponent implements OnInit {
     { property: 'required', label: 'Obrigatório', type: 'boolean', width: '5%' },
 
     // Colunas de Ação
-    { property: 'up', label: ' ', type: 'icon', icon: 'an an-caret-circle-up', action: (row: any) => this.moveUp(row), color: 'color-08', tooltip: 'Subir' },
-    { property: 'down', label: ' ', type: 'icon', icon: 'an an-caret-circle-down', action: (row: any) => this.moveDown(row), color: 'color-08', tooltip: 'Descer' },
-    { property: 'edit', label: ' ', type: 'icon', icon: 'an an-pencil-simple', action: (row: any) => this.editField(row), color: 'color-07', tooltip: 'Editar Campo' },
-    { property: 'delete', label: ' ', type: 'icon', icon: 'an an-trash', action: (row: any) => this.removeField(row), color: 'color-01', tooltip: 'Remover' }
+    { 
+      property: 'up', 
+      label: ' ', 
+      type: 'icon', 
+      icons: [
+        { icon: 'an an-caret-circle-up', action: (row: any) => this.moveUp(row), color: 'color-08', tooltip: 'Subir' }
+      ]
+    },
+    { 
+      property: 'down', 
+      label: ' ', 
+      type: 'icon', 
+      icons: [
+        { icon: 'an an-caret-circle-down', action: (row: any) => this.moveDown(row), color: 'color-08', tooltip: 'Descer' }
+      ]
+    },
+    { 
+      property: 'edit', 
+      label: ' ', 
+      type: 'icon', 
+      icons: [
+        { icon: 'an an-pencil-simple', action: (row: any) => this.editField(row), color: 'color-07', tooltip: 'Editar Campo' }
+      ]
+    },
+    { 
+      property: 'delete', 
+      label: ' ', 
+      type: 'icon', 
+      icons: [
+        { icon: 'an an-trash', action: (row: any) => this.removeField(row), color: 'color-01', tooltip: 'Remover' }
+      ]
+    }
   ];
 
   ngOnInit() {
@@ -134,7 +162,7 @@ export class MetadataEditorComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/admin/metadata-editor']);
+    this.router.navigate(['/saas/metadata-editor']);
   }
 
   editField(row: any) { }
