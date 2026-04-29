@@ -14,41 +14,33 @@ model Plan {
   maxUsers          Int      @default(5)
   maxBranches       Int      @default(1)
   maxRecords        Int      @default(5000)
-  features          Json     
+  features          Json?    
   tenants           Tenant[]
+  routines          PlanRoutine[]
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
 
 model Tenant {
   id                String   @id @default(uuid())
-  name              String
+  name              String   // Nome do Grupo
   domain            String   @unique
-  connectionString  String?  
   logoUrl           String?  
-  themeConfig       Json?    
-  customLimits      Json?    
+  email             String?  
   status            TenantStatus @default(ACTIVE)
-  lastPaymentDate   DateTime?
-  nextBillingDate   DateTime?
-  trialEndsAt       DateTime?
+  isActive          Boolean  @default(true)
   planId            String
   plan              Plan     @relation(fields: [planId], references: [id])
-  isActive          Boolean  @default(true)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-
+  branches          Branch[]
   users             User[]
-  products          Product[]
   roles             Role[]
   entities          MetadataEntity[]
   metadataFields    MetadataField[]
-  customEntities    DynamicEntity[]
-  branches          Branch[]
-  customReports     CustomReport[]
-  apiKeys           ApiKey[]
-  customRoutines    CustomRoutine[] 
+  routines          TenantRoutine[]
+  accessControls    AccessControl[]
   auditLogs         AuditLog[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
 }
 
 enum TenantStatus {
@@ -58,147 +50,191 @@ enum TenantStatus {
   CANCELLED
 }
 
-// --- NOVAS TABELAS DE METADADOS ---
+// --- CADASTROS AUXILIARES (IBGE / FISCAL) ---
+
+model Country {
+  id        String   @id @default(uuid())
+  code      String   @unique // Código BACEN
+  name      String   
+  isoCode   String?  // Ex: BRA
+  branches  Branch[]
+  createdAt DateTime @default(now())
+}
+
+model State {
+  id        String   @id @default(uuid())
+  code      Int      @unique // Código IBGE
+  name      String   
+  uf        String   @unique // Sigla (SP, RJ...)
+  cities    City[]
+  createdAt DateTime @default(now())
+}
+
+model City {
+  id        String   @id @default(uuid())
+  code      Int      @unique // Código IBGE
+  name      String   
+  stateId   String
+  state     State    @relation(fields: [stateId], references: [id])
+  ceps      Cep[]
+  createdAt DateTime @default(now())
+}
+
+model Cep {
+  id           String   @id @default(uuid())
+  code         String   @unique
+  address      String?
+  neighborhood String?
+  cityId       String
+  city         City     @relation(fields: [cityId], references: [id])
+  createdAt    DateTime @default(now())
+}
+
+model Cnae {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  description String
+  branches    BranchCnae[]
+}
+
+// --- FIM AUXILIARES ---
+
+model Branch {
+  id                String   @id @default(uuid())
+  tenantId          String
+  tenant            Tenant   @relation(fields: [tenantId], references: [id])
+  isMain            Boolean  @default(false)
+  name              String   
+  tradeName         String?  
+  document          String   @unique 
+  personType        String   @default("J") 
+  stateRegistration String?  
+  foundationDate    DateTime? 
+  email             String?
+  phone             String?
+  responsibleName   String?
+  domain            String?  @unique
+  logoUrl           String?  
+  primaryColor      String?  @default("#003551")
+  secondaryColor    String?  @default("#ffffff")
+
+  // Endereço Fiscal
+  zipCode           String?
+  address           String?
+  number            String?
+  complement        String?
+  neighborhood      String?
+  city              String?
+  state             String?
+  countryId         String?
+  country           Country? @relation(fields: [countryId], references: [id])
+
+  // Endereço Cobrança
+  billingZipCode      String?
+  billingAddress      String?
+  billingNumber       String?
+  billingComplement   String?
+  billingNeighborhood String?
+  billingCity         String?
+  billingState        String?
+
+  cnaes             BranchCnae[]
+  users             User[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  @@index([tenantId])
+}
+
+model BranchCnae {
+  id          String   @id @default(uuid())
+  cnaeId      String
+  cnae        Cnae     @relation(fields: [cnaeId], references: [id])
+  isMain      Boolean  @default(false)
+  branchId    String
+  branch      Branch   @relation(fields: [branchId], references: [id])
+}
+
+model Routine {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  label       String   
+  module      String   
+  icon        String?  
+  link        String?  
+  type        String   @default("S")
+  levelMin    Int      @default(1)
+  plans       PlanRoutine[]
+  tenants     TenantRoutine[]
+  access      AccessControl[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PlanRoutine {
+  id          String   @id @default(uuid())
+  planId      String
+  plan        Plan     @relation(fields: [planId], references: [id])
+  routineId   String
+  routine     Routine  @relation(fields: [routineId], references: [id])
+  @@unique([planId, routineId])
+}
+
+model TenantRoutine {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  routineId   String
+  routine     Routine  @relation(fields: [routineId], references: [id])
+  isActive    Boolean  @default(true)
+  @@unique([tenantId, routineId])
+}
+
+model AccessControl {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  routineId   String
+  routine     Routine  @relation(fields: [routineId], references: [id])
+  targetType  String   
+  targetId    String   
+  canView     Boolean  @default(true)
+  canCreate   Boolean  @default(false)
+  canEdit     Boolean  @default(false)
+  canDelete   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
 
 model MetadataEntity {
   id          String   @id @default(uuid())
-  name        String   // Nome técnico (slug)
-  label       String   // Nome amigável
-  type        String   @default("U") // S=Sistema, U=Usuário
+  name        String   
+  label       String   
+  type        String   @default("U")
   tenantId    String
   tenant      Tenant   @relation(fields: [tenantId], references: [id])
   fields      MetadataField[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
   @@unique([name, tenantId])
-  @@index([tenantId])
 }
 
 model MetadataField {
   id                String   @id @default(uuid())
   entityId          String
   entity            MetadataEntity @relation(fields: [entityId], references: [id])
-  name              String   // Nome do campo (API/Banco)
-  type              String   // C=Caráter, D=Data, N=Numero, M=Memo, L=Logico, V=Virtual, S=Sistema
-  isSystem          String   @default("U") // S=Sistema, U=Usuário
-  
-  titleForm         String?  // Título Tela
-  titleList         String?  // Título Lista
-  helpText          String?  // Ajuda
+  name              String   
+  type              String   
+  isSystem          String   @default("U")
+  titleForm         String?  
+  titleList         String?  
+  helpText          String?  
   order             Int      @default(0)
-  defaultValueForm  String?  // Valor Padrão Tela
-  defaultValueList  String?  // Valor Padrão Lista
-  trigger           String?  // Gatilho
-  mask              String?  // Mascara
-  
-  isActiveForm      String   @default("S") // S=Habilitado, N=Desabilitado
-  isActiveList      String   @default("S") // S=Habilitado, N=Desabilitado
-  
+  isActiveForm      String   @default("S")
+  isActiveList      String   @default("S")
   tenantId          String
   tenant            Tenant   @relation(fields: [tenantId], references: [id])
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
-
-  @@index([entityId])
-  @@index([tenantId])
-}
-
-// --- FIM NOVAS TABELAS ---
-
-model AuditLog {
-  id          String   @id @default(uuid())
-  action      String
-  entity      String?
-  details     Json
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  tenantId    String
-  tenant      Tenant   @relation(fields: [tenantId], references: [id])
-  ipAddress   String?
-  createdAt   DateTime @default(now())
-}
-
-model CustomRoutine {
-  id          String   @id @default(uuid())
-  hookName    String   
-  version     Int      @default(1)
-  filePath    String   
-  description String?  
-  isActive    Boolean  @default(false)
-  tenantId    String
-  tenant      Tenant   @relation(fields: [tenantId], references: [id])
-  author      String?  
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  @@index([tenantId, hookName])
-}
-
-model ApiKey {
-  id          String   @id @default(uuid())
-  key         String   @unique
-  name        String
-  tenantId    String
-  tenant      Tenant   @relation(fields: [tenantId], references: [id])
-  permissions Json     
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  @@index([tenantId])
-}
-
-model CustomReport {
-  id          String   @id @default(uuid())
-  name        String
-  description String?
-  entity      String   
-  config      Json     
-  tenantId    String
-  tenant      Tenant   @relation(fields: [tenantId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  @@index([tenantId])
-}
-
-model Branch {
-  id          String   @id @default(uuid())
-  name        String
-  logoUrl     String?  
-  tenantId    String
-  tenant      Tenant   @relation(fields: [tenantId], references: [id])
-  users       User[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  @@index([tenantId])
-}
-
-model DynamicEntity {
-  id          String   @id @default(uuid())
-  name        String   
-  slug        String   
-  tenantId    String
-  tenant      Tenant   @relation(fields: [tenantId], references: [id])
-  fields      Json     
-  records     DynamicRecord[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  @@unique([slug, tenantId])
-  @@index([tenantId])
-}
-
-model DynamicRecord {
-  id                String   @id @default(uuid())
-  entityId          String
-  entity            DynamicEntity @relation(fields: [entityId], references: [id])
-  tenantId          String
-  parentId          String?  
-  parentEntity      String?  
-  data              Json     
-  createdAt         DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  @@index([entityId])
-  @@index([tenantId])
-  @@index([parentId])
 }
 
 model User {
@@ -209,15 +245,12 @@ model User {
   level     Int      @default(1)
   tenantId  String
   tenant    Tenant   @relation(fields: [tenantId], references: [id])
-  branchId  String?
-  branch    Branch?  @relation(fields: [branchId], references: [id])
   roleId    String?
   role      Role?    @relation(fields: [roleId], references: [id])
-  auditLogs AuditLog[]
+  branchId  String?
+  branch    Branch?  @relation(fields: [branchId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  @@index([tenantId])
-  @@index([branchId])
 }
 
 model Role {
@@ -225,30 +258,18 @@ model Role {
   name        String
   tenantId    String
   tenant      Tenant   @relation(fields: [tenantId], references: [id])
-  columnsConfig Json?    
   users       User[]
-  permissions Permission[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   @@unique([name, tenantId])
 }
 
-model Permission {
+model AuditLog {
   id          String   @id @default(uuid())
   action      String
-  roles       Role[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Product {
-  id              String   @id @default(uuid())
-  name            String
-  price           Decimal
-  tenantId        String
+  details     Json
+  userId      String
+  tenantId    String
   tenant      Tenant   @relation(fields: [tenantId], references: [id])
-  additionalData  Json?    
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  @@index([tenantId])
+  createdAt   DateTime @default(now())
 }

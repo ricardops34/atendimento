@@ -9,22 +9,24 @@ export class MenuService {
    * Gera a estrutura de menu filtrada pelas permissões do usuário e customizações do Tenant
    */
   async getTenantMenu(tenantId: string, userPermissions: string[]) {
-    // 1. Definição Base do Menu (Caminhos atualizados para /admin/...)
+    // 1. Definição Base do Menu
     const menuStructure: any[] = [
       { 
         label: 'Dashboard', 
-        link: '/admin/dashboard', 
+        link: '/dashboard', 
         icon: 'po-icon-home', 
         permission: 'VIEW_DASHBOARD' 
       },
       { 
-        label: 'Gestão SaaS', 
+        label: 'Administração SaaS', 
         icon: 'po-icon-settings', 
         permission: 'SAAS_ADMIN',
         subItems: [
-          { label: 'Empresas', link: '/admin/tenants', icon: 'po-icon-company', permission: 'MANAGE_TENANTS' },
-          { label: 'Planos', link: '/admin/plans', icon: 'po-icon-finance', permission: 'MANAGE_PLANS' },
-          { label: 'Editor de Telas', link: '/admin/metadata-editor', icon: 'po-icon-grid', permission: 'MANAGE_METADATA' },
+          { label: 'Empresas', link: '/saas/tenants', icon: 'po-icon-company', permission: 'MANAGE_TENANTS' },
+          { label: 'Planos', link: '/saas/plans', icon: 'po-icon-finance', permission: 'MANAGE_PLANS' },
+          { label: 'Matriz de Recursos', link: '/saas/plans/matrix', icon: 'po-icon-grid', permission: 'MANAGE_PLANS' },
+          { label: 'Catálogo de Rotinas', link: '/saas/routines', icon: 'po-icon-xml', permission: 'MANAGE_ROUTINES' },
+          { label: 'Editor de Telas', link: '/saas/metadata-editor', icon: 'po-icon-grid', permission: 'MANAGE_METADATA' },
         ]
       },
       { 
@@ -32,48 +34,29 @@ export class MenuService {
         icon: 'po-icon-company', 
         permission: 'VIEW_COMPANY',
         subItems: [
-          { label: 'Usuários', link: '/admin/users', icon: 'po-icon-users', permission: 'MANAGE_USERS' },
-          { label: 'Perfis de Acesso', link: '/admin/roles', icon: 'po-icon-lock', permission: 'MANAGE_ROLES' }
+          { label: 'Unidades / Filiais', link: '/app/branches', icon: 'po-icon-company', permission: 'MANAGE_BRANCHES' },
+          { label: 'Usuários', link: '/app/users', icon: 'po-icon-users', permission: 'MANAGE_USERS' },
+          { label: 'Perfis de Acesso', link: '/app/roles', icon: 'po-icon-lock', permission: 'MANAGE_ROLES' }
         ]
       }
     ];
 
     // 2. Busca Entidades Virtuais
-    const customEntities = await this.prisma.dynamicEntity.findMany({
+    const customEntities = await this.prisma.metadataEntity.findMany({
       where: { tenantId },
-      orderBy: { name: 'asc' }
+      orderBy: { label: 'asc' }
     });
 
     if (customEntities.length > 0) {
       menuStructure.push({
-        label: 'Módulos Customizados',
+        label: 'Módulos de Negócio',
         icon: 'po-icon-grid',
         permission: 'VIEW_CUSTOM_MODULES',
         subItems: customEntities.map(entity => ({
-          label: entity.name,
-          link: `/app/dynamic/${entity.slug}`,
+          label: entity.label || entity.name,
+          link: `/app/dynamic/${entity.name}`,
           icon: 'po-icon-pushcart',
-          permission: `VIEW_${entity.slug.toUpperCase()}`
-        }))
-      });
-    }
-
-    // 3. Busca Rotinas Customizadas
-    const customRoutines = await this.prisma.customRoutine.findMany({
-      where: { tenantId, isActive: true },
-      orderBy: { hookName: 'asc' }
-    });
-
-    if (customRoutines.length > 0) {
-      menuStructure.push({
-        label: 'Rotinas Customizadas',
-        icon: 'po-icon-xml',
-        permission: 'VIEW_CUSTOM_ROUTINES',
-        subItems: customRoutines.map(routine => ({
-          label: routine.hookName,
-          link: `/app/routines/${routine.id}`,
-          icon: 'po-icon-execute',
-          permission: `EXEC_${routine.hookName.toUpperCase()}`
+          permission: `VIEW_${entity.name.toUpperCase()}`
         }))
       });
     }

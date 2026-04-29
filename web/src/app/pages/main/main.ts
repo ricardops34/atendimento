@@ -18,7 +18,12 @@ import { CoreService } from '../../core/services/core.service';
         [p-profile-actions]="profileActions">
       </po-toolbar>
       
-      <po-menu id="saas-main-menu" [p-menus]="menus"></po-menu>
+      <po-menu 
+        id="saas-main-menu" 
+        [p-menus]="menus"
+        [p-filter]="true"
+        [p-automatic-toggle]="true">
+      </po-menu>
       
       <div class="po-main-container">
         <router-outlet></router-outlet>
@@ -62,14 +67,13 @@ export class MainComponent implements OnInit {
   }
 
   loadDynamicMenu() {
-    // Agora buscamos o menu do Backend para trazer as rotinas e entidades dinâmicas
     this.http.get(`${this.coreService.apiUrl}/menu`).subscribe({
       next: (menu: any) => {
         this.menus = menu;
       },
       error: () => {
-        console.error('Falha ao carregar menu dinâmico, usando fallback básico.');
-        this.menus = [{ label: 'Dashboard', link: '/app/dashboard', icon: 'po-icon-chart-area' }];
+        console.error('Falha ao carregar menu dinâmico');
+        this.menus = [{ label: 'Dashboard', link: '/admin/dashboard', icon: 'po-icon-chart-area' }];
       }
     });
   }

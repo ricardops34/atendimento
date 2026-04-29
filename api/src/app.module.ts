@@ -19,6 +19,8 @@ import { DynamicRecordsModule } from './modules/dynamic-records/dynamic-records.
 import { RolesModule } from './modules/roles/roles.module';
 import { RedisModule } from '@nestjs-modules/ioredis';
 import { TenantInterceptor } from './common/interceptors/tenant.interceptor';
+import { AuditInterceptor } from './common/interceptors/audit.interceptor';
+import { RoutinesModule } from './modules/routines/routines.module';
 
 @Module({
   imports: [
@@ -40,7 +42,8 @@ import { TenantInterceptor } from './common/interceptors/tenant.interceptor';
     PlansModule, 
     CustomRoutinesModule,
     DynamicRecordsModule,
-    RolesModule
+    RolesModule,
+    RoutinesModule
   ],
   controllers: [AppController],
   providers: [
@@ -48,6 +51,10 @@ import { TenantInterceptor } from './common/interceptors/tenant.interceptor';
     {
       provide: APP_INTERCEPTOR,
       useClass: TenantInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AuditInterceptor,
     },
   ],
 })
