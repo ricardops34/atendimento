@@ -1,9 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
-export class MenuService {
+export class MenuService implements OnModuleInit {
   constructor(private prisma: PrismaService) {}
+
+  async onModuleInit() {
+    await this.seedInitialMenus();
+  }
 
   async getMenuByRole(role: string) {
     const allItems = await this.prisma.menu.findMany({
