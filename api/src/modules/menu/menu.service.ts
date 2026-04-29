@@ -17,7 +17,7 @@ export class MenuService implements OnModuleInit {
 
     if (!user) return [];
 
-    const userRole = user.role?.name || (user.level === 9 ? 'SUPER_ADMIN' : 'USER');
+    const userRole = user.level === 9 ? 'SUPER_ADMIN' : (user.role?.name || 'USER');
 
     const menus = await this.prisma.menu.findMany({
       where: { active: true },
