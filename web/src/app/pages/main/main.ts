@@ -18,8 +18,7 @@ import { CoreService } from '../../core/services/core.service';
   template: `
     <div class="po-wrapper">
       <po-header 
-        [p-title]="toolbarTitle"
-        [p-logo]="logo"
+        [p-brand]="brand"
         [p-actions-tools]="toolbarActions"
         [p-header-user]="profile">
       </po-header>
@@ -55,7 +54,11 @@ export class MainComponent implements OnInit {
 
   user = JSON.parse(localStorage.getItem('user') || '{}');
   defaultAvatar = 'avatar-default.png';
-  logo = 'logo.png';
+
+  brand: any = {
+    logo: 'logo.png',
+    title: 'Sistema SaaS'
+  };
 
   profile: any = {
     title: this.user.name || 'Usuário',

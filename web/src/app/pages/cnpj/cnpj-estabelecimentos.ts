@@ -15,6 +15,7 @@ import { CoreService } from '../../core/services/core.service';
       [p-service-api]="serviceApi"
       [p-fields]="fields"
       [p-actions]="actions"
+      [p-page-custom-actions]="pageCustomActions"
     >
     </po-page-dynamic-table>
   `
@@ -33,18 +34,14 @@ export class CnpjEstabelecimentosComponent {
   };
   
   readonly actions: PoPageDynamicTableActions = {
-    edit: '/saas/cnpj/empresas/edit/:id', // Redireciona para a view unificada
+    edit: '/saas/cnpj/empresas/edit/:id',
     remove: false,
-    removeAll: false,
-    custom: [
-      { 
-        label: 'Sincronizar com RFB', 
-        icon: 'an an-cloud-arrow-down', 
-        action: () => this.syncData(),
-        type: 'default'
-      }
-    ]
+    removeAll: false
   };
+
+  readonly pageCustomActions: Array<any> = [
+    { label: 'Sincronizar com RFB', action: this.syncData.bind(this), icon: 'an an-cloud-arrow-down' }
+  ];
 
   readonly fields: Array<PoPageDynamicTableField> = [
     { property: 'id', key: true, visible: false },
