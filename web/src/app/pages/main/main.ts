@@ -103,7 +103,7 @@ export class MainComponent implements OnInit {
   }
 
   loadDynamicMenu() {
-    this.http.get(`${this.coreService.apiUrl}/menu`).subscribe({
+    this.http.get(`${this.coreService.apiUrl}/menu/user-menu`).subscribe({
       next: (res: any) => {
         this.menus = res.menus;
         

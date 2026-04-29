@@ -34,6 +34,10 @@ export const routes: Routes = [
           { path: 'routines/new', loadComponent: () => import('./pages/saas/routines/routines-edit').then(m => m.RoutinesEditComponent) },
           { path: 'routines/edit/:id', loadComponent: () => import('./pages/saas/routines/routines-edit').then(m => m.RoutinesEditComponent) },
 
+          { path: 'menu', loadComponent: () => import('./pages/saas/menu-management').then(m => m.MenuManagementComponent) },
+          { path: 'menu/new', loadComponent: () => import('./pages/saas/menu-management').then(m => m.MenuManagementComponent) },
+          { path: 'menu/edit/:id', loadComponent: () => import('./pages/saas/menu-management').then(m => m.MenuManagementComponent) },
+
           // --- Dados Públicos CNPJ ---
           { path: 'cnpj/empresas', loadComponent: () => import('./pages/cnpj/cnpj-empresas').then(m => m.CnpjEmpresasComponent) },
           { path: 'cnpj/empresas/edit/:id', loadComponent: () => import('./pages/cnpj/cnpj-view').then(m => m.CnpjViewComponent) },
