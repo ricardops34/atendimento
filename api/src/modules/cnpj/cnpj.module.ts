@@ -1,3 +1,4 @@
+import { Module } from '@nestjs/common';
 import { CnpjService } from './cnpj.service';
 import { CnpjImportService } from './cnpj-import.service';
 import { CnpjController } from './cnpj.controller';

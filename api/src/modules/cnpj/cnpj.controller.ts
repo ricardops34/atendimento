@@ -53,4 +53,22 @@ export class CnpjController {
   async getDetalhes(@Param('cnpjBasico') cnpjBasico: string) {
     return this.cnpjService.findOne(cnpjBasico);
   }
+
+  @Post('import/empresas')
+  async importEmpresas(@Body('path') path: string) {
+    return this.importService.importEmpresas(path);
+  }
+
+  @Post('import/estabelecimentos')
+  async importEstabelecimentos(@Body('path') path: string) {
+    return this.importService.importEstabelecimentos(path);
+  }
+
+  @Post('import/auxiliary')
+  async importAuxiliary(
+    @Body('path') path: string,
+    @Body('type') type: 'CNAE' | 'MUNIC' | 'PAIS' | 'NATU' | 'QUAL' | 'MOTI'
+  ) {
+    return this.importService.importAuxiliary(path, type);
+  }
 }

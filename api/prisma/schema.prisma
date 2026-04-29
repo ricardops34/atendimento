@@ -39,6 +39,12 @@ model Tenant {
   routines          TenantRoutine[]
   accessControls    AccessControl[]
   auditLogs         AuditLog[]
+  dynamicEntities   DynamicEntity[]
+  dynamicRecords    DynamicRecord[]
+  customRoutines    CustomRoutine[]
+  products          Product[]
+  themeConfig       Json?
+  customLimits      Json?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
@@ -163,6 +169,8 @@ model Routine {
   link        String?  
   type        String   @default("S")
   levelMin    Int      @default(1)
+  hookName    String?  
+  description String?  
   plans       PlanRoutine[]
   tenants     TenantRoutine[]
   access      AccessControl[]
@@ -231,6 +239,7 @@ model MetadataField {
   order             Int      @default(0)
   isActiveForm      String   @default("S")
   isActiveList      String   @default("S")
+  mask              String?  
   tenantId          String
   tenant            Tenant   @relation(fields: [tenantId], references: [id])
   createdAt         DateTime @default(now())
@@ -259,17 +268,28 @@ model Role {
   tenantId    String
   tenant      Tenant   @relation(fields: [tenantId], references: [id])
   users       User[]
+  permissions Permission[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   @@unique([name, tenantId])
 }
 
+model Permission {
+  id        String   @id @default(uuid())
+  name      String   
+  roleId    String
+  role      Role     @relation(fields: [roleId], references: [id])
+  createdAt DateTime @default(now())
+}
+
 model AuditLog {
   id          String   @id @default(uuid())
   action      String
+  entity      String?  
   details     Json
   userId      String
   tenantId    String
+  ipAddress   String?
   tenant      Tenant   @relation(fields: [tenantId], references: [id])
   createdAt   DateTime @default(now())
 }
@@ -359,4 +379,53 @@ model CnpjAuxiliary {
 
   @@unique([type, code])
   @@index([type])
+}
+
+model DynamicEntity {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  fields      Json?    
+  records     DynamicRecord[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@unique([slug, tenantId])
+}
+
+model DynamicRecord {
+  id          String   @id @default(uuid())
+  entityId    String
+  entity      DynamicEntity @relation(fields: [entityId], references: [id])
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  data        Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CustomRoutine {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  hookName    String   
+  version     Int      @default(1)
+  description String?
+  filePath    String   
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@index([tenantId, hookName])
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  price       Float
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

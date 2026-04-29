@@ -79,19 +79,25 @@ async function main() {
   });
 
   // 6. Configurar Metadados da Tela (O que o PO-UI vai mostrar)
-  await prisma.entityMetadata.upsert({
-    where: { entity_tenantId: { entity: 'veiculos', tenantId: saasAdmin.id } },
+  const meta = await prisma.metadataEntity.upsert({
+    where: { name_tenantId: { name: 'veiculos', tenantId: saasAdmin.id } },
     update: {},
     create: {
-      entity: 'veiculos',
+      name: 'veiculos',
+      label: 'Veículos',
       tenantId: saasAdmin.id,
-      fields: [
-        { property: 'placa', label: 'Placa do Veículo', filter: true, gridColumns: 4 },
-        { property: 'modelo', label: 'Marca/Modelo', filter: true, gridColumns: 4 },
-        { property: 'cor', label: 'Cor Predominante', gridColumns: 4 },
-        { property: 'ano', label: 'Ano de Fabricação', type: 'number', gridColumns: 4 }
-      ]
+      type: 'U'
     }
+  });
+
+  await prisma.metadataField.deleteMany({ where: { entityId: meta.id } });
+  await prisma.metadataField.createMany({
+    data: [
+      { entityId: meta.id, tenantId: saasAdmin.id, name: 'placa', titleList: 'Placa do Veículo', type: 'C', order: 1 },
+      { entityId: meta.id, tenantId: saasAdmin.id, name: 'modelo', titleList: 'Marca/Modelo', type: 'C', order: 2 },
+      { entityId: meta.id, tenantId: saasAdmin.id, name: 'cor', titleList: 'Cor Predominante', type: 'C', order: 3 },
+      { entityId: meta.id, tenantId: saasAdmin.id, name: 'ano', titleList: 'Ano de Fabricação', type: 'N', order: 4 }
+    ]
   });
 
   console.log('✅ Semente concluída! Ricardo é Admin e a tela dinâmica de Veículos está pronta.');

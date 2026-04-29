@@ -1,6 +1,7 @@
 # Dependências e Builds
 node_modules/
 dist/
+bkp/
 build/
 .next/
 out/
