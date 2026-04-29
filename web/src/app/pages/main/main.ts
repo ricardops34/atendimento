@@ -17,12 +17,13 @@ import { CoreService } from '../../core/services/core.service';
   imports: [CommonModule, RouterOutlet, PoComponentsModule, PoPageModule],
   template: `
     <div class="po-wrapper">
-      <po-header 
-        [p-brand]="brand"
-        [p-actions-tools]="toolbarActions"
-        [p-user]="profile"
+      <po-toolbar 
+        [p-title]="toolbarTitle"
+        [p-actions]="toolbarActions"
+        [p-profile]="profile"
+        [p-profile-actions]="profile.actions"
         (p-collapsed-menu)="isCollapsed = !isCollapsed">
-      </po-header>
+      </po-toolbar>
       
       <po-menu 
         id="saas-main-menu" 
