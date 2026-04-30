@@ -102,6 +102,22 @@ export class SystemSeedService implements OnModuleInit {
         });
       }
 
+      // 6. Criar Usuário Ricardo (Admin Master)
+      await this.prisma.user.upsert({
+        where: { email: 'ricardo@bjsoft.com.br' },
+        update: {
+          level: 9,
+          tenantId: tenant.id
+        },
+        create: {
+          email: 'ricardo@bjsoft.com.br',
+          password: '$2b$10$YourDefaultHashHere', // Se já existe, não alteramos a senha
+          name: 'Ricardo Patay',
+          level: 9,
+          tenantId: tenant.id
+        }
+      });
+
       this.logger.log('Seed do sistema concluído com sucesso.');
     } catch (error) {
       this.logger.error('Falha ao executar Seed do sistema: ' + error.message);

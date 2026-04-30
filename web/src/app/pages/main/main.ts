@@ -18,26 +18,60 @@ import { CoreService } from '../../core/services/core.service';
   imports: [CommonModule, RouterOutlet, PoComponentsModule, PoPageModule],
   template: `
     <div class="po-wrapper">
+      <!-- Toolbar Premium -->
       <po-toolbar 
-        p-title="Sistema SaaS"
-        [p-actions]="toolbarActions"
+        [p-title]="toolbarTitle"
         [p-profile]="profile"
-        [p-profile-actions]="profileActions">
+        [p-profile-actions]="profileActions"
+        [p-actions]="toolbarActions">
       </po-toolbar>
-      
+
+      <!-- Menu com Filtro e Identificação -->
       <po-menu 
         [p-menus]="menus"
-        [p-filter]="true">
+        [p-filter]="true"
+        [p-collapsed]="isCollapsed">
+        
+        <div class="menu-header-custom">
+          <div class="user-info">
+            <span class="user-name">{{ user.name || 'Usuário' }}</span>
+            <span class="user-role">{{ profile.subtitle }}</span>
+          </div>
+        </div>
       </po-menu>
-      
-      <div class="po-main-container">
+
+      <!-- Container de Conteúdo -->
+      <po-page-default [p-title]="pageTitle">
         <router-outlet></router-outlet>
-      </div>
+      </po-page-default>
     </div>
   `,
   styles: [`
-    .po-main-container {
-      background-color: #f5f7fa;
+    .menu-header-custom {
+      padding: 16px;
+      border-bottom: 1px solid #e0e0e0;
+      background-color: #fafafa;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .user-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .user-name {
+      font-weight: bold;
+      font-size: 14px;
+      color: #333;
+    }
+    .user-role {
+      font-size: 11px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    :host ::ng-deep .po-menu-header {
+      display: none; /* Remove header padrão do menu para usar o custom */
     }
   `]
 })
@@ -49,45 +83,39 @@ export class MainComponent implements OnInit {
 
   menus: Array<PoMenuItem> = [];
   isCollapsed = false;
-  toolbarTitle = 'Sistema SaaS';
+  toolbarTitle = 'BJSOFT SAAS';
+  pageTitle = 'Dashboard';
   literals: any = {};
-
-  user = JSON.parse(localStorage.getItem('user') || '{}');
-  defaultAvatar = 'https://ui-avatars.com/api/?name=' + (this.user.name || 'User') + '&background=0054a6&color=fff';
-
-  brand: any = {
-    logo: 'https://po-ui.io/assets/po-logos/po_logo_white.svg',
-    title: 'Sistema SaaS'
-  };
-
-  profile: PoToolbarProfile = {
-    title: 'Usuário',
-    avatar: this.defaultAvatar,
-  };
-
+  user: any = {};
+  
+  profile: PoToolbarProfile = { title: '', subtitle: '', avatar: '' };
   profileActions: Array<any> = [];
   toolbarActions: Array<PoToolbarAction> = [];
 
   ngOnInit() {
-    this.setupProfile();
+    this.loadUserData();
     this.setupProfileActions();
     this.loadDynamicMenu();
 
-    // Carrega traduções de forma assíncrona sem bloquear a UI
     this.poI18n.getLiterals({ context: 'admin' }).subscribe({
       next: (literals: any) => {
         this.literals = literals.menu || {};
         this.setupProfileActions();
       },
-      error: () => console.warn('I18n: Usando literais padrão (fallback).')
+      error: () => console.warn('I18n: Usando fallbacks.')
     });
   }
 
-  setupProfile() {
+  loadUserData() {
+    const data = localStorage.getItem('user');
+    this.user = data ? JSON.parse(data) : {};
+    const initials = (this.user.name || 'U').substring(0, 1).toUpperCase();
+    const defaultAvatar = `https://ui-avatars.com/api/?name=${initials}&background=7b1fa2&color=fff`;
+
     this.profile = {
       title: this.user.name || 'Usuário',
-      subtitle: this.user.role?.name || (this.user.level === 9 ? 'Admin Master' : 'Administrador'),
-      avatar: this.user.avatarUrl || this.defaultAvatar,
+      subtitle: this.user.level === 9 ? 'Administrador Master' : (this.user.role?.name || 'Acesso Limitado'),
+      avatar: this.user.avatarUrl || defaultAvatar,
     };
   }
 
