@@ -125,10 +125,34 @@ export class MetadataService {
     const defaults: any = {
       users: [
         { property: 'id', key: true, visible: false },
-        { property: 'name', label: 'Nome', filter: true, gridColumns: 6 },
-        { property: 'email', label: 'E-mail', filter: true, gridColumns: 6 },
-        { property: 'level', label: 'Nível', type: 'number', filter: true },
+        { property: 'login', label: 'Login', filter: true, gridColumns: 4 },
+        { property: 'name', label: 'Nome', filter: true, gridColumns: 4 },
+        { property: 'email', label: 'E-mail', filter: true, gridColumns: 4 },
+        { property: 'status', label: 'Situação', filter: true, gridColumns: 3 },
+        { property: 'level', label: 'Nível', type: 'number', filter: true, gridColumns: 2 },
+        { property: 'backdateDays', label: 'Retroagir (Dias)', type: 'number', gridColumns: 2 },
+        { property: 'futureDateDays', label: 'Adiantar (Dias)', type: 'number', gridColumns: 2 },
+        { property: 'createdAt', label: 'Criado em', type: 'date', gridColumns: 3 }
+      ],
+      roles: [
+        { property: 'id', key: true, visible: false },
+        { property: 'name', label: 'Nome do Perfil', filter: true },
         { property: 'createdAt', label: 'Criado em', type: 'date' }
+      ],
+      branches: [
+        { property: 'id', key: true, visible: false },
+        { property: 'name', label: 'Nome da Filial', filter: true },
+        { property: 'document', label: 'CNPJ/CPF', filter: true },
+        { property: 'email', label: 'E-mail', filter: true },
+        { property: 'city', label: 'Cidade', filter: true },
+        { property: 'state', label: 'UF', filter: true }
+      ],
+      companies: [
+        { property: 'id', key: true, visible: false },
+        { property: 'name', label: 'Razão Social', filter: true },
+        { property: 'tradeName', label: 'Nome Fantasia', filter: true },
+        { property: 'document', label: 'CNPJ', filter: true },
+        { property: 'createdAt', label: 'Cadastrado em', type: 'date' }
       ],
       plans: [
         { property: 'id', key: true, visible: false },
@@ -139,7 +163,7 @@ export class MetadataService {
       ],
       tenants: [
         { property: 'id', key: true, visible: false },
-        { property: 'name', label: 'Nome da Organização', filter: true },
+        { property: 'name', label: 'Nome da Organização (Grupo)', filter: true },
         { property: 'domain', label: 'Domínio', filter: true },
         { property: 'status', label: 'Status', filter: true },
         { property: 'createdAt', label: 'Desde', type: 'date' }

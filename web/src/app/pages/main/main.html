@@ -1,16 +1,10 @@
-<po-header
-  [p-brand]="brand"
-  [p-header-user]="headerUser"
-  [p-actions-tools]="actions"
-  [p-menus]="menus">
+<po-header [p-brand]="brand" [p-menu-items]="items" [p-actions-tools]="actions" [p-header-user]="user" [p-menus]="menus"
+  [p-filter-menu]="true">
 </po-header>
 
 <div class="po-wrapper">
-  <po-menu 
-    [p-menus]="menus"
-    [p-filter]="true"
-    [p-collapsed]="isCollapsed">
-    
+  <po-menu [p-menus]="menus" [p-filter]="true" [p-collapsed]="isCollapsed">
+
     <div *p-menu-header-template class="po-p-2 po-font-title">
       <p>Bem-vindo,</p>
       <p>
@@ -18,7 +12,7 @@
       </p>
     </div>
   </po-menu>
-  
+
   <div class="po-main-container">
     <router-outlet></router-outlet>
   </div>
