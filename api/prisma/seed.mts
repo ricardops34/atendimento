@@ -9,6 +9,10 @@ async function main() {
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash('bjsoft2026', saltRounds);
 
+  console.log('🧹 Limpando dados antigos...');
+  await prisma.usersOnMenus.deleteMany();
+  await prisma.menu.deleteMany();
+
   // 1. Setup Base
   const plan = await prisma.plan.upsert({
     where: { name: 'Plano Pro' },
