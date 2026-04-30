@@ -18,7 +18,7 @@ import { CoreService } from '../../core/services/core.service';
   imports: [CommonModule, RouterOutlet, PoComponentsModule, PoPageModule],
   template: `
     <div class="po-wrapper">
-      <!-- Toolbar Premium -->
+      <!-- Toolbar Moderna -->
       <po-toolbar 
         [p-title]="toolbarTitle"
         [p-profile]="profile"
@@ -26,52 +26,67 @@ import { CoreService } from '../../core/services/core.service';
         [p-actions]="toolbarActions">
       </po-toolbar>
 
-      <!-- Menu com Filtro e Identificação -->
+      <!-- Sidebar Area -->
       <po-menu 
         [p-menus]="menus"
         [p-filter]="true"
-        [p-collapsed]="isCollapsed">
+        [(p-collapsed)]="isCollapsed">
         
-        <div class="menu-header-custom">
-          <div class="user-info">
+        <!-- Identificação do Usuário no Topo do Menu -->
+        <div class="menu-user-section" *ngIf="!isCollapsed">
+          <po-avatar [p-src]="profile.avatar" p-size="md"></po-avatar>
+          <div class="user-details">
             <span class="user-name">{{ user.name || 'Usuário' }}</span>
-            <span class="user-role">{{ profile.subtitle }}</span>
+            <span class="user-level">{{ profile.subtitle }}</span>
           </div>
         </div>
       </po-menu>
 
-      <!-- Container de Conteúdo -->
+      <!-- Área de Conteúdo -->
       <po-page-default [p-title]="pageTitle">
-        <router-outlet></router-outlet>
+        <div class="content-wrapper">
+          <router-outlet></router-outlet>
+        </div>
       </po-page-default>
     </div>
   `,
   styles: [`
-    .menu-header-custom {
-      padding: 16px;
-      border-bottom: 1px solid #e0e0e0;
-      background-color: #fafafa;
+    .menu-user-section {
+      padding: 24px 16px;
       display: flex;
       align-items: center;
       gap: 12px;
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #e9ecef;
+      margin-bottom: 8px;
     }
-    .user-info {
+    .user-details {
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
     .user-name {
-      font-weight: bold;
       font-size: 14px;
-      color: #333;
+      font-weight: 600;
+      color: #212529;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
-    .user-role {
+    .user-level {
       font-size: 11px;
-      color: #666;
+      color: #6c757d;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
+    .content-wrapper {
+      margin-top: -20px; /* Ajuste para encostar no header da página */
+    }
+    :host ::ng-deep .po-menu {
+      background-color: #ffffff;
+    }
     :host ::ng-deep .po-menu-header {
-      display: none; /* Remove header padrão do menu para usar o custom */
+       display: none; /* Esconde o header padrão do PO-UI */
     }
   `]
 })
@@ -82,9 +97,9 @@ export class MainComponent implements OnInit {
   private poI18n = inject(PoI18nService);
 
   menus: Array<PoMenuItem> = [];
-  isCollapsed = false;
+  isCollapsed = true; // Inicia recolhido conforme solicitado
   toolbarTitle = 'BJSOFT SAAS';
-  pageTitle = 'Dashboard';
+  pageTitle = '';
   literals: any = {};
   user: any = {};
   

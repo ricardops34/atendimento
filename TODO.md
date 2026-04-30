@@ -25,6 +25,9 @@
 - [ ] **Sincronização RFB**:
     - [ ] Depurar erro 400 na importação massiva de CNPJ.
     - [ ] Interface de Monitoramento de Progresso.
+- [ ] **Sincronização do Esquema**: Executar `npx prisma db push` no container para aplicar `@@unique`.
+- [ ] **Auditoria de Segurança**: Executar auditoria via MCP (OWASP Top 10) na lógica de autenticação.
+- [ ] **Remover Bypass de Emergência**: Após validar o acesso e o seed, remover o código hardcoded do `AuthService`.
 
 ## 📋 Próximas Etapas
 - [ ] **Gestão de Acessos**:
