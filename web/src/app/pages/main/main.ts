@@ -17,33 +17,7 @@ import { CoreService } from '../../core/services/core.service';
   selector: 'app-main',
   standalone: true,
   imports: [CommonModule, RouterOutlet, PoComponentsModule, PoPageModule, PoHeaderModule],
-  template: `
-    <po-header
-      [p-brand]="brand"
-      [p-header-user]="headerUser"
-      [p-actions-tools]="actions"
-      [p-menus]="menus">
-    </po-header>
-
-    <div class="po-wrapper">
-      <po-menu 
-        [p-menus]="menus"
-        [p-filter]="true"
-        [p-collapsed]="isCollapsed">
-        
-        <div *p-menu-header-template class="po-p-2">
-          <div class="po-font-title">Bem-vindo,</div>
-          <div class="po-font-title">
-            <b>{{ user.name || 'Usuário' }}</b>
-          </div>
-        </div>
-      </po-menu>
-      
-      <div class="po-main-container">
-        <router-outlet></router-outlet>
-      </div>
-    </div>
-  `
+  templateUrl: './main.html'
 })
 export class MainComponent implements OnInit {
   private coreService = inject(CoreService);
@@ -83,7 +57,6 @@ export class MainComponent implements OnInit {
   loadDynamicMenu() {
     this.http.get(`${this.coreService.apiUrl}/menu/user-menu`).subscribe({
       next: (res: any) => {
-        // Mapeia ícones recursivamente para manter o alinhamento padrão do PO-UI
         const mapIcons = (items: Array<any>): Array<PoMenuItem> => {
           return (items || []).map(item => ({
             ...item,

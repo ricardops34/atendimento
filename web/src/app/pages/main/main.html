@@ -1,17 +1,25 @@
+<po-header
+  [p-brand]="brand"
+  [p-header-user]="headerUser"
+  [p-actions-tools]="actions"
+  [p-menus]="menus">
+</po-header>
+
 <div class="po-wrapper">
-  <po-toolbar p-title="Sistema SaaS - Alvorada Veículos">
-  </po-toolbar>
-
-  <po-menu [p-menus]="menus">
-  </po-menu>
-
-  <po-page-default p-title="Dashboard Principal">
-    <div class="po-row">
-      <po-info class="po-md-4" p-label="Total de Clientes" p-value="150"></po-info>
-      <po-info class="po-md-4" p-label="Faturamento Mensal" p-value="R$ 45.000,00"></po-info>
-      <po-info class="po-md-4" p-label="Status do Sistema" p-value="Operacional"></po-info>
-    </div>
+  <po-menu 
+    [p-menus]="menus"
+    [p-filter]="true"
+    [p-collapsed]="isCollapsed">
     
+    <div *p-menu-header-template class="po-p-2 po-font-title">
+      <p>Bem-vindo,</p>
+      <p>
+        <b>{{ user.name || 'Usuário' }}</b>
+      </p>
+    </div>
+  </po-menu>
+  
+  <div class="po-main-container">
     <router-outlet></router-outlet>
-  </po-page-default>
+  </div>
 </div>
