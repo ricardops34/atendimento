@@ -63,3 +63,18 @@ Para garantir a conformidade fiscal e operacional, o cadastro de usuários deve 
 3. **Jornada de Acesso**: O campo `workSchedule` define os dias da semana e faixas de horário permitidas para login, impedindo acessos fora do horário comercial se assim configurado.
 4. **Hierarquia N:N**: Usuários podem ser vinculados a múltiplas **Empresas** e **Filiais** simultaneamente, devendo o sistema prover um seletor de contexto no Header quando houver mais de um vínculo ativo.
 5. **Modo Simulação (Impersonation)**: Exclusivo para Nível 9 e usuários do grupo de suporte, permite auditar o sistema sob a perspectiva de outro usuário para fins de suporte técnico, gerando logs de auditoria específicos para esta ação.
+
+---
+
+## 🚀 Infraestrutura e Carga Inicial (Seed)
+
+Para garantir a estabilidade e o funcionamento imediato do sistema na VPS, as seguintes regras de infraestrutura são mandatórias:
+
+1. **Ambiente Local**: O sistema roda nativamente na VPS. **NÃO utilizamos Docker** para o ecossistema de aplicação.
+2. **Banco de Dados**: O PostgreSQL é **REMOTO**. O arquivo `.env` local na VPS é apenas um referencial; as conexões reais são gerenciadas pelo ambiente ou informadas manualmente.
+3. **Regra de Ouro da Carga Inicial (Seed)**: Todo novo deploy ou reset de ambiente deve obrigatoriamente executar a carga inicial contemplando a hierarquia completa:
+   - **Grupo (Tenant)**: B. J. INFORMATICA
+   - **Empresa**: Matriz vinculada ao Grupo.
+   - **Filial**: Estabelecimento vinculado à Empresa.
+   - **Menus e Permissões**: Vínculo total do usuário mestre (`ricardo@bjsoft.com.br`) aos menus e perfis padrão (**ADMIN_SAAS**, **GERENCIAL**, **OPERACIONAL**, **SUPORTE**).
+4. **Login Único**: O campo `login` deve ser sempre preenchido com o e-mail do usuário, garantindo compatibilidade com o sistema de autenticação flexível.

@@ -9,7 +9,7 @@ export class SystemSeedService implements OnModuleInit {
   constructor(private prisma: PrismaService) {}
 
   async onModuleInit() {
-    this.logger.log('Sincronizando Carga Inicial Automática...');
+    this.logger.log('Sincronizando Carga Real BJSOFT...');
     await this.seedInitialData();
   }
 
@@ -17,22 +17,22 @@ export class SystemSeedService implements OnModuleInit {
     try {
       // 1. Plano e Tenant
       const plan = await this.prisma.plan.upsert({
-        where: { name: 'Enterprise' },
+        where: { name: 'Plano Pro' },
         update: {},
-        create: { name: 'Enterprise', description: 'Plano Master', maxUsers: 999, maxBranches: 999 }
+        create: { name: 'Plano Pro', description: 'Plano Master', maxUsers: 10, maxBranches: 3 }
       });
 
       const tenant = await this.prisma.tenant.upsert({
         where: { domain: 'bjsoft.com.br' },
-        update: { name: 'BJSOFT SISTEMAS' },
-        create: { name: 'BJSOFT SISTEMAS', domain: 'bjsoft.com.br', status: 'ACTIVE', planId: plan.id }
+        update: { name: 'B. J. INFORMATICA', email: 'conasci@gmail.com' },
+        create: { name: 'B. J. INFORMATICA', domain: 'bjsoft.com.br', email: 'conasci@gmail.com', status: 'ACTIVE', planId: plan.id }
       });
 
       // 2. Empresa e Filial
       const company = await this.prisma.company.upsert({
         where: { document: '19654062000145' },
-        update: {},
-        create: { tenantId: tenant.id, name: 'BJSOFT MATRIZ', document: '19654062000145', status: 'ACTIVE' }
+        update: { name: 'RICARDO PATAY SOTOMAYOR' },
+        create: { tenantId: tenant.id, name: 'RICARDO PATAY SOTOMAYOR', tradeName: 'B. J. INFORMATICA', document: '19654062000145', status: 'ACTIVE' }
       });
 
       const branch = await this.prisma.branch.upsert({
@@ -41,15 +41,15 @@ export class SystemSeedService implements OnModuleInit {
         create: { 
           tenantId: tenant.id, 
           companyId: company.id, 
-          name: 'MATRIZ CG', 
+          name: 'MATRIZ - CAMPO GRANDE', 
           document: '19654062000145', 
           isMain: true,
-          city: 'Campo Grande',
+          city: 'CAMPO GRANDE',
           state: 'MS'
         }
       });
 
-      // 3. Usuário Ricardo
+      // 3. Usuário Ricardo (ADMIN_SAAS)
       const user = await this.prisma.user.upsert({
         where: { email: 'ricardo@bjsoft.com.br' },
         update: { level: 9, status: 'ACTIVE' },
@@ -77,7 +77,7 @@ export class SystemSeedService implements OnModuleInit {
         create: { userId: user.id, branchId: branch.id, isDefault: true }
       });
 
-      // 4. Menus Core
+      // 4. Menus
       const menus = [
         { module: 'SISTEMA', type: MenuType.SIDEBAR, name: 'Dashboard', link: '/dashboard', icon: 'an an-chart-line', order: 1, roles: ['USER', 'ADMIN_SAAS'] },
         { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Gestão', name: 'Usuários', link: '/app/users', icon: 'an an-user', order: 10, roles: ['ADMIN_SAAS'] },
@@ -92,9 +92,9 @@ export class SystemSeedService implements OnModuleInit {
         });
       }
 
-      this.logger.log('Carga inicial concluída com sucesso.');
+      this.logger.log('Carga real BJSOFT sincronizada.');
     } catch (error) {
-      this.logger.error('Erro na carga inicial: ' + error.message);
+      this.logger.error('Erro na carga real: ' + error.message);
     }
   }
 }

@@ -4,78 +4,99 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Iniciando Carga Inicial Completa...');
+  console.log('🌱 Iniciando Carga Inicial Real (BJSOFT)...');
 
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash('bjsoft2026', saltRounds);
 
-  // 1. Criar Plano
+  // 1. Plano Pro
   const plan = await prisma.plan.upsert({
-    where: { name: 'Enterprise' },
+    where: { name: 'Plano Pro' },
     update: {},
     create: {
-      name: 'Enterprise',
-      description: 'Plano ilimitado',
-      maxUsers: 999,
-      maxBranches: 999,
-      maxRecords: 999999,
+      name: 'Plano Pro',
+      description: 'Plano completo para gestão empresarial',
+      maxUsers: 10,
+      maxBranches: 3,
+      maxRecords: 10000,
       features: ['ALL'],
     },
   });
 
-  // 2. Criar o Grupo (Tenant Master)
+  // 2. Grupo (Tenant Master)
   const tenant = await prisma.tenant.upsert({
     where: { domain: 'bjsoft.com.br' },
-    update: { name: 'BJSOFT SISTEMAS' },
+    update: { 
+      name: 'B. J. INFORMATICA',
+      email: 'conasci@gmail.com'
+    },
     create: {
-      name: 'BJSOFT SISTEMAS',
+      name: 'B. J. INFORMATICA',
       domain: 'bjsoft.com.br',
+      email: 'conasci@gmail.com',
       planId: plan.id,
       status: 'ACTIVE',
     },
   });
 
-  // 3. Criar a Empresa
+  // 3. Empresa Matriz
   const company = await prisma.company.upsert({
     where: { document: '19654062000145' },
-    update: {},
+    update: { name: 'RICARDO PATAY SOTOMAYOR' },
     create: {
       tenantId: tenant.id,
-      name: 'RICARDO PATAY SOTOMAYOR LTDA',
-      tradeName: 'BJSOFT MATRIZ',
+      name: 'RICARDO PATAY SOTOMAYOR',
+      tradeName: 'B. J. INFORMATICA',
       document: '19654062000145',
       status: 'ACTIVE'
     }
   });
 
-  // 4. Criar a Filial
+  // 4. Filial Principal
   const branch = await prisma.branch.upsert({
-    where: { document: '19654062000145' }, // Usando o mesmo pra exemplo
+    where: { document: '19654062000145' },
     update: {},
     create: {
       tenantId: tenant.id,
       companyId: company.id,
-      name: 'BJSOFT - FILIAL CAMPO GRANDE',
+      name: 'MATRIZ - CAMPO GRANDE',
       document: '19654062000145',
-      city: 'Campo Grande',
+      city: 'CAMPO GRANDE',
       state: 'MS',
+      zipCode: '79117130',
+      address: 'R JOAO GUIMARAES ROSA',
+      number: '459',
+      neighborhood: 'VILA NASSER',
       isMain: true
     }
   });
 
-  // 5. Criar Perfis
-  const superAdminRole = await prisma.role.upsert({
-    where: { name_tenantId: { name: 'SUPER_ADMIN', tenantId: tenant.id } },
-    update: {},
-    create: { name: 'SUPER_ADMIN', tenantId: tenant.id }
+  // 5. Grupos Padrão (Perfis)
+  const roles = [
+    { name: 'ADMIN_SAAS', description: 'Administrador Total do Sistema' },
+    { name: 'GERENCIAL', description: 'Gestores de Unidade' },
+    { name: 'OPERACIONAL', description: 'Usuários de Frente de Loja/Escritório' },
+    { name: 'SUPORTE', description: 'Equipe de Atendimento BJSoft' }
+  ];
+
+  for (const r of roles) {
+    await prisma.role.upsert({
+      where: { name_tenantId: { name: r.name, tenantId: tenant.id } },
+      update: {},
+      create: { ...r, tenantId: tenant.id }
+    });
+  }
+
+  const superAdminRole = await prisma.role.findFirst({ 
+    where: { name: 'ADMIN_SAAS', tenantId: tenant.id } 
   });
 
-  // 6. Criar Usuário Mestre
+  // 6. Usuário Ricardo
   const user = await prisma.user.upsert({
     where: { email: 'ricardo@bjsoft.com.br' },
     update: {
       password: hashedPassword,
-      roleId: superAdminRole.id,
+      roleId: superAdminRole?.id,
       level: 9,
       status: 'ACTIVE'
     },
@@ -85,13 +106,13 @@ async function main() {
       password: hashedPassword,
       name: 'Ricardo Patay Sotomayor',
       tenantId: tenant.id,
-      roleId: superAdminRole.id,
+      roleId: superAdminRole?.id,
       level: 9,
       status: 'ACTIVE'
     },
   });
 
-  // Vincular Usuário à Empresa e Filial (N:N)
+  // Vínculos N:N
   await prisma.usersOnCompanies.upsert({
     where: { userId_companyId: { userId: user.id, companyId: company.id } },
     update: {},
@@ -104,13 +125,13 @@ async function main() {
     create: { userId: user.id, branchId: branch.id, isDefault: true }
   });
 
-  // 7. Criar Menus Iniciais
+  // 7. Menus
   const menuData = [
-    { module: 'SISTEMA', type: MenuType.SIDEBAR, name: 'Dashboard', link: '/dashboard', icon: 'an an-chart-line', order: 1, roles: ['USER', 'SUPER_ADMIN'] },
-    { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Administração', name: 'Usuários', link: '/app/users', icon: 'an an-user', order: 10, roles: ['SUPER_ADMIN'] },
-    { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Administração', name: 'Perfis', link: '/app/roles', icon: 'an an-users-three', order: 11, roles: ['SUPER_ADMIN'] },
-    { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Estrutura', name: 'Empresas', link: '/app/companies', icon: 'an an-briefcase', order: 20, roles: ['SUPER_ADMIN'] },
-    { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Estrutura', name: 'Filiais', link: '/app/branches', icon: 'an an-tree-structure', order: 21, roles: ['SUPER_ADMIN'] },
+    { module: 'SISTEMA', type: MenuType.SIDEBAR, name: 'Dashboard', link: '/dashboard', icon: 'an an-chart-line', order: 1, roles: ['USER', 'ADMIN_SAAS'] },
+    { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Administração', name: 'Usuários', link: '/app/users', icon: 'an an-user', order: 10, roles: ['ADMIN_SAAS'] },
+    { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Administração', name: 'Perfis', link: '/app/roles', icon: 'an an-users-three', order: 11, roles: ['ADMIN_SAAS'] },
+    { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Estrutura', name: 'Empresas', link: '/app/companies', icon: 'an an-briefcase', order: 20, roles: ['ADMIN_SAAS'] },
+    { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Estrutura', name: 'Filiais', link: '/app/branches', icon: 'an an-tree-structure', order: 21, roles: ['ADMIN_SAAS'] },
   ];
 
   for (const m of menuData) {
@@ -120,7 +141,6 @@ async function main() {
       create: m
     });
 
-    // Vincular menu ao usuário (opcional se o papel já permitir, mas garante acesso)
     await prisma.usersOnMenus.upsert({
       where: { userId_menuId: { userId: user.id, menuId: menu.id } },
       update: {},
@@ -128,7 +148,7 @@ async function main() {
     });
   }
 
-  console.log('✅ Carga inicial concluída com sucesso!');
+  console.log('✅ Carga BJSOFT concluída com sucesso!');
 }
 
 main()
