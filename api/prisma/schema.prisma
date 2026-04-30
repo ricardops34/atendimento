@@ -59,6 +59,7 @@ model Company {
   tenant      Tenant   @relation(fields: [tenantId], references: [id])
   branches    Branch[]
   users       UsersOnCompanies[]
+  status      String   @default("ACTIVE") // ACTIVE, INACTIVE, SUSPENDED
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   @@index([tenantId])
@@ -155,6 +156,7 @@ model Branch {
 
   cnaes             BranchCnae[]
   users             UsersOnBranches[]
+  status            String   @default("ACTIVE") // ACTIVE, INACTIVE, SUSPENDED
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   @@index([tenantId])
