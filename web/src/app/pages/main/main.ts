@@ -64,7 +64,7 @@ export class MainComponent implements OnInit {
         const mapIcons = (items: Array<any>): Array<PoMenuItem> => {
           return (items || []).map(item => ({
             ...item,
-            icon: item.icon || 'an an-folder',
+            icon: item.icon || 'an an-dot',
             subItems: item.subItems ? mapIcons(item.subItems) : undefined
           }));
         };
