@@ -73,10 +73,9 @@ async function main() {
 
   // 5. Grupos Padrão (Perfis)
   const roles = [
-    { name: 'ADMIN_SAAS', description: 'Administrador Total do Sistema' },
-    { name: 'GERENCIAL', description: 'Gestores de Unidade' },
-    { name: 'OPERACIONAL', description: 'Usuários de Frente de Loja/Escritório' },
-    { name: 'SUPORTE', description: 'Equipe de Atendimento BJSoft' }
+    { name: 'ADMIN_SAAS', description: 'Administrador Total do Sistema (BJSoft)' },
+    { name: 'ADMIN_SISTEMA', description: 'Administrador da Empresa Cliente' },
+    { name: 'USUARIO', description: 'Usuário Operacional' }
   ];
 
   for (const r of roles) {

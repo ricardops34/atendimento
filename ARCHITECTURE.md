@@ -76,5 +76,5 @@ Para garantir a estabilidade e o funcionamento imediato do sistema na VPS, as se
    - **Grupo (Tenant)**: B. J. INFORMATICA
    - **Empresa**: Matriz vinculada ao Grupo.
    - **Filial**: Estabelecimento vinculado à Empresa.
-   - **Menus e Permissões**: Vínculo total do usuário mestre (`ricardo@bjsoft.com.br`) aos menus e perfis padrão (**ADMIN_SAAS**, **GERENCIAL**, **OPERACIONAL**, **SUPORTE**).
+   - **Menus e Permissões**: Vínculo total do usuário mestre (`ricardo@bjsoft.com.br`) aos menus e perfis padrão (**ADMIN_SAAS**, **ADMIN_SISTEMA**, **USUARIO**).
 4. **Login Único**: O campo `login` deve ser sempre preenchido com o e-mail do usuário, garantindo compatibilidade com o sistema de autenticação flexível.
