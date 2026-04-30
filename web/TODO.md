@@ -36,12 +36,11 @@ Este documento detalha o progresso da reestruturação da arquitetura para um mo
 - [x] **Busca de CEP**: Implementar campo de busca com gatilho para preenchimento automático no formulário de Filiais.
 - [x] **Menu Master**: Adicionar os novos cadastros auxiliares ao menu do Administrador Master.
 
-### 3. Padrão Visual Premium (PO-UI UI/UX)
-- [x] **Configuração do Toolbar**: Limpar header nativo e usar `po-toolbar` fixo com título do sistema.
-- [x] **Header Customizado no Menu**: Aplicar `<ng-template p-menu-header-template>` para injetar nome, cargo e avatar corretamente sem quebrar o componente nativo.
-- [ ] **Menu Colapsável (Requisito Documentação)**: Revisar a matriz de `menus` para garantir que **todos os itens de primeiro nível** tenham a propriedade `icon` definida (sem isso, o PO-UI não permite iniciar o menu recolhido).
-- [ ] **Integração de Permissões**: Garantir que o `AuthService` entregue o payload correto para popular o Header do Menu dinamicamente.
-- [ ] **Padronização de Páginas**: Refatorar páginas de listagem vazias (ex: Empresas RFB) para utilizar ações (`p-actions`) no cabeçalho do `po-page-default` e facilitar a carga de dados inicial.
+### 3. Padrão Visual Premium (Reconstrução Passo a Passo)
+- [x] **PASSO 1: Toolbar Limpa**: Remover tudo do `MainComponent`, deixando APENAS a `po-toolbar` funcionando e o `router-outlet`.
+- [ ] **PASSO 2: Sidebar (Menu Lateral)**: Implementar APENAS o `po-menu` básico, validar o funcionamento, e depois inserir o template do perfil do usuário.
+- [ ] **PASSO 3: Menu Dinâmico**: Acoplar a carga de dados do backend (`loadMenus`) e garantir que os ícones permitam o colapso automático.
+- [ ] **PASSO 4: Views Internas**: Garantir que as páginas renderizadas no `router-outlet` tenham seus próprios cabeçalhos (`po-page-default`).
 
 ### 4. Finalização
 - [ ] **Build Final**: Garantir `npm run build` com sucesso absoluto.
