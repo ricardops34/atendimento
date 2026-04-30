@@ -31,14 +31,10 @@ import { CoreService } from '../../core/services/core.service';
         [p-filter]="true"
         [p-collapsed]="isCollapsed">
         
-        <div *p-menu-header-template class="menu-profile-header">
-          <div class="avatar-container">
-            <img [src]="profileAvatar" class="profile-avatar-img" alt="Avatar">
-          </div>
-          <div class="menu-profile-info">
-            <span class="profile-name">{{ user.name || 'Usuário' }}</span>
-            <span class="profile-role">{{ userRole }}</span>
-          </div>
+        <div *p-menu-header-template class="po-p-2">
+          <div class="po-font-subtitle po-text-center">Bem-vindo,</div>
+          <div class="po-font-title po-text-center">{{ user.name || 'Usuário' }}</div>
+          <div class="po-text-center po-font-text-smaller" style="color: var(--color-neutral-dark-70)">{{ userRole }}</div>
         </div>
       </po-menu>
       
@@ -46,93 +42,7 @@ import { CoreService } from '../../core/services/core.service';
         <router-outlet></router-outlet>
       </div>
     </div>
-  `,
-  styles: [`
-    /* Cabeçalho do Perfil no Menu */
-    .menu-profile-header {
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: #f8fafc;
-      border-bottom: 1px solid #e2e8f0;
-      margin-bottom: 4px;
-    }
-
-    .avatar-container {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%; /* Mudado para redondo para um look mais padrão e limpo */
-      overflow: hidden;
-      border: 2px solid #fff;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-
-    .profile-avatar-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .menu-profile-info {
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .profile-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: #1e293b;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .profile-role {
-      font-size: 10px;
-      font-weight: 500;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    /* Ajustes Finos nos Itens do Menu */
-    :host ::ng-deep .po-menu-item-link {
-      height: 40px !important;
-      margin: 2px 8px !important;
-      border-radius: 6px !important;
-      color: #475569 !important; /* Cor cinza slate para itens normais */
-      border: none !important; /* Remove bordas estranhas */
-    }
-
-    /* Item Selecionado - Azul Padrão PO-UI */
-    :host ::ng-deep .po-menu-item-selected .po-menu-item-link {
-      background-color: #0054a6 !important;
-      color: #ffffff !important;
-    }
-
-    :host ::ng-deep .po-menu-item-selected .po-menu-item-link .po-icon {
-      color: #ffffff !important;
-    }
-
-    /* Ajuste de Subitens (Nível 2) */
-    :host ::ng-deep .po-menu-subitems .po-menu-item-link {
-      padding-left: 12px !important; /* Reduz o recuo excessivo */
-      font-size: 13px !important;
-    }
-
-    /* Hover Suave */
-    :host ::ng-deep .po-menu-item-link:hover {
-      background-color: #f1f5f9 !important;
-      color: #0f172a !important;
-    }
-
-    /* Cor dos ícones */
-    :host ::ng-deep .po-icon {
-      color: #64748b;
-    }
-  `]
+  `
 })
 export class MainComponent implements OnInit {
   private coreService = inject(CoreService);
@@ -172,7 +82,7 @@ export class MainComponent implements OnInit {
   loadDynamicMenu() {
     this.http.get(`${this.coreService.apiUrl}/menu/user-menu`).subscribe({
       next: (res: any) => {
-        // Função recursiva para garantir ícones em todos os níveis
+        // Mapeia ícones recursivamente para manter o alinhamento padrão do PO-UI
         const mapIcons = (items: Array<any>): Array<PoMenuItem> => {
           return (items || []).map(item => ({
             ...item,
