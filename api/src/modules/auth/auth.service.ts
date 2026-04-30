@@ -11,13 +11,16 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.usersService.findByEmail(email);
+    const cleanEmail = email.trim().toLowerCase();
+    const user = await this.usersService.findByEmail(cleanEmail);
     
     if (!user) {
+      console.log(`[AuthService] Login falhou: Usuário ${cleanEmail} não encontrado.`);
       throw new UnauthorizedException('Usuário não encontrado.');
     }
 
     const isPasswordValid = await bcrypt.compare(pass, user.password);
+    console.log(`[AuthService] Login para ${cleanEmail}: Senha Válida = ${isPasswordValid}`);
     
     if (!isPasswordValid) {
       throw new UnauthorizedException('Credenciais inválidas.');
@@ -50,9 +53,9 @@ export class AuthService {
         email: user.email,
         name: user.name,
         tenantId: user.tenantId,
-        tenantName: user.tenant?.name,
+        tenantName: user.tenant?.name || 'Sistema SaaS',
         role: userRole,
-        level: userLevel
+        level: user.level || userLevel
       }
     };
   }
