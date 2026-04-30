@@ -1,8 +1,9 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class MenuService implements OnModuleInit {
+  private readonly logger = new Logger(MenuService.name);
   constructor(private prisma: PrismaService) {}
 
   async onModuleInit() {
@@ -128,12 +129,17 @@ export class MenuService implements OnModuleInit {
       { module: 'SAAS', type: 'SIDEBAR', group: 'Dados Públicos RFB', name: 'Empresas (RFB)', link: '/saas/cnpj/estabelecimentos', icon: 'an an-building', order: 100, roles: ['USER', 'ADMIN', 'ADMIN_SAAS'] },
     ];
 
-    for (const m of menus) {
-      await this.prisma.menu.upsert({
-        where: { name_module_type: { name: m.name, module: m.module, type: m.type as any } },
-        update: m as any,
-        create: m as any
-      });
+    try {
+      for (const m of menus) {
+        await this.prisma.menu.upsert({
+          where: { name_module_type: { name: m.name, module: m.module, type: m.type as any } },
+          update: m as any,
+          create: m as any
+        });
+      }
+      this.logger.log('Menus iniciais sincronizados com sucesso.');
+    } catch (error) {
+      this.logger.error('Falha ao sincronizar menus iniciais. Certifique-se de rodar npx prisma db push.', error.stack);
     }
   }
 }
