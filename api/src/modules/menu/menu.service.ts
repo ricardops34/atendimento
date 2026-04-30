@@ -1,5 +1,6 @@
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { MenuType } from '@prisma/client';
 
 @Injectable()
 export class MenuService implements OnModuleInit {
@@ -121,12 +122,12 @@ export class MenuService implements OnModuleInit {
 
   async seedInitialMenus() {
     const menus = [
-      { module: 'SISTEMA', type: 'SIDEBAR', group: null, name: 'Dashboard', link: '/dashboard', icon: 'an an-chart-line', order: 1, roles: ['USER', 'ADMIN', 'ADMIN_SAAS'] },
-      { module: 'SISTEMA', type: 'TOOLBAR', name: 'Configurações', link: '/settings', icon: 'an an-gear', order: 1, roles: ['ADMIN', 'ADMIN_SAAS'] },
-      { module: 'SISTEMA', type: 'TOOLBAR', name: 'Apps', link: null, icon: 'an an-grid-four', order: 2, roles: ['USER', 'ADMIN', 'ADMIN_SAAS'] },
-      { module: 'SAAS', type: 'SIDEBAR', group: 'Gestão SaaS', name: 'Metadados', link: '/saas/metadata-editor', icon: 'an an-database', order: 10, roles: ['ADMIN_SAAS'] },
-      { module: 'SAAS', type: 'SIDEBAR', group: 'Gestão SaaS', name: 'Menus', link: '/saas/menu', icon: 'an an-list', order: 11, roles: ['ADMIN_SAAS'] },
-      { module: 'SAAS', type: 'SIDEBAR', group: 'Dados Públicos RFB', name: 'Empresas (RFB)', link: '/saas/cnpj/estabelecimentos', icon: 'an an-building', order: 100, roles: ['USER', 'ADMIN', 'ADMIN_SAAS'] },
+      { module: 'SISTEMA', type: MenuType.SIDEBAR, group: null, name: 'Dashboard', link: '/dashboard', icon: 'an an-chart-line', order: 1, roles: ['USER', 'ADMIN', 'ADMIN_SAAS'] },
+      { module: 'SISTEMA', type: MenuType.TOOLBAR, name: 'Configurações', link: '/settings', icon: 'an an-gear', order: 1, roles: ['ADMIN', 'ADMIN_SAAS'] },
+      { module: 'SISTEMA', type: MenuType.TOOLBAR, name: 'Apps', link: null, icon: 'an an-grid-four', order: 2, roles: ['USER', 'ADMIN', 'ADMIN_SAAS'] },
+      { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Gestão SaaS', name: 'Metadados', link: '/saas/metadata-editor', icon: 'an an-database', order: 10, roles: ['ADMIN_SAAS'] },
+      { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Gestão SaaS', name: 'Menus', link: '/saas/menu', icon: 'an an-list', order: 11, roles: ['ADMIN_SAAS'] },
+      { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Dados Públicos RFB', name: 'Empresas (RFB)', link: '/saas/cnpj/estabelecimentos', icon: 'an an-building', order: 100, roles: ['USER', 'ADMIN', 'ADMIN_SAAS'] },
     ];
 
     try {
