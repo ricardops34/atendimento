@@ -3,8 +3,9 @@ import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import {
-  PoToolbarAction,
-  PoToolbarProfile,
+  PoHeaderActionTool,
+  PoHeaderBrand,
+  PoHeaderUser,
   PoComponentsModule
 } from '@po-ui/ng-components';
 import { CoreService } from '../../core/services/core.service';
@@ -14,15 +15,14 @@ import { CoreService } from '../../core/services/core.service';
   standalone: true,
   imports: [CommonModule, RouterOutlet, PoComponentsModule],
   template: `
-    <div class="po-wrapper">
-      <!-- 1. APENAS A TOOLBAR -->
-      <po-toolbar 
-        p-title="BJSOFT SAAS"
-        [p-profile]="profile"
-        [p-profile-actions]="profileActions">
-      </po-toolbar>
+    <!-- HEADER PREMIUM DO PO-UI -->
+    <po-header
+      [p-brand]="brand"
+      [p-header-user]="headerUser"
+      [p-actions-tools]="actions">
+    </po-header>
 
-      <!-- 2. RENDERIZAÇÃO DAS PÁGINAS -->
+    <div class="po-wrapper">
       <router-outlet></router-outlet>
     </div>
   `,
@@ -31,8 +31,9 @@ import { CoreService } from '../../core/services/core.service';
 export class MainComponent implements OnInit {
   private router = inject(Router);
   
-  profile: PoToolbarProfile = { title: 'Usuário', subtitle: '', avatar: '' };
-  profileActions: Array<PoToolbarAction> = [];
+  brand: PoHeaderBrand = { title: 'BJSOFT SAAS' };
+  headerUser: PoHeaderUser = { name: 'Usuário', avatar: '' };
+  actions: Array<PoHeaderActionTool> = [];
 
   ngOnInit() {
     this.setupProfile();
@@ -43,16 +44,15 @@ export class MainComponent implements OnInit {
     const user = data ? JSON.parse(data) : {};
     
     const initials = (user.name || 'U').substring(0, 1).toUpperCase();
-    const defaultAvatar = `https://ui-avatars.com/api/?name=${initials}&background=7b1fa2&color=fff`;
+    const defaultAvatar = \`https://ui-avatars.com/api/?name=\${initials}&background=7b1fa2&color=fff\`;
 
-    this.profile = {
-      title: user.name || 'Usuário',
-      subtitle: user.level === 9 ? 'Admin Master' : 'Acesso Limitado',
+    this.headerUser = {
+      name: user.name || 'Usuário Não Identificado',
       avatar: user.avatarUrl || defaultAvatar
     };
 
-    this.profileActions = [
-      { label: 'Sair', icon: 'an an-sign-out', type: 'danger', action: () => this.logout() }
+    this.actions = [
+      { label: 'Sair', icon: 'an an-sign-out', click: () => this.logout() }
     ];
   }
 
