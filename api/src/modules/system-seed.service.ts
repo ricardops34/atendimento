@@ -1,5 +1,6 @@
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { MenuType } from '@prisma/client';
 
 @Injectable()
 export class SystemSeedService implements OnModuleInit {
@@ -8,123 +9,92 @@ export class SystemSeedService implements OnModuleInit {
   constructor(private prisma: PrismaService) {}
 
   async onModuleInit() {
-    this.logger.log('Verificando necessidade de Seed do Sistema...');
+    this.logger.log('Sincronizando Carga Inicial Automática...');
     await this.seedInitialData();
   }
 
   private async seedInitialData() {
     try {
-      // 1. Criar Plano Padrão
+      // 1. Plano e Tenant
       const plan = await this.prisma.plan.upsert({
-        where: { name: 'Plano Pro' },
+        where: { name: 'Enterprise' },
         update: {},
-        create: {
-          name: 'Plano Pro',
-          description: 'Plano completo para gestão empresarial',
-          maxUsers: 10,
-          maxBranches: 3,
-          maxRecords: 10000,
-        }
+        create: { name: 'Enterprise', description: 'Plano Master', maxUsers: 999, maxBranches: 999 }
       });
 
-      // 2. Criar Tenant Mestre (B. J. INFORMATICA)
       const tenant = await this.prisma.tenant.upsert({
         where: { domain: 'bjsoft.com.br' },
-        update: {
-          name: 'B. J. INFORMATICA',
-          email: 'conasci@gmail.com',
-        },
-        create: {
-          name: 'B. J. INFORMATICA',
-          domain: 'bjsoft.com.br',
-          email: 'conasci@gmail.com',
-          status: 'ACTIVE',
-          planId: plan.id,
-        }
+        update: { name: 'BJSOFT SISTEMAS' },
+        create: { name: 'BJSOFT SISTEMAS', domain: 'bjsoft.com.br', status: 'ACTIVE', planId: plan.id }
       });
 
-      // 3. PRIORIDADE: Criar Usuário Ricardo (Admin Master)
-      this.logger.log(`Criando/Atualizando usuário mestre: ricardo@bjsoft.com.br`);
-      await this.prisma.user.upsert({
-        where: { email: 'ricardo@bjsoft.com.br' },
-        update: {
-          level: 9,
-          tenantId: tenant.id,
-          password: '$2b$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm' // admin123
-        },
-        create: {
-          email: 'ricardo@bjsoft.com.br',
-          login: 'ricardo@bjsoft.com.br',
-          password: '$2b$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', // admin123
-          name: 'Ricardo Patay',
-          level: 9,
-          tenantId: tenant.id
-        }
-      });
-      this.logger.log('Usuário Ricardo sincronizado com sucesso.');
-
-      // 4. Criar Matriz
-      await this.prisma.branch.upsert({
+      // 2. Empresa e Filial
+      const company = await this.prisma.company.upsert({
         where: { document: '19654062000145' },
         update: {},
-        create: {
-          tenantId: tenant.id,
-          name: 'RICARDO PATAY SOTOMAYOR',
-          tradeName: 'B. J. INFORMATICA',
-          document: '19654062000145',
+        create: { tenantId: tenant.id, name: 'BJSOFT MATRIZ', document: '19654062000145', status: 'ACTIVE' }
+      });
+
+      const branch = await this.prisma.branch.upsert({
+        where: { document: '19654062000145' },
+        update: {},
+        create: { 
+          tenantId: tenant.id, 
+          companyId: company.id, 
+          name: 'MATRIZ CG', 
+          document: '19654062000145', 
           isMain: true,
-          email: 'conasci@gmail.com',
-          phone: '(67) 3029-2680',
-          zipCode: '79117130',
-          address: 'JOAO GUIMARAES ROSA',
-          number: '459',
-          neighborhood: 'VILA NASSER',
-          city: 'CAMPO GRANDE',
+          city: 'Campo Grande',
           state: 'MS'
         }
       });
 
-      // 4. Criar Rotinas Core
-      const routines = [
-        { name: 'DASHBOARD', label: 'Dashboard', module: 'SISTEMA', link: '/dashboard', icon: 'an an-chart-line' },
-        { name: 'CNPJ_RFB', label: 'Dados Públicos RFB', module: 'SAAS', link: '/saas/cnpj/estabelecimentos', icon: 'an an-building' },
-        { name: 'METADATA_ADMIN', label: 'Metadados', module: 'SAAS', link: '/saas/metadata-editor', icon: 'an an-database' },
-        { name: 'MENU_ADMIN', label: 'Menus', module: 'SAAS', link: '/saas/menu', icon: 'an an-list' },
+      // 3. Usuário Ricardo
+      const user = await this.prisma.user.upsert({
+        where: { email: 'ricardo@bjsoft.com.br' },
+        update: { level: 9, status: 'ACTIVE' },
+        create: {
+          email: 'ricardo@bjsoft.com.br',
+          login: 'ricardo@bjsoft.com.br',
+          password: '$2b$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', // admin123
+          name: 'Ricardo Patay Sotomayor',
+          level: 9,
+          tenantId: tenant.id,
+          status: 'ACTIVE'
+        }
+      });
+
+      // Vínculos N:N
+      await this.prisma.usersOnCompanies.upsert({
+        where: { userId_companyId: { userId: user.id, companyId: company.id } },
+        update: {},
+        create: { userId: user.id, companyId: company.id, isDefault: true }
+      });
+
+      await this.prisma.usersOnBranches.upsert({
+        where: { userId_branchId: { userId: user.id, branchId: branch.id } },
+        update: {},
+        create: { userId: user.id, branchId: branch.id, isDefault: true }
+      });
+
+      // 4. Menus Core
+      const menus = [
+        { module: 'SISTEMA', type: MenuType.SIDEBAR, name: 'Dashboard', link: '/dashboard', icon: 'an an-chart-line', order: 1, roles: ['USER', 'ADMIN_SAAS'] },
+        { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Gestão', name: 'Usuários', link: '/app/users', icon: 'an an-user', order: 10, roles: ['ADMIN_SAAS'] },
+        { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Estrutura', name: 'Empresas', link: '/app/companies', icon: 'an an-briefcase', order: 20, roles: ['ADMIN_SAAS'] },
       ];
 
-      for (const r of routines) {
-        const routine = await this.prisma.routine.upsert({
-          where: { name: r.name },
-          update: r,
-          create: r
-        });
-
-        // Vincula a rotina ao Plano Pro
-        await this.prisma.planRoutine.upsert({
-          where: { planId_routineId: { planId: plan.id, routineId: routine.id } },
-          update: {},
-          create: { planId: plan.id, routineId: routine.id }
+      for (const m of menus) {
+        await this.prisma.menu.upsert({
+          where: { name_module_type: { name: m.name, module: m.module, type: m.type as any } },
+          update: m as any,
+          create: m as any
         });
       }
 
-      // 5. Criar CNAEs Globais da Matriz
-      const cnaes = [
-        { code: '6209100', description: 'Suporte técnico, manutenção e outros serviços em tecnologia da informação' },
-        { code: '6201501', description: 'Desenvolvimento de programas de computador sob encomenda' },
-        { code: '9511800', description: 'Reparação e manutenção de computadores e de equipamentos periféricos' }
-      ];
-
-      for (const cnae of cnaes) {
-        await this.prisma.cnae.upsert({
-          where: { code: cnae.code },
-          update: {},
-          create: cnae
-        });
-      }
-
-      this.logger.log('Seed do sistema concluído com sucesso.');
+      this.logger.log('Carga inicial concluída com sucesso.');
     } catch (error) {
-      this.logger.error('Falha ao executar Seed do sistema: ' + error.message);
+      this.logger.error('Erro na carga inicial: ' + error.message);
     }
   }
 }
