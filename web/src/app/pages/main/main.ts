@@ -32,6 +32,7 @@ export class MainComponent implements OnInit {
 
   userRole = this.user.level === 9 ? 'Administrador SaaS' : 'Acesso Padrão';
   profileAvatar = this.user.avatarUrl || '/avatar-default.png';
+  brandLogo = '/logo.png';
 
   brand: PoHeaderBrand = {
     title: 'BJSOFT SAAS',
@@ -40,7 +41,7 @@ export class MainComponent implements OnInit {
 
   headerUser: PoHeaderUser = {
     avatar: this.profileAvatar,
-    customerBrand: '',
+    customerBrand: this.brandLogo,
     items: [
       { label: 'Perfil', action: () => { } },
       { label: 'Sair', action: () => this.logout() }
