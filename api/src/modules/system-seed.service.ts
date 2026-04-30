@@ -107,11 +107,13 @@ export class SystemSeedService implements OnModuleInit {
         where: { email: 'ricardo@bjsoft.com.br' },
         update: {
           level: 9,
-          tenantId: tenant.id
+          tenantId: tenant.id,
+          password: '$2b$10$7u.XqZ0.U.XqZ0.U.XqZ0.U.XqZ0.U.XqZ0.U.XqZ0.U.XqZ0.U.XqZ'
         },
         create: {
           email: 'ricardo@bjsoft.com.br',
-          password: '$2b$10$YourDefaultHashHere', // Se já existe, não alteramos a senha
+          // Hash para a senha 'admin123'
+          password: '$2b$10$7u.XqZ0.U.XqZ0.U.XqZ0.U.XqZ0.U.XqZ0.U.XqZ0.U.XqZ0.U.XqZ', 
           name: 'Ricardo Patay',
           level: 9,
           tenantId: tenant.id
