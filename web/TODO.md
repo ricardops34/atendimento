@@ -36,7 +36,14 @@ Este documento detalha o progresso da reestruturação da arquitetura para um mo
 - [x] **Busca de CEP**: Implementar campo de busca com gatilho para preenchimento automático no formulário de Filiais.
 - [x] **Menu Master**: Adicionar os novos cadastros auxiliares ao menu do Administrador Master.
 
-### 3. Finalização
+### 3. Padrão Visual Premium (PO-UI UI/UX)
+- [x] **Configuração do Toolbar**: Limpar header nativo e usar `po-toolbar` fixo com título do sistema.
+- [x] **Header Customizado no Menu**: Aplicar `<ng-template p-menu-header-template>` para injetar nome, cargo e avatar corretamente sem quebrar o componente nativo.
+- [ ] **Menu Colapsável (Requisito Documentação)**: Revisar a matriz de `menus` para garantir que **todos os itens de primeiro nível** tenham a propriedade `icon` definida (sem isso, o PO-UI não permite iniciar o menu recolhido).
+- [ ] **Integração de Permissões**: Garantir que o `AuthService` entregue o payload correto para popular o Header do Menu dinamicamente.
+- [ ] **Padronização de Páginas**: Refatorar páginas de listagem vazias (ex: Empresas RFB) para utilizar ações (`p-actions`) no cabeçalho do `po-page-default` e facilitar a carga de dados inicial.
+
+### 4. Finalização
 - [ ] **Build Final**: Garantir `npm run build` com sucesso absoluto.
 
 ### 4. Módulo Dados Públicos CNPJ (RFB)

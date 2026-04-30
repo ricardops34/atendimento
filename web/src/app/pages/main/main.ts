@@ -1,169 +1,139 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import {
   PoMenuItem,
   PoToolbarAction,
-  PoI18nService,
-  PoComponentsModule,
-  PoPageModule,
-  PoToolbarProfile
+  PoToolbarProfile,
+  PoComponentsModule
 } from '@po-ui/ng-components';
-import { HttpClient } from '@angular/common/http';
 import { CoreService } from '../../core/services/core.service';
 
 @Component({
   selector: 'app-main',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, PoComponentsModule, PoPageModule],
+  imports: [CommonModule, RouterOutlet, PoComponentsModule],
   template: `
     <div class="po-wrapper">
-      <!-- Toolbar Moderna -->
       <po-toolbar 
-        [p-title]="toolbarTitle"
+        p-title="BJSOFT SAAS"
         [p-profile]="profile"
         [p-profile-actions]="profileActions"
         [p-actions]="toolbarActions">
       </po-toolbar>
 
-      <!-- Sidebar Area -->
       <po-menu 
         [p-menus]="menus"
         [p-filter]="true"
         [p-collapsed]="isCollapsed">
-        
         <ng-template p-menu-header-template>
-          <div class="menu-user-section" *ngIf="!isCollapsed">
+          <!-- Perfil no Menu -->
+          <div class="menu-profile-header" *ngIf="!isCollapsed">
             <po-avatar [p-src]="profile.avatar || ''" p-size="md"></po-avatar>
-            <div class="user-details">
-              <span class="user-name">{{ user.name || 'Usuário' }}</span>
-              <span class="user-level">{{ profile.subtitle }}</span>
+            <div class="menu-profile-info">
+              <span class="profile-name">{{ profile.title }}</span>
+              <span class="profile-role">{{ profile.subtitle }}</span>
             </div>
           </div>
         </ng-template>
       </po-menu>
 
-      <!-- Área de Conteúdo -->
-      <po-page-default [p-title]="pageTitle">
-        <div class="content-wrapper">
-          <router-outlet></router-outlet>
-        </div>
-      </po-page-default>
+      <!-- O PO-UI recomenda que o outlet fique solto no wrapper -->
+      <!-- Cada página filha (ex: Dashboard) deve ter seu próprio po-page-default -->
+      <router-outlet></router-outlet>
     </div>
   `,
   styles: [`
-    .menu-user-section {
-      padding: 24px 16px;
+    .menu-profile-header {
+      padding: 16px;
       display: flex;
       align-items: center;
       gap: 12px;
-      background-color: #f8f9fa;
-      border-bottom: 1px solid #e9ecef;
-      margin-bottom: 8px;
+      background: var(--color-neutral-light-05);
+      border-bottom: 1px solid var(--color-neutral-light-20);
     }
-    .user-details {
+    .menu-profile-info {
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
-    .user-name {
-      font-size: 14px;
-      font-weight: 600;
-      color: #212529;
+    .profile-name {
+      font-family: var(--font-family-theme);
+      font-size: var(--font-size-default);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-neutral-dark-90);
       white-space: nowrap;
-      text-overflow: ellipsis;
       overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .user-level {
+    .profile-role {
+      font-family: var(--font-family-theme);
       font-size: 11px;
-      color: #6c757d;
+      color: var(--color-neutral-dark-70);
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .content-wrapper {
-      margin-top: -20px; /* Ajuste para encostar no header da página */
-    }
-    :host ::ng-deep .po-menu {
-      background-color: #ffffff;
-    }
-    :host ::ng-deep .po-menu-header {
-       display: none; /* Esconde o header padrão do PO-UI */
     }
   `]
 })
 export class MainComponent implements OnInit {
-  private coreService = inject(CoreService);
   private router = inject(Router);
   private http = inject(HttpClient);
-  private poI18n = inject(PoI18nService);
+  private coreService = inject(CoreService);
 
+  isCollapsed = true; // Força o recolhimento inicial
   menus: Array<PoMenuItem> = [];
-  isCollapsed = true; // Inicia recolhido conforme solicitado
-  toolbarTitle = 'BJSOFT SAAS';
-  pageTitle = '';
-  literals: any = {};
-  user: any = {};
-  
-  profile: PoToolbarProfile = { title: '', subtitle: '', avatar: '' };
-  profileActions: Array<any> = [];
+  profile: PoToolbarProfile = { title: 'Usuário', subtitle: 'Acesso', avatar: '' };
+  profileActions: Array<PoToolbarAction> = [];
   toolbarActions: Array<PoToolbarAction> = [];
 
   ngOnInit() {
-    this.loadUserData();
-    this.setupProfileActions();
-    this.loadDynamicMenu();
-
-    this.poI18n.getLiterals({ context: 'admin' }).subscribe({
-      next: (literals: any) => {
-        this.literals = literals.menu || {};
-        this.setupProfileActions();
-      },
-      error: () => console.warn('I18n: Usando fallbacks.')
-    });
+    this.setupProfile();
+    this.loadMenus();
   }
 
-  loadUserData() {
+  private setupProfile() {
     const data = localStorage.getItem('user');
-    this.user = data ? JSON.parse(data) : {};
-    const initials = (this.user.name || 'U').substring(0, 1).toUpperCase();
+    const user = data ? JSON.parse(data) : {};
+    
+    const initials = (user.name || 'U').substring(0, 1).toUpperCase();
     const defaultAvatar = `https://ui-avatars.com/api/?name=${initials}&background=7b1fa2&color=fff`;
 
     this.profile = {
-      title: this.user.name || 'Usuário',
-      subtitle: this.user.level === 9 ? 'Administrador Master' : (this.user.role?.name || 'Acesso Limitado'),
-      avatar: this.user.avatarUrl || defaultAvatar,
+      title: user.name || 'Usuário Não Identificado',
+      subtitle: user.level === 9 ? 'Administrador Master' : 'Acesso Limitado',
+      avatar: user.avatarUrl || defaultAvatar
     };
-  }
 
-  setupProfileActions() {
     this.profileActions = [
-      { label: this.literals.profile || 'Perfil', icon: 'an an-user', action: () => { } },
-      { label: this.literals.logout || 'Sair', icon: 'an an-sign-out', type: 'danger', action: () => this.logout() }
+      { label: 'Sair', icon: 'an an-sign-out', type: 'danger', action: () => this.logout() }
     ];
   }
 
-  loadDynamicMenu() {
+  private loadMenus() {
     this.http.get(`${this.coreService.apiUrl}/menu/user-menu`).subscribe({
       next: (res: any) => {
-        this.menus = res.sidebar || [];
+        // REGRA DE OURO DO PO-UI: Se um menu de primeiro nível não tiver ícone,
+        // o componente INTEIRO bloqueia o modo colapsado.
+        this.menus = (res.sidebar || []).map((menuItem: any) => ({
+          ...menuItem,
+          icon: menuItem.icon || 'an an-folder' // Fallback obrigatório
+        }));
 
         if (res.toolbar) {
           this.toolbarActions = res.toolbar.map((item: any) => ({
             label: item.label,
             icon: item.icon,
-            action: (action: PoToolbarAction) => {
+            action: () => {
               if (item.link) this.router.navigate([item.link]);
             }
           }));
         }
       },
-      error: () => {
-        console.error('Falha ao carregar menus dinâmicos');
-      }
+      error: () => console.error('Erro ao carregar menus')
     });
   }
 
-  logout() {
+  private logout() {
     localStorage.clear();
     this.router.navigate(['/login']);
   }
