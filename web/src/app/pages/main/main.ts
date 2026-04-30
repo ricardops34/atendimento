@@ -31,10 +31,11 @@ import { CoreService } from '../../core/services/core.service';
         [p-filter]="true"
         [p-collapsed]="isCollapsed">
         
-        <div *p-menu-header-template class="po-p-2">
-          <div class="po-font-subtitle po-text-center">Bem-vindo,</div>
-          <div class="po-font-title po-text-center">{{ user.name || 'Usuário' }}</div>
-          <div class="po-text-center po-font-text-smaller" style="color: var(--color-neutral-dark-70)">{{ userRole }}</div>
+        <div *p-menu-header-template class="po-p-2 po-text-center">
+          <po-avatar [p-src]="profileAvatar" p-size="md"></po-avatar>
+          <div class="po-font-subtitle po-mt-1">Bem-vindo,</div>
+          <div class="po-font-title">{{ user.name || 'Usuário' }}</div>
+          <div class="po-font-text-smaller" style="color: var(--color-neutral-dark-70)">{{ userRole }}</div>
         </div>
       </po-menu>
       
