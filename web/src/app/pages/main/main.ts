@@ -41,8 +41,8 @@ export class MainComponent implements OnInit {
     const user = data ? JSON.parse(data) : {};
     
     this.actions = [
-      { label: user.name || 'Meu Perfil', icon: 'an an-user', click: () => {} },
-      { label: 'Sair', icon: 'an an-sign-out', type: 'danger', click: () => this.logout() }
+      { label: user.name || 'Meu Perfil', icon: 'an an-user', action: () => {} },
+      { label: 'Sair', icon: 'an an-sign-out', action: () => this.logout() }
     ];
   }
 
