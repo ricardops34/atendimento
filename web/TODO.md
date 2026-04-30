@@ -38,8 +38,8 @@ Este documento detalha o progresso da reestruturação da arquitetura para um mo
 
 ### 3. Padrão Visual Premium (Reconstrução Passo a Passo)
 - [x] **PASSO 1: Toolbar Limpa**: Remover tudo do `MainComponent`, deixando APENAS a `po-toolbar` funcionando e o `router-outlet`.
-- [ ] **PASSO 2: Sidebar (Menu Lateral)**: Implementar APENAS o `po-menu` básico, validar o funcionamento, e depois inserir o template do perfil do usuário.
-- [ ] **PASSO 3: Menu Dinâmico**: Acoplar a carga de dados do backend (`loadMenus`) e garantir que os ícones permitam o colapso automático.
+- [x] **PASSO 2: Sidebar (Menu Lateral)**: Implementar o `po-menu` com template do perfil do usuário e estilização premium.
+- [x] **PASSO 3: Menu Dinâmico**: Acoplar a carga de dados do backend (`loadMenus`) e garantir que os ícones permitam o colapso automático.
 - [ ] **PASSO 4: Views Internas**: Garantir que as páginas renderizadas no `router-outlet` tenham seus próprios cabeçalhos (`po-page-default`).
 
 ### 4. Finalização
