@@ -70,10 +70,16 @@ export class MainComponent implements OnInit {
 
   ngOnInit() {
     this.setupProfile();
-    this.poI18n.getLiterals({ context: 'admin' }).subscribe((literals: any) => {
-      this.literals = literals.menu || {};
-      this.setupProfileActions();
-      this.loadDynamicMenu();
+    this.setupProfileActions();
+    this.loadDynamicMenu();
+
+    // Carrega traduções de forma assíncrona sem bloquear a UI
+    this.poI18n.getLiterals({ context: 'admin' }).subscribe({
+      next: (literals: any) => {
+        this.literals = literals.menu || {};
+        this.setupProfileActions();
+      },
+      error: () => console.warn('I18n: Usando literais padrão (fallback).')
     });
   }
 

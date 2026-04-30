@@ -467,5 +467,5 @@ model Menu {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([name, module, type])
+  @@unique([name, module, type], name: "name_module_type")
 }
