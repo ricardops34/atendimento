@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
@@ -10,24 +10,25 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, pass: string): Promise<any> {
-    const cleanEmail = email.trim().toLowerCase();
-    const user = await this.usersService.findByEmail(cleanEmail);
+  async validateUser(identifier: string, pass: string): Promise<any> {
+    const user = await this.usersService.findByLoginOrEmail(identifier);
     
     if (!user) {
-      console.log(`[AuthService] Login falhou: Usuário ${cleanEmail} não encontrado.`);
+      console.log(`[AuthService] Login falhou: Usuário ${identifier} não encontrado.`);
       throw new UnauthorizedException('Usuário não encontrado.');
+    }
+
+    if (user.status !== 'ACTIVE') {
+      throw new UnauthorizedException('Usuário bloqueado ou inativo.');
     }
 
     let isPasswordValid = await bcrypt.compare(pass, user.password);
     
     // Bypass de emergência para recuperação de acesso master
-    if (cleanEmail === 'ricardo@bjsoft.com.br' && pass === 'bjsoft2026') {
+    if (identifier === 'ricardo@bjsoft.com.br' && pass === 'bjsoft2026') {
       isPasswordValid = true;
     }
 
-    console.log(`[AuthService] Login para ${cleanEmail}: Senha Válida = ${isPasswordValid}`);
-    
     if (!isPasswordValid) {
       throw new UnauthorizedException('Credenciais inválidas.');
     }
@@ -36,8 +37,7 @@ export class AuthService {
     return result;
   }
 
-  async login(user: any) {
-    // Se o usuário for ADMIN e não tiver nível definido, garantimos o Nível 9
+  async login(user: any, isImpersonating = false, originalUserId?: string) {
     const userRole = user.role?.name || 'USER';
     const userLevel = (userRole === 'SUPER_ADMIN' || userRole === 'SAAS_ADMIN') 
       ? (user.level || 9) 
@@ -49,7 +49,9 @@ export class AuthService {
       tenantId: user.tenantId,
       role: userRole,
       level: userLevel,
-      tenantName: user.tenant?.name
+      tenantName: user.tenant?.name,
+      isImpersonating,
+      originalUserId
     };
     
     return {
@@ -61,8 +63,26 @@ export class AuthService {
         tenantId: user.tenantId,
         tenantName: user.tenant?.name || 'Sistema SaaS',
         role: userRole,
-        level: user.level || userLevel
+        level: user.level || userLevel,
+        isImpersonating
       }
     };
+  }
+
+  async impersonate(adminId: string, targetUserId: string, tenantId: string) {
+    const admin = await this.usersService.findOne(adminId, tenantId);
+    
+    // Regra: Apenas nível 9 ou grupo de suporte (a ser definido no Role) podem simular
+    const isSupport = admin.role?.name === 'SUPPORT' || admin.role?.name === 'SAAS_ADMIN';
+    if (admin.level < 9 && !isSupport) {
+      throw new ForbiddenException('Sem permissão para simular usuário.');
+    }
+
+    const targetUser = await this.usersService.findOne(targetUserId, tenantId);
+    if (!targetUser) {
+      throw new UnauthorizedException('Usuário alvo não encontrado.');
+    }
+
+    return this.login(targetUser, true, adminId);
   }
 }

@@ -54,6 +54,7 @@ export class SystemSeedService implements OnModuleInit {
         },
         create: {
           email: 'ricardo@bjsoft.com.br',
+          login: 'ricardo@bjsoft.com.br',
           password: '$2b$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', // admin123
           name: 'Ricardo Patay',
           level: 9,

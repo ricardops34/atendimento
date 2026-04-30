@@ -1,5 +1,6 @@
-import { Controller, Post, Body, Headers, UnauthorizedException, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Headers, UnauthorizedException, HttpCode, HttpStatus, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -11,21 +12,30 @@ export class AuthController {
     @Body() loginDto: any,
     @Headers('x-tenant-id') tenantIdFromHeader: string
   ) {
-    // Prioriza o tenantId do corpo da requisição ou do Header
-    const tenantId = loginDto.tenantId || tenantIdFromHeader;
-
-    // Removemos o bloqueio obrigatório aqui para permitir login de Super Admin
-    // A validação real acontecerá dentro do validateUser
+    // Aceita tanto login quanto email no campo 'email' do DTO para compatibilidade
+    const identifier = loginDto.email || loginDto.login;
     const user = await this.authService.validateUser(
-      loginDto.email,
+      identifier,
       loginDto.password
     );
 
     if (!user) {
-      throw new UnauthorizedException('E-mail ou senha inválidos.');
+      throw new UnauthorizedException('Credenciais inválidas.');
     }
 
-    // Geramos o Token JWT
     return this.authService.login(user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('impersonate')
+  @HttpCode(HttpStatus.OK)
+  async impersonate(
+    @Body('userId') targetUserId: string,
+    @Req() req: any
+  ) {
+    const adminId = req.user.userId;
+    const tenantId = req.user.tenantId;
+
+    return this.authService.impersonate(adminId, targetUserId, tenantId);
   }
 }

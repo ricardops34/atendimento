@@ -59,6 +59,7 @@ async function main() {
     },
     create: {
       email: 'ricardo@bjsoft.com.br',
+      login: 'ricardo@bjsoft.com.br',
       password: hashedPassword,
       name: 'Ricardo Patay Sotomayor',
       tenantId: saasAdmin.id,

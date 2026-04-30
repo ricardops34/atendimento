@@ -49,3 +49,17 @@ Para garantir alta disponibilidade, compilação impecável (sem falhas de escap
 1. **Recursos Estáticos**: Imagens estruturais (como `avatar-default.png` ou logos de fallback) devem SEMPRE ser servidas localmente na pasta `public` ou `assets`. O uso de APIs públicas de terceiros (como `ui-avatars.com`) para carregamento síncrono no template é terminantemente proibido.
 2. **Componentização PO-UI**: A construção de cabeçalhos de sistema deve usar estritamente o `po-header` tipado pelas interfaces oficiais (`PoHeaderUser`, `PoHeaderActionTool`), evitando injetar HTML/CSS customizado onde o framework já provê suporte nativo.
 3. **Menu de Sistema**: O `po-menu` é obrigatório dentro do `po-wrapper` para garantir o cálculo de 100% da viewport pelo framework. Além disso, todos os menus de nível raiz recebem fallback de ícone (ex: `an an-folder`) para impedir que o PO-UI bloqueie o estado de "Menu Recolhido" (`collapsed`).
+
+---
+
+## 🔒 Governança de Usuários e Segurança Operacional
+
+Para garantir a conformidade fiscal e operacional, o cadastro de usuários deve observar os seguintes controles de segurança:
+
+1. **Ciclo de Vida**: Todo usuário possui `Data de Criação` (auditável) e `Data de Bloqueio`. Um usuário bloqueado tem seu acesso revogado imediatamente pelo middleware de segurança.
+2. **Controle de Retroatividade**:
+   - `backdateDays`: Limita quantos dias no passado o usuário pode realizar lançamentos (ex: travar o financeiro após 5 dias do fechamento).
+   - `futureDateDays`: Limita quantos dias no futuro o usuário pode agendar lançamentos.
+3. **Jornada de Acesso**: O campo `workSchedule` define os dias da semana e faixas de horário permitidas para login, impedindo acessos fora do horário comercial se assim configurado.
+4. **Hierarquia N:N**: Usuários podem ser vinculados a múltiplas **Empresas** e **Filiais** simultaneamente, devendo o sistema prover um seletor de contexto no Header quando houver mais de um vínculo ativo.
+5. **Modo Simulação (Impersonation)**: Exclusivo para Nível 9 e usuários do grupo de suporte, permite auditar o sistema sob a perspectiva de outro usuário para fins de suporte técnico, gerando logs de auditoria específicos para esta ação.

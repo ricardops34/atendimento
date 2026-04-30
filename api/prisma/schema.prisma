@@ -31,6 +31,7 @@ model Tenant {
   isActive          Boolean  @default(true)
   planId            String
   plan              Plan     @relation(fields: [planId], references: [id])
+  companies         Company[]
   branches          Branch[]
   users             User[]
   roles             Role[]
@@ -47,6 +48,20 @@ model Tenant {
   customLimits      Json?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+}
+
+model Company {
+  id          String   @id @default(uuid())
+  name        String   // Razão Social
+  tradeName   String?  // Nome Fantasia
+  document    String   @unique // CNPJ
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  branches    Branch[]
+  users       UsersOnCompanies[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@index([tenantId])
 }
 
 enum TenantStatus {
@@ -110,6 +125,8 @@ model Branch {
   id                String   @id @default(uuid())
   tenantId          String
   tenant            Tenant   @relation(fields: [tenantId], references: [id])
+  companyId         String?
+  company           Company? @relation(fields: [companyId], references: [id])
   isMain            Boolean  @default(false)
   name              String   
   tradeName         String?  
@@ -136,20 +153,12 @@ model Branch {
   countryId         String?
   country           Country? @relation(fields: [countryId], references: [id])
 
-  // Endereço Cobrança
-  billingZipCode      String?
-  billingAddress      String?
-  billingNumber       String?
-  billingComplement   String?
-  billingNeighborhood String?
-  billingCity         String?
-  billingState        String?
-
   cnaes             BranchCnae[]
-  users             User[]
+  users             UsersOnBranches[]
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   @@index([tenantId])
+  @@index([companyId])
 }
 
 model BranchCnae {
@@ -248,20 +257,59 @@ model MetadataField {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  name      String?
-  avatarUrl String?  // Foto do perfil
-  level     Int      @default(1)
-  tenantId  String
-  tenant    Tenant   @relation(fields: [tenantId], references: [id])
-  roleId    String?
-  role      Role?    @relation(fields: [roleId], references: [id])
-  branchId  String?
-  branch    Branch?  @relation(fields: [branchId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String   @id @default(uuid())
+  login           String   @unique
+  email           String   @unique
+  password        String
+  name            String?
+  avatarUrl       String?
+  level           Int      @default(1)
+  status          String   @default("ACTIVE") // ACTIVE, BLOCKED, INACTIVE
+  
+  // Limites Operacionais
+  backdateDays    Int      @default(0)
+  futureDateDays  Int      @default(0)
+  workSchedule    Json?    // Dias e horários de trabalho
+  
+  blockedAt       DateTime?
+  tenantId        String
+  tenant          Tenant   @relation(fields: [tenantId], references: [id])
+  roleId          String?
+  role            Role?    @relation(fields: [roleId], references: [id])
+  
+  // Relacionamentos N:N
+  companies       UsersOnCompanies[]
+  branches        UsersOnBranches[]
+  allowedMenus    UsersOnMenus[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model UsersOnCompanies {
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id])
+  isDefault Boolean  @default(false)
+  @@id([userId, companyId])
+}
+
+model UsersOnBranches {
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  branchId  String
+  branch    Branch   @relation(fields: [branchId], references: [id])
+  isDefault Boolean  @default(false)
+  @@id([userId, branchId])
+}
+
+model UsersOnMenus {
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  menuId    String
+  menu      Menu     @relation(fields: [menuId], references: [id])
+  @@id([userId, menuId])
 }
 
 model Role {
@@ -350,6 +398,8 @@ model CnpjEstabelecimento {
   @@index([cnpjBasico])
   @@index([nomeFantasia])
   @@index([cep])
+  @@index([uf])
+  @@index([municipio])
 }
 
 model CnpjSocio {
@@ -463,6 +513,7 @@ model Menu {
   order     Int      @default(0)     // Ordenação
   roles     String[] @default(["ADMIN"]) // Quem pode ver
   active    Boolean  @default(true)
+  users     UsersOnMenus[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
