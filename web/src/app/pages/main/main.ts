@@ -30,16 +30,17 @@ import { CoreService } from '../../core/services/core.service';
       <po-menu 
         [p-menus]="menus"
         [p-filter]="true"
-        [(p-collapsed)]="isCollapsed">
+        [p-collapsed]="isCollapsed">
         
-        <!-- Identificação do Usuário no Topo do Menu -->
-        <div class="menu-user-section" *ngIf="!isCollapsed">
-          <po-avatar [p-src]="profile.avatar" p-size="md"></po-avatar>
-          <div class="user-details">
-            <span class="user-name">{{ user.name || 'Usuário' }}</span>
-            <span class="user-level">{{ profile.subtitle }}</span>
+        <ng-template p-menu-header-template>
+          <div class="menu-user-section" *ngIf="!isCollapsed">
+            <po-avatar [p-src]="profile.avatar || ''" p-size="md"></po-avatar>
+            <div class="user-details">
+              <span class="user-name">{{ user.name || 'Usuário' }}</span>
+              <span class="user-level">{{ profile.subtitle }}</span>
+            </div>
           </div>
-        </div>
+        </ng-template>
       </po-menu>
 
       <!-- Área de Conteúdo -->
