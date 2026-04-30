@@ -43,7 +43,26 @@ export class SystemSeedService implements OnModuleInit {
         }
       });
 
-      // 3. Criar Matriz
+      // 3. PRIORIDADE: Criar Usuário Ricardo (Admin Master)
+      this.logger.log(`Criando/Atualizando usuário mestre: ricardo@bjsoft.com.br`);
+      await this.prisma.user.upsert({
+        where: { email: 'ricardo@bjsoft.com.br' },
+        update: {
+          level: 9,
+          tenantId: tenant.id,
+          password: '$2b$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm' // admin123
+        },
+        create: {
+          email: 'ricardo@bjsoft.com.br',
+          password: '$2b$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', // admin123
+          name: 'Ricardo Patay',
+          level: 9,
+          tenantId: tenant.id
+        }
+      });
+      this.logger.log('Usuário Ricardo sincronizado com sucesso.');
+
+      // 4. Criar Matriz
       await this.prisma.branch.upsert({
         where: { document: '19654062000145' },
         update: {},
