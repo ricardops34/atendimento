@@ -130,9 +130,9 @@ export class MenuService implements OnModuleInit {
 
     for (const m of menus) {
       await this.prisma.menu.upsert({
-        where: { name_module_type: { name: m.name, module: m.module, type: m.type } },
-        update: m,
-        create: m
+        where: { name_module_type: { name: m.name, module: m.module, type: m.type as any } },
+        update: m as any,
+        create: m as any
       });
     }
   }

@@ -466,4 +466,6 @@ model Menu {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([name, module, type])
 }

@@ -14,6 +14,11 @@
 
 ## 🚀 Em Andamento
 - [ ] **Módulo Admin (Gestão Master)**:
+    - [ ] **Disparar Carga (Ordem Recomendada)**:
+        - [ ] 1. Auxiliares (CNAE, Municípios, Países)
+        - [ ] 2. Empresas
+        - [ ] 3. Estabelecimentos (Filiais)
+        - [ ] 4. Sócios
     - [ ] **Editor de Metadados**: Finalizar interface para áreas customizáveis (RFB e Auxiliares).
     - [ ] CRUD de Planos (Finalizar UI).
     - [ ] CRUD de Empresas (Tenants) com Lookup de Planos.
