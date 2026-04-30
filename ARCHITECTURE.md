@@ -40,3 +40,12 @@ Os itens abaixo são estruturais e imutáveis via interface para garantir segura
 ## 🛠️ Ferramentas Administrativas
 - **Editor de Metadados**: Gerencia rótulos, níveis e validações (exclusivo para áreas customizáveis).
 - **Configurador de Temas**: Utiliza CSS Custom Properties injetadas dinamicamente via `ThemeService` para branding por tenant.
+
+---
+
+## 🎨 Padrões de Interface e Estabilidade (PO-UI)
+Para garantir alta disponibilidade, compilação impecável (sem falhas de escape string no Angular) e independência de APIs externas de design, as seguintes regras se aplicam ao frontend:
+
+1. **Recursos Estáticos**: Imagens estruturais (como `avatar-default.png` ou logos de fallback) devem SEMPRE ser servidas localmente na pasta `public` ou `assets`. O uso de APIs públicas de terceiros (como `ui-avatars.com`) para carregamento síncrono no template é terminantemente proibido.
+2. **Componentização PO-UI**: A construção de cabeçalhos de sistema deve usar estritamente o `po-header` tipado pelas interfaces oficiais (`PoHeaderUser`, `PoHeaderActionTool`), evitando injetar HTML/CSS customizado onde o framework já provê suporte nativo.
+3. **Menu de Sistema**: O `po-menu` é obrigatório dentro do `po-wrapper` para garantir o cálculo de 100% da viewport pelo framework. Além disso, todos os menus de nível raiz recebem fallback de ícone (ex: `an an-folder`) para impedir que o PO-UI bloqueie o estado de "Menu Recolhido" (`collapsed`).

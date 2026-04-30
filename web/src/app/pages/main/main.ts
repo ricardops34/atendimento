@@ -24,18 +24,58 @@ import { CoreService } from '../../core/services/core.service';
     </po-header>
 
     <div class="po-wrapper">
-      <!-- O menu lateral DEVE existir para o po-wrapper calcular 100% da área -->
+      <!-- O menu lateral com template nativo para o avatar -->
       <po-menu 
         [p-menus]="menus"
         [p-filter]="true"
         [p-collapsed]="isCollapsed">
+        
+        <ng-template p-menu-header-template>
+          <div class="menu-profile-header" *ngIf="!isCollapsed">
+            <po-avatar [p-src]="menuUser.avatar" p-size="md"></po-avatar>
+            <div class="menu-profile-info">
+              <span class="profile-name">{{ menuUser.name }}</span>
+              <span class="profile-role">{{ menuUser.role }}</span>
+            </div>
+          </div>
+        </ng-template>
+
       </po-menu>
 
       <!-- RENDERIZAÇÃO DAS PÁGINAS -->
       <router-outlet></router-outlet>
     </div>
   `,
-  styles: []
+  styles: [`
+    .menu-profile-header {
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--color-neutral-light-05);
+      border-bottom: 1px solid var(--color-neutral-light-20);
+    }
+    .menu-profile-info {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .profile-name {
+      font-family: var(--font-family-theme);
+      font-size: var(--font-size-default);
+      font-weight: var(--font-weight-bold);
+      color: var(--color-neutral-dark-90);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .profile-role {
+      font-family: var(--font-family-theme);
+      font-size: 11px;
+      color: var(--color-neutral-dark-70);
+      text-transform: uppercase;
+    }
+  `]
 })
 export class MainComponent implements OnInit {
   private router = inject(Router);
@@ -48,6 +88,8 @@ export class MainComponent implements OnInit {
   brand: PoHeaderBrand = { title: 'BJSOFT SAAS' };
   headerUser: PoHeaderUser = { avatar: '', customerBrand: '', items: [] };
   actions: Array<PoHeaderActionTool> = [];
+  
+  menuUser = { name: '', role: '', avatar: '' };
 
   ngOnInit() {
     this.setupHeader();
@@ -58,6 +100,13 @@ export class MainComponent implements OnInit {
     const data = localStorage.getItem('user');
     const user = data ? JSON.parse(data) : {};
     
+    // Configuração para o menu lateral (novo)
+    this.menuUser = {
+      name: user.name || 'Usuário Não Identificado',
+      role: user.level === 9 ? 'Administrador SAAS' : 'Acesso Padrão',
+      avatar: user.avatarUrl || 'avatar-default.png'
+    };
+
     // 1. ÁREA DO USUÁRIO (Lado direito: Avatar + Menu Dropdown)
     this.headerUser = {
       avatar: user.avatarUrl || 'avatar-default.png',
