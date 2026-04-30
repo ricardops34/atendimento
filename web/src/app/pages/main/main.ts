@@ -48,23 +48,24 @@ import { CoreService } from '../../core/services/core.service';
     </div>
   `,
   styles: [`
+    /* Cabeçalho do Perfil no Menu */
     .menu-profile-header {
-      padding: 20px 16px;
+      padding: 16px;
       display: flex;
       align-items: center;
       gap: 12px;
-      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      background: #f8fafc;
       border-bottom: 1px solid #e2e8f0;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
 
     .avatar-container {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%; /* Mudado para redondo para um look mais padrão e limpo */
       overflow: hidden;
       border: 2px solid #fff;
-      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
     .profile-avatar-img {
@@ -80,7 +81,7 @@ import { CoreService } from '../../core/services/core.service';
     }
 
     .profile-name {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: #1e293b;
       white-space: nowrap;
@@ -89,27 +90,47 @@ import { CoreService } from '../../core/services/core.service';
     }
 
     .profile-role {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 500;
       color: #64748b;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
+    /* Ajustes Finos nos Itens do Menu */
     :host ::ng-deep .po-menu-item-link {
-      border-radius: 8px;
-      margin: 2px 8px;
-      transition: all 0.2s ease;
+      height: 40px !important;
+      margin: 2px 8px !important;
+      border-radius: 6px !important;
+      color: #475569 !important; /* Cor cinza slate para itens normais */
+      border: none !important; /* Remove bordas estranhas */
     }
 
-    :host ::ng-deep .po-menu-item-link:hover {
-      background-color: #f1f5f9;
-      transform: translateX(4px);
-    }
-
-    :host ::ng-deep .po-menu-item-selected {
+    /* Item Selecionado - Azul Padrão PO-UI */
+    :host ::ng-deep .po-menu-item-selected .po-menu-item-link {
       background-color: #0054a6 !important;
-      color: #fff !important;
+      color: #ffffff !important;
+    }
+
+    :host ::ng-deep .po-menu-item-selected .po-menu-item-link .po-icon {
+      color: #ffffff !important;
+    }
+
+    /* Ajuste de Subitens (Nível 2) */
+    :host ::ng-deep .po-menu-subitems .po-menu-item-link {
+      padding-left: 12px !important; /* Reduz o recuo excessivo */
+      font-size: 13px !important;
+    }
+
+    /* Hover Suave */
+    :host ::ng-deep .po-menu-item-link:hover {
+      background-color: #f1f5f9 !important;
+      color: #0f172a !important;
+    }
+
+    /* Cor dos ícones */
+    :host ::ng-deep .po-icon {
+      color: #64748b;
     }
   `]
 })
@@ -127,7 +148,7 @@ export class MainComponent implements OnInit {
 
   brand: PoHeaderBrand = { 
     title: 'BJSOFT SAAS',
-    logo: 'logo.png', // Ajustar caminho se necessário
+    logo: 'logo.png',
   };
 
   headerUser: PoHeaderUser = {
@@ -151,10 +172,16 @@ export class MainComponent implements OnInit {
   loadDynamicMenu() {
     this.http.get(`${this.coreService.apiUrl}/menu/user-menu`).subscribe({
       next: (res: any) => {
-        this.menus = (res.sidebar || []).map((item: any) => ({
-          ...item,
-          icon: item.icon || 'an an-folder'
-        }));
+        // Função recursiva para garantir ícones em todos os níveis
+        const mapIcons = (items: Array<any>): Array<PoMenuItem> => {
+          return (items || []).map(item => ({
+            ...item,
+            icon: item.icon || 'an an-folder',
+            subItems: item.subItems ? mapIcons(item.subItems) : undefined
+          }));
+        };
+
+        this.menus = mapIcons(res.sidebar || []);
       },
       error: () => {
         console.error('Erro ao carregar menus');
