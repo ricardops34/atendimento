@@ -317,6 +317,7 @@ model UsersOnMenus {
 model Role {
   id          String   @id @default(uuid())
   name        String
+  description String?
   tenantId    String
   tenant      Tenant   @relation(fields: [tenantId], references: [id])
   users       User[]
