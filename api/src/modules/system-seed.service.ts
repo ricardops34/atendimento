@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { MenuType } from '@prisma/client';
+import { MenuType, MenuModule } from '@prisma/client';
 
 @Injectable()
 export class SystemSeedService implements OnModuleInit {
@@ -9,13 +9,13 @@ export class SystemSeedService implements OnModuleInit {
   constructor(private prisma: PrismaService) {}
 
   async onModuleInit() {
-    this.logger.log('Sincronizando Catálogo de Menus e Estrutura...');
+    this.logger.log('Sincronizando Hierarquia SAAS Admin...');
     await this.seedInitialData();
   }
 
   private async seedInitialData() {
     try {
-      // 1. Plano e Tenant
+      // 1. Setup Base
       const plan = await this.prisma.plan.upsert({
         where: { name: 'Plano Pro' },
         update: {},
@@ -28,70 +28,35 @@ export class SystemSeedService implements OnModuleInit {
         create: { name: 'B. J. INFORMATICA', domain: 'bjsoft.com.br', email: 'conasci@gmail.com', status: 'ACTIVE', planId: plan.id }
       });
 
-      // 2. Empresa e Filial
-      const company = await this.prisma.company.upsert({
-        where: { document: '19654062000145' },
-        update: { name: 'RICARDO PATAY SOTOMAYOR' },
-        create: { tenantId: tenant.id, name: 'RICARDO PATAY SOTOMAYOR', tradeName: 'B. J. INFORMATICA', document: '19654062000145', status: 'ACTIVE' }
-      });
-
-      const branch = await this.prisma.branch.upsert({
-        where: { document: '19654062000145' },
-        update: {},
-        create: { 
-          tenantId: tenant.id, 
-          companyId: company.id, 
-          name: 'MATRIZ - CAMPO GRANDE', 
-          document: '19654062000145', 
-          isMain: true,
-          city: 'CAMPO GRANDE',
-          state: 'MS',
-          status: 'ACTIVE'
-        }
-      });
-
-      // 3. Usuário Ricardo
-      const user = await this.prisma.user.upsert({
-        where: { email: 'ricardo@bjsoft.com.br' },
-        update: { level: 9, status: 'ACTIVE' },
-        create: {
-          email: 'ricardo@bjsoft.com.br',
-          login: 'ricardo@bjsoft.com.br',
-          password: '$2b$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbcoQgdIVFlYg7B77UdFm', // admin123
-          name: 'Ricardo Patay Sotomayor',
-          level: 9,
-          tenantId: tenant.id,
-          status: 'ACTIVE'
-        }
-      });
-
-      // 4. Menus Detalhados
-      const menus = [
-        { module: 'SISTEMA', type: MenuType.SIDEBAR, name: 'Dashboard', link: '/dashboard', icon: 'an an-chart-line', order: 1, roles: ['USUARIO', 'ADMIN_SAAS'] },
-        
-        { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Segurança', name: 'Usuários', link: '/app/users', icon: 'an an-user', order: 10, roles: ['ADMIN_SAAS'] },
-        { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Segurança', name: 'Perfis de Acesso', link: '/app/roles', icon: 'an an-users-three', order: 11, roles: ['ADMIN_SAAS'] },
-        
-        { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Estrutura', name: 'Empresas', link: '/app/companies', icon: 'an an-briefcase', order: 20, roles: ['ADMIN_SAAS'] },
-        { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Estrutura', name: 'Filiais', link: '/app/branches', icon: 'an an-tree-structure', order: 21, roles: ['ADMIN_SAAS'] },
-        
-        { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Customização', name: 'Metadados', link: '/saas/metadata-editor', icon: 'an an-database', order: 30, roles: ['ADMIN_SAAS'] },
-        { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Customização', name: 'Gestão de Menus', link: '/saas/menu', icon: 'an an-list', order: 31, roles: ['ADMIN_SAAS'] },
-
-        { module: 'SISTEMA', type: MenuType.TOOLBAR, name: 'Configurações', link: '/settings', icon: 'an an-gear', order: 1, roles: ['ADMIN_SAAS'] },
-      ];
-
-      for (const m of menus) {
-        await this.prisma.menu.upsert({
-          where: { name_module_type: { name: m.name, module: m.module, type: m.type as any } },
+      // 2. Função Auxiliar Interna
+      const createMenu = async (m: any) => {
+        return this.prisma.menu.upsert({
+          where: { name_module_type: { name: m.name, module: m.module as any, type: m.type as any } },
           update: m as any,
           create: m as any
         });
-      }
+      };
 
-      this.logger.log('Carga de menus finalizada com sucesso.');
+      // --- MÓDULO SAAS (ROOT) ---
+      const saasRoot = await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Administração SaaS', icon: 'an an-gear', order: 1, roles: ['ADMIN_SAAS'] });
+
+      // --- GRUPOS ---
+      const saasSeg = await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Segurança', parentId: saasRoot.id, order: 1, roles: ['ADMIN_SAAS'] });
+      const saasEst = await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Estrutura', parentId: saasRoot.id, order: 2, roles: ['ADMIN_SAAS'] });
+      const saasCust = await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Customização', parentId: saasRoot.id, order: 3, roles: ['ADMIN_SAAS'] });
+
+      // --- ROTINAS ---
+      await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Usuários', link: '/app/users', parentId: saasSeg.id, icon: 'an an-user', order: 1, roles: ['ADMIN_SAAS'] });
+      await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Empresas', link: '/app/companies', parentId: saasEst.id, icon: 'an an-briefcase', order: 1, roles: ['ADMIN_SAAS'] });
+      await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Metadados', link: '/saas/metadata-editor', parentId: saasCust.id, icon: 'an an-database', order: 1, roles: ['ADMIN_SAAS'] });
+      await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Gestão de Menus', link: '/saas/menu', parentId: saasCust.id, icon: 'an an-list', order: 2, roles: ['ADMIN_SAAS'] });
+
+      // --- MÓDULO SISTEMA ---
+      await createMenu({ module: MenuModule.SISTEMA, type: MenuType.SIDEBAR, name: 'Dashboard', link: '/dashboard', icon: 'an an-chart-line', order: 1, roles: ['USUARIO', 'ADMIN_SAAS'] });
+
+      this.logger.log('Hierarquia SAAS Admin sincronizada com sucesso.');
     } catch (error) {
-      this.logger.error('Erro na carga de menus: ' + error.message);
+      this.logger.error('Erro na sincronização de menus: ' + error.message);
     }
   }
 }

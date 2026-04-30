@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { MenuType } from '@prisma/client';
+import { MenuType, MenuModule } from '@prisma/client';
 
 @Injectable()
 export class MenuService implements OnModuleInit {
@@ -93,7 +93,7 @@ export class MenuService implements OnModuleInit {
     try {
       for (const m of menus) {
         await this.prisma.menu.upsert({
-          where: { name_module_type: { name: m.name, module: m.module, type: m.type as any } },
+          where: { name_module_type: { name: m.name, module: m.module as any, type: m.type as any } },
           update: m as any,
           create: m as any
         });

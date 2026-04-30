@@ -4,12 +4,12 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Iniciando Carga de Menus Hierárquicos...');
+  console.log('🌱 Iniciando Carga de Menus Hierárquicos (SAAS ADMIN)...');
 
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash('bjsoft2026', saltRounds);
 
-  // 1. Setup Base (Plano, Tenant, User)
+  // 1. Setup Base
   const plan = await prisma.plan.upsert({
     where: { name: 'Plano Pro' },
     update: {},
@@ -42,7 +42,7 @@ async function main() {
     }
   });
 
-  // 2. Função Auxiliar para criar menus com hierarquia
+  // 2. Função Auxiliar
   const createMenu = async (m: any) => {
     return prisma.menu.upsert({
       where: { name_module_type: { name: m.name, module: m.module, type: m.type } },
@@ -51,34 +51,73 @@ async function main() {
     });
   };
 
-  // --- MÓDULO SAAS ---
-  const saasRoot = await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Gestão SaaS', icon: 'an an-database', order: 1 });
-  await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Usuários', link: '/app/users', parentId: saasRoot.id, icon: 'an an-user', order: 1 });
-  await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Menus', link: '/saas/menu', parentId: saasRoot.id, icon: 'an an-list', order: 2 });
+  // --- MÓDULO SAAS (ROOT) ---
+  const saasRoot = await createMenu({ 
+    module: MenuModule.SAAS, 
+    type: MenuType.SIDEBAR, 
+    name: 'Administração SaaS', 
+    icon: 'an an-gear', 
+    order: 1,
+    roles: ['ADMIN_SAAS']
+  });
 
-  // --- MÓDULO SISTEMA (Exemplo Financeiro solicitado) ---
-  const financeiro = await createMenu({ module: MenuModule.SISTEMA, type: MenuType.SIDEBAR, name: 'Financeiro', icon: 'an an-money', order: 10 });
+  // --- GRUPO: SEGURANÇA ---
+  const saasSeg = await createMenu({ 
+    module: MenuModule.SAAS, 
+    type: MenuType.SIDEBAR, 
+    name: 'Segurança', 
+    parentId: saasRoot.id, 
+    order: 1,
+    roles: ['ADMIN_SAAS']
+  });
   
-  // Nível 2: Atualizações, Consultas, Relatórios
-  const finAtu = await createMenu({ module: MenuModule.SISTEMA, type: MenuType.SIDEBAR, name: 'Atualizações', parentId: financeiro.id, order: 1 });
-  const finCon = await createMenu({ module: MenuModule.SISTEMA, type: MenuType.SIDEBAR, name: 'Consultas', parentId: financeiro.id, order: 2 });
-  const finRel = await createMenu({ module: MenuModule.SISTEMA, type: MenuType.SIDEBAR, name: 'Relatórios', parentId: financeiro.id, order: 3 });
-  const finMisc = await createMenu({ module: MenuModule.SISTEMA, type: MenuType.SIDEBAR, name: 'Miscelâneas', parentId: financeiro.id, order: 4 });
+  await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Usuários', link: '/app/users', parentId: saasSeg.id, icon: 'an an-user', order: 1, roles: ['ADMIN_SAAS'] });
+  await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Perfis de Acesso', link: '/app/roles', parentId: saasSeg.id, icon: 'an an-users-three', order: 2, roles: ['ADMIN_SAAS'] });
+  await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Log de Auditoria', link: '/saas/audit', parentId: saasSeg.id, icon: 'an an-shield-check', order: 3, roles: ['ADMIN_SAAS'] });
 
-  // Nível 3: Cadastros dentro de Atualizações
-  const finAtuCad = await createMenu({ module: MenuModule.SISTEMA, type: MenuType.SIDEBAR, name: 'Cadastros (Financeiro)', parentId: finAtu.id, order: 1 });
-  const finAtuPagar = await createMenu({ module: MenuModule.SISTEMA, type: MenuType.SIDEBAR, name: 'Contas a Pagar', parentId: finAtu.id, order: 2 });
+  // --- GRUPO: ESTRUTURA ---
+  const saasEst = await createMenu({ 
+    module: MenuModule.SAAS, 
+    type: MenuType.SIDEBAR, 
+    name: 'Estrutura', 
+    parentId: saasRoot.id, 
+    order: 2,
+    roles: ['ADMIN_SAAS']
+  });
 
-  // Nível 4: Rotinas Finais
-  await createMenu({ module: MenuModule.SISTEMA, type: MenuType.SIDEBAR, name: 'Clientes', link: '/fin/clientes', parentId: finAtuCad.id, order: 1 });
-  await createMenu({ module: MenuModule.SISTEMA, type: MenuType.SIDEBAR, name: 'Fornecedores', link: '/fin/fornecedores', parentId: finAtuCad.id, order: 2 });
-  await createMenu({ module: MenuModule.SISTEMA, type: MenuType.SIDEBAR, name: 'Funções Contas a Pagar', link: '/fin/pagar', parentId: finAtuPagar.id, order: 1 });
-  await createMenu({ module: MenuModule.SISTEMA, type: MenuType.SIDEBAR, name: 'Borderô', link: '/fin/bordero', parentId: finAtuPagar.id, order: 2 });
+  await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Empresas (Tenants)', link: '/app/companies', parentId: saasEst.id, icon: 'an an-briefcase', order: 1, roles: ['ADMIN_SAAS'] });
+  await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Filiais', link: '/app/branches', parentId: saasEst.id, icon: 'an an-tree-structure', order: 2, roles: ['ADMIN_SAAS'] });
+  await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Planos', link: '/saas/plans', parentId: saasEst.id, icon: 'an an-tag', order: 3, roles: ['ADMIN_SAAS'] });
 
-  // Reprocessamento em Miscelâneas
-  await createMenu({ module: MenuModule.SISTEMA, type: MenuType.SIDEBAR, name: 'Reprocessamento', link: '/fin/misc/reprocessar', parentId: finMisc.id, order: 1 });
+  // --- GRUPO: CUSTOMIZAÇÃO ---
+  const saasCust = await createMenu({ 
+    module: MenuModule.SAAS, 
+    type: MenuType.SIDEBAR, 
+    name: 'Customização', 
+    parentId: saasRoot.id, 
+    order: 3,
+    roles: ['ADMIN_SAAS']
+  });
 
-  console.log('✅ Carga de Menus Hierárquicos concluída!');
+  await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Metadados', link: '/saas/metadata-editor', parentId: saasCust.id, icon: 'an an-database', order: 1, roles: ['ADMIN_SAAS'] });
+  await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Gestão de Menus', link: '/saas/menu', parentId: saasCust.id, icon: 'an an-list', order: 2, roles: ['ADMIN_SAAS'] });
+
+  // --- GRUPO: DADOS PÚBLICOS ---
+  const saasDados = await createMenu({ 
+    module: MenuModule.SAAS, 
+    type: MenuType.SIDEBAR, 
+    name: 'Dados Públicos', 
+    parentId: saasRoot.id, 
+    order: 10,
+    roles: ['ADMIN_SAAS', 'USUARIO']
+  });
+
+  await createMenu({ module: MenuModule.SAAS, type: MenuType.SIDEBAR, name: 'Empresas (RFB)', link: '/saas/cnpj/estabelecimentos', parentId: saasDados.id, icon: 'an an-buildings', order: 1, roles: ['ADMIN_SAAS', 'USUARIO'] });
+
+  // --- MÓDULO SISTEMA ---
+  await createMenu({ module: MenuModule.SISTEMA, type: MenuType.SIDEBAR, name: 'Dashboard', link: '/dashboard', icon: 'an an-chart-line', order: 1, roles: ['USUARIO', 'ADMIN_SAAS'] });
+
+  console.log('✅ Carga de Menus SAAS finalizada!');
 }
 
 main()
