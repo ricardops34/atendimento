@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Iniciando Carga Inicial Real (BJSOFT)...');
+  console.log('🌱 Iniciando Carga de Menus e Estrutura Completa...');
 
   const saltRounds = 10;
   const hashedPassword = await bcrypt.hash('bjsoft2026', saltRounds);
@@ -67,7 +67,8 @@ async function main() {
       address: 'R JOAO GUIMARAES ROSA',
       number: '459',
       neighborhood: 'VILA NASSER',
-      isMain: true
+      isMain: true,
+      status: 'ACTIVE'
     }
   });
 
@@ -81,7 +82,7 @@ async function main() {
   for (const r of roles) {
     await prisma.role.upsert({
       where: { name_tenantId: { name: r.name, tenantId: tenant.id } },
-      update: {},
+      update: { description: r.description },
       create: { ...r, tenantId: tenant.id }
     });
   }
@@ -124,13 +125,28 @@ async function main() {
     create: { userId: user.id, branchId: branch.id, isDefault: true }
   });
 
-  // 7. Menus
+  // 7. Menus Detalhados (SAAS, SISTEMA e TOOLBAR)
   const menuData = [
-    { module: 'SISTEMA', type: MenuType.SIDEBAR, name: 'Dashboard', link: '/dashboard', icon: 'an an-chart-line', order: 1, roles: ['USER', 'ADMIN_SAAS'] },
-    { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Administração', name: 'Usuários', link: '/app/users', icon: 'an an-user', order: 10, roles: ['ADMIN_SAAS'] },
-    { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Administração', name: 'Perfis', link: '/app/roles', icon: 'an an-users-three', order: 11, roles: ['ADMIN_SAAS'] },
-    { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Estrutura', name: 'Empresas', link: '/app/companies', icon: 'an an-briefcase', order: 20, roles: ['ADMIN_SAAS'] },
+    // --- MÓDULO SISTEMA (SIDEBAR) ---
+    { module: 'SISTEMA', type: MenuType.SIDEBAR, group: null, name: 'Dashboard', link: '/dashboard', icon: 'an an-chart-line', order: 1, roles: ['USUARIO', 'ADMIN_SISTEMA', 'ADMIN_SAAS'] },
+    
+    // --- MÓDULO SAAS (SIDEBAR) ---
+    { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Segurança', name: 'Usuários', link: '/app/users', icon: 'an an-user', order: 10, roles: ['ADMIN_SAAS'] },
+    { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Segurança', name: 'Perfis de Acesso', link: '/app/roles', icon: 'an an-users-three', order: 11, roles: ['ADMIN_SAAS'] },
+    { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Segurança', name: 'Log de Auditoria', link: '/saas/audit', icon: 'an an-shield-check', order: 12, roles: ['ADMIN_SAAS'] },
+    
+    { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Estrutura', name: 'Empresas (Tenants)', link: '/app/companies', icon: 'an an-briefcase', order: 20, roles: ['ADMIN_SAAS'] },
     { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Estrutura', name: 'Filiais', link: '/app/branches', icon: 'an an-tree-structure', order: 21, roles: ['ADMIN_SAAS'] },
+    { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Estrutura', name: 'Planos', link: '/saas/plans', icon: 'an an-tag', order: 22, roles: ['ADMIN_SAAS'] },
+    
+    { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Customização', name: 'Metadados', link: '/saas/metadata-editor', icon: 'an an-database', order: 30, roles: ['ADMIN_SAAS'] },
+    { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Customização', name: 'Gestão de Menus', link: '/saas/menu', icon: 'an an-list', order: 31, roles: ['ADMIN_SAAS'] },
+    
+    { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Dados Públicos', name: 'Empresas (RFB)', link: '/saas/cnpj/estabelecimentos', icon: 'an an-buildings', order: 100, roles: ['USUARIO', 'ADMIN_SAAS'] },
+
+    // --- TOOLBAR (Ações Rápidas) ---
+    { module: 'SISTEMA', type: MenuType.TOOLBAR, name: 'Configurações', link: '/settings', icon: 'an an-gear', order: 1, roles: ['ADMIN_SISTEMA', 'ADMIN_SAAS'] },
+    { module: 'SISTEMA', type: MenuType.TOOLBAR, name: 'Notificações', link: '/notifications', icon: 'an an-bell', order: 2, roles: ['USUARIO', 'ADMIN_SISTEMA', 'ADMIN_SAAS'] }
   ];
 
   for (const m of menuData) {
@@ -140,6 +156,7 @@ async function main() {
       create: m
     });
 
+    // Vincular menu ao usuário mestre para garantir
     await prisma.usersOnMenus.upsert({
       where: { userId_menuId: { userId: user.id, menuId: menu.id } },
       update: {},
@@ -147,7 +164,7 @@ async function main() {
     });
   }
 
-  console.log('✅ Carga BJSOFT concluída com sucesso!');
+  console.log('✅ Carga completa (Menus/Roles/Estrutura) finalizada!');
 }
 
 main()

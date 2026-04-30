@@ -9,7 +9,7 @@ export class SystemSeedService implements OnModuleInit {
   constructor(private prisma: PrismaService) {}
 
   async onModuleInit() {
-    this.logger.log('Sincronizando Carga Real BJSOFT...');
+    this.logger.log('Sincronizando Catálogo de Menus e Estrutura...');
     await this.seedInitialData();
   }
 
@@ -45,11 +45,12 @@ export class SystemSeedService implements OnModuleInit {
           document: '19654062000145', 
           isMain: true,
           city: 'CAMPO GRANDE',
-          state: 'MS'
+          state: 'MS',
+          status: 'ACTIVE'
         }
       });
 
-      // 3. Usuário Ricardo (ADMIN_SAAS)
+      // 3. Usuário Ricardo
       const user = await this.prisma.user.upsert({
         where: { email: 'ricardo@bjsoft.com.br' },
         update: { level: 9, status: 'ACTIVE' },
@@ -64,24 +65,20 @@ export class SystemSeedService implements OnModuleInit {
         }
       });
 
-      // Vínculos N:N
-      await this.prisma.usersOnCompanies.upsert({
-        where: { userId_companyId: { userId: user.id, companyId: company.id } },
-        update: {},
-        create: { userId: user.id, companyId: company.id, isDefault: true }
-      });
-
-      await this.prisma.usersOnBranches.upsert({
-        where: { userId_branchId: { userId: user.id, branchId: branch.id } },
-        update: {},
-        create: { userId: user.id, branchId: branch.id, isDefault: true }
-      });
-
-      // 4. Menus
+      // 4. Menus Detalhados
       const menus = [
         { module: 'SISTEMA', type: MenuType.SIDEBAR, name: 'Dashboard', link: '/dashboard', icon: 'an an-chart-line', order: 1, roles: ['USUARIO', 'ADMIN_SAAS'] },
-        { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Gestão', name: 'Usuários', link: '/app/users', icon: 'an an-user', order: 10, roles: ['ADMIN_SAAS'] },
+        
+        { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Segurança', name: 'Usuários', link: '/app/users', icon: 'an an-user', order: 10, roles: ['ADMIN_SAAS'] },
+        { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Segurança', name: 'Perfis de Acesso', link: '/app/roles', icon: 'an an-users-three', order: 11, roles: ['ADMIN_SAAS'] },
+        
         { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Estrutura', name: 'Empresas', link: '/app/companies', icon: 'an an-briefcase', order: 20, roles: ['ADMIN_SAAS'] },
+        { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Estrutura', name: 'Filiais', link: '/app/branches', icon: 'an an-tree-structure', order: 21, roles: ['ADMIN_SAAS'] },
+        
+        { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Customização', name: 'Metadados', link: '/saas/metadata-editor', icon: 'an an-database', order: 30, roles: ['ADMIN_SAAS'] },
+        { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Customização', name: 'Gestão de Menus', link: '/saas/menu', icon: 'an an-list', order: 31, roles: ['ADMIN_SAAS'] },
+
+        { module: 'SISTEMA', type: MenuType.TOOLBAR, name: 'Configurações', link: '/settings', icon: 'an an-gear', order: 1, roles: ['ADMIN_SAAS'] },
       ];
 
       for (const m of menus) {
@@ -92,9 +89,9 @@ export class SystemSeedService implements OnModuleInit {
         });
       }
 
-      this.logger.log('Carga real BJSOFT sincronizada.');
+      this.logger.log('Carga de menus finalizada com sucesso.');
     } catch (error) {
-      this.logger.error('Erro na carga real: ' + error.message);
+      this.logger.error('Erro na carga de menus: ' + error.message);
     }
   }
 }
