@@ -503,19 +503,29 @@ model ImportStatus {
   updatedAt   DateTime @updatedAt
 }
 
+enum MenuModule {
+  SAAS
+  SISTEMA
+}
+
 model Menu {
   id        String   @id @default(uuid())
-  module    String   // Ex: 'SAAS', 'SISTEMA'
-  type      MenuType @default(SIDEBAR)
-  group     String?  // Ex: 'Cadastros', 'Dados Públicos'
-  subGroup  String?  // Ex: 'Auxiliares'
+  module    MenuModule @default(SISTEMA)
+  type      MenuType   @default(SIDEBAR)
   name      String   // Nome que aparece no menu (Label)
   link      String?  // URL/Rota
   icon      String?  // Ícone (an an-...)
-  isCloud   Boolean  @default(false) // Campo 'nuvem'
-  order     Int      @default(0)     // Ordenação
-  roles     String[] @default(["ADMIN"]) // Quem pode ver
+  
+  parentId  String?  // Para submenus
+  parent    Menu?    @relation("MenuToMenu", fields: [parentId], references: [id])
+  subMenus  Menu[]   @relation("MenuToMenu")
+
+  group     String?  // Legado/Agrupador simples
+  order     Int      @default(0)
+  roles     String[] @default(["ADMIN"])
   active    Boolean  @default(true)
+  isCloud   Boolean  @default(false)
+
   users     UsersOnMenus[]
 
   createdAt DateTime @default(now())

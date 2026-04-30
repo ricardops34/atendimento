@@ -17,84 +17,44 @@ export class MenuService implements OnModuleInit {
       include: { role: true },
     });
 
-    if (!user) return [];
+    if (!user) return { sidebar: [], toolbar: [] };
 
     const userRole = user.level === 9 ? 'ADMIN_SAAS' : (user.role?.name || 'USER');
 
-    // Busca o plano do tenant e suas rotinas ativas
-    const tenant = await this.prisma.tenant.findUnique({
-      where: { id: user.tenantId },
-      include: {
-        plan: {
-          include: { routines: { include: { routine: true } } }
-        }
-      }
-    });
-
-    const allowedRoutineLinks = tenant?.plan.routines.map(pr => pr.routine.link) || [];
-
-    const menus = await this.prisma.menu.findMany({
+    // Busca todos os menus ativos (A lógica de filtro por plano pode ser aplicada aqui depois)
+    const allMenus = await this.prisma.menu.findMany({
       where: { active: true },
       orderBy: { order: 'asc' },
     });
 
-    // Filtra por permissão e por disponibilidade no Plano
-    const filteredMenus = menus.filter((menu) => {
-      // ADMIN_SAAS sempre vê tudo
-      if (userRole === 'ADMIN_SAAS') return true;
+    // Filtra por permissão básica de Role
+    const allowedMenus = allMenus.filter(m => 
+      userRole === 'ADMIN_SAAS' || m.roles.includes(userRole) || m.roles.includes('USER')
+    );
 
-      // Verifica se o perfil tem acesso
-      const hasRoleAccess = menu.roles.includes(userRole) || menu.roles.includes('USER');
-      if (!hasRoleAccess) return false;
-
-      // Se o menu tem um link, verifica se esse link está no catálogo de rotinas do Plano
-      if (menu.link && menu.link !== '/dashboard') {
-        return allowedRoutineLinks.some(link => link && menu.link!.startsWith(link));
-      }
-
-      return true;
-    });
-
-    // Agrupa por módulo e grupos
-    return this.buildMenuTree(filteredMenus);
+    return {
+      sidebar: this.buildRecursiveMenu(allowedMenus, 'SIDEBAR'),
+      toolbar: this.buildRecursiveMenu(allowedMenus, 'TOOLBAR')
+    };
   }
 
-  private buildMenuTree(menus: any[]) {
-    const menuTree: any = {
-      sidebar: [],
-      toolbar: []
-    };
+  private buildRecursiveMenu(menus: any[], type: MenuType, parentId: string | null = null): any[] {
+    return menus
+      .filter(m => m.type === type && m.parentId === parentId)
+      .map(m => {
+        const subItems = this.buildRecursiveMenu(menus, type, m.id);
+        const item: any = {
+          label: m.name,
+          link: m.link || undefined,
+          icon: m.icon || undefined
+        };
 
-    menus.forEach(menu => {
-      if (menu.type === 'SIDEBAR') {
-        if (menu.group) {
-          let group = menuTree.sidebar.find((i: any) => i.label === menu.group);
-          if (!group) {
-            group = { label: menu.group, icon: 'an an-folder', subItems: [] };
-            menuTree.sidebar.push(group);
-          }
-          group.subItems.push({
-            label: menu.name,
-            link: menu.link,
-            icon: menu.icon
-          });
-        } else {
-          menuTree.sidebar.push({
-            label: menu.name,
-            link: menu.link,
-            icon: menu.icon
-          });
+        if (subItems.length > 0) {
+          item.subItems = subItems;
         }
-      } else {
-        menuTree.toolbar.push({
-          label: menu.name,
-          link: menu.link,
-          icon: menu.icon
-        });
-      }
-    });
 
-    return menuTree;
+        return item;
+      });
   }
 
   async findAll() {
