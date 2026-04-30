@@ -54,7 +54,7 @@ export class MainComponent implements OnInit {
   user = JSON.parse(localStorage.getItem('user') || '{}');
   
   userRole = this.user.level === 9 ? 'Administrador SaaS' : 'Acesso Padrão';
-  profileAvatar = this.user.avatarUrl || 'https://ui-avatars.com/api/?name=' + (this.user.name || 'User') + '&background=0054a6&color=fff';
+  profileAvatar = this.user.avatarUrl || '/avatar-default.png';
 
   brand: PoHeaderBrand = { 
     title: 'BJSOFT SAAS',
