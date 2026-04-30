@@ -24,14 +24,16 @@ export class MainComponent implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
 
+  readonly items: Array<PoMenuItem> = [];
+
   isCollapsed = false;
   menus: Array<PoMenuItem> = [];
   user = JSON.parse(localStorage.getItem('user') || '{}');
-  
+
   userRole = this.user.level === 9 ? 'Administrador SaaS' : 'Acesso Padrão';
   profileAvatar = this.user.avatarUrl || '/avatar-default.png';
 
-  brand: PoHeaderBrand = { 
+  brand: PoHeaderBrand = {
     title: 'BJSOFT SAAS',
     logo: 'logo.png',
   };
@@ -46,8 +48,8 @@ export class MainComponent implements OnInit {
   };
 
   actions: Array<PoHeaderActionTool> = [
-    { icon: 'an an-gear', tooltip: 'Configurações', action: () => {} },
-    { icon: 'an an-bell', tooltip: 'Notificações', badge: 3, action: () => {} }
+    { icon: 'an an-gear', tooltip: 'Configurações', action: () => { } },
+    { icon: 'an an-bell', tooltip: 'Notificações', badge: 3, action: () => { } }
   ];
 
   ngOnInit() {
