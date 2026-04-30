@@ -5,7 +5,6 @@ import { HttpClient } from '@angular/common/http';
 import {
   PoHeaderActionTool,
   PoHeaderBrand,
-  PoHeaderUser,
   PoComponentsModule
 } from '@po-ui/ng-components';
 import { CoreService } from '../../core/services/core.service';
@@ -18,7 +17,6 @@ import { CoreService } from '../../core/services/core.service';
     <!-- HEADER PREMIUM DO PO-UI -->
     <po-header
       [p-brand]="brand"
-      [p-header-user]="headerUser"
       [p-actions-tools]="actions">
     </po-header>
 
@@ -32,7 +30,6 @@ export class MainComponent implements OnInit {
   private router = inject(Router);
   
   brand: PoHeaderBrand = { title: 'BJSOFT SAAS' };
-  headerUser: PoHeaderUser = { name: 'Usuário', avatar: '' };
   actions: Array<PoHeaderActionTool> = [];
 
   ngOnInit() {
@@ -43,16 +40,9 @@ export class MainComponent implements OnInit {
     const data = localStorage.getItem('user');
     const user = data ? JSON.parse(data) : {};
     
-    const initials = (user.name || 'U').substring(0, 1).toUpperCase();
-    const defaultAvatar = \`https://ui-avatars.com/api/?name=\${initials}&background=7b1fa2&color=fff\`;
-
-    this.headerUser = {
-      name: user.name || 'Usuário Não Identificado',
-      avatar: user.avatarUrl || defaultAvatar
-    };
-
     this.actions = [
-      { label: 'Sair', icon: 'an an-sign-out', click: () => this.logout() }
+      { label: user.name || 'Meu Perfil', icon: 'an an-user', click: () => {} },
+      { label: 'Sair', icon: 'an an-sign-out', type: 'danger', click: () => this.logout() }
     ];
   }
 
@@ -61,3 +51,4 @@ export class MainComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 }
+
