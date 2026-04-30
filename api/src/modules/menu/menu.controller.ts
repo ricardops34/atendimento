@@ -42,8 +42,4 @@ export class MenuController {
     return this.menuService.remove(id);
   }
 
-  @Post('seed')
-  async seed() {
-    return this.menuService.seedInitialMenus();
-  }
 }

@@ -8,7 +8,7 @@ export class MenuService implements OnModuleInit {
   constructor(private prisma: PrismaService) {}
 
   async onModuleInit() {
-    await this.seedInitialMenus();
+    // A carga inicial agora é gerenciada pelo SystemSeedService
   }
 
   async getMenu(userId: string) {
@@ -58,9 +58,10 @@ export class MenuService implements OnModuleInit {
   }
 
   async findAll() {
-    return this.prisma.menu.findMany({
+    const items = await this.prisma.menu.findMany({
       orderBy: { order: 'asc' }
     });
+    return { items };
   }
 
   async create(data: any) {
@@ -80,27 +81,4 @@ export class MenuService implements OnModuleInit {
     });
   }
 
-  async seedInitialMenus() {
-    const menus = [
-      { module: 'SISTEMA', type: MenuType.SIDEBAR, group: null, name: 'Dashboard', link: '/dashboard', icon: 'an an-chart-line', order: 1, roles: ['USER', 'ADMIN', 'ADMIN_SAAS'] },
-      { module: 'SISTEMA', type: MenuType.TOOLBAR, name: 'Configurações', link: '/settings', icon: 'an an-gear', order: 1, roles: ['ADMIN', 'ADMIN_SAAS'] },
-      { module: 'SISTEMA', type: MenuType.TOOLBAR, name: 'Apps', link: null, icon: 'an an-grid-four', order: 2, roles: ['USER', 'ADMIN', 'ADMIN_SAAS'] },
-      { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Gestão SaaS', name: 'Metadados', link: '/saas/metadata-editor', icon: 'an an-database', order: 10, roles: ['ADMIN_SAAS'] },
-      { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Gestão SaaS', name: 'Menus', link: '/saas/menu', icon: 'an an-list', order: 11, roles: ['ADMIN_SAAS'] },
-      { module: 'SAAS', type: MenuType.SIDEBAR, group: 'Dados Públicos RFB', name: 'Empresas (RFB)', link: '/saas/cnpj/estabelecimentos', icon: 'an an-building', order: 100, roles: ['USER', 'ADMIN', 'ADMIN_SAAS'] },
-    ];
-
-    try {
-      for (const m of menus) {
-        await this.prisma.menu.upsert({
-          where: { name_module_type: { name: m.name, module: m.module as any, type: m.type as any } },
-          update: m as any,
-          create: m as any
-        });
-      }
-      this.logger.log('Menus iniciais sincronizados com sucesso.');
-    } catch (error) {
-      this.logger.error('Falha ao sincronizar menus iniciais. Certifique-se de rodar npx prisma db push.', error.stack);
-    }
-  }
 }
