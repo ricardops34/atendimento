@@ -18,8 +18,7 @@ export class AuthController {
     // A validação real acontecerá dentro do validateUser
     const user = await this.authService.validateUser(
       loginDto.email,
-      loginDto.password,
-      tenantId
+      loginDto.password
     );
 
     if (!user) {

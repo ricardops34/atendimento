@@ -10,8 +10,8 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, pass: string, tenantId: string): Promise<any> {
-    const user = await this.usersService.findByEmail(email, tenantId);
+  async validateUser(email: string, pass: string): Promise<any> {
+    const user = await this.usersService.findByEmail(email);
     
     if (!user) {
       throw new UnauthorizedException('Usuário não encontrado.');
