@@ -1,12 +1,17 @@
-<div class="po-wrapper">
-  <po-toolbar p-title="Atendimento MVP"></po-toolbar>
+<div class="po-wrapper" *ngIf="isAuthenticated()">
+  <po-toolbar 
+    p-title="Sistema de Atendimento"
+    [p-profile]="profile"
+    [p-profile-actions]="profileActions">
+  </po-toolbar>
 
-  <po-menu [p-menus]="menus"></po-menu>
+  <po-menu [p-menus]="menus()"></po-menu>
 
-  <po-page-default p-title="Painel de Atendimentos">
+  <po-page-default>
     <router-outlet></router-outlet>
-    <div style="padding: 16px;">
-      <p>Bem-vindo ao novo sistema de Atendimentos operacionalizado com PO-UI e Angular 21!</p>
-    </div>
   </po-page-default>
+</div>
+
+<div *ngIf="!isAuthenticated()">
+  <router-outlet></router-outlet>
 </div>

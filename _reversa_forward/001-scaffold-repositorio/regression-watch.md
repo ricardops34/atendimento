@@ -1,19 +1,23 @@
-# Regression Watch — Feature `001-scaffold-repositorio`
+﻿# Regression Watch â€” Feature `001-scaffold-repositorio`
 
 > Identificador: `001-scaffold-repositorio`  
 
-## 🛡️ Lista de Itens Monitorados (Regression Watch)
+## ðŸ›¡ï¸ Lista de Itens Monitorados (Regression Watch)
 
-Nenhum comportamento funcional ou regra de negócio preexistente foi alterada ou removida nesta rodada de desenvolvimento. Como consequência, não há itens de watch cadastrados para monitoramento nesta fase.
+Nenhum comportamento funcional ou regra de negÃ³cio preexistente foi alterada ou removida nesta rodada de desenvolvimento. Como consequÃªncia, nÃ£o hÃ¡ itens de watch cadastrados para monitoramento nesta fase.
 
-| ID | Origem (arquivo, seção) | Regra esperada após mudança | Tipo de verificação | Sinal de violação |
+| ID | Origem (arquivo, seÃ§Ã£o) | Regra esperada apÃ³s mudanÃ§a | Tipo de verificaÃ§Ã£o | Sinal de violaÃ§Ã£o |
 | :--- | :--- | :--- | :--- | :--- |
 | - | - | - | - | - |
 
-## 📅 Histórico de Re-extrações
+## ðŸ“… HistÃ³rico de Re-extraÃ§Ãµes
 
-*Nenhuma re-extração foi rodada após esta feature.*
+### Re-extraÃ§Ã£o 2026-06-17 14:23
 
-## 🗃️ Arquivadas
+| ID | Veredito | ObservaÃ§Ã£o |
+|----|----------|------------|
+| - | ðŸŸ¢ verde | sem watch items cadastrados para esta feature; nenhuma verificaÃ§Ã£o semÃ¢ntica pendente |
+
+## ðŸ—ƒï¸ Arquivadas
 
 *Nenhum item arquivado.*

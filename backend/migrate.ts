@@ -5,6 +5,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 const prisma = new PrismaClient();
+const DEFAULT_TENANT_ID = 1;
 
 // Configuração de conexão com o banco legado (MySQL)
 const legacyDbConfig = {
@@ -72,6 +73,7 @@ async function runETL() {
     const [empresasLegacy] = await legacyConn.execute<any[]>('SELECT * FROM empresa');
     const empresasToInsert = empresasLegacy.map((e) => ({
       id: e.id,
+      tenantId: DEFAULT_TENANT_ID,
       nome: String(e.nome).trim(),
     }));
     await prisma.empresa.createMany({ data: empresasToInsert });
@@ -82,6 +84,7 @@ async function runETL() {
     const [profissionaisLegacy] = await legacyConn.execute<any[]>('SELECT * FROM profissional');
     const profissionaisToInsert = profissionaisLegacy.map((p) => ({
       id: p.id,
+      tenantId: DEFAULT_TENANT_ID,
       nome: String(p.nome).trim(),
     }));
     await prisma.profissional.createMany({ data: profissionaisToInsert });
@@ -92,6 +95,7 @@ async function runETL() {
     const [contratosLegacy] = await legacyConn.execute<any[]>('SELECT * FROM contrato');
     const contratosToInsert = contratosLegacy.map((c) => ({
       id: c.id,
+      tenantId: DEFAULT_TENANT_ID,
       empresaId: c.empresa_id,
       descricao: String(c.descricao).trim(),
       cor: sanitizeColor(c.cor),
@@ -129,6 +133,7 @@ async function runETL() {
 
       return {
         id: a.id,
+        tenantId: DEFAULT_TENANT_ID,
         contratoId: a.contrato_id || null,
         profissionalId: a.profissional_id || null,
         descricao: String(a.descricao || '').trim().substring(0, 500),

@@ -1,0 +1,24 @@
+<po-page-list p-title="Contratos">
+  <div class="po-row" style="margin-bottom: 16px;">
+    <po-button p-label="Novo Contrato" p-icon="po-icon-plus" (p-click)="openCreate()"></po-button>
+  </div>
+
+  <po-table [p-items]="contratos" [p-columns]="columns" [p-actions]="actions" [p-loading]="loading"></po-table>
+</po-page-list>
+
+<po-modal p-title="Contrato" #modal>
+  <div class="po-row">
+    <po-combo class="po-md-12" p-label="Empresa" [p-options]="empresas" [ngModel]="formData.empresaId" (ngModelChange)="formData.empresaId = $event"></po-combo>
+  </div>
+  <div class="po-row">
+    <po-input class="po-md-12" p-label="Descricao" [ngModel]="formData.descricao" (ngModelChange)="formData.descricao = $event"></po-input>
+  </div>
+  <div class="po-row">
+    <po-input class="po-md-6" p-label="Cor" [ngModel]="formData.cor" (ngModelChange)="formData.cor = $event"></po-input>
+    <po-switch class="po-md-6" p-label="Feriado" [ngModel]="formData.isFeriado" (ngModelChange)="formData.isFeriado = $event"></po-switch>
+  </div>
+
+  <po-modal-footer>
+    <po-button p-label="Salvar" p-kind="primary" [p-loading]="saving" (p-click)="save()"></po-button>
+  </po-modal-footer>
+</po-modal>

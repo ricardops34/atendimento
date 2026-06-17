@@ -1,0 +1,19 @@
+<po-page-list p-title="Atendimentos Operacionais">
+  
+  <div class="po-row" style="margin-bottom: 16px; gap: 8px;">
+    <po-button p-label="Novo Agendamento" p-icon="po-icon-plus" (p-click)="onNew()"></po-button>
+    <po-button p-label="Fechar Lote" p-icon="po-icon-ok" (p-click)="onFecharLote()"></po-button>
+  </div>
+
+  <po-table
+    [p-items]="agendamentos"
+    [p-columns]="columns"
+    [p-actions]="actions"
+    [p-loading]="loading"
+    [p-striped]="true"
+    [p-hide-detail]="true">
+  </po-table>
+
+</po-page-list>
+
+<app-form-sidebar (saved)="loadData()"></app-form-sidebar>

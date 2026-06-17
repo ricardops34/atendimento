@@ -32,30 +32,29 @@
 - **GUD-001**: Keep MVP scoped to operational scheduling workflows; defer advanced reports and full OS document generation.
 - **DOC-001**: Use local PO-UI documentation from `doc/po-ui` before consulting external docs.
 
-## 2. Recommended Project Structure
+## 2. Project Structure
 
 ```text
-apps/
-  web/                         # Angular + PO-UI frontend
-    src/app/core/              # auth, guards, API client, layout
-    src/app/features/auth/
-    src/app/features/dashboard/
-    src/app/features/companies/
-    src/app/features/professionals/
-    src/app/features/contracts/
-    src/app/features/appointments/
-  api/                         # NestJS backend
-    src/modules/auth/
-    src/modules/tenants/
-    src/modules/users/
-    src/modules/profiles/
-    src/modules/modules/
-    src/modules/companies/
-    src/modules/professionals/
-    src/modules/contracts/
-    src/modules/appointments/
-    src/modules/import/
-    prisma/
+frontend/                     # Angular + PO-UI frontend (instead of apps/web)
+  src/app/core/              # auth, guards, API client, layout
+  src/app/features/auth/
+  src/app/features/dashboard/
+  src/app/features/companies/
+  src/app/features/professionals/
+  src/app/features/contracts/
+  src/app/features/appointments/
+backend/                      # NestJS backend (instead of apps/api)
+  src/modules/auth/
+  src/modules/tenants/
+  src/modules/users/
+  src/modules/profiles/
+  src/modules/modules/
+  src/modules/companies/
+  src/modules/professionals/
+  src/modules/contracts/
+  src/modules/appointments/
+  src/modules/import/
+  prisma/
 ```
 
 ## 3. Data Model
@@ -107,10 +106,10 @@ apps/
 
 | Task | Description | Completed | Date |
 |---|---|---|---|
-| TASK-001 | Create `apps/api` with NestJS, TypeScript, ESLint, and test setup. | | |
-| TASK-002 | Create `apps/web` with Angular and PO-UI. | | |
-| TASK-003 | Add root scripts for `dev`, `build`, `test`, and `lint`. | | |
-| TASK-004 | Add `.env.example` with `DATABASE_URL`, `JWT_SECRET`, and import configuration. | | |
+| TASK-001 | Create NestJS API project in `backend/` with NestJS, TypeScript, ESLint, and test setup. | | |
+| TASK-002 | Create Angular + PO-UI frontend project in `frontend/`. | | |
+| TASK-003 | Add root scripts for `dev`, `build`, `test`, and `lint` targeting `backend/` and `frontend/` directories. | | |
+| TASK-004 | Add `.env.example` with `DATABASE_URL`, `JWT_SECRET`, and import configuration in root and `backend/`. | | |
 
 ### Phase 2: Database and Import
 
@@ -118,12 +117,12 @@ apps/
 
 | Task | Description | Completed | Date |
 |---|---|---|---|
-| TASK-005 | Create Prisma schema for tenants, users, profiles, modules, profileModules, companies, professionals, contracts, and appointments. | | |
-| TASK-006 | Create migration `initial_mvp_schema`. | | |
-| TASK-007 | Implement import command `apps/api/src/modules/import/import-legacy.command.ts`. | | |
-| TASK-008 | Parse/import rows from `bjsoft18_portal.sql` for required MVP tables. | | |
-| TASK-009 | Create one fallback admin user when legacy password hashes cannot be reused. | | |
-| TASK-010 | Add import validation summary with record counts per table. | | |
+| TASK-005 | Create Prisma schema for tenants, users, profiles, modules, profileModules, companies, professionals, contracts, and appointments. | ✅ | 2026-06-17 |
+| TASK-006 | Create migration `initial_mvp_schema`. | ✅ | 2026-06-17 |
+| TASK-007 | Implement import command `backend/src/modules/import/import-legacy.command.ts`. | ✅ | 2026-06-17 |
+| TASK-008 | Parse/import rows from `bjsoft18_portal.sql` for required MVP tables. | ✅ | 2026-06-17 |
+| TASK-009 | Create one fallback admin user when legacy password hashes cannot be reused. | ✅ | 2026-06-17 |
+| TASK-010 | Add import validation summary with record counts per table. | ✅ | 2026-06-17 |
 
 ### Phase 3: Auth, Tenant, Profile, and Dynamic Menu
 
@@ -131,14 +130,14 @@ apps/
 
 | Task | Description | Completed | Date |
 |---|---|---|---|
-| TASK-011 | Implement login endpoint `POST /auth/login` returning user, active tenant, active profile, token, and allowed modules. | | |
-| TASK-012 | Implement authenticated user endpoint `GET /auth/me` returning tenant/profile context and dynamic menu modules. | | |
-| TASK-013 | Implement tenant guard requiring every protected request to include an active tenant context. | | |
-| TASK-014 | Implement module guard checking module keys and actions from the active profile. | | |
-| TASK-015 | Seed MVP modules: `dashboard`, `companies`, `professionals`, `contracts`, `appointments-calendar`, `appointments-list`. | | |
-| TASK-016 | Seed default tenant `default` and default profile `Administrador` with access to all MVP modules. | | |
-| TASK-017 | Implement Angular auth guard, tenant/profile state service, and login page. | | |
-| TASK-018 | Implement dynamic PO-UI menu from `GET /auth/me` allowed modules. | | |
+| TASK-011 | Implement login endpoint `POST /auth/login` returning user, active tenant, active profile, token, and allowed modules. | ✅ | 2026-06-17 |
+| TASK-012 | Implement authenticated user endpoint `GET /auth/me` returning tenant/profile context and dynamic menu modules. | ✅ | 2026-06-17 |
+| TASK-013 | Implement tenant guard requiring every protected request to include an active tenant context. | ✅ | 2026-06-17 |
+| TASK-014 | Implement module guard checking module keys and actions from the active profile. | ✅ | 2026-06-17 |
+| TASK-015 | Seed MVP modules: `dashboard`, `companies`, `professionals`, `contracts`, `appointments-calendar`, `appointments-list`. | ✅ | 2026-06-17 |
+| TASK-016 | Seed default tenant `default` and default profile `Administrador` with access to all MVP modules. | ✅ | 2026-06-17 |
+| TASK-017 | Implement Angular auth guard, tenant/profile state service, and login page. | ✅ | 2026-06-17 |
+| TASK-018 | Implement dynamic PO-UI menu from `GET /auth/me` allowed modules. | ✅ | 2026-06-17 |
 
 ### Phase 4: Cadastros de Apoio
 

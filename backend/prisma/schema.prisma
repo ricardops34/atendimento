@@ -8,9 +8,85 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// ----------------------------------------------------------------------------
+// SECURITY / AUTH MODELS
+// ----------------------------------------------------------------------------
+
+model Tenant {
+  id             Int            @id @default(autoincrement())
+  name           String         @db.VarChar(255)
+  slug           String         @unique @db.VarChar(255)
+  
+  users          User[]
+  profiles       Profile[]
+  empresas       Empresa[]
+  profissionais  Profissional[]
+  contratos      Contrato[]
+  agendamentos   Agendamento[]
+
+  @@map("tenants")
+}
+
+model User {
+  id             Int            @id @default(autoincrement())
+  tenantId       Int            @map("tenant_id")
+  tenant         Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  profileId      Int            @map("profile_id")
+  profile        Profile        @relation(fields: [profileId], references: [id], onDelete: Restrict)
+  name           String         @db.VarChar(255)
+  email          String         @db.VarChar(255)
+  password       String         @db.VarChar(255)
+  isActive       Boolean        @default(true) @map("is_active")
+
+  @@unique([tenantId, email])
+  @@map("users")
+}
+
+model Profile {
+  id             Int            @id @default(autoincrement())
+  tenantId       Int            @map("tenant_id")
+  tenant         Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  name           String         @db.VarChar(255)
+  
+  users          User[]
+  profileModules ProfileModule[]
+
+  @@unique([tenantId, name])
+  @@map("profiles")
+}
+
+model Module {
+  id             Int            @id @default(autoincrement())
+  name           String         @db.VarChar(255)
+  key            String         @unique @db.VarChar(255) // ex: 'companies', 'appointments-calendar'
+
+  profileModules ProfileModule[]
+
+  @@map("modules")
+}
+
+model ProfileModule {
+  id             Int            @id @default(autoincrement())
+  profileId      Int            @map("profile_id")
+  profile        Profile        @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  moduleId       Int            @map("module_id")
+  module         Module         @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  canRead        Boolean        @default(true) @map("can_read")
+  canWrite       Boolean        @default(false) @map("can_write")
+
+  @@unique([profileId, moduleId])
+  @@map("profile_modules")
+}
+
+// ----------------------------------------------------------------------------
+// DOMAIN MODELS
+// ----------------------------------------------------------------------------
+
 /// Representa a empresa cliente (Cadastros de Apoio)
 model Empresa {
   id        Int        @id @default(autoincrement())
+  tenantId  Int        @map("tenant_id")
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   nome      String     @db.VarChar(255)
   contratos Contrato[]
 
@@ -20,6 +96,8 @@ model Empresa {
 /// Representa o profissional executor (Cadastros de Apoio)
 model Profissional {
   id           Int            @id @default(autoincrement())
+  tenantId     Int            @map("tenant_id")
+  tenant       Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   nome         String         @db.VarChar(255)
   agendamentos Agendamento[]
   escalas      ContratoItem[]
@@ -30,6 +108,8 @@ model Profissional {
 /// Representa o contrato de serviço (Cadastros de Apoio)
 model Contrato {
   id           Int            @id @default(autoincrement())
+  tenantId     Int            @map("tenant_id")
+  tenant       Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   empresaId    Int            @map("empresa_id")
   empresa      Empresa        @relation(fields: [empresaId], references: [id], onDelete: Restrict)
   descricao    String         @db.VarChar(255)
@@ -60,6 +140,8 @@ model ContratoItem {
 /// Representa os apontamentos de atendimentos (Agendamentos)
 model Agendamento {
   id                   Int           @id @default(autoincrement())
+  tenantId             Int           @map("tenant_id")
+  tenant               Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   contratoId           Int?          @map("contrato_id")
   contrato             Contrato?     @relation(fields: [contratoId], references: [id], onDelete: SetNull)
   profissionalId       Int?          @map("profissional_id")

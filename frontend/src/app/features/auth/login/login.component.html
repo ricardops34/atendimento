@@ -1,0 +1,7 @@
+<po-page-login
+  [p-hide-remember-user]="true"
+  [p-login-pattern]="'^[^@]+@[^@]+\\.[a-zA-Z]{2,}$'"
+  [p-login-errors]="['E-mail inválido']"
+  p-background="https://po-ui.io/assets/graphics/po-bg-login.png"
+  (p-login-submit)="loginSubmit($event)">
+</po-page-login>

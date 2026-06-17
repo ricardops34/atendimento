@@ -1,0 +1,32 @@
+<po-modal p-title="Lançamento de Atendimento">
+  <div class="po-row">
+    <po-combo class="po-md-12" name="contratoId" p-label="Contrato" [p-options]="contratos" [ngModel]="formData.contratoId" (ngModelChange)="formData.contratoId = $event" [p-required]="true"></po-combo>
+  </div>
+  <div class="po-row">
+    <po-combo class="po-md-12" name="profissionalId" p-label="Profissional" [p-options]="profissionais" [ngModel]="formData.profissionalId" (ngModelChange)="formData.profissionalId = $event"></po-combo>
+  </div>
+  <div class="po-row">
+    <po-input class="po-md-12" name="descricao" p-label="Descrição do Atendimento" [ngModel]="formData.descricao" (ngModelChange)="formData.descricao = $event"></po-input>
+  </div>
+  <div class="po-row">
+    <po-datepicker class="po-md-12" name="dataAgenda" p-label="Data do Apontamento" [ngModel]="formData.dataAgenda" (ngModelChange)="formData.dataAgenda = $event"></po-datepicker>
+  </div>
+  <div class="po-row">
+    <po-input class="po-md-6" name="horaInicio" p-label="Hora Início" p-mask="99:99" [ngModel]="formData.horaInicio" (ngModelChange)="formData.horaInicio = $event"></po-input>
+    <po-input class="po-md-6" name="horaFim" p-label="Hora Fim" p-mask="99:99" [ngModel]="formData.horaFim" (ngModelChange)="formData.horaFim = $event"></po-input>
+  </div>
+  <div class="po-row">
+    <po-input class="po-md-6" name="horaIntervaloInicial" p-label="Intervalo Início" p-mask="99:99" [ngModel]="formData.horaIntervaloInicial" (ngModelChange)="formData.horaIntervaloInicial = $event"></po-input>
+    <po-input class="po-md-6" name="horaIntervaloFinal" p-label="Intervalo Fim" p-mask="99:99" [ngModel]="formData.horaIntervaloFinal" (ngModelChange)="formData.horaIntervaloFinal = $event"></po-input>
+  </div>
+  <div class="po-row">
+    <po-combo class="po-md-12" name="local" p-label="Modalidade" [p-options]="modalidadeOptions" [ngModel]="formData.local" (ngModelChange)="formData.local = $event"></po-combo>
+  </div>
+  <div class="po-row">
+    <po-textarea class="po-md-12" name="observacao" p-label="Observações" [ngModel]="formData.observacao" (ngModelChange)="formData.observacao = $event"></po-textarea>
+  </div>
+  
+  <po-modal-footer>
+    <po-button p-label="Salvar" (p-click)="save()"></po-button>
+  </po-modal-footer>
+</po-modal>

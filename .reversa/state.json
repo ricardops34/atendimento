@@ -8,7 +8,7 @@
   "doc_level": "essencial",
   "output_folder": "_reversa_sdd",
   "forward_folder": "_reversa_forward",
-  "phase": null,
+  "phase": "revisao",
   "completed": [
     "reconhecimento",
     "escavacao",
@@ -59,6 +59,18 @@
         "_reversa_sdd/confidence-report.md",
         "_reversa_sdd/questions.md"
       ]
+    },
+    "regression_check": {
+      "completed_at": "2026-06-17T14:23:00-04:00",
+      "features_checked": [
+        "001-scaffold-repositorio"
+      ],
+      "watch_items_checked": 0,
+      "summary": {
+        "green": 0,
+        "yellow": 0,
+        "red": 0
+      }
     }
   },
   "engines": [

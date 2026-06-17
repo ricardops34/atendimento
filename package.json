@@ -8,7 +8,15 @@
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "dev:backend": "cd backend && npm run start:dev",
     "dev:frontend": "cd frontend && npm run start",
-    "build:all": "cd backend && npm run build && cd ../frontend && npm run build"
+    "build:all": "cd backend && npm run build && cd ../frontend && npm run build",
+    "db:up": "docker compose -f backend/docker-compose.yml up -d db legacy_db",
+    "db:down": "docker compose -f backend/docker-compose.yml down",
+    "db:ui": "docker compose -f backend/docker-compose.yml up -d pgadmin",
+    "prisma:migrate": "cd backend && npx prisma migrate dev --schema prisma/schema.prisma",
+    "prisma:generate": "cd backend && npx prisma generate --schema prisma/schema.prisma",
+    "seed:backend": "cd backend && npx prisma db seed --schema prisma/schema.prisma",
+    "import:legacy": "cd backend && npx ts-node src/modules/import/import-legacy.command.ts",
+    "bootstrap:local": "npm run db:up && npm run prisma:generate && npm run prisma:migrate && npm run seed:backend"
   },
   "dependencies": {
     "concurrently": "^8.2.2"
