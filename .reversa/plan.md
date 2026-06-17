@@ -8,9 +8,9 @@
 
 ## Fase 1: Reconhecimento 🔍
 
-- [ ] **Scout** — Mapeamento de estrutura de pastas e tecnologias
-- [ ] **Scout** — Análise de dependências e gerenciadores de pacotes
-- [ ] **Scout** — Identificação de entry points, CI/CD e configurações
+- [x] **Scout** — Mapeamento de estrutura de pastas e tecnologias
+- [x] **Scout** — Análise de dependências e gerenciadores de pacotes
+- [x] **Scout** — Identificação de entry points, CI/CD e configurações
 
 ## Decisão de organização das specs 🗂️
 
@@ -18,42 +18,49 @@
 
 ## Fase 2: Escavação 🏗️
 
-> O Reversa preenche esta seção com os módulos reais após o Scout concluir o reconhecimento.
-
-- [ ] **Arqueólogo** — Análise dos módulos identificados pelo Scout
+- [x] **Arqueólogo** — Análise do módulo `servicos`
+- [x] **Arqueólogo** — Análise do módulo `cadastros_basicos`
 
 ## Fase 3: Interpretação 🧠
 
-- [ ] **Detetive** — Arqueologia Git e ADRs retroativos
-- [ ] **Detetive** — Regras de negócio implícitas e máquinas de estado
-- [ ] **Detetive** — Matriz de permissões (RBAC/ACL)
-- [ ] **Arquiteto** — Diagramas C4 (Contexto, Containers, Componentes)
-- [ ] **Arquiteto** — ERD completo e integrações externas
-- [ ] **Arquiteto** — Spec Impact Matrix
+- [x] **Detetive** — Arqueologia Git e ADRs retroativos
+- [x] **Detetive** — Regras de negócio implícitas e máquinas de estado
+- [x] **Detetive** — Matriz de permissões (RBAC/ACL)
+- [x] **Arquiteto** — Diagramas C4 (Contexto, Containers, Componentes)
+- [x] **Arquiteto** — ERD completo e integrações externas
+- [x] **Arquiteto** — Spec Impact Matrix
 
 ## Fase 4: Geração 📝
 
-- [ ] **Redator** — Specs SDD por componente
-- [ ] **Redator** — OpenAPI (se aplicável)
-- [ ] **Redator** — User Stories (se aplicável)
-- [ ] **Redator** — Code/Spec Matrix
+- [x] **Redator** — Specs da Unit `cadastros-apoio` (Contrato, Profissional, Empresa)
+- [x] **Redator** — Specs da Unit `agendamentos` (AgendamentoList, AgendamentoCalendarioForm)
 
 ## Fase 5: Revisão ✅
 
-- [ ] **Revisor** — Revisão cruzada de specs
-- [ ] **Revisor** — Resolução de lacunas com o usuário
-- [ ] **Revisor** — Relatório de confiança final
+- [x] **Revisor** — Revisão cruzada das specs (cadastros-apoio e agendamentos)
+- [x] **Revisor** — Resolução de lacunas com o usuário
+- [x] **Revisor** — Relatório de confiança final
 
 ---
 
-## Agentes Independentes
+## Escopo do MVP (Anotado) 📌
 
-> Execute estes agentes quando os recursos estiverem disponíveis — podem rodar em qualquer fase.
+> Apenas as rotinas e cadastros selecionados abaixo serão portados e documentados. Os demais foram removidos do escopo ativo.
 
-- [ ] **Visor** — Análise de interface via screenshots
-- [ ] **Data Master** — Análise completa do banco de dados
-- [ ] **Design System** — Extração de tokens de design
-- [ ] **Tracer** — Análise dinâmica (requer sistema acessível)
+*   **AgendamentoList** (Listagem/Grid de agendamentos com filtros e exportação)
+*   **AgendamentoCalendarioForm** (Formulário de inclusão, edição, exclusão e confirmação de agendamento)
+*   **Contrato** (Cadastro de contratos e regras comerciais)
+*   **Profissional** (Cadastro de profissionais executores)
+*   **Empresa** (Cadastro de empresas parceiras/clientes)
+
+---
+
+## Agentes Independentes (Fora do Escopo) 🚫
+
+- [x] **Visor** — (Pulado/Integrado nas specs visuais via prints de telas)
+- [x] **Data Master** — (Pulado/Integrado no mapeamento do banco em architecture.md)
+- [x] **Design System** — (Descartado)
+- [x] **Tracer** — (Descartado)
 
 ---
 

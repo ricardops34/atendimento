@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-17T15:21:00Z",
+  "producedBy": "screen-translator",
+  "sourcePlatform": "php-server-rendered",
+  "detectionConfidence": "confirmed",
+  "screens": [
+    {
+      "id": "SCR-0001",
+      "canonicalName": "AgendamentoList",
+      "legacyOrigin": {
+        "file": "antigo/app/control/servicos/AgendamentoList.php",
+        "line": 1,
+        "paragraph": "AgendamentoList"
+      },
+      "kind": "list",
+      "isCritical": true,
+      "matchesUiInventory": true,
+      "uiInventoryRef": "AgendamentoList",
+      "interpolations": [],
+      "transitions": ["SCR-0002", "SCR-0004"],
+      "tokens": ["color.primary", "typography.body"]
+    },
+    {
+      "id": "SCR-0002",
+      "canonicalName": "AgendamentoListFiltros",
+      "legacyOrigin": {
+        "file": "antigo/app/control/servicos/AgendamentoList.php",
+        "line": 40,
+        "paragraph": "AgendamentoList->onSearch"
+      },
+      "kind": "form",
+      "isCritical": false,
+      "matchesUiInventory": true,
+      "uiInventoryRef": "AgendamentoList - Filtros",
+      "interpolations": ["{{contrato_id}}", "{{profissional_id}}", "{{data_de}}", "{{data_ate}}"],
+      "transitions": ["SCR-0001"],
+      "tokens": ["color.background", "typography.small"]
+    },
+    {
+      "id": "SCR-0003",
+      "canonicalName": "AgendamentoCalendarioFormView",
+      "legacyOrigin": {
+        "file": "antigo/app/control/servicos/AgendamentoCalendarioFormView.php",
+        "line": 1,
+        "paragraph": "AgendamentoCalendarioFormView"
+      },
+      "kind": "page",
+      "isCritical": true,
+      "matchesUiInventory": true,
+      "uiInventoryRef": "AgendamentoCalendarioFormView",
+      "interpolations": [],
+      "transitions": ["SCR-0004"],
+      "tokens": ["color.primary", "typography.body"]
+    },
+    {
+      "id": "SCR-0004",
+      "canonicalName": "AgendamentoCalendarioFormIncluir",
+      "legacyOrigin": {
+        "file": "antigo/app/control/servicos/AgendamentoCalendarioForm.php",
+        "line": 1,
+        "paragraph": "AgendamentoCalendarioForm"
+      },
+      "kind": "form",
+      "isCritical": true,
+      "matchesUiInventory": true,
+      "uiInventoryRef": "AgendamentoCalendarioForm - Incluir",
+      "interpolations": [
+        "{{descricao}}",
+        "{{contrato_id}}",
+        "{{profissional_id}}",
+        "{{data_agenda}}",
+        "{{hora_inicio}}",
+        "{{hora_fim}}",
+        "{{hora_intervalo_inicial}}",
+        "{{hora_intervalo_final}}",
+        "{{duracao_minutos}}",
+        "{{local}}",
+        "{{observacao}}"
+      ],
+      "transitions": ["SCR-0003"],
+      "tokens": ["color.accent", "typography.body"]
+    }
+  ],
+  "divergenceFromUiInventory": {
+    "totalInUiInventory": 4,
+    "totalInThisInventory": 4,
+    "matched": 4,
+    "missingInUiInventory": [],
+    "extraInUiInventory": [],
+    "divergencePercent": 0
+  }
+}

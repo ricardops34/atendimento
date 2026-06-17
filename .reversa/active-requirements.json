@@ -1,0 +1,10 @@
+{
+  "schema-version": 1,
+  "feature-dir": "_reversa_forward/001-scaffold-repositorio",
+  "feature-id": "001",
+  "short-name": "scaffold-repositorio",
+  "started-at": "2026-06-17T15:28:00Z",
+  "current-stage": "requirements",
+  "stages-completed": [],
+  "paused-features": []
+}

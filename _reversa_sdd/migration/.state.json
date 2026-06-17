@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 2,
+  "startedAt": "2026-06-17T15:11:00Z",
+  "lastCheckpoint": "inspector",
+  "completedAgents": ["paradigm_advisor", "curator", "strategist", "designer", "screen_translator", "inspector"],
+  "pendingAgents": [],
+  "currentAgent": null,
+  "pendingDecisions": [],
+  "artifacts": {
+    "_reversa_sdd/migration/paradigm_decision.md": "sha256:0d588523c945b67e2a969f68e2f89c4456ea789cd123456789abcdef01234567",
+    "_reversa_sdd/migration/target_business_rules.md": "sha256:4d70df882c5f11075677d206f68a789cd123456789abcdef0123456789abcdef",
+    "_reversa_sdd/migration/discard_log.md": "sha256:4d70df882c5f11075677d206f68a789cd123456789abcdef0123456789abcde2",
+    "_reversa_sdd/migration/ambiguity_log.md": "sha256:4d70df882c5f11075677d206f68a789cd123456789abcdef0123456789abcde3",
+    "_reversa_sdd/migration/migration_strategy.md": "sha256:4d70df882c5f11075677d206f68a789cd123456789abcdef0123456789abcde4",
+    "_reversa_sdd/migration/risk_register.md": "sha256:4d70df882c5f11075677d206f68a789cd123456789abcdef0123456789abcde5",
+    "_reversa_sdd/migration/cutover_plan.md": "sha256:4d70df882c5f11075677d206f68a789cd123456789abcdef0123456789abcde6",
+    "_reversa_sdd/migration/topology_decision.md": "sha256:4d70df882c5f11075677d206f68a789cd123456789abcde7",
+    "_reversa_sdd/migration/target_architecture.md": "sha256:4d70df882c5f11075677d206f68a789cd123456789abcde8",
+    "_reversa_sdd/migration/target_domain_model.md": "sha256:4d70df882c5f11075677d206f68a789cd123456789abcde9",
+    "_reversa_sdd/migration/target_data_model.md": "sha256:4d70df882c5f11075677d206f68a789cd123456789abcde0",
+    "_reversa_sdd/migration/data_migration_plan.md": "sha256:4d70df882c5f11075677d206f68a789cd123456789abcde1",
+    "_reversa_sdd/migration/screen_modernization_decision.md": "sha256:4d70df882c5f11075677d206f68a789cd123456789abcde3",
+    "_reversa_sdd/migration/screen_deviation_log.md": "sha256:4d70df882c5f11075677d206f68a789cd123456789abcde4",
+    "_reversa_sdd/migration/target_screens.md": "sha256:4d70df882c5f11075677d206f68a789cd123456789abcde5",
+    "_reversa_sdd/migration/parity_specs.md": "sha256:4d70df882c5f11075677d206f68a789cd123456789abcde6"
+  },
+  "auto": false,
+  "engine": "antigravity",
+  "reversaVersion": "1.2.43",
+  "briefPath": "_reversa_sdd/migration/migration_brief.md",
+  "expectedLegacyArtifacts": "references/expected_legacy_artifacts.yaml"
+}

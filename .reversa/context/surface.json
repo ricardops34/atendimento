@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-06-17T14:46:00Z",
+  "project_root": "C:/Patay/Ricardo/VPS/atendimento",
+  "languages": [
+    { "name": "PHP", "extensions": [".php"], "file_count": 242 },
+    { "name": "CSS", "extensions": [".css"], "file_count": 110 },
+    { "name": "JavaScript", "extensions": [".js"], "file_count": 102 },
+    { "name": "HTML", "extensions": [".html"], "file_count": 86 },
+    { "name": "SQL", "extensions": [".sql"], "file_count": 28 }
+  ],
+  "primary_language": "PHP",
+  "frameworks": [
+    { "name": "Adianti Framework", "version": "4.2", "source": "antigo/app/config/application.ini" },
+    { "name": "PHPMailer", "version": "^6.9.1", "source": "antigo/composer.json" },
+    { "name": "Dompdf", "version": "^2.0.4", "source": "antigo/composer.json" },
+    { "name": "BaconQrCode", "version": "^2.0.7", "source": "antigo/composer.json" },
+    { "name": "PHP-JWT", "version": "^6.10.0", "source": "antigo/composer.json" }
+  ],
+  "package_manager": "composer",
+  "entry_points": [
+    { "path": "antigo/index.php", "type": "web_entry" },
+    { "path": "antigo/rest.php", "type": "api_entry" },
+    { "path": "antigo/soap.php.dist", "type": "soap_entry" },
+    { "path": "antigo/mobile.php", "type": "mobile_entry" },
+    { "path": "antigo/cmd.php", "type": "cli_entry" },
+    { "path": "antigo/engine.php", "type": "engine_entry" }
+  ],
+  "config_files": [
+    "antigo/app/config/application.ini",
+    "antigo/app/config/consultor.php",
+    "antigo/app/config/permission.php",
+    "antigo/app/config/communication.php",
+    "antigo/app/config/log.php",
+    "antigo/composer.json"
+  ],
+  "ci_cd": [],
+  "docker": {},
+  "database_hints": [
+    { "path": "antigo/app/database/consultor-mysql.sql", "type": "ddl_sql" },
+    { "path": "antigo/backup/bjsoft18_portal.sql", "type": "sql_backup" },
+    { "path": "antigo/backup/bjsoft18_log.sql", "type": "sql_backup" }
+  ],
+  "test_framework": null,
+  "test_file_count": 0,
+  "modules": [
+    "admin",
+    "cadastros_basicos",
+    "servicos",
+    "communication"
+  ],
+  "total_files": 649,
+  "organization_suggestion": {
+    "granularity": "module",
+    "rationale": "A estrutura de controle da aplicação está organizada fisicamente por submódulos de domínio na pasta antigo/app/control/.",
+    "signals": [
+      { "type": "top_level_domain_folders", "evidence": ["antigo/app/control/admin/", "antigo/app/control/cadastros_basicos/", "antigo/app/control/servicos/"] }
+    ],
+    "features": []
+  }
+}

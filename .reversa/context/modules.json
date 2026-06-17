@@ -1,0 +1,138 @@
+{
+  "generated_at": "2026-06-17T14:48:00Z",
+  "modules": [
+    {
+      "name": "servicos",
+      "path": "antigo/app/control/servicos",
+      "purpose": "Gestão operacional de agendamentos, visualização de calendário e emissão de ordens de serviço",
+      "primary_files": [
+        "antigo/app/control/servicos/AgendamentoCalendarioForm.php",
+        "antigo/app/control/servicos/AgendamentoCalendarioFormView.php",
+        "antigo/app/control/servicos/AgendamentoList.php",
+        "antigo/app/model/Agendamento.php"
+      ],
+      "functions": [
+        {
+          "name": "onSave",
+          "file": "antigo/app/control/servicos/AgendamentoCalendarioForm.php",
+          "params": ["param: array"],
+          "returns": "void",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "onConfirmar",
+          "file": "antigo/app/control/servicos/AgendamentoCalendarioForm.php",
+          "params": ["param: array"],
+          "returns": "void",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "onExitHoraFim",
+          "file": "antigo/app/control/servicos/AgendamentoCalendarioForm.php",
+          "params": ["param: array"],
+          "returns": "void",
+          "confidence": "confirmed"
+        },
+        {
+          "name": "OnChangeContrato",
+          "file": "antigo/app/control/servicos/AgendamentoCalendarioForm.php",
+          "params": ["param: array"],
+          "returns": "void",
+          "confidence": "confirmed"
+        }
+      ],
+      "entities": [
+        {
+          "name": "Agendamento",
+          "fields": [
+            { "name": "id", "type": "int", "required": true },
+            { "name": "contrato_id", "type": "int", "required": false },
+            { "name": "profissional_id", "type": "int", "required": false },
+            { "name": "descricao", "type": "string", "required": true },
+            { "name": "horario_inicial", "type": "datetime", "required": true },
+            { "name": "horario_final", "type": "datetime", "required": true },
+            { "name": "cor", "type": "string", "required": false },
+            { "name": "observacao", "type": "string", "required": false },
+            { "name": "tipo", "type": "string", "required": true },
+            { "name": "data_agenda", "type": "date", "required": true },
+            { "name": "hora_inicio", "type": "string", "required": true },
+            { "name": "hora_fim", "type": "string", "required": true },
+            { "name": "hora_intervalo_inicial", "type": "string", "required": false },
+            { "name": "hora_intervalo_final", "type": "string", "required": false },
+            { "name": "hora_total", "type": "string", "required": false },
+            { "name": "local", "type": "string", "required": true }
+          ],
+          "confidence": "confirmed"
+        }
+      ],
+      "business_rules": [
+        {
+          "description": "Horário inicial e final são derivados da concatenação de data_agenda + hora_inicio/hora_fim",
+          "location": "antigo/app/control/servicos/AgendamentoCalendarioForm.php:271",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Tempo total de agendamento é calculado excluindo a duração do intervalo de almoço/descanso",
+          "location": "antigo/app/control/servicos/AgendamentoCalendarioForm.php:280",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "A confirmação de um agendamento (tipo passa a ser R) exige que o agendamento original esteja com status de ativo/agendado (tipo = A)",
+          "location": "antigo/app/control/servicos/AgendamentoCalendarioForm.php:385",
+          "confidence": "confirmed"
+        },
+        {
+          "description": "Ao alterar a seleção do contrato no formulário, a cor visual e a descrição padrão do formulário são herdados do cadastro do contrato correspondente",
+          "location": "antigo/app/control/servicos/AgendamentoCalendarioForm.php:219",
+          "confidence": "confirmed"
+        }
+      ],
+      "dependencies": [
+        "cadastros_basicos"
+      ],
+      "algorithms": [
+        {
+          "name": "Cálculo de hora total líquida",
+          "description": "Subtração (hora_fim - hora_inicio) e subsequente desconto do intervalo (hora_intervalo_final - hora_intervalo_inicial) usando timestamp de época",
+          "file": "antigo/app/control/servicos/AgendamentoCalendarioForm.php",
+          "confidence": "confirmed"
+        }
+      ],
+      "complexity": "medium"
+    },
+    {
+      "name": "cadastros_basicos",
+      "path": "antigo/app/control/cadastros_basicos",
+      "purpose": "Manutenção dos cadastros de Cidade, Estado, Colaborador, Empresa, Feriados, Função e Profissional",
+      "primary_files": [
+        "antigo/app/control/cadastros_basicos/EmpresaForm.php",
+        "antigo/app/control/cadastros_basicos/ProfissionalForm.php",
+        "antigo/app/model/Empresa.php",
+        "antigo/app/model/Profissional.php"
+      ],
+      "functions": [],
+      "entities": [
+        {
+          "name": "Empresa",
+          "fields": [
+            { "name": "id", "type": "int", "required": true },
+            { "name": "nome", "type": "string", "required": true }
+          ],
+          "confidence": "confirmed"
+        },
+        {
+          "name": "Profissional",
+          "fields": [
+            { "name": "id", "type": "int", "required": true },
+            { "name": "nome", "type": "string", "required": true }
+          ],
+          "confidence": "confirmed"
+        }
+      ],
+      "business_rules": [],
+      "dependencies": [],
+      "algorithms": [],
+      "complexity": "low"
+    }
+  ]
+}
