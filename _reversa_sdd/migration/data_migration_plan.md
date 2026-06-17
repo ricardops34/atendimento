@@ -116,3 +116,179 @@ Devido à baixa volumetria total do banco de dados legado (~10k registros no tot
 ## Riscos específicos de dados
 - **RISK-001**: Quebra de interface por cores hex nulas/inválidas no backup (Resolvido pela transformação T-01).
 - **RISK-002**: Inconsistências de faturamento centesimal na tipagem de tempo (Mitigado pela precisão da transformação T-02 e validação no checksum).
+
+---
+
+## Script de ETL (Implementação de Referência)
+
+Abaixo encontra-se o script TypeScript detalhado (`migrate.ts`) que implementa as etapas de extração, transformação e carga (Bulk ETL) definidas neste plano, validando as regras **T-01**, **T-02**, **T-03** e **T-04**.
+
+```typescript
+import { PrismaClient } from '@prisma/client';
+import * as mysql from 'mysql2/promise';
+
+const prisma = new PrismaClient();
+
+// Configuração de conexão com o banco legado (MySQL)
+const legacyDbConfig = {
+  host: process.env.LEGACY_DB_HOST || 'localhost',
+  user: process.env.LEGACY_DB_USER || 'root',
+  password: process.env.LEGACY_DB_PASSWORD || '',
+  database: process.env.LEGACY_DB_NAME || 'bjsoft18_portal',
+};
+
+/**
+ * Função T-01: Higienização de Cores Hexadecimais
+ */
+function sanitizeColor(color: string | null | undefined): string {
+  if (!color) return '#333333';
+  const cleanColor = color.trim();
+  const hexRegex = /^#[0-9A-F]{6}$/i;
+  return hexRegex.test(cleanColor) ? cleanColor : '#333333';
+}
+
+/**
+ * Função T-02: Conversão de Tempo Líquido Textual para Minutos
+ */
+function parseDurationToMinutes(durationText: string | null): number {
+  if (!durationText || typeof durationText !== 'string') return 0;
+  const parts = durationText.split(':');
+  if (parts.length !== 2) return 0;
+  const hours = parseInt(parts[0], 10);
+  const minutes = parseInt(parts[1], 10);
+  if (isNaN(hours) || isNaN(minutes)) return 0;
+  return hours * 60 + minutes;
+}
+
+/**
+ * Função T-03: Concatenação de Datetimes Técnicos
+ */
+function composeDateTime(date: Date, timeStr: string): Date {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  const composed = new Date(date);
+  composed.setHours(hours || 0, minutes || 0, 0, 0);
+  return composed;
+}
+
+/**
+ * Script Principal de ETL
+ */
+async function runETL() {
+  console.log('Iniciando script de migração ETL...');
+  const legacyConn = await mysql.createConnection(legacyDbConfig);
+
+  try {
+    // 1. Limpeza do banco de dados alvo (Idempotência)
+    console.log('Limpando tabelas do banco de dados PostgreSQL...');
+    await prisma.$transaction([
+      prisma.realizado.deleteMany(),
+      prisma.agendamento.deleteMany(),
+      prisma.contratoItem.deleteMany(),
+      prisma.contrato.deleteMany(),
+      prisma.profissional.deleteMany(),
+      prisma.empresa.deleteMany(),
+    ]);
+
+    // 2. Migração de Empresas
+    console.log('Migrando Empresas...');
+    const [empresasLegacy] = await legacyConn.execute<any[]>('SELECT * FROM empresa');
+    const empresasToInsert = empresasLegacy.map((e) => ({
+      id: e.id,
+      nome: String(e.nome).trim(),
+    }));
+    await prisma.empresa.createMany({ data: empresasToInsert });
+
+    // 3. Migração de Profissionais
+    console.log('Migrando Profissionais...');
+    const [profissionaisLegacy] = await legacyConn.execute<any[]>('SELECT * FROM profissional');
+    const profissionaisToInsert = profissionaisLegacy.map((p) => ({
+      id: p.id,
+      nome: String(p.nome).trim(),
+    }));
+    await prisma.profissional.createMany({ data: profissionaisToInsert });
+
+    // 4. Migração de Contratos
+    console.log('Migrando Contratos...');
+    const [contratosLegacy] = await legacyConn.execute<any[]>('SELECT * FROM contrato');
+    const contratosToInsert = contratosLegacy.map((c) => ({
+      id: c.id,
+      empresaId: c.empresa_id,
+      descricao: String(c.descricao).trim(),
+      cor: sanitizeColor(c.cor),
+      isFeriado: c.is_feriado === 1 || false,
+    }));
+    await prisma.contrato.createMany({ data: contratosToInsert });
+
+    // 5. Migração de Escalas (ContratoItem)
+    console.log('Migrando Escalas (ContratoItem)...');
+    const [itensLegacy] = await legacyConn.execute<any[]>('SELECT * FROM contrato_item');
+    const itensToInsert = itensLegacy.map((ci) => ({
+      id: ci.id,
+      contratoId: ci.contrato_id,
+      profissionalId: ci.profissional_id,
+      diaSemana: ci.dia_semana,
+      horaInicio: ci.hora_inicio || '00:00',
+      horaFim: ci.hora_fim || '00:00',
+      intervaloIni: ci.intervalo_ini || '00:00',
+      intervaloFim: ci.intervalo_fim || '00:00',
+    }));
+    await prisma.contratoItem.createMany({ data: itensToInsert });
+
+    // 6. Migração de Agendamentos
+    console.log('Migrando Agendamentos...');
+    const [agendamentosLegacy] = await legacyConn.execute<any[]>('SELECT * FROM agendamento');
+    const agendamentosToInsert = agendamentosLegacy.map((a) => {
+      // Aplicando transformações T-02 e T-03
+      const duracaoMinutos = parseDurationToMinutes(a.hora_total);
+      const horarioInicial = composeDateTime(new Date(a.data_agenda), a.hora_inicio);
+      const horarioFinal = composeDateTime(new Date(a.data_agenda), a.hora_fim);
+
+      return {
+        id: a.id,
+        contratoId: a.contrato_id || null,
+        profissionalId: a.profissional_id || null,
+        descricao: String(a.descricao || '').trim(),
+        dataAgenda: new Date(a.data_agenda),
+        horaInicio: a.hora_inicio || '00:00',
+        horaFim: a.hora_fim || '00:00',
+        horaIntervaloInicial: a.hora_intervalo_inicial || '00:00',
+        horaIntervaloFinal: a.hora_intervalo_final || '00:00',
+        duracaoMinutos,
+        horarioInicial,
+        horarioFinal,
+        local: a.local || 'P',
+        tipo: a.tipo || 'A',
+        cor: sanitizeColor(a.cor),
+        observacao: a.observacao || null,
+      };
+    });
+    await prisma.agendamento.createMany({ data: agendamentosToInsert });
+
+    // 7. Migração de Realizados
+    console.log('Migrando Realizados...');
+    const [realizadosLegacy] = await legacyConn.execute<any[]>('SELECT * FROM realizado');
+    const realizadosToInsert = realizadosLegacy.map((r) => {
+      // Localizamos a duracao_minutos no array parseado para T-04
+      const agendamentoRelacionado = agendamentosToInsert.find(a => a.id === r.agendamento_id);
+      const minutos = agendamentoRelacionado?.duracaoMinutos || 0;
+      const horasDecimais = (minutos / 60).toFixed(2); // Transformação T-04
+
+      return {
+        id: r.id,
+        agendamentoId: r.agendamento_id,
+        horasDecimais: Number(horasDecimais),
+      };
+    });
+    await prisma.realizado.createMany({ data: realizadosToInsert });
+
+    console.log('Migração concluída com sucesso!');
+  } catch (error) {
+    console.error('Erro durante a migração ETL:', error);
+  } finally {
+    await legacyConn.end();
+    await prisma.$disconnect();
+  }
+}
+
+runETL();
+```

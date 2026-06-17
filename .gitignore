@@ -1,0 +1,20 @@
+# Dependency directories
+node_modules/
+/dist/
+/backend/dist/
+/frontend/dist/
+/frontend/.angular/
+
+# Environmental variables
+.env
+/backend/.env
+
+# Local databases (SQLite, etc.)
+*.db
+*.db-journal
+
+# IDE logs and system files
+.DS_Store
+.idea/
+.vscode/
+Thumbs.db

@@ -1,0 +1,16 @@
+{
+  "name": "atendimento-mvp",
+  "version": "1.0.0",
+  "description": "MVP de Atendimentos Operacionais com NestJS e Angular PO-UI",
+  "main": "index.js",
+  "scripts": {
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run start:dev",
+    "dev:frontend": "cd frontend && npm run start",
+    "build:all": "cd backend && npm run build && cd ../frontend && npm run build"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

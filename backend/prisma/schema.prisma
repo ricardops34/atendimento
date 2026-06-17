@@ -1,0 +1,93 @@
+// Configuração do Prisma Client e do Banco PostgreSQL
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+/// Representa a empresa cliente (Cadastros de Apoio)
+model Empresa {
+  id        Int        @id @default(autoincrement())
+  nome      String     @db.VarChar(255)
+  contratos Contrato[]
+
+  @@map("empresa")
+}
+
+/// Representa o profissional executor (Cadastros de Apoio)
+model Profissional {
+  id           Int            @id @default(autoincrement())
+  nome         String         @db.VarChar(255)
+  agendamentos Agendamento[]
+  escalas      ContratoItem[]
+
+  @@map("profissional")
+}
+
+/// Representa o contrato de serviço (Cadastros de Apoio)
+model Contrato {
+  id           Int            @id @default(autoincrement())
+  empresaId    Int            @map("empresa_id")
+  empresa      Empresa        @relation(fields: [empresaId], references: [id], onDelete: Restrict)
+  descricao    String         @db.VarChar(255)
+  cor          String         @default("#333333") @db.VarChar(7)
+  isFeriado    Boolean        @default(false) @map("is_feriado") // Flag para identificar dinamicamente o contrato de feriados
+  agendamentos Agendamento[]
+  escalas      ContratoItem[]
+
+  @@map("contrato")
+}
+
+/// Representa a escala semanal recorrente do profissional no contrato (Cadastros de Apoio)
+model ContratoItem {
+  id             Int          @id @default(autoincrement())
+  contratoId     Int          @map("contrato_id")
+  contrato       Contrato     @relation(fields: [contratoId], references: [id], onDelete: Cascade)
+  profissionalId Int          @map("profissional_id")
+  profissional   Profissional @relation(fields: [profissionalId], references: [id], onDelete: Cascade)
+  diaSemana      Int          @map("dia_semana") // 0 (Domingo) a 6 (Sábado)
+  horaInicio     String       @map("hora_inicio") @db.VarChar(5) // hh:ii
+  horaFim        String       @map("hora_fim") @db.VarChar(5) // hh:ii
+  intervaloIni   String       @map("intervalo_ini") @db.VarChar(5) // hh:ii
+  intervaloFim   String       @map("intervalo_fim") @db.VarChar(5) // hh:ii
+
+  @@map("contrato_item")
+}
+
+/// Representa os apontamentos de atendimentos (Agendamentos)
+model Agendamento {
+  id                   Int           @id @default(autoincrement())
+  contratoId           Int?          @map("contrato_id")
+  contrato             Contrato?     @relation(fields: [contratoId], references: [id], onDelete: SetNull)
+  profissionalId       Int?          @map("profissional_id")
+  profissional         Profissional? @relation(fields: [profissionalId], references: [id], onDelete: SetNull)
+  descricao            String        @db.VarChar(500)
+  dataAgenda           DateTime      @map("data_agenda") @db.Date
+  horaInicio           String        @map("hora_inicio") @db.VarChar(5)
+  horaFim              String        @map("hora_fim") @db.VarChar(5)
+  horaIntervaloInicial String        @default("00:00") @map("hora_intervalo_inicial") @db.VarChar(5)
+  horaIntervaloFinal   String        @default("00:00") @map("hora_intervalo_final") @db.VarChar(5)
+  duracaoMinutos       Int           @map("duracao_minutos") // Novo! Gravação em minutos inteiros líquidos
+  horarioInicial       DateTime      @map("horario_inicial") @db.Timestamptz // Datetime composto formatado
+  horarioFinal         DateTime      @map("horario_final") @db.Timestamptz // Datetime composto formatado
+  local                String        @default("P") @db.VarChar(1) // P (Presencial), R (Remoto), F (Falta)
+  tipo                 String        @default("A") @db.VarChar(1) // A (Agendada), R (Realizada), C (Cancelada), F (Feriado)
+  cor                  String        @default("#333333") @db.VarChar(7)
+  observacao           String?       @db.Text
+  realizados           Realizado[]
+
+  @@map("agendamento")
+}
+
+/// Representa os atendimentos realizados faturados (Agendamentos)
+model Realizado {
+  id            Int         @id @default(autoincrement())
+  agendamentoId Int         @map("agendamento_id")
+  agendamento   Agendamento @relation(fields: [agendamentoId], references: [id], onDelete: Cascade)
+  horasDecimais Decimal     @map("horas_decimais") @db.Decimal(5, 2) // Novo! Horas líquidas decimais para faturamento
+
+  @@map("realizado")
+}
