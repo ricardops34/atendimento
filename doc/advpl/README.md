@@ -1,0 +1,116 @@
+# Referencia local do TDN AdvPL
+
+Colecao em Markdown preparada para leitura humana e ingestao por IA.
+
+- Fonte do indice: https://tdn.totvs.com/pages/viewpage.action?pageId=212898493
+- Total exportado: 93
+- Funcoes publicadas: 88
+- Artigos publicados: 5
+- Paginas restritas: 0
+- Pasta principal: `funcoes/`
+- Catalogo auxiliar: `catalogo.json`
+- Data de geracao: 2026-06-03 09:59:06
+
+## Estrutura AI-ready
+
+- Frontmatter YAML com metadados estaveis
+- Secoes canonicas para chunking e busca semantica
+- Classificacao por `doc_type` e `status`
+- Tabelas de parametros preservadas em Markdown
+
+## Arquivos
+
+- [AddMashupAlias()](funcoes/AddMashupAlias().md) - function / published
+- [AmIIn](funcoes/AmIIn.md) - function / published
+- [AmIOnRestEnv - Verifica se o ambiente esta com a MPP habilitada](funcoes/AmIOnRestEnv-Verifica-se-o-ambiente-esta-com-a-MPP-habilitada.md) - function / published
+- [ApExcel()](funcoes/ApExcel().md) - function / published
+- [Assunto](funcoes/Assunto.md) - function / published
+- [AxCadastro](funcoes/AxCadastro.md) - function / published
+- [Cadastro de Usuário](funcoes/Cadastro-de-Usuário.md) - function / published
+- [CanUseWebUI](funcoes/CanUseWebUI.md) - function / published
+- [ChangeQuery](funcoes/ChangeQuery.md) - function / published
+- [ChkAdvplSyntax](funcoes/ChkAdvplSyntax.md) - function / published
+- [DATAVALIDA()](funcoes/DATAVALIDA().md) - function / published
+- [Documentação: Como desinstalar o Smart View no TOTVS Framework](funcoes/Documentação-Como-desinstalar-o-Smart-View-no-TOTVS-Framework.md) - article / published
+- [FillGetDados](funcoes/FillGetDados.md) - function / published
+- [Função de gravação na SX5](funcoes/Função-de-gravação-na-SX5.md) - article / published
+- [Função MPPswVault](funcoes/Função-MPPswVault.md) - function / published
+- [Funções auxiliares de Dicionários](funcoes/Funções-auxiliares-de-Dicionários.md) - article / published
+- [Fw8601ToDate - Converte uma data em formato ISO 8601 para o tipo Date](funcoes/Fw8601ToDate-Converte-uma-data-em-formato-ISO-8601-para-o-tipo-Date.md) - function / published
+- [FWAliasInDic](funcoes/FWAliasInDic.md) - function / published
+- [FwAppStack](funcoes/FwAppStack.md) - function / published
+- [FwBranAltInf - Informações do cadastro de Filial Localizado](funcoes/FwBranAltInf-Informações-do-cadastro-de-Filial-Localizado.md) - function / published
+- [FwCallApp](funcoes/FwCallApp.md) - function / published
+- [FwClearHLP() - Limpeza de buffer da função Help](funcoes/FwClearHLP()-Limpeza-de-buffer-da-função-Help.md) - function / published
+- [FwComAltInf - Informações do cadastro de Empresa Localizado](funcoes/FwComAltInf-Informações-do-cadastro-de-Empresa-Localizado.md) - function / published
+- [FWDateTo8601 - Converte uma variável date para ISO 8601](funcoes/FWDateTo8601-Converte-uma-variável-date-para-ISO-8601.md) - function / published
+- [FwExecLocaliz - Executa função localizada.](funcoes/FwExecLocaliz-Executa-função-localizada.md) - function / published
+- [FwExistLocaliz - Verifica a existência da função localizada.](funcoes/FwExistLocaliz-Verifica-a-existência-da-função-localizada.md) - function / published
+- [FWFreeArray](funcoes/FWFreeArray.md) - function / published
+- [FWFreeObj](funcoes/FWFreeObj.md) - function / published
+- [FWFreeVar](funcoes/FWFreeVar.md) - function / published
+- [FwGetArea](funcoes/FwGetArea.md) - function / published
+- [FwGetUserName](funcoes/FwGetUserName.md) - function / published
+- [FwGrpPrivDB](funcoes/FwGrpPrivDB.md) - function / published
+- [FWHasAccMode](funcoes/FWHasAccMode.md) - function / published
+- [FWHttpEncode](funcoes/FWHttpEncode.md) - function / published
+- [FWInputBox](funcoes/FWInputBox.md) - function / published
+- [FWJoinFilial](funcoes/FWJoinFilial.md) - function / published
+- [FwLibVersion](funcoes/FwLibVersion.md) - function / published
+- [FwListBranches](funcoes/FwListBranches.md) - function / published
+- [FWLoadSM0](funcoes/FWLoadSM0.md) - function / published
+- [FWMonitorMsg](funcoes/FWMonitorMsg.md) - function / published
+- [FWMsgRun](funcoes/FWMsgRun.md) - function / published
+- [FWMVCRotAuto](funcoes/FWMVCRotAuto.md) - function / published
+- [FwPDCanUse](funcoes/FwPDCanUse.md) - function / published
+- [FwPDLogUser](funcoes/FwPDLogUser.md) - function / published
+- [FwQtToChr](funcoes/FwQtToChr.md) - function / published
+- [FwRebuildIndex
+Aqui você encontra tudo sobre a FwRebuildIndex](funcoes/FwRebuildIndex-Aqui-você-encontra-tudo-sobre-a-FwRebuildIndex.md) - function / published
+- [FwRestArea](funcoes/FwRestArea.md) - function / published
+- [FwRetIdiom](funcoes/FwRetIdiom.md) - function / published
+- [FwRulesDB](funcoes/FwRulesDB.md) - function / published
+- [FWSchdAvaiable](funcoes/FWSchdAvaiable.md) - function / published
+- [FWSchdByFunction](funcoes/FWSchdByFunction.md) - function / published
+- [FWSchdEmpFil](funcoes/FWSchdEmpFil.md) - function / published
+- [FWSFGlRelRule](funcoes/FWSFGlRelRule.md) - function / published
+- [FWSFLdRelRule()](funcoes/FWSFLdRelRule().md) - function / published
+- [FWURIDecode](funcoes/FWURIDecode.md) - function / published
+- [FWUsrEmp](funcoes/FWUsrEmp.md) - function / published
+- [FWVldVinc](funcoes/FWVldVinc.md) - function / published
+- [FWX2CHAVE()](funcoes/FWX2CHAVE().md) - function / published
+- [FWX2Unico()](funcoes/FWX2Unico().md) - function / published
+- [FWX3Titulo](funcoes/FWX3Titulo.md) - function / published
+- [Help](funcoes/Help.md) - function / published
+- [IMPORTANTE!](funcoes/IMPORTANTE!.md) - article / published
+- [MakeAdvplExpr()](funcoes/MakeAdvplExpr().md) - function / published
+- [MakeSqlExpr](funcoes/MakeSqlExpr.md) - function / published
+- [MarkBrow](funcoes/MarkBrow.md) - function / published
+- [MayIUseCode - Reserva de nomes com semáforo](funcoes/MayIUseCode-Reserva-de-nomes-com-semáforo.md) - function / published
+- [MpBinView - Banco de Conhecimento](funcoes/MpBinView-Banco-de-Conhecimento.md) - function / published
+- [MPCriaNumS](funcoes/MPCriaNumS.md) - function / published
+- [MPDocPath](funcoes/MPDocPath.md) - function / published
+- [MpDocView - Banco de Conhecimento](funcoes/MpDocView-Banco-de-Conhecimento.md) - function / published
+- [MPExpChk](funcoes/MPExpChk.md) - function / published
+- [MPIsSmart](funcoes/MPIsSmart.md) - function / published
+- [MPUserHasAccess](funcoes/MPUserHasAccess.md) - function / published
+- [MsDocument](funcoes/MsDocument.md) - function / published
+- [MsMultDir](funcoes/MsMultDir.md) - function / published
+- [MsRetPath](funcoes/MsRetPath.md) - function / published
+- [OLE_CreateLink](funcoes/OLE_CreateLink.md) - function / published
+- [PESQBRW](funcoes/PESQBRW.md) - function / published
+- [Processa - Diálogo na execução de processo monitorado](funcoes/Processa-Diálogo-na-execução-de-processo-monitorado.md) - function / published
+- [PutSx1Help - Cadastro de Help](funcoes/PutSx1Help-Cadastro-de-Help.md) - function / published
+- [RestInter](funcoes/RestInter.md) - function / published
+- [Rotina Automática - MsGetDAuto](funcoes/Rotina-Automática-MsGetDAuto.md) - function / published
+- [SaveInter](funcoes/SaveInter.md) - function / published
+- [totvs.framework.company.getParameter](funcoes/totvs.framework.company.getParameter.md) - function / published
+- [totvs.framework.company.xEmpFil](funcoes/totvs.framework.company.xEmpFil.md) - function / published
+- [totvs.framework.environment.type.get](funcoes/totvs.framework.environment.type.get.md) - function / published
+- [totvs.framework.rest.url.getBaseURL](funcoes/totvs.framework.rest.url.getBaseURL.md) - function / published
+- [totvs.framework.schedule.utils.getSchedsByRotine](funcoes/totvs.framework.schedule.utils.getSchedsByRotine.md) - article / published
+- [totvs.framework.start.jobs.exclusiveAccess](funcoes/totvs.framework.start.jobs.exclusiveAccess.md) - function / published
+- [TVZRV0_DT_Controle de Buffer da função Help()](funcoes/TVZRV0_DT_Controle-de-Buffer-da-função-Help().md) - function / published
+- [UsrRetName](funcoes/UsrRetName.md) - function / published
+- [WModeAccess - Retorna o modo de compartilhamento](funcoes/WModeAccess-Retorna-o-modo-de-compartilhamento.md) - function / published
+- [WSAdvValue](funcoes/WSAdvValue.md) - function / published

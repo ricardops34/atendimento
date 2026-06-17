@@ -1,0 +1,1389 @@
+[
+    {
+        "title":  "AddMashupAlias()",
+        "function_name":  "AddMashupAlias",
+        "page_id":  "285640286",
+        "file_name":  "AddMashupAlias().md",
+        "relative_path":  "funcoes/AddMashupAlias().md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=285640286",
+        "section_keys":  [
+                             "descricao",
+                             "compatibilidade_banco",
+                             "sistemas_operacionais",
+                             "idioma",
+                             "sintaxe",
+                             "parametros",
+                             "retorno",
+                             "exemplo",
+                             "programa_fonte"
+                         ]
+    },
+    {
+        "title":  "AmIIn",
+        "function_name":  "AmIIn",
+        "page_id":  "555856401",
+        "file_name":  "AmIIn.md",
+        "relative_path":  "funcoes/AmIIn.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=555856401",
+        "section_keys":  [
+                             "sintaxe",
+                             "retorno"
+                         ]
+    },
+    {
+        "title":  "AmIOnRestEnv - Verifica se o ambiente esta com a MPP habilitada",
+        "function_name":  "AmIOnRestEnv",
+        "page_id":  "870411743",
+        "file_name":  "AmIOnRestEnv-Verifica-se-o-ambiente-esta-com-a-MPP-habilitada.md",
+        "relative_path":  "funcoes/AmIOnRestEnv-Verifica-se-o-ambiente-esta-com-a-MPP-habilitada.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=870411743",
+        "section_keys":  [
+                             "sintaxe"
+                         ]
+    },
+    {
+        "title":  "ApExcel()",
+        "function_name":  "ApExcel",
+        "page_id":  "269441698",
+        "file_name":  "ApExcel().md",
+        "relative_path":  "funcoes/ApExcel().md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=269441698",
+        "section_keys":  [
+                             "exemplo"
+                         ]
+    },
+    {
+        "title":  "Assunto",
+        "function_name":  "Assunto",
+        "page_id":  "297929359",
+        "file_name":  "Assunto.md",
+        "relative_path":  "funcoes/Assunto.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=297929359",
+        "section_keys":  [
+                             "produto",
+                             "fun_o",
+                             "programa_fonte",
+                             "sintaxe",
+                             "retorno",
+                             "exemplo"
+                         ]
+    },
+    {
+        "title":  "AxCadastro",
+        "function_name":  "AxCadastro",
+        "page_id":  "235322181",
+        "file_name":  "AxCadastro.md",
+        "relative_path":  "funcoes/AxCadastro.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=235322181",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "Cadastro de Usuário",
+        "function_name":  "Cadastro",
+        "page_id":  "212898497",
+        "file_name":  "Cadastro-de-Usuário.md",
+        "relative_path":  "funcoes/Cadastro-de-Usuário.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=212898497",
+        "section_keys":  [
+
+                         ]
+    },
+    {
+        "title":  "CanUseWebUI",
+        "function_name":  "CanUseWebUI",
+        "page_id":  "654955251",
+        "file_name":  "CanUseWebUI.md",
+        "relative_path":  "funcoes/CanUseWebUI.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=654955251",
+        "section_keys":  [
+                             "sintaxe",
+                             "retorno"
+                         ]
+    },
+    {
+        "title":  "ChangeQuery",
+        "function_name":  "ChangeQuery",
+        "page_id":  "6814905",
+        "file_name":  "ChangeQuery.md",
+        "relative_path":  "funcoes/ChangeQuery.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=6814905",
+        "section_keys":  [
+                             "vers_es",
+                             "compatibilidade_banco",
+                             "sistemas_operacionais",
+                             "n_vel_de_acesso",
+                             "idioma",
+                             "programa_fonte",
+                             "retorno",
+                             "exemplo"
+                         ]
+    },
+    {
+        "title":  "ChkAdvplSyntax",
+        "function_name":  "ChkAdvplSyntax",
+        "page_id":  "1045007094",
+        "file_name":  "ChkAdvplSyntax.md",
+        "relative_path":  "funcoes/ChkAdvplSyntax.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=1045007094",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "DATAVALIDA()",
+        "function_name":  "DATAVALIDA",
+        "page_id":  "224132661",
+        "file_name":  "DATAVALIDA().md",
+        "relative_path":  "funcoes/DATAVALIDA().md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=224132661",
+        "section_keys":  [
+                             "descricao",
+                             "compatibilidade_banco",
+                             "sistemas_operacionais",
+                             "idioma",
+                             "sintaxe",
+                             "parametros",
+                             "retorno",
+                             "observacoes",
+                             "exemplo",
+                             "programa_fonte"
+                         ]
+    },
+    {
+        "title":  "Documentação: Como desinstalar o Smart View no TOTVS Framework",
+        "function_name":  "Documentação: Como desinstalar o Smart View no TOTVS Framework",
+        "page_id":  "916401607",
+        "file_name":  "Documentação-Como-desinstalar-o-Smart-View-no-TOTVS-Framework.md",
+        "relative_path":  "funcoes/Documentação-Como-desinstalar-o-Smart-View-no-TOTVS-Framework.md",
+        "doc_type":  "article",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=916401607",
+        "section_keys":  [
+                             "conte_do"
+                         ]
+    },
+    {
+        "title":  "FillGetDados",
+        "function_name":  "FillGetDados",
+        "page_id":  "692933217",
+        "file_name":  "FillGetDados.md",
+        "relative_path":  "funcoes/FillGetDados.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=692933217",
+        "section_keys":  [
+                             "parametros",
+                             "exemplo"
+                         ]
+    },
+    {
+        "title":  "Função de gravação na SX5",
+        "function_name":  "Função de gravação na SX5",
+        "page_id":  "286016719",
+        "file_name":  "Função-de-gravação-na-SX5.md",
+        "relative_path":  "funcoes/Função-de-gravação-na-SX5.md",
+        "doc_type":  "article",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=286016719",
+        "section_keys":  [
+                             "linha_de_produto",
+                             "m_dulo",
+                             "fun_o",
+                             "programa_fonte"
+                         ]
+    },
+    {
+        "title":  "Função MPPswVault",
+        "function_name":  "Função MPPswVault",
+        "page_id":  "606646874",
+        "file_name":  "Função-MPPswVault.md",
+        "relative_path":  "funcoes/Função-MPPswVault.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=606646874",
+        "section_keys":  [
+                             "parametros",
+                             "amessage",
+                             "sintaxe",
+                             "retorno"
+                         ]
+    },
+    {
+        "title":  "Funções auxiliares de Dicionários",
+        "function_name":  "Funções auxiliares de Dicionários",
+        "page_id":  "353290193",
+        "file_name":  "Funções-auxiliares-de-Dicionários.md",
+        "relative_path":  "funcoes/Funções-auxiliares-de-Dicionários.md",
+        "doc_type":  "article",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=353290193",
+        "section_keys":  [
+                             "conte_do"
+                         ]
+    },
+    {
+        "title":  "Fw8601ToDate - Converte uma data em formato ISO 8601 para o tipo Date",
+        "function_name":  "Fw8601ToDate",
+        "page_id":  "679179196",
+        "file_name":  "Fw8601ToDate-Converte-uma-data-em-formato-ISO-8601-para-o-tipo-Date.md",
+        "relative_path":  "funcoes/Fw8601ToDate-Converte-uma-data-em-formato-ISO-8601-para-o-tipo-Date.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=679179196",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "FWAliasInDic",
+        "function_name":  "FWAliasInDic",
+        "page_id":  "315231994",
+        "file_name":  "FWAliasInDic.md",
+        "relative_path":  "funcoes/FWAliasInDic.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=315231994",
+        "section_keys":  [
+                             "linha_de_produto",
+                             "parametros",
+                             "pa_s_es",
+                             "banco_s_de_dados",
+                             "sistema_s_operacional_is",
+                             "sintaxe",
+                             "retorno"
+                         ]
+    },
+    {
+        "title":  "FwAppStack",
+        "function_name":  "FwAppStack",
+        "page_id":  "725737393",
+        "file_name":  "FwAppStack.md",
+        "relative_path":  "funcoes/FwAppStack.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=725737393",
+        "section_keys":  [
+                             "conte_do"
+                         ]
+    },
+    {
+        "title":  "FwBranAltInf - Informações do cadastro de Filial Localizado",
+        "function_name":  "FwBranAltInf",
+        "page_id":  "273997191",
+        "file_name":  "FwBranAltInf-Informações-do-cadastro-de-Filial-Localizado.md",
+        "relative_path":  "funcoes/FwBranAltInf-Informações-do-cadastro-de-Filial-Localizado.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=273997191",
+        "section_keys":  [
+                             "parametros",
+                             "retorno"
+                         ]
+    },
+    {
+        "title":  "FwCallApp",
+        "function_name":  "FwCallApp",
+        "page_id":  "512430562",
+        "file_name":  "FwCallApp.md",
+        "relative_path":  "funcoes/FwCallApp.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=512430562",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "FwClearHLP() - Limpeza de buffer da função Help",
+        "function_name":  "FwClearHLP",
+        "page_id":  "268818341",
+        "file_name":  "FwClearHLP()-Limpeza-de-buffer-da-função-Help.md",
+        "relative_path":  "funcoes/FwClearHLP()-Limpeza-de-buffer-da-função-Help.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=268818341",
+        "section_keys":  [
+                             "linha_de_produto",
+                             "m_dulo",
+                             "fun_o",
+                             "chamados_relacionados",
+                             "programa_fonte",
+                             "sintaxe",
+                             "retorno"
+                         ]
+    },
+    {
+        "title":  "FwComAltInf - Informações do cadastro de Empresa Localizado",
+        "function_name":  "FwComAltInf",
+        "page_id":  "273996793",
+        "file_name":  "FwComAltInf-Informações-do-cadastro-de-Empresa-Localizado.md",
+        "relative_path":  "funcoes/FwComAltInf-Informações-do-cadastro-de-Empresa-Localizado.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=273996793",
+        "section_keys":  [
+                             "parametros",
+                             "retorno"
+                         ]
+    },
+    {
+        "title":  "FWDateTo8601 - Converte uma variável date para ISO 8601",
+        "function_name":  "FWDateTo8601",
+        "page_id":  "679178872",
+        "file_name":  "FWDateTo8601-Converte-uma-variável-date-para-ISO-8601.md",
+        "relative_path":  "funcoes/FWDateTo8601-Converte-uma-variável-date-para-ISO-8601.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=679178872",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "FwExecLocaliz - Executa função localizada.",
+        "function_name":  "FwExecLocaliz",
+        "page_id":  "287071131",
+        "file_name":  "FwExecLocaliz-Executa-função-localizada.md",
+        "relative_path":  "funcoes/FwExecLocaliz-Executa-função-localizada.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=287071131",
+        "section_keys":  [
+                             "parametros",
+                             "exemplo",
+                             "retorno"
+                         ]
+    },
+    {
+        "title":  "FwExistLocaliz - Verifica a existência da função localizada.",
+        "function_name":  "FwExistLocaliz",
+        "page_id":  "287071061",
+        "file_name":  "FwExistLocaliz-Verifica-a-existência-da-função-localizada.md",
+        "relative_path":  "funcoes/FwExistLocaliz-Verifica-a-existência-da-função-localizada.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=287071061",
+        "section_keys":  [
+                             "parametros",
+                             "exemplo",
+                             "retorno"
+                         ]
+    },
+    {
+        "title":  "FWFreeArray",
+        "function_name":  "FWFreeArray",
+        "page_id":  "1046424557",
+        "file_name":  "FWFreeArray.md",
+        "relative_path":  "funcoes/FWFreeArray.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=1046424557",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "FWFreeObj",
+        "function_name":  "FWFreeObj",
+        "page_id":  "1046425598",
+        "file_name":  "FWFreeObj.md",
+        "relative_path":  "funcoes/FWFreeObj.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=1046425598",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "FWFreeVar",
+        "function_name":  "FWFreeVar",
+        "page_id":  "1046422940",
+        "file_name":  "FWFreeVar.md",
+        "relative_path":  "funcoes/FWFreeVar.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=1046422940",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "FwGetArea",
+        "function_name":  "FwGetArea",
+        "page_id":  "691451170",
+        "file_name":  "FwGetArea.md",
+        "relative_path":  "funcoes/FwGetArea.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=691451170",
+        "section_keys":  [
+                             "conte_do"
+                         ]
+    },
+    {
+        "title":  "FwGetUserName",
+        "function_name":  "FwGetUserName",
+        "page_id":  "718989506",
+        "file_name":  "FwGetUserName.md",
+        "relative_path":  "funcoes/FwGetUserName.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=718989506",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "FwGrpPrivDB",
+        "function_name":  "FwGrpPrivDB",
+        "page_id":  "556378774",
+        "file_name":  "FwGrpPrivDB.md",
+        "relative_path":  "funcoes/FwGrpPrivDB.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=556378774",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "FWHasAccMode",
+        "function_name":  "FWHasAccMode",
+        "page_id":  "522005353",
+        "file_name":  "FWHasAccMode.md",
+        "relative_path":  "funcoes/FWHasAccMode.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=522005353",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "FWHttpEncode",
+        "function_name":  "FWHttpEncode",
+        "page_id":  "644008194",
+        "file_name":  "FWHttpEncode.md",
+        "relative_path":  "funcoes/FWHttpEncode.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=644008194",
+        "section_keys":  [
+                             "parametros",
+                             "sintaxe",
+                             "retorno",
+                             "exemplo"
+                         ]
+    },
+    {
+        "title":  "FWInputBox",
+        "function_name":  "FWInputBox",
+        "page_id":  "864993986",
+        "file_name":  "FWInputBox.md",
+        "relative_path":  "funcoes/FWInputBox.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=864993986",
+        "section_keys":  [
+                             "parametros",
+                             "cdescr",
+                             "ctext"
+                         ]
+    },
+    {
+        "title":  "FWJoinFilial",
+        "function_name":  "FWJoinFilial",
+        "page_id":  "725744304",
+        "file_name":  "FWJoinFilial.md",
+        "relative_path":  "funcoes/FWJoinFilial.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=725744304",
+        "section_keys":  [
+                             "nome",
+                             "calias1",
+                             "calias2",
+                             "ctbalias1",
+                             "ctbalias2",
+                             "lprefixo",
+                             "cdbms",
+                             "lfilcompjoin",
+                             "sintaxe"
+                         ]
+    },
+    {
+        "title":  "FwLibVersion",
+        "function_name":  "FwLibVersion",
+        "page_id":  "454433740",
+        "file_name":  "FwLibVersion.md",
+        "relative_path":  "funcoes/FwLibVersion.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=454433740",
+        "section_keys":  [
+                             "conte_do"
+                         ]
+    },
+    {
+        "title":  "FwListBranches",
+        "function_name":  "FwListBranches",
+        "page_id":  "423939703",
+        "file_name":  "FwListBranches.md",
+        "relative_path":  "funcoes/FwListBranches.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=423939703",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "FWLoadSM0",
+        "function_name":  "FWLoadSM0",
+        "page_id":  "6815120",
+        "file_name":  "FWLoadSM0.md",
+        "relative_path":  "funcoes/FWLoadSM0.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=6815120",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "FWMonitorMsg",
+        "function_name":  "FWMonitorMsg",
+        "page_id":  "643990275",
+        "file_name":  "FWMonitorMsg.md",
+        "relative_path":  "funcoes/FWMonitorMsg.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=643990275",
+        "section_keys":  [
+                             "parametros",
+                             "sintaxe",
+                             "retorno",
+                             "exemplo"
+                         ]
+    },
+    {
+        "title":  "FWMsgRun",
+        "function_name":  "FWMsgRun",
+        "page_id":  "269552207",
+        "file_name":  "FWMsgRun.md",
+        "relative_path":  "funcoes/FWMsgRun.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=269552207",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "FWMVCRotAuto",
+        "function_name":  "FWMVCRotAuto",
+        "page_id":  "347439760",
+        "file_name":  "FWMVCRotAuto.md",
+        "relative_path":  "funcoes/FWMVCRotAuto.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=347439760",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "FwPDCanUse",
+        "function_name":  "FwPDCanUse",
+        "page_id":  "525795957",
+        "file_name":  "FwPDCanUse.md",
+        "relative_path":  "funcoes/FwPDCanUse.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=525795957",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "FwPDLogUser",
+        "function_name":  "FwPDLogUser",
+        "page_id":  "521141967",
+        "file_name":  "FwPDLogUser.md",
+        "relative_path":  "funcoes/FwPDLogUser.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=521141967",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "FwQtToChr",
+        "function_name":  "FwQtToChr",
+        "page_id":  "611792525",
+        "file_name":  "FwQtToChr.md",
+        "relative_path":  "funcoes/FwQtToChr.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=611792525",
+        "section_keys":  [
+                             "parametros",
+                             "sintaxe",
+                             "retorno",
+                             "exemplo"
+                         ]
+    },
+    {
+        "title":  "FwRebuildIndex\nAqui você encontra tudo sobre a FwRebuildIndex",
+        "function_name":  "FwRebuildIndex",
+        "page_id":  "573525303",
+        "file_name":  "FwRebuildIndex-Aqui-você-encontra-tudo-sobre-a-FwRebuildIndex.md",
+        "relative_path":  "funcoes/FwRebuildIndex-Aqui-você-encontra-tudo-sobre-a-FwRebuildIndex.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=573525303",
+        "section_keys":  [
+                             "conte_do"
+                         ]
+    },
+    {
+        "title":  "FwRestArea",
+        "function_name":  "FwRestArea",
+        "page_id":  "691451220",
+        "file_name":  "FwRestArea.md",
+        "relative_path":  "funcoes/FwRestArea.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=691451220",
+        "section_keys":  [
+                             "conte_do"
+                         ]
+    },
+    {
+        "title":  "FwRetIdiom",
+        "function_name":  "FwRetIdiom",
+        "page_id":  "578814918",
+        "file_name":  "FwRetIdiom.md",
+        "relative_path":  "funcoes/FwRetIdiom.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=578814918",
+        "section_keys":  [
+                             "conte_do"
+                         ]
+    },
+    {
+        "title":  "FwRulesDB",
+        "function_name":  "FwRulesDB",
+        "page_id":  "556379492",
+        "file_name":  "FwRulesDB.md",
+        "relative_path":  "funcoes/FwRulesDB.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=556379492",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "FWSchdAvaiable",
+        "function_name":  "FWSchdAvaiable",
+        "page_id":  "682452974",
+        "file_name":  "FWSchdAvaiable.md",
+        "relative_path":  "funcoes/FWSchdAvaiable.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=682452974",
+        "section_keys":  [
+                             "sintaxe",
+                             "retorno"
+                         ]
+    },
+    {
+        "title":  "FWSchdByFunction",
+        "function_name":  "FWSchdByFunction",
+        "page_id":  "364921365",
+        "file_name":  "FWSchdByFunction.md",
+        "relative_path":  "funcoes/FWSchdByFunction.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=364921365",
+        "section_keys":  [
+                             "parametros",
+                             "retorno"
+                         ]
+    },
+    {
+        "title":  "FWSchdEmpFil",
+        "function_name":  "FWSchdEmpFil",
+        "page_id":  "364921446",
+        "file_name":  "FWSchdEmpFil.md",
+        "relative_path":  "funcoes/FWSchdEmpFil.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=364921446",
+        "section_keys":  [
+                             "parametros",
+                             "retorno"
+                         ]
+    },
+    {
+        "title":  "FWSFGlRelRule",
+        "function_name":  "FWSFGlRelRule",
+        "page_id":  "458766273",
+        "file_name":  "FWSFGlRelRule.md",
+        "relative_path":  "funcoes/FWSFGlRelRule.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=458766273",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "FWSFLdRelRule()",
+        "function_name":  "FWSFLdRelRule",
+        "page_id":  "272427688",
+        "file_name":  "FWSFLdRelRule().md",
+        "relative_path":  "funcoes/FWSFLdRelRule().md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=272427688",
+        "section_keys":  [
+                             "descricao",
+                             "compatibilidade_banco",
+                             "sistemas_operacionais",
+                             "idioma",
+                             "sintaxe",
+                             "parametros",
+                             "retorno",
+                             "exemplo",
+                             "programa_fonte"
+                         ]
+    },
+    {
+        "title":  "FWURIDecode",
+        "function_name":  "FWURIDecode",
+        "page_id":  "822689152",
+        "file_name":  "FWURIDecode.md",
+        "relative_path":  "funcoes/FWURIDecode.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=822689152",
+        "section_keys":  [
+                             "parametros",
+                             "sintaxe",
+                             "retorno",
+                             "exemplo"
+                         ]
+    },
+    {
+        "title":  "FWUsrEmp",
+        "function_name":  "FWUsrEmp",
+        "page_id":  "347471728",
+        "file_name":  "FWUsrEmp.md",
+        "relative_path":  "funcoes/FWUsrEmp.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=347471728",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "FWVldVinc",
+        "function_name":  "FWVldVinc",
+        "page_id":  "674539759",
+        "file_name":  "FWVldVinc.md",
+        "relative_path":  "funcoes/FWVldVinc.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=674539759",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "FWX2CHAVE()",
+        "function_name":  "FWX2CHAVE",
+        "page_id":  "317304054",
+        "file_name":  "FWX2CHAVE().md",
+        "relative_path":  "funcoes/FWX2CHAVE().md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=317304054",
+        "section_keys":  [
+                             "linha_de_produto",
+                             "m_dulo",
+                             "fun_o",
+                             "programa_fonte"
+                         ]
+    },
+    {
+        "title":  "FWX2Unico()",
+        "function_name":  "FWX2Unico",
+        "page_id":  "330137969",
+        "file_name":  "FWX2Unico().md",
+        "relative_path":  "funcoes/FWX2Unico().md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=330137969",
+        "section_keys":  [
+                             "linha_de_produto",
+                             "m_dulo",
+                             "fun_o",
+                             "programa_fonte"
+                         ]
+    },
+    {
+        "title":  "FWX3Titulo",
+        "function_name":  "FWX3Titulo",
+        "page_id":  "354476805",
+        "file_name":  "FWX3Titulo.md",
+        "relative_path":  "funcoes/FWX3Titulo.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=354476805",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "Help",
+        "function_name":  "Help",
+        "page_id":  "345541359",
+        "file_name":  "Help.md",
+        "relative_path":  "funcoes/Help.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=345541359",
+        "section_keys":  [
+                             "parametros",
+                             "sintaxe",
+                             "exemplo"
+                         ]
+    },
+    {
+        "title":  "IMPORTANTE!",
+        "function_name":  "IMPORTANTE",
+        "page_id":  "454831708",
+        "file_name":  "IMPORTANTE!.md",
+        "relative_path":  "funcoes/IMPORTANTE!.md",
+        "doc_type":  "article",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=454831708",
+        "section_keys":  [
+                             "conte_do"
+                         ]
+    },
+    {
+        "title":  "MakeAdvplExpr()",
+        "function_name":  "MakeAdvplExpr",
+        "page_id":  "235333170",
+        "file_name":  "MakeAdvplExpr().md",
+        "relative_path":  "funcoes/MakeAdvplExpr().md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=235333170",
+        "section_keys":  [
+                             "descricao",
+                             "compatibilidade_banco",
+                             "sistemas_operacionais",
+                             "idioma",
+                             "sintaxe",
+                             "parametros",
+                             "observacoes",
+                             "programa_fonte",
+                             "retorno"
+                         ]
+    },
+    {
+        "title":  "MakeSqlExpr",
+        "function_name":  "MakeSqlExpr",
+        "page_id":  "1045394761",
+        "file_name":  "MakeSqlExpr.md",
+        "relative_path":  "funcoes/MakeSqlExpr.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=1045394761",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "MarkBrow",
+        "function_name":  "MarkBrow",
+        "page_id":  "236431063",
+        "file_name":  "MarkBrow.md",
+        "relative_path":  "funcoes/MarkBrow.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=236431063",
+        "section_keys":  [
+                             "nome",
+                             "calias",
+                             "ccampo",
+                             "ccpo",
+                             "acampos",
+                             "linverte",
+                             "cmarca",
+                             "cctrlm",
+                             "upar8",
+                             "cexpini",
+                             "cexpfim",
+                             "caval",
+                             "bparbloco",
+                             "cexprfiltop",
+                             "upar14",
+                             "acolors",
+                             "upar16",
+                             "sintaxe"
+                         ]
+    },
+    {
+        "title":  "MayIUseCode - Reserva de nomes com semáforo",
+        "function_name":  "MayIUseCode",
+        "page_id":  "700496432",
+        "file_name":  "MayIUseCode-Reserva-de-nomes-com-semáforo.md",
+        "relative_path":  "funcoes/MayIUseCode-Reserva-de-nomes-com-semáforo.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=700496432",
+        "section_keys":  [
+                             "programa_fonte",
+                             "retorno"
+                         ]
+    },
+    {
+        "title":  "MpBinView - Banco de Conhecimento",
+        "function_name":  "MpBinView",
+        "page_id":  "856454365",
+        "file_name":  "MpBinView-Banco-de-Conhecimento.md",
+        "relative_path":  "funcoes/MpBinView-Banco-de-Conhecimento.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=856454365",
+        "section_keys":  [
+                             "parametros",
+                             "sintaxe",
+                             "retorno",
+                             "exemplo",
+                             "programa_fonte"
+                         ]
+    },
+    {
+        "title":  "MPCriaNumS",
+        "function_name":  "MPCriaNumS",
+        "page_id":  "465390768",
+        "file_name":  "MPCriaNumS.md",
+        "relative_path":  "funcoes/MPCriaNumS.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=465390768",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "MPDocPath",
+        "function_name":  "MPDocPath",
+        "page_id":  "620550729",
+        "file_name":  "MPDocPath.md",
+        "relative_path":  "funcoes/MPDocPath.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=620550729",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "MpDocView - Banco de Conhecimento",
+        "function_name":  "MpDocView",
+        "page_id":  "856453882",
+        "file_name":  "MpDocView-Banco-de-Conhecimento.md",
+        "relative_path":  "funcoes/MpDocView-Banco-de-Conhecimento.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=856453882",
+        "section_keys":  [
+                             "parametros",
+                             "sintaxe",
+                             "retorno",
+                             "exemplo",
+                             "programa_fonte"
+                         ]
+    },
+    {
+        "title":  "MPExpChk",
+        "function_name":  "MPExpChk",
+        "page_id":  "1042925227",
+        "file_name":  "MPExpChk.md",
+        "relative_path":  "funcoes/MPExpChk.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=1042925227",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "MPIsSmart",
+        "function_name":  "MPIsSmart",
+        "page_id":  "461919343",
+        "file_name":  "MPIsSmart.md",
+        "relative_path":  "funcoes/MPIsSmart.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=461919343",
+        "section_keys":  [
+                             "conte_do"
+                         ]
+    },
+    {
+        "title":  "MPUserHasAccess",
+        "function_name":  "MPUserHasAccess",
+        "page_id":  "239034245",
+        "file_name":  "MPUserHasAccess.md",
+        "relative_path":  "funcoes/MPUserHasAccess.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=239034245",
+        "section_keys":  [
+                             "linha_de_produto",
+                             "segmento",
+                             "m_dulo",
+                             "fun_o",
+                             "conversores_e_par_metros",
+                             "observacoes"
+                         ]
+    },
+    {
+        "title":  "MsDocument",
+        "function_name":  "MsDocument",
+        "page_id":  "274632224",
+        "file_name":  "MsDocument.md",
+        "relative_path":  "funcoes/MsDocument.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=274632224",
+        "section_keys":  [
+                             "descricao",
+                             "compatibilidade_banco",
+                             "sistemas_operacionais",
+                             "idioma",
+                             "sintaxe",
+                             "parametros",
+                             "retorno",
+                             "exemplo",
+                             "programa_fonte"
+                         ]
+    },
+    {
+        "title":  "MsMultDir",
+        "function_name":  "MsMultDir",
+        "page_id":  "620558818",
+        "file_name":  "MsMultDir.md",
+        "relative_path":  "funcoes/MsMultDir.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=620558818",
+        "section_keys":  [
+                             "conte_do"
+                         ]
+    },
+    {
+        "title":  "MsRetPath",
+        "function_name":  "MsRetPath",
+        "page_id":  "620552188",
+        "file_name":  "MsRetPath.md",
+        "relative_path":  "funcoes/MsRetPath.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=620552188",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "OLE_CreateLink",
+        "function_name":  "OLE_CreateLink",
+        "page_id":  "239014970",
+        "file_name":  "OLE_CreateLink.md",
+        "relative_path":  "funcoes/OLE_CreateLink.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=239014970",
+        "section_keys":  [
+                             "descricao",
+                             "sintaxe",
+                             "parametros",
+                             "retorno",
+                             "sistemas_operacionais",
+                             "programa_fonte",
+                             "chamados_relacionados"
+                         ]
+    },
+    {
+        "title":  "PESQBRW",
+        "function_name":  "PESQBRW",
+        "page_id":  "754249983",
+        "file_name":  "PESQBRW.md",
+        "relative_path":  "funcoes/PESQBRW.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=754249983",
+        "section_keys":  [
+                             "conte_do"
+                         ]
+    },
+    {
+        "title":  "Processa - Diálogo na execução de processo monitorado",
+        "function_name":  "Processa",
+        "page_id":  "727933986",
+        "file_name":  "Processa-Diálogo-na-execução-de-processo-monitorado.md",
+        "relative_path":  "funcoes/Processa-Diálogo-na-execução-de-processo-monitorado.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=727933986",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "PutSx1Help - Cadastro de Help",
+        "function_name":  "PutSx1Help",
+        "page_id":  "244740727",
+        "file_name":  "PutSx1Help-Cadastro-de-Help.md",
+        "relative_path":  "funcoes/PutSx1Help-Cadastro-de-Help.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=244740727",
+        "section_keys":  [
+                             "linha_de_produto",
+                             "m_dulo",
+                             "fun_o",
+                             "chamados_relacionados",
+                             "vers_es",
+                             "programa_fonte",
+                             "sintaxe",
+                             "retorno"
+                         ]
+    },
+    {
+        "title":  "RestInter",
+        "function_name":  "RestInter",
+        "page_id":  "1037984363",
+        "file_name":  "RestInter.md",
+        "relative_path":  "funcoes/RestInter.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=1037984363",
+        "section_keys":  [
+                             "conte_do"
+                         ]
+    },
+    {
+        "title":  "Rotina Automática - MsGetDAuto",
+        "function_name":  "Rotina",
+        "page_id":  "795110543",
+        "file_name":  "Rotina-Automática-MsGetDAuto.md",
+        "relative_path":  "funcoes/Rotina-Automática-MsGetDAuto.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=795110543",
+        "section_keys":  [
+                             "parametros",
+                             "sintaxe"
+                         ]
+    },
+    {
+        "title":  "SaveInter",
+        "function_name":  "SaveInter",
+        "page_id":  "1037984360",
+        "file_name":  "SaveInter.md",
+        "relative_path":  "funcoes/SaveInter.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=1037984360",
+        "section_keys":  [
+                             "conte_do"
+                         ]
+    },
+    {
+        "title":  "totvs.framework.company.getParameter",
+        "function_name":  "totvs",
+        "page_id":  "981769877",
+        "file_name":  "totvs.framework.company.getParameter.md",
+        "relative_path":  "funcoes/totvs.framework.company.getParameter.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=981769877",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "totvs.framework.company.xEmpFil",
+        "function_name":  "totvs",
+        "page_id":  "864979602",
+        "file_name":  "totvs.framework.company.xEmpFil.md",
+        "relative_path":  "funcoes/totvs.framework.company.xEmpFil.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=864979602",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    },
+    {
+        "title":  "totvs.framework.environment.type.get",
+        "function_name":  "totvs",
+        "page_id":  "969122503",
+        "file_name":  "totvs.framework.environment.type.get.md",
+        "relative_path":  "funcoes/totvs.framework.environment.type.get.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=969122503",
+        "section_keys":  [
+                             "sintaxe",
+                             "retorno",
+                             "exemplo"
+                         ]
+    },
+    {
+        "title":  "totvs.framework.rest.url.getBaseURL",
+        "function_name":  "totvs",
+        "page_id":  "901955138",
+        "file_name":  "totvs.framework.rest.url.getBaseURL.md",
+        "relative_path":  "funcoes/totvs.framework.rest.url.getBaseURL.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=901955138",
+        "section_keys":  [
+                             "parametros",
+                             "exemplo",
+                             "sintaxe",
+                             "retorno"
+                         ]
+    },
+    {
+        "title":  "totvs.framework.schedule.utils.getSchedsByRotine",
+        "function_name":  "totvs",
+        "page_id":  "720350312",
+        "file_name":  "totvs.framework.schedule.utils.getSchedsByRotine.md",
+        "relative_path":  "funcoes/totvs.framework.schedule.utils.getSchedsByRotine.md",
+        "doc_type":  "article",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=720350312",
+        "section_keys":  [
+                             "conte_do"
+                         ]
+    },
+    {
+        "title":  "totvs.framework.start.jobs.exclusiveAccess",
+        "function_name":  "totvs",
+        "page_id":  "927556330",
+        "file_name":  "totvs.framework.start.jobs.exclusiveAccess.md",
+        "relative_path":  "funcoes/totvs.framework.start.jobs.exclusiveAccess.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=927556330",
+        "section_keys":  [
+                             "parametros",
+                             "sintaxe"
+                         ]
+    },
+    {
+        "title":  "TVZRV0_DT_Controle de Buffer da função Help()",
+        "function_name":  "TVZRV0_DT_Controle",
+        "page_id":  "268818487",
+        "file_name":  "TVZRV0_DT_Controle-de-Buffer-da-função-Help().md",
+        "relative_path":  "funcoes/TVZRV0_DT_Controle-de-Buffer-da-função-Help().md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=268818487",
+        "section_keys":  [
+                             "linha_de_produto",
+                             "m_dulo",
+                             "fun_o",
+                             "chamados_relacionados"
+                         ]
+    },
+    {
+        "title":  "UsrRetName",
+        "function_name":  "UsrRetName",
+        "page_id":  "6814861",
+        "file_name":  "UsrRetName.md",
+        "relative_path":  "funcoes/UsrRetName.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=6814861",
+        "section_keys":  [
+                             "abrang_ncias",
+                             "compatibilidade_banco",
+                             "sistemas_operacionais",
+                             "n_vel_de_acesso",
+                             "retorno"
+                         ]
+    },
+    {
+        "title":  "WModeAccess - Retorna o modo de compartilhamento",
+        "function_name":  "WModeAccess",
+        "page_id":  "312155906",
+        "file_name":  "WModeAccess-Retorna-o-modo-de-compartilhamento.md",
+        "relative_path":  "funcoes/WModeAccess-Retorna-o-modo-de-compartilhamento.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=312155906",
+        "section_keys":  [
+                             "linha_de_produto",
+                             "parametros",
+                             "pa_s_es",
+                             "banco_s_de_dados",
+                             "sistema_s_operacional_is",
+                             "programa_fonte",
+                             "sintaxe",
+                             "retorno"
+                         ]
+    },
+    {
+        "title":  "WSAdvValue",
+        "function_name":  "WSAdvValue",
+        "page_id":  "361450525",
+        "file_name":  "WSAdvValue.md",
+        "relative_path":  "funcoes/WSAdvValue.md",
+        "doc_type":  "function",
+        "status":  "published",
+        "source_url":  "https://tdn.totvs.com/pages/releaseview.action?pageId=361450525",
+        "section_keys":  [
+                             "parametros"
+                         ]
+    }
+]

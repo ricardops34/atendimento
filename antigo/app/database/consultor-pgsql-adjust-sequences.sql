@@ -1,0 +1,14 @@
+SELECT setval('agendamento_id_seq', coalesce(max(id),0) + 1, false) FROM agendamento;
+SELECT setval('ausencias_id_seq', coalesce(max(id),0) + 1, false) FROM ausencias;
+SELECT setval('cidade_id_seq', coalesce(max(id),0) + 1, false) FROM cidade;
+SELECT setval('colaborador_id_seq', coalesce(max(id),0) + 1, false) FROM colaborador;
+SELECT setval('contrato_id_seq', coalesce(max(id),0) + 1, false) FROM contrato;
+SELECT setval('contrato_item_id_seq', coalesce(max(id),0) + 1, false) FROM contrato_item;
+SELECT setval('contrato_profissional_id_seq', coalesce(max(id),0) + 1, false) FROM contrato_profissional;
+SELECT setval('empresa_id_seq', coalesce(max(id),0) + 1, false) FROM empresa;
+SELECT setval('empresa_colaborador_id_seq', coalesce(max(id),0) + 1, false) FROM empresa_colaborador;
+SELECT setval('estado_id_seq', coalesce(max(id),0) + 1, false) FROM estado;
+SELECT setval('feriado_id_seq', coalesce(max(id),0) + 1, false) FROM feriado;
+SELECT setval('funcao_id_seq', coalesce(max(id),0) + 1, false) FROM funcao;
+SELECT setval('profissional_id_seq', coalesce(max(id),0) + 1, false) FROM profissional;
+SELECT setval('realizado_id_seq', coalesce(max(id),0) + 1, false) FROM realizado;

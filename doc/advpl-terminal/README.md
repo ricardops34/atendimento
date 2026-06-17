@@ -1,0 +1,362 @@
+# Referencia comunitaria AdvPL - Terminal de Informacao
+
+Colecao separada da base oficial, voltada para exemplos praticos e consulta humano+AI.
+
+- Fonte base: https://terminaldeinformacao.com/knowledgebase_category/advpl/
+- Total exportado: 343
+- Itens com exemplos: 341
+- Itens com correspondencia no corpus TDN: 4
+- Pasta principal: `itens/`
+- Catalogo auxiliar: `catalogo.json`
+
+## Regras de uso
+
+- Tratar este corpus como complementar ao TDN
+- Revisar exemplos antes de reutilizar em codigo produtivo
+- Priorizar a documentacao oficial para assinatura e comportamento
+
+## Arquivos
+
+- [__CopyFile](itens/__CopyFile.md) - exemplos: 2 - categoria: arquivos
+- [aAdd](itens/aAdd.md) - exemplos: 2 - categoria: array
+- [Abs](itens/Abs.md) - exemplos: 1 - categoria: valores-numericos
+- [aClone](itens/aClone.md) - exemplos: 1 - categoria: array
+- [aDel](itens/aDel.md) - exemplos: 2 - categoria: array
+- [Adição de colunas em P.E. MVC (GTPA283)](itens/Adição-de-colunas-em-P.E.-MVC-(GTPA283).md) - exemplos: 1 - categoria: pontos-de-entrada
+- [aIns](itens/aIns.md) - exemplos: 2 - categoria: array
+- [Alert](itens/Alert.md) - exemplos: 4 - categoria: avisos-e-alertas
+- [AllToChar](itens/AllToChar.md) - exemplos: 1 - categoria: manipulacao-de-texto
+- [Alltrim](itens/Alltrim.md) - exemplos: 1 - categoria: manipulacao-de-texto
+- [AllwaysFalse](itens/AllwaysFalse.md) - exemplos: 1 - categoria: funcoes-de-validacao
+- [AllwaysTrue](itens/AllwaysTrue.md) - exemplos: 1 - categoria: funcoes-de-validacao
+- [ApMsgStop](itens/ApMsgStop.md) - exemplos: 2 - categoria: avisos-e-alertas
+- [ApOleClient](itens/ApOleClient.md) - exemplos: 1 - categoria: integracao-com-o-office
+- [Array](itens/Array.md) - exemplos: 2 - categoria: array
+- [ArrTokStr](itens/ArrTokStr.md) - exemplos: 2 - categoria: array
+- [Asc](itens/Asc.md) - exemplos: 1 - categoria: manipulacao-de-texto
+- [aScan](itens/aScan.md) - exemplos: 3 - categoria: array
+- [aSize](itens/aSize.md) - exemplos: 2 - categoria: array
+- [aSort](itens/aSort.md) - exemplos: 3 - categoria: array
+- [At](itens/At.md) - exemplos: 3 - categoria: manipulacao-de-texto
+- [Atributo lOptionConfig](itens/Atributo-lOptionConfig.md) - exemplos: 1 - categoria: mvc
+- [Aviso](itens/Aviso.md) - exemplos: 4 - categoria: avisos-e-alertas
+- [AxAltera](itens/AxAltera.md) - exemplos: 1 - categoria: cadastros
+- [AxCadastro](itens/AxCadastro.md) - exemplos: 1 - categoria: cadastros
+- [AxDeleta](itens/AxDeleta.md) - exemplos: 1 - categoria: cadastros
+- [AxInclui](itens/AxInclui.md) - exemplos: 1 - categoria: cadastros
+- [AxPesqui](itens/AxPesqui.md) - exemplos: 1 - categoria: cadastros
+- [AxVisual](itens/AxVisual.md) - exemplos: 1 - categoria: cadastros
+- [Begin Sequence … End Sequence](itens/Begin-Sequence-…-End-Sequence.md) - exemplos: 1 - categoria: exemplos-de-comandos
+- [Begin Transaction … End Transaction](itens/Begin-Transaction-…-End-Transaction.md) - exemplos: 1 - categoria: exemplos-de-comandos
+- [BeginSQL … EndSQL](itens/BeginSQL-…-EndSQL.md) - exemplos: 1 - categoria: exemplos-de-comandos
+- [BoF](itens/BoF.md) - exemplos: 1 - categoria: banco-de-dados
+- [BrGetDDB](itens/BrGetDDB.md) - exemplos: 2 - categoria: grids
+- [BrwLegenda](itens/BrwLegenda.md) - exemplos: 1 - categoria: telas-objetos
+- [ButtonBar](itens/ButtonBar.md) - exemplos: 1 - categoria: telas-objetos
+- [Cabec](itens/Cabec.md) - exemplos: 1 - categoria: relatorios
+- [Calculadora](itens/Calculadora.md) - exemplos: 1 - categoria: s-o-e-funcionalidades
+- [Campo Check virtual em MVC](itens/Campo-Check-virtual-em-MVC.md) - exemplos: 1 - categoria: mvc
+- [Capital](itens/Capital.md) - exemplos: 1 - categoria: manipulacao-de-texto
+- [cGetFile](itens/cGetFile.md) - exemplos: 2 - categoria: arquivos
+- [Chr](itens/Chr.md) - exemplos: 1 - categoria: manipulacao-de-texto
+- [Class](itens/Class.md) - exemplos: 1 - categoria: exemplos-de-comandos
+- [ConfirmSX8](itens/ConfirmSX8.md) - exemplos: 1 - categoria: banco-de-dados
+- [ConOut](itens/ConOut.md) - exemplos: 1 - categoria: avisos-e-alertas
+- [Copy File … To …](itens/Copy-File-…-To-….md) - exemplos: 1 - categoria: exemplos-de-comandos
+- [Copy To](itens/Copy-To.md) - exemplos: 2 - categoria: banco-de-dados
+- [Count To](itens/Count-To.md) - exemplos: 2 - categoria: banco-de-dados
+- [CriaTrab](itens/CriaTrab.md) - exemplos: 1 - categoria: banco-de-dados
+- [CriaVar](itens/CriaVar.md) - exemplos: 1 - categoria: banco-de-dados
+- [cToD](itens/cToD.md) - exemplos: 1 - categoria: data-e-hora
+- [CursorArrow](itens/CursorArrow.md) - exemplos: 1 - categoria: s-o-e-funcionalidades
+- [CursorWait](itens/CursorWait.md) - exemplos: 1 - categoria: s-o-e-funcionalidades
+- [cValToChar](itens/cValToChar.md) - exemplos: 1 - categoria: manipulacao-de-texto
+- [Date](itens/Date.md) - exemplos: 1 - categoria: data-e-hora
+- [DaySub](itens/DaySub.md) - exemplos: 1 - categoria: data-e-hora
+- [DaySum](itens/DaySum.md) - exemplos: 1 - categoria: data-e-hora
+- [DbCloseArea](itens/DbCloseArea.md) - exemplos: 2 - categoria: banco-de-dados
+- [DbCommit](itens/DbCommit.md) - exemplos: 1 - categoria: banco-de-dados
+- [DbCommitAll](itens/DbCommitAll.md) - exemplos: 1 - categoria: banco-de-dados
+- [DbDelete](itens/DbDelete.md) - exemplos: 1 - categoria: banco-de-dados
+- [DbEval](itens/DbEval.md) - exemplos: 1 - categoria: banco-de-dados
+- [DbSkip](itens/DbSkip.md) - exemplos: 3 - categoria: banco-de-dados
+- [ElapTime](itens/ElapTime.md) - exemplos: 1 - categoria: data-e-hora
+- [EoF](itens/EoF.md) - exemplos: 2 - categoria: banco-de-dados
+- [Estrut2](itens/Estrut2.md) - exemplos: 1 - categoria: funcoes-internas
+- [EVal](itens/EVal.md) - exemplos: 3 - categoria: outras-funcoes
+- [ExecAuto – CTBA020 (MVC)](itens/ExecAuto-–-CTBA020-(MVC).md) - exemplos: 2 - categoria: rotinas-automaticas
+- [ExecAuto – MATA220](itens/ExecAuto-–-MATA220.md) - exemplos: 1 - categoria: rotinas-automaticas
+- [ExecAuto FINA040](itens/ExecAuto-FINA040.md) - exemplos: 1 - categoria: rotinas-automaticas
+- [ExecAuto FINA050](itens/ExecAuto-FINA050.md) - exemplos: 1 - categoria: rotinas-automaticas
+- [ExecAuto MATA010 (MVC)](itens/ExecAuto-MATA010-(MVC).md) - exemplos: 2 - categoria: rotinas-automaticas
+- [ExecAuto MATA020 (MVC)](itens/ExecAuto-MATA020-(MVC).md) - exemplos: 1 - categoria: rotinas-automaticas
+- [ExecAuto MATA030 (MVC)](itens/ExecAuto-MATA030-(MVC).md) - exemplos: 1 - categoria: rotinas-automaticas
+- [ExecAuto MATA300](itens/ExecAuto-MATA300.md) - exemplos: 1 - categoria: rotinas-automaticas
+- [ExistChav](itens/ExistChav.md) - exemplos: 1 - categoria: funcoes-de-validacao
+- [ExistCPO](itens/ExistCPO.md) - exemplos: 2 - categoria: funcoes-de-validacao
+- [Extenso](itens/Extenso.md) - exemplos: 3 - categoria: manipulacao-de-texto
+- [F040ADLE](itens/F040ADLE.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [F040BUT](itens/F040BUT.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [F040URET](itens/F040URET.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [F060COL](itens/F060COL.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [F080Fil](itens/F080Fil.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [F340FLCP](itens/F340FLCP.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [F811MailTo](itens/F811MailTo.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [FA340QRY](itens/FA340QRY.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [FA740BRW](itens/FA740BRW.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [FieldGet](itens/FieldGet.md) - exemplos: 2 - categoria: banco-de-dados
+- [FieldPos](itens/FieldPos.md) - exemplos: 1 - categoria: banco-de-dados
+- [FieldPut](itens/FieldPut.md) - exemplos: 1 - categoria: banco-de-dados
+- [Fonetica](itens/Fonetica.md) - exemplos: 1 - categoria: outras-funcoes
+- [FormatIn](itens/FormatIn.md) - exemplos: 1 - categoria: manipulacao-de-texto
+- [FormBatch](itens/FormBatch.md) - exemplos: 1 - categoria: telas-objetos
+- [FTPConnect](itens/FTPConnect.md) - exemplos: 1 - categoria: outras-funcoes
+- [FTPDirChange](itens/FTPDirChange.md) - exemplos: 1 - categoria: outras-funcoes
+- [FTPDisconnect](itens/FTPDisconnect.md) - exemplos: 1 - categoria: outras-funcoes
+- [FTPUpload](itens/FTPUpload.md) - exemplos: 1 - categoria: outras-funcoes
+- [FWFileReader](itens/FWFileReader.md) - exemplos: 2 - categoria: arquivos
+- [FWFileWriter](itens/FWFileWriter.md) - exemplos: 2 - categoria: arquivos
+- [FWFldPut](itens/FWFldPut.md) - exemplos: 2 - categoria: mvc
+- [FWIsInCallStack](itens/FWIsInCallStack.md) - exemplos: 2 - categoria: funcoes-de-validacao
+- [FwListBranches](itens/FwListBranches.md) - exemplos: 1 - categoria: banco-de-dados
+- [FWMarkBrowse (com tabela temporária)](itens/FWMarkBrowse-(com-tabela-temporária).md) - exemplos: 1 - categoria: telas-objetos
+- [FWMBrowse](itens/FWMBrowse.md) - exemplos: 4 - categoria: cadastros
+- [FWMBrowse com temporária e colunas](itens/FWMBrowse-com-temporária-e-colunas.md) - exemplos: 1 - categoria: telas-objetos
+- [FWMsgRun](itens/FWMsgRun.md) - exemplos: 1 - categoria: reguas-de-processamento
+- [FWMSPrinter](itens/FWMSPrinter.md) - exemplos: 3 - categoria: relatorios
+- [FWNoAccent](itens/FWNoAccent.md) - exemplos: 2 - categoria: manipulacao-de-texto
+- [FWRest](itens/FWRest.md) - exemplos: 1 - categoria: webservices
+- [FWTemporaryTable](itens/FWTemporaryTable.md) - exemplos: 2 - categoria: banco-de-dados
+- [FWTimeStamp](itens/FWTimeStamp.md) - exemplos: 5 - categoria: data-e-hora
+- [FWWizardControl](itens/FWWizardControl.md) - exemplos: 1 - categoria: telas-objetos
+- [FWxFilial](itens/FWxFilial.md) - exemplos: 2 - categoria: banco-de-dados
+- [Gerando TReport em Arquivo (html, xls, etc)](itens/Gerando-TReport-em-Arquivo-(html,-xls,-etc).md) - exemplos: 2 - categoria: relatorios
+- [GetArea](itens/GetArea.md) - exemplos: 1 - categoria: banco-de-dados
+- [GetDToVal](itens/GetDToVal.md) - exemplos: 2 - categoria: valores-numericos
+- [GetLastQuery](itens/GetLastQuery.md) - exemplos: 1 - categoria: banco-de-dados
+- [GetMV](itens/GetMV.md) - exemplos: 2 - categoria: banco-de-dados
+- [GetNewPar](itens/GetNewPar.md) - exemplos: 2 - categoria: banco-de-dados
+- [GetNextAlias](itens/GetNextAlias.md) - exemplos: 1 - categoria: banco-de-dados
+- [GetSX3Cache](itens/GetSX3Cache.md) - exemplos: 2 - categoria: banco-de-dados
+- [GetSXENum](itens/GetSXENum.md) - exemplos: 1 - categoria: banco-de-dados
+- [GetTempPath](itens/GetTempPath.md) - exemplos: 1 - categoria: s-o-e-funcionalidades
+- [HttpGet](itens/HttpGet.md) - exemplos: 1 - categoria: outras-funcoes
+- [IncProc](itens/IncProc.md) - exemplos: 1 - categoria: reguas-de-processamento
+- [IncRegua](itens/IncRegua.md) - exemplos: 1 - categoria: reguas-de-processamento
+- [IndexKey](itens/IndexKey.md) - exemplos: 2 - categoria: banco-de-dados
+- [IndexOrd](itens/IndexOrd.md) - exemplos: 1 - categoria: banco-de-dados
+- [LastRec](itens/LastRec.md) - exemplos: 1 - categoria: banco-de-dados
+- [LockByName](itens/LockByName.md) - exemplos: 1 - categoria: outras-funcoes
+- [M261BCHOI](itens/M261BCHOI.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ma200Monta](itens/Ma200Monta.md) - exemplos: 1 - categoria: funcoes-internas
+- [Macro Substituição](itens/Macro-Substituição.md) - exemplos: 2 - categoria: exemplos-de-comandos
+- [Max](itens/Max.md) - exemplos: 2 - categoria: outras-funcoes
+- [mBrowse](itens/mBrowse.md) - exemplos: 2 - categoria: cadastros
+- [MemoWrite](itens/MemoWrite.md) - exemplos: 4 - categoria: arquivos
+- [MesExtenso](itens/MesExtenso.md) - exemplos: 2 - categoria: data-e-hora
+- [Método AddIncrementField](itens/Método-AddIncrementField.md) - exemplos: 0 - categoria: mvc
+- [Método AddLegend](itens/Método-AddLegend.md) - exemplos: 2 - categoria: mvc
+- [Método AddLine](itens/Método-AddLine.md) - exemplos: 1 - categoria: mvc
+- [Método AddTrigger](itens/Método-AddTrigger.md) - exemplos: 0 - categoria: mvc
+- [Método ClearData](itens/Método-ClearData.md) - exemplos: 1 - categoria: mvc
+- [Método GoLine](itens/Método-GoLine.md) - exemplos: 1 - categoria: mvc
+- [Método Length](itens/Método-Length.md) - exemplos: 1 - categoria: mvc
+- [Método SetColumns](itens/Método-SetColumns.md) - exemplos: 1 - categoria: mvc
+- [Método SetUseOldGrid](itens/Método-SetUseOldGrid.md) - exemplos: 1 - categoria: mvc
+- [Min](itens/Min.md) - exemplos: 2 - categoria: outras-funcoes
+- [MNTA6561](itens/MNTA6561.md) - exemplos: 2 - categoria: pontos-de-entrada
+- [MostraErro](itens/MostraErro.md) - exemplos: 2 - categoria: avisos-e-alertas
+- [MsAguarde](itens/MsAguarde.md) - exemplos: 1 - categoria: reguas-de-processamento
+- [MSCBPrinter](itens/MSCBPrinter.md) - exemplos: 1 - categoria: relatorios
+- [MsgAlert](itens/MsgAlert.md) - exemplos: 4 - categoria: avisos-e-alertas
+- [MsgInfo](itens/MsgInfo.md) - exemplos: 4 - categoria: avisos-e-alertas
+- [MsgNoYes](itens/MsgNoYes.md) - exemplos: 4 - categoria: avisos-e-alertas
+- [MsgRun](itens/MsgRun.md) - exemplos: 1 - categoria: reguas-de-processamento
+- [MsgStop](itens/MsgStop.md) - exemplos: 4 - categoria: avisos-e-alertas
+- [MsgYesNo](itens/MsgYesNo.md) - exemplos: 4 - categoria: avisos-e-alertas
+- [MsNewGetDados](itens/MsNewGetDados.md) - exemplos: 3 - categoria: grids
+- [MsNewProcess](itens/MsNewProcess.md) - exemplos: 1 - categoria: reguas-de-processamento
+- [MsProcTxt](itens/MsProcTxt.md) - exemplos: 1 - categoria: reguas-de-processamento
+- [MsUnlock](itens/MsUnlock.md) - exemplos: 3 - categoria: banco-de-dados
+- [MT100GE2](itens/MT100GE2.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [MT410CPY](itens/MT410CPY.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [OemToAnsi](itens/OemToAnsi.md) - exemplos: 1 - categoria: manipulacao-de-texto
+- [OMSA010 em MVC](itens/OMSA010-em-MVC.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [OpenSXs](itens/OpenSXs.md) - exemplos: 1 - categoria: banco-de-dados
+- [ParamBox](itens/ParamBox.md) - exemplos: 6 - categoria: telas-objetos
+- [ParamBox com vários botões e parâmetros](itens/ParamBox-com-vários-botões-e-parâmetros.md) - exemplos: 1 - categoria: telas-objetos
+- [PLS260DB](itens/PLS260DB.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [PLS260LF](itens/PLS260LF.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [PLSQuery](itens/PLSQuery.md) - exemplos: 1 - categoria: banco-de-dados
+- [Ponto de Entrada – A010TOK](itens/Ponto-de-Entrada-–-A010TOK.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – A200GRVE](itens/Ponto-de-Entrada-–-A200GRVE.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – A250ARD4](itens/Ponto-de-Entrada-–-A250ARD4.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – A250REQAUT](itens/Ponto-de-Entrada-–-A250REQAUT.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – A410CONS](itens/Ponto-de-Entrada-–-A410CONS.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – A415LIOK](itens/Ponto-de-Entrada-–-A415LIOK.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – A650ADCOL](itens/Ponto-de-Entrada-–-A650ADCOL.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – A680PERG](itens/Ponto-de-Entrada-–-A680PERG.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – AFTERLOGIN](itens/Ponto-de-Entrada-–-AFTERLOGIN.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – AT400GOS](itens/Ponto-de-Entrada-–-AT400GOS.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – AT410GRV](itens/Ponto-de-Entrada-–-AT410GRV.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – CHGX5FIL](itens/Ponto-de-Entrada-–-CHGX5FIL.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – CHKEXEC](itens/Ponto-de-Entrada-–-CHKEXEC.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – ENVCQMAT](itens/Ponto-de-Entrada-–-ENVCQMAT.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F050ROT](itens/Ponto-de-Entrada-–-F050ROT.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F060OK](itens/Ponto-de-Entrada-–-F060OK.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F070OWN](itens/Ponto-de-Entrada-–-F070OWN.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F080ACRE](itens/Ponto-de-Entrada-–-F080ACRE.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F080FIL](itens/Ponto-de-Entrada-–-F080FIL.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F090TOK](itens/Ponto-de-Entrada-–-F090TOK.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F110QRCP](itens/Ponto-de-Entrada-–-F110QRCP.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F110TOK](itens/Ponto-de-Entrada-–-F110TOK.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F200CNAB](itens/Ponto-de-Entrada-–-F200CNAB.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F240AFIL](itens/Ponto-de-Entrada-–-F240AFIL.md) - exemplos: 2 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F240BORD](itens/Ponto-de-Entrada-–-F240BORD.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F240TBOR](itens/Ponto-de-Entrada-–-F240TBOR.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F380MTR](itens/Ponto-de-Entrada-–-F380MTR.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F380VLD](itens/Ponto-de-Entrada-–-F380VLD.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F470ALLF](itens/Ponto-de-Entrada-–-F470ALLF.md) - exemplos: 2 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F550EXCL](itens/Ponto-de-Entrada-–-F550EXCL.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F550FECH](itens/Ponto-de-Entrada-–-F550FECH.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F550REPOS](itens/Ponto-de-Entrada-–-F550REPOS.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F560BLOCK](itens/Ponto-de-Entrada-–-F560BLOCK.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – F560VMOV](itens/Ponto-de-Entrada-–-F560VMOV.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – FA040INC](itens/Ponto-de-Entrada-–-FA040INC.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – FA070CA4](itens/Ponto-de-Entrada-–-FA070CA4.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – FA080POS](itens/Ponto-de-Entrada-–-FA080POS.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – FA090TIT](itens/Ponto-de-Entrada-–-FA090TIT.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – FA470CTA](itens/Ponto-de-Entrada-–-FA470CTA.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – FA60FIL](itens/Ponto-de-Entrada-–-FA60FIL.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – FA750BRW](itens/Ponto-de-Entrada-–-FA750BRW.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – FADTMOV](itens/Ponto-de-Entrada-–-FADTMOV.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – FT400MNU](itens/Ponto-de-Entrada-–-FT400MNU.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – GP011MEN](itens/Ponto-de-Entrada-–-GP011MEN.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – GPE10MENU](itens/Ponto-de-Entrada-–-GPE10MENU.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – ITEM (MATA010 em MVC)](itens/Ponto-de-Entrada-–-ITEM-(MATA010-em-MVC).md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – M200TEXT](itens/Ponto-de-Entrada-–-M200TEXT.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – M410FSQL](itens/Ponto-de-Entrada-–-M410FSQL.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – M410PVNF](itens/Ponto-de-Entrada-–-M410PVNF.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – M410STTS](itens/Ponto-de-Entrada-–-M410STTS.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – M440SC9I](itens/Ponto-de-Entrada-–-M440SC9I.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – M440STTS](itens/Ponto-de-Entrada-–-M440STTS.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – M450CMAN](itens/Ponto-de-Entrada-–-M450CMAN.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – M455FIL](itens/Ponto-de-Entrada-–-M455FIL.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – M460FIM](itens/Ponto-de-Entrada-–-M460FIM.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – M460MARK](itens/Ponto-de-Entrada-–-M460MARK.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – M460NUM](itens/Ponto-de-Entrada-–-M460NUM.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – M460QRY](itens/Ponto-de-Entrada-–-M460QRY.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – M461COR](itens/Ponto-de-Entrada-–-M461COR.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – M461LEG](itens/Ponto-de-Entrada-–-M461LEG.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – M461SER](itens/Ponto-de-Entrada-–-M461SER.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – M651DPC](itens/Ponto-de-Entrada-–-M651DPC.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MA030TOK](itens/Ponto-de-Entrada-–-MA030TOK.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MA040TOK](itens/Ponto-de-Entrada-–-MA040TOK.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MA103OPC](itens/Ponto-de-Entrada-–-MA103OPC.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MA200CAB](itens/Ponto-de-Entrada-–-MA200CAB.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MA410COR](itens/Ponto-de-Entrada-–-MA410COR.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MA410LEG](itens/Ponto-de-Entrada-–-MA410LEG.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MA410MNU](itens/Ponto-de-Entrada-–-MA410MNU.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MA410TOK](itens/Ponto-de-Entrada-–-MA410TOK.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MA455MNU](itens/Ponto-de-Entrada-–-MA455MNU.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MA461EST](itens/Ponto-de-Entrada-–-MA461EST.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MA650BUT](itens/Ponto-de-Entrada-–-MA650BUT.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MATA070 (MVC)](itens/Ponto-de-Entrada-–-MATA070-(MVC).md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MBLKCOLOR](itens/Ponto-de-Entrada-–-MBLKCOLOR.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MDIOK](itens/Ponto-de-Entrada-–-MDIOK.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT010ALT](itens/Ponto-de-Entrada-–-MT010ALT.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT010EXC](itens/Ponto-de-Entrada-–-MT010EXC.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT010INC](itens/Ponto-de-Entrada-–-MT010INC.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT103DRF](itens/Ponto-de-Entrada-–-MT103DRF.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT103NPC](itens/Ponto-de-Entrada-–-MT103NPC.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT120CPE](itens/Ponto-de-Entrada-–-MT120CPE.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT120FIM](itens/Ponto-de-Entrada-–-MT120FIM.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT120QRY](itens/Ponto-de-Entrada-–-MT120QRY.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT120TEL](itens/Ponto-de-Entrada-–-MT120TEL.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT121BRW](itens/Ponto-de-Entrada-–-MT121BRW.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT140PC](itens/Ponto-de-Entrada-–-MT140PC.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT241LOK](itens/Ponto-de-Entrada-–-MT241LOK.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT241TOK](itens/Ponto-de-Entrada-–-MT241TOK.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT250SAL](itens/Ponto-de-Entrada-–-MT250SAL.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT250TOK](itens/Ponto-de-Entrada-–-MT250TOK.md) - exemplos: 3 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT410ACE](itens/Ponto-de-Entrada-–-MT410ACE.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT410CPY](itens/Ponto-de-Entrada-–-MT410CPY.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT410ROD](itens/Ponto-de-Entrada-–-MT410ROD.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT410TOK](itens/Ponto-de-Entrada-–-MT410TOK.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT440VLD](itens/Ponto-de-Entrada-–-MT440VLD.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT450MAN](itens/Ponto-de-Entrada-–-MT450MAN.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT450QRY](itens/Ponto-de-Entrada-–-MT450QRY.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT460EST](itens/Ponto-de-Entrada-–-MT460EST.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT680EST](itens/Ponto-de-Entrada-–-MT680EST.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT680GREST](itens/Ponto-de-Entrada-–-MT680GREST.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT680VAL](itens/Ponto-de-Entrada-–-MT680VAL.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MT681INC](itens/Ponto-de-Entrada-–-MT681INC.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MTA103MNU](itens/Ponto-de-Entrada-–-MTA103MNU.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MTA120G2](itens/Ponto-de-Entrada-–-MTA120G2.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MTA241MNU](itens/Ponto-de-Entrada-–-MTA241MNU.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MTA260MNU](itens/Ponto-de-Entrada-–-MTA260MNU.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MTA455E](itens/Ponto-de-Entrada-–-MTA455E.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MTA455P](itens/Ponto-de-Entrada-–-MTA455P.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MTA456P](itens/Ponto-de-Entrada-–-MTA456P.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MTA650E](itens/Ponto-de-Entrada-–-MTA650E.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – MTA681MNU](itens/Ponto-de-Entrada-–-MTA681MNU.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – OM200OK](itens/Ponto-de-Entrada-–-OM200OK.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – OM200QRY](itens/Ponto-de-Entrada-–-OM200QRY.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – OM320LOK](itens/Ponto-de-Entrada-–-OM320LOK.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – OS010BTN](itens/Ponto-de-Entrada-–-OS010BTN.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – OS200EST](itens/Ponto-de-Entrada-–-OS200EST.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – OS200PM](itens/Ponto-de-Entrada-–-OS200PM.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – OSAGRCAR](itens/Ponto-de-Entrada-–-OSAGRCAR.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – QAD150EN](itens/Ponto-de-Entrada-–-QAD150EN.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – QD150BUT](itens/Ponto-de-Entrada-–-QD150BUT.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – SACI008](itens/Ponto-de-Entrada-–-SACI008.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – SD3250I](itens/Ponto-de-Entrada-–-SD3250I.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – SDULOGIN](itens/Ponto-de-Entrada-–-SDULOGIN.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – SX5NOTA](itens/Ponto-de-Entrada-–-SX5NOTA.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – TK271ROTM](itens/Ponto-de-Entrada-–-TK271ROTM.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – TK380BOK](itens/Ponto-de-Entrada-–-TK380BOK.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – TK380DAT](itens/Ponto-de-Entrada-–-TK380DAT.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – TM350FIL](itens/Ponto-de-Entrada-–-TM350FIL.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – TM491FAT](itens/Ponto-de-Entrada-–-TM491FAT.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – TM540GRV](itens/Ponto-de-Entrada-–-TM540GRV.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – TM850FIL](itens/Ponto-de-Entrada-–-TM850FIL.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – TMA144BUT](itens/Ponto-de-Entrada-–-TMA144BUT.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – TMA190TOK](itens/Ponto-de-Entrada-–-TMA190TOK.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – TMFATFIL](itens/Ponto-de-Entrada-–-TMFATFIL.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada – TMKBARLA](itens/Ponto-de-Entrada-–-TMKBARLA.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada CriaSXE](itens/Ponto-de-Entrada-CriaSXE.md) - exemplos: 2 - categoria: pontos-de-entrada
+- [Ponto de Entrada MT260TOK](itens/Ponto-de-Entrada-MT260TOK.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Ponto de Entrada MT440AT](itens/Ponto-de-Entrada-MT440AT.md) - exemplos: 1 - categoria: pontos-de-entrada
+- [Posicione](itens/Posicione.md) - exemplos: 2 - categoria: banco-de-dados
+- [Processa](itens/Processa.md) - exemplos: 1 - categoria: reguas-de-processamento
+- [ProcRegua](itens/ProcRegua.md) - exemplos: 1 - categoria: reguas-de-processamento
+- [ReadVar](itens/ReadVar.md) - exemplos: 1 - categoria: telas-objetos
+- [RecCount](itens/RecCount.md) - exemplos: 1 - categoria: banco-de-dados
+- [RecLock](itens/RecLock.md) - exemplos: 5 - categoria: banco-de-dados
+- [RecNo](itens/RecNo.md) - exemplos: 1 - categoria: banco-de-dados
+- [RestArea](itens/RestArea.md) - exemplos: 1 - categoria: banco-de-dados
+- [RollBackSX8](itens/RollBackSX8.md) - exemplos: 1 - categoria: banco-de-dados
+- [RPTStatus](itens/RPTStatus.md) - exemplos: 1 - categoria: reguas-de-processamento
+- [SB8Saldo](itens/SB8Saldo.md) - exemplos: 1 - categoria: funcoes-internas
+- [Separa](itens/Separa.md) - exemplos: 2 - categoria: array
+- [SetRegua](itens/SetRegua.md) - exemplos: 1 - categoria: reguas-de-processamento
+- [SF1100I](itens/SF1100I.md) - exemplos: 2 - categoria: pontos-de-entrada
+- [ShellExecute](itens/ShellExecute.md) - exemplos: 2 - categoria: s-o-e-funcionalidades
+- [SoftLock](itens/SoftLock.md) - exemplos: 1 - categoria: banco-de-dados
+- [Soma1](itens/Soma1.md) - exemplos: 3 - categoria: outras-funcoes
+- [StartJob](itens/StartJob.md) - exemplos: 1 - categoria: outras-funcoes
+- [StrTokArr](itens/StrTokArr.md) - exemplos: 1 - categoria: array
+- [SuperGetMV](itens/SuperGetMV.md) - exemplos: 2 - categoria: banco-de-dados
+- [TCSetField](itens/TCSetField.md) - exemplos: 1 - categoria: banco-de-dados
+- [TCSPExec](itens/TCSPExec.md) - exemplos: 1 - categoria: banco-de-dados
+- [tFTPClient](itens/tFTPClient.md) - exemplos: 1 - categoria: outras-funcoes
+- [Tira1](itens/Tira1.md) - exemplos: 1 - categoria: outras-funcoes
+- [tMailManager](itens/tMailManager.md) - exemplos: 1 - categoria: outras-funcoes
+- [TMailMessage e TMailManager](itens/TMailMessage-e-TMailManager.md) - exemplos: 1 - categoria: outras-funcoes
+- [Transform](itens/Transform.md) - exemplos: 8 - categoria: manipulacao-de-texto
+- [UnlockByName](itens/UnlockByName.md) - exemplos: 1 - categoria: outras-funcoes
+- [VarInfo](itens/VarInfo.md) - exemplos: 2 - categoria: funcoes-internas
+- [WaitRun](itens/WaitRun.md) - exemplos: 2 - categoria: s-o-e-funcionalidades
+- [WaitRunSrv](itens/WaitRunSrv.md) - exemplos: 1 - categoria: s-o-e-funcionalidades
+- [WSSERVICE, WSDATA e WSMETHOD](itens/WSSERVICE,-WSDATA-e-WSMETHOD.md) - exemplos: 1 - categoria: webservices
+- [X3Combo](itens/X3Combo.md) - exemplos: 1 - categoria: banco-de-dados
