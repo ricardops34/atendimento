@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProfissionalDto } from './dto/create-profissional.dto';
@@ -14,18 +13,24 @@ interface ProfissionalSearchQuery {
   sortDirection?: string;
 }
 
+const userSelect = { select: { id: true, name: true } } as const;
+
 @Injectable()
 export class ProfissionaisService {
   constructor(private prisma: PrismaService) {}
 
-  create(createProfissionalDto: CreateProfissionalDto) {
+  create(dto: CreateProfissionalDto) {
     return this.prisma.profissional.create({
-      data: createProfissionalDto as any,
+      data: { ...dto, tenantId: 1 },
+      include: { user: userSelect },
     });
   }
 
   findAll() {
-    return this.prisma.profissional.findMany();
+    return this.prisma.profissional.findMany({
+      orderBy: { nome: 'asc' },
+      include: { user: userSelect },
+    });
   }
 
   async search(query: ProfissionalSearchQuery) {
@@ -35,6 +40,7 @@ export class ProfissionaisService {
     const total = await this.prisma.profissional.count({ where });
     const items = await this.prisma.profissional.findMany({
       where,
+      include: { user: userSelect },
       orderBy: this.buildOrderBy(query.sortProperty, query.sortDirection),
       skip: (page - 1) * pageSize,
       take: pageSize,
@@ -44,16 +50,20 @@ export class ProfissionaisService {
   }
 
   async findOne(id: number) {
-    const profissional = await this.prisma.profissional.findUnique({ where: { id } });
+    const profissional = await this.prisma.profissional.findUnique({
+      where: { id },
+      include: { user: userSelect },
+    });
     if (!profissional) throw new NotFoundException('Profissional não encontrado.');
     return profissional;
   }
 
-  async update(id: number, updateProfissionalDto: UpdateProfissionalDto) {
+  async update(id: number, dto: UpdateProfissionalDto) {
     await this.findOne(id);
     return this.prisma.profissional.update({
       where: { id },
-      data: updateProfissionalDto,
+      data: dto,
+      include: { user: userSelect },
     });
   }
 
@@ -63,18 +73,10 @@ export class ProfissionaisService {
   }
 
   private buildWhere(query: ProfissionalSearchQuery) {
-    if (query.id) {
-      return { id: Number(query.id) };
-    }
-
+    if (query.id) return { id: Number(query.id) };
     const nome = query.nome?.trim() || query.search?.trim();
-    if (!nome) {
-      return {};
-    }
-
-    return {
-      nome: { contains: nome, mode: 'insensitive' },
-    };
+    if (!nome) return {};
+    return { nome: { contains: nome, mode: 'insensitive' as const } };
   }
 
   private buildOrderBy(sortProperty?: string, sortDirection?: string) {

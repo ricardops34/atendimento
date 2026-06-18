@@ -6,6 +6,9 @@ dotenv.config();
 
 const prisma = new PrismaClient();
 const DEFAULT_TENANT_ID = 1;
+const DEFAULT_CONTRACT_START = new Date('2026-01-01');
+const DEFAULT_CONTRACT_END = new Date('2026-12-31');
+const DEFAULT_CONTRACT_TYPE = 'F';
 
 // Configuração de conexão com o banco legado (MySQL)
 const legacyDbConfig = {
@@ -99,6 +102,9 @@ async function runETL() {
       empresaId: c.empresa_id,
       descricao: String(c.descricao).trim(),
       cor: sanitizeColor(c.cor),
+      dtInicio: c.dt_inicio ? new Date(c.dt_inicio) : DEFAULT_CONTRACT_START,
+      dtFim: c.dt_fim ? new Date(c.dt_fim) : DEFAULT_CONTRACT_END,
+      tipo: c.tipo || DEFAULT_CONTRACT_TYPE,
       isFeriado: c.is_feriado === 1 || false,
     }));
     await prisma.contrato.createMany({ data: contratosToInsert });

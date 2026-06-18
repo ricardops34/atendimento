@@ -6,3 +6,18 @@
   p-secondary-logo="/logo_bj.png"
   (p-login-submit)="loginSubmit($event)">
 </po-page-login>
+
+<po-modal p-title="Selecionar tenant" #tenantModal>
+  <div class="po-row">
+    <po-combo
+      class="po-md-12"
+      p-label="Tenant"
+      [p-options]="tenantOptions"
+      [ngModel]="selectedTenantId"
+      (ngModelChange)="selectedTenantId = $event">
+    </po-combo>
+  </div>
+  <po-modal-footer>
+    <po-button p-label="Entrar" p-kind="primary" (p-click)="confirmTenantSelection()"></po-button>
+  </po-modal-footer>
+</po-modal>

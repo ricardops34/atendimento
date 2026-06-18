@@ -44,7 +44,13 @@ generator client {
 /// Representa a empresa cliente (Cadastros de Apoio)
 model Empresa {
   id        Int        @id @default(autoincrement())
+  tenantId  Int        @map("tenant_id")
   nome      String     @db.VarChar(255)
+  razao     String?    @db.VarChar(255)
+  cor       String?    @db.VarChar(7)      // cor padrão na agenda (hex)
+  endereco  String?    @db.VarChar(500)
+  cidade    String?    @db.VarChar(255)
+  estado    String?    @db.VarChar(2)
   contratos Contrato[]
 
   @@map("empresa")
@@ -52,26 +58,48 @@ model Empresa {
 
 /// Representa o profissional executor (Cadastros de Apoio)
 model Profissional {
-  id           Int            @id @default(autoincrement())
-  nome         String         @db.VarChar(255)
-  agendamentos Agendamento[]
-  escalas      ContratoItem[]
+  id               Int                    @id @default(autoincrement())
+  tenantId         Int                    @map("tenant_id")
+  userId           Int?                   @map("user_id")  // vínculo com usuário do sistema
+  nome             String                 @db.VarChar(255)
+  agendamentos     Agendamento[]
+  escalas          ContratoItem[]
+  contratos        ContratoProfissional[]
 
   @@map("profissional")
 }
 
 /// Representa o contrato de serviço (Cadastros de Apoio)
 model Contrato {
-  id           Int            @id @default(autoincrement())
-  empresaId    Int            @map("empresa_id")
-  empresa      Empresa        @relation(fields: [empresaId], references: [id], onDelete: Restrict)
-  descricao    String         @db.VarChar(255)
-  cor          String         @default("#333333") @db.VarChar(7)
-  isFeriado    Boolean        @default(false) @map("is_feriado") // Flag para identificar dinamicamente o contrato de feriados
-  agendamentos Agendamento[]
-  escalas      ContratoItem[]
+  id             Int                    @id @default(autoincrement())
+  tenantId       Int                    @map("tenant_id")
+  empresaId      Int                    @map("empresa_id")
+  empresa        Empresa                @relation(fields: [empresaId], references: [id], onDelete: Restrict)
+  descricao      String                 @db.VarChar(255)
+  cor            String                 @default("#333333") @db.VarChar(7)
+  dtInicio       DateTime               @map("dt_inicio") @db.Date
+  dtFim          DateTime               @map("dt_fim") @db.Date
+  tipo           String                 @db.VarChar(1)   // F (Fixo), H (Hora)
+  valorHora      Decimal?               @map("valor_hora") @db.Decimal(10, 2)
+  valorFixo      Decimal?               @map("valor_fixo") @db.Decimal(10, 2)
+  isFeriado      Boolean                @default(false) @map("is_feriado")
+  agendamentos   Agendamento[]
+  escalas        ContratoItem[]
+  profissionais  ContratoProfissional[]
 
   @@map("contrato")
+}
+
+/// Pivô many-to-many entre Contrato e Profissional
+model ContratoProfissional {
+  id             Int          @id @default(autoincrement())
+  contratoId     Int          @map("contrato_id")
+  contrato       Contrato     @relation(fields: [contratoId], references: [id], onDelete: Cascade)
+  profissionalId Int          @map("profissional_id")
+  profissional   Profissional @relation(fields: [profissionalId], references: [id], onDelete: Cascade)
+
+  @@unique([contratoId, profissionalId])
+  @@map("contrato_profissional")
 }
 
 /// Representa a escala semanal recorrente do profissional no contrato (Cadastros de Apoio)
@@ -82,10 +110,10 @@ model ContratoItem {
   profissionalId Int          @map("profissional_id")
   profissional   Profissional @relation(fields: [profissionalId], references: [id], onDelete: Cascade)
   diaSemana      Int          @map("dia_semana") // 0 (Domingo) a 6 (Sábado)
-  horaInicio     String       @map("hora_inicio") @db.VarChar(5) // hh:ii
-  horaFim        String       @map("hora_fim") @db.VarChar(5) // hh:ii
-  intervaloIni   String       @map("intervalo_ini") @db.VarChar(5) // hh:ii
-  intervaloFim   String       @map("intervalo_fim") @db.VarChar(5) // hh:ii
+  horaInicio     String       @map("hora_inicio") @db.VarChar(5) // hh:mm
+  horaFim        String       @map("hora_fim") @db.VarChar(5) // hh:mm
+  intervaloIni   String       @map("intervalo_ini") @db.VarChar(5) // hh:mm
+  intervaloFim   String       @map("intervalo_fim") @db.VarChar(5) // hh:mm
 
   @@map("contrato_item")
 }
@@ -133,11 +161,14 @@ model Realizado {
 | Origem | Destino | Cardinalidade | Integridade | Notas |
 |---|---|---|---|---|
 | `contrato.empresa_id` | `empresa.id` | N:1 | FK ON DELETE RESTRICT | Impede a exclusão de uma empresa com contratos ativos. |
+| `contrato_profissional.contrato_id` | `contrato.id` | N:1 | FK ON DELETE CASCADE | Remove os vínculos se o contrato for deletado. |
+| `contrato_profissional.profissional_id` | `profissional.id` | N:1 | FK ON DELETE CASCADE | Remove os vínculos se o profissional for deletado. |
 | `contrato_item.contrato_id` | `contrato.id` | N:1 | FK ON DELETE CASCADE | Exclui as escalas associadas se o contrato for deletado. |
 | `contrato_item.profissional_id`| `profissional.id` | N:1 | FK ON DELETE CASCADE | Exclui as escalas associadas se o profissional for deletado. |
-| `agendamento.contrato_id` | `contrato.id` | N:1 | FK ON DELETE SET NULL | Mantém o agendamento histórico mesmo se o contrato for desativado/removido. |
+| `profissional.user_id` | `users.id` | N:1 | FK ON DELETE SET NULL | Mantém o profissional mesmo se o usuário do sistema for removido. |
+| `agendamento.contrato_id` | `contrato.id` | N:1 | FK ON DELETE SET NULL | Mantém o agendamento histórico mesmo se o contrato for removido. |
 | `agendamento.profissional_id` | `profissional.id` | N:1 | FK ON DELETE SET NULL | Mantém o agendamento mesmo se o profissional se desligar. |
-| `realizado.agendamento_id` | `agendamento.id` | N:1 | FK ON DELETE CASCADE | Remove o lançamento de faturamento se o agendamento correspondente for apagado. |
+| `realizado.agendamento_id` | `agendamento.id` | N:1 | FK ON DELETE CASCADE | Remove o lançamento de faturamento se o agendamento for apagado. |
 
 ---
 
@@ -162,9 +193,10 @@ model Realizado {
 
 | Tabela / coleção nova | Origem no legado | Transformação |
 |---|---|---|
-| `empresa` | `empresa` | Normalização de tipos e renomeação de colunas. |
-| `profissional` | `profissional` | Normalização de tipos e renomeação de colunas. |
-| `contrato` | `contrato` | Inclusão do campo `is_feriado` e default de cor `#333333`. |
+| `empresa` | `empresa` | Adição de `razao`, `cor`, `endereco`; `cidade_id` e `estado_id` desnormalizados para texto `cidade`/`estado`. |
+| `profissional` | `profissional` | Adição de `user_id` (FK → users). |
+| `contrato` | `contrato` | Adição de `dt_inicio`, `dt_fim`, `tipo`, `valor_hora`, `valor_fixo`; inclusão de `is_feriado` e default de cor `#333333`. |
+| `contrato_profissional` | `contrato_profissional` | Migração da tabela de junção many-to-many profissionais × contrato. |
 | `contrato_item` | `contrato_item` | Normalização de tipos e relacionamentos. |
 | `agendamento` | `agendamento` | Substituição do campo textual `hora_total` pela coluna inteira `duracao_minutos`, e alteração dos tipos datetime técnicos para TIMESTAMPTZ. |
 | `realizado` | `realizado` | Vinculação direta via FK ao `agendamento.id` e tipagem Decimal. |

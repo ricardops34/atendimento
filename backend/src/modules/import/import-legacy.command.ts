@@ -4,6 +4,9 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 const prisma = new PrismaClient();
+const DEFAULT_CONTRACT_START = new Date('2026-01-01');
+const DEFAULT_CONTRACT_END = new Date('2026-12-31');
+const DEFAULT_CONTRACT_TYPE = 'F';
 
 async function bootstrap() {
   console.log('Starting Legacy Data Import...');
@@ -39,11 +42,11 @@ async function bootstrap() {
     }
 
     let adminProfile = await prisma.profile.findFirst({
-      where: { tenantId, name: 'Administrador' }
+      where: { name: 'Administrador' }
     });
     if (!adminProfile) {
       adminProfile = await prisma.profile.create({
-        data: { tenantId, name: 'Administrador' }
+        data: { name: 'Administrador' }
       });
       const allModules = await prisma.module.findMany();
       for (const mod of allModules) {
@@ -61,11 +64,18 @@ async function bootstrap() {
         data: {
           name: 'Administrador (Fallback)',
           email: 'admin@fallback.com',
+          profileId: adminProfile.id,
           password: 'hashed_password_placeholder', // Should be hashed with bcrypt in real app
           isActive: true
         }
       });
       console.log('Created fallback admin user.');
+    }
+    if (adminUser.profileId !== adminProfile.id) {
+      adminUser = await prisma.user.update({
+        where: { id: adminUser.id },
+        data: { profileId: adminProfile.id }
+      });
     }
 
     await prisma.userTenant.upsert({
@@ -76,13 +86,11 @@ async function bootstrap() {
         },
       },
       update: {
-        profileId: adminProfile.id,
         isDefault: true,
       },
       create: {
         userId: adminUser.id,
         tenantId,
-        profileId: adminProfile.id,
         isDefault: true,
       },
     });
@@ -123,6 +131,9 @@ async function bootstrap() {
           empresaId: row.empresa_id,
           descricao: row.descricao || 'Sem descrição',
           cor: row.cor || '#333333',
+          dtInicio: row.dt_inicio ? new Date(row.dt_inicio) : DEFAULT_CONTRACT_START,
+          dtFim: row.dt_fim ? new Date(row.dt_fim) : DEFAULT_CONTRACT_END,
+          tipo: row.tipo || DEFAULT_CONTRACT_TYPE,
           isFeriado: row.id === 4 // Baseado no domain.md onde ID 4 é feriado
         },
         create: {
@@ -131,6 +142,9 @@ async function bootstrap() {
           empresaId: row.empresa_id,
           descricao: row.descricao || 'Sem descrição',
           cor: row.cor || '#333333',
+          dtInicio: row.dt_inicio ? new Date(row.dt_inicio) : DEFAULT_CONTRACT_START,
+          dtFim: row.dt_fim ? new Date(row.dt_fim) : DEFAULT_CONTRACT_END,
+          tipo: row.tipo || DEFAULT_CONTRACT_TYPE,
           isFeriado: row.id === 4
         }
       });

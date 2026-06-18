@@ -6,7 +6,6 @@ export interface ProfileSearchParams {
   page?: number;
   pageSize?: number;
   search?: string;
-  tenantId?: number;
   name?: string;
   sortProperty?: string;
   sortDirection?: 'ascending' | 'descending';

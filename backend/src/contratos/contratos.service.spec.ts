@@ -92,4 +92,31 @@ describe('ContratosService', () => {
       hasNext: true,
     });
   });
+
+  it('filters by tipo', async () => {
+    prisma.contrato.count.mockResolvedValue(5);
+    prisma.contrato.findMany.mockResolvedValue([{ id: 1, tipo: 'F' }]);
+
+    await service.search({ tipo: 'F' });
+
+    expect(prisma.contrato.count).toHaveBeenCalledWith({
+      where: { AND: [{ tipo: 'F' }] },
+    });
+  });
+
+  it('filters by dtInicio and dtFim', async () => {
+    prisma.contrato.count.mockResolvedValue(2);
+    prisma.contrato.findMany.mockResolvedValue([]);
+
+    await service.search({ dtInicio: '2026-01-01', dtFim: '2026-12-31' });
+
+    expect(prisma.contrato.count).toHaveBeenCalledWith({
+      where: {
+        AND: [
+          { dtInicio: new Date('2026-01-01') },
+          { dtFim: new Date('2026-12-31') },
+        ],
+      },
+    });
+  });
 });

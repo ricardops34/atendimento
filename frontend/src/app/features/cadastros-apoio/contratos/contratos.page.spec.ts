@@ -5,6 +5,7 @@ import { ContratosPage } from './contratos.page';
 import { ContratoService } from '../../../core/services/contrato.service';
 import { EmpresaService } from '../../../core/services/empresa.service';
 import { PoNotificationService } from '@po-ui/ng-components';
+import { ProfissionalService } from '../../../core/services/profissional.service';
 
 describe('ContratosPage', () => {
   let component: ContratosPage;
@@ -26,6 +27,10 @@ describe('ContratosPage', () => {
         {
           provide: EmpresaService,
           useValue: { findAll: () => of([{ id: 1, nome: 'Empresa A' }]) },
+        },
+        {
+          provide: ProfissionalService,
+          useValue: { findAll: () => of([]) },
         },
         {
           provide: PoNotificationService,
@@ -63,6 +68,10 @@ describe('ContratosPage', () => {
   });
 
   it('defines sortable listing columns', () => {
-    expect(component.columns.every((column) => column.sortable === true)).toBe(true);
+    expect(component.columns.filter((column) => column.sortable === true).map((column) => column.property)).toEqual([
+      'empresa.nome',
+      'descricao',
+      'tipo',
+    ]);
   });
 });

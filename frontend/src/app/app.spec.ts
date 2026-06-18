@@ -6,7 +6,7 @@ import { of } from 'rxjs';
 import { App } from './app';
 import { AuthService } from './core/auth/auth.service';
 import { TenantStateService } from './core/auth/tenant-state.service';
-import { PoMenuItem, PoMenuModule, PoPageModule, PoToolbarModule } from '@po-ui/ng-components';
+import { PoBreadcrumbModule, PoMenuItem, PoMenuModule, PoPageModule, PoToolbarModule } from '@po-ui/ng-components';
 
 describe('App', () => {
   const createTenantState = (user: any = null) => ({
@@ -80,7 +80,7 @@ describe('App', () => {
     TestBed.resetTestingModule();
     TestBed.overrideComponent(App, {
       remove: {
-        imports: [PoMenuModule, PoPageModule, PoToolbarModule]
+        imports: [PoMenuModule, PoPageModule, PoToolbarModule, PoBreadcrumbModule]
       },
       add: {
         schemas: [CUSTOM_ELEMENTS_SCHEMA]
@@ -150,8 +150,8 @@ describe('App', () => {
             tenant: { name: 'Tenant Demo' },
             modules: ['settings'],
             availableTenants: [
-              { tenantId: 1, tenantName: 'Tenant Demo', profileId: 1, profileName: 'Administrador', isDefault: true },
-              { tenantId: 2, tenantName: 'Tenant 2', profileId: 2, profileName: 'Operador', isDefault: false }
+              { tenantId: 1, tenantName: 'Tenant Demo', isDefault: true },
+              { tenantId: 2, tenantName: 'Tenant 2', isDefault: false }
             ],
             menus: [
               {
@@ -217,8 +217,8 @@ describe('App', () => {
             tenant: { name: 'Tenant Demo' },
             modules: ['settings'],
             availableTenants: [
-              { tenantId: 1, tenantName: 'Tenant Demo', profileId: 1, profileName: 'Administrador', isDefault: true },
-              { tenantId: 2, tenantName: 'Tenant 2', profileId: 2, profileName: 'Operador', isDefault: false }
+              { tenantId: 1, tenantName: 'Tenant Demo', isDefault: true },
+              { tenantId: 2, tenantName: 'Tenant 2', isDefault: false }
             ],
             menus: []
           }),
@@ -233,5 +233,48 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
 
     expect(fixture.componentInstance.profileActions.some((item: any) => item.label === 'Trocar tenant')).toBe(true);
+  });
+
+  it('builds breadcrumb from current route and keeps the last item without link', async () => {
+    TestBed.resetTestingModule();
+
+    await TestBed.configureTestingModule({
+      imports: [App],
+      providers: [
+        {
+          provide: AuthService,
+          useValue: {
+            isAuthenticated: () => true,
+            me: () => of(null),
+            logout: vi.fn(),
+          },
+        },
+        {
+          provide: TenantStateService,
+          useValue: createTenantState({
+            name: 'Administrador',
+            tenant: { name: 'Tenant Demo' },
+            modules: ['appointments-list'],
+            availableTenants: [],
+            menus: []
+          }),
+        },
+        {
+          provide: Router,
+          useValue: createRouter(),
+        },
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(App);
+    const breadcrumb = fixture.componentInstance.breadcrumb();
+
+    expect(breadcrumb.items.map((item: any) => item.label)).toEqual([
+      'Inicio',
+      'Agendamentos',
+      'Lista de Atendimentos'
+    ]);
+    expect(breadcrumb.items[0].link).toBe('/agendamentos/lista');
+    expect(breadcrumb.items.at(-1)?.link).toBeUndefined();
   });
 });

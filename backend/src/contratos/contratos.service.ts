@@ -1,5 +1,5 @@
-// @ts-nocheck
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateContratoDto } from './dto/create-contrato.dto';
 import { UpdateContratoDto } from './dto/update-contrato.dto';
@@ -10,6 +10,9 @@ interface ContratoSearchQuery {
   search?: string;
   descricao?: string;
   empresaId?: string;
+  tipo?: string;
+  dtInicio?: string;
+  dtFim?: string;
   isFeriado?: string;
   sortProperty?: string;
   sortDirection?: string;
@@ -19,20 +22,34 @@ interface ContratoSearchQuery {
 export class ContratosService {
   constructor(private prisma: PrismaService) {}
 
-  create(createContratoDto: CreateContratoDto) {
-    return this.prisma.contrato.create({
-      data: {
-        ...createContratoDto,
-        cor: createContratoDto.cor || '#333333',
-        isFeriado: createContratoDto.isFeriado || false,
-      },
+  async create(dto: CreateContratoDto) {
+    const { profissionalIds, escalas, ...contratoData } = dto;
+    return this.prisma.$transaction(async (tx) => {
+      const contrato = await tx.contrato.create({
+        data: {
+          ...contratoData,
+          cor: contratoData.cor || '#333333',
+          isFeriado: contratoData.isFeriado ?? false,
+          tenantId: 1,
+        },
+      });
+      if (profissionalIds?.length) {
+        await tx.contratoProfissional.createMany({
+          data: profissionalIds.map((id) => ({ contratoId: contrato.id, profissionalId: id })),
+          skipDuplicates: true,
+        });
+      }
+      if (escalas?.length) {
+        await tx.contratoItem.createMany({
+          data: escalas.map((e) => ({ ...e, contratoId: contrato.id })),
+        });
+      }
+      return contrato;
     });
   }
 
   findAll() {
-    return this.prisma.contrato.findMany({
-      include: { empresa: true },
-    });
+    return this.prisma.contrato.findMany({ include: { empresa: true } });
   }
 
   async search(query: ContratoSearchQuery) {
@@ -54,17 +71,39 @@ export class ContratosService {
   async findOne(id: number) {
     const contrato = await this.prisma.contrato.findUnique({
       where: { id },
-      include: { empresa: true, escalas: true },
+      include: {
+        empresa: true,
+        profissionais: { include: { profissional: true } },
+        escalas: { include: { profissional: true } },
+      },
     });
     if (!contrato) throw new NotFoundException('Contrato não encontrado.');
     return contrato;
   }
 
-  async update(id: number, updateContratoDto: UpdateContratoDto) {
+  async update(id: number, dto: UpdateContratoDto) {
     await this.findOne(id);
-    return this.prisma.contrato.update({
-      where: { id },
-      data: updateContratoDto as any,
+    const { profissionalIds, escalas, ...contratoData } = dto as any;
+    return this.prisma.$transaction(async (tx) => {
+      const contrato = await tx.contrato.update({ where: { id }, data: contratoData });
+      if (profissionalIds !== undefined) {
+        await tx.contratoProfissional.deleteMany({ where: { contratoId: id } });
+        if (profissionalIds.length) {
+          await tx.contratoProfissional.createMany({
+            data: profissionalIds.map((pid: number) => ({ contratoId: id, profissionalId: pid })),
+            skipDuplicates: true,
+          });
+        }
+      }
+      if (escalas !== undefined) {
+        await tx.contratoItem.deleteMany({ where: { contratoId: id } });
+        if (escalas.length) {
+          await tx.contratoItem.createMany({
+            data: escalas.map((e: any) => ({ ...e, contratoId: id })),
+          });
+        }
+      }
+      return contrato;
     });
   }
 
@@ -90,6 +129,18 @@ export class ContratosService {
       andFilters.push({ empresaId: Number(query.empresaId) });
     }
 
+    if (query.tipo) {
+      andFilters.push({ tipo: query.tipo });
+    }
+
+    if (query.dtInicio) {
+      andFilters.push({ dtInicio: new Date(query.dtInicio) });
+    }
+
+    if (query.dtFim) {
+      andFilters.push({ dtFim: new Date(query.dtFim) });
+    }
+
     if (query.isFeriado === 'true' || query.isFeriado === 'false') {
       andFilters.push({ isFeriado: query.isFeriado === 'true' });
     }
@@ -101,17 +152,20 @@ export class ContratosService {
     const direction = sortDirection === 'descending' ? 'desc' : 'asc';
 
     if (sortProperty === 'empresa.nome') {
-      return { empresa: { nome: direction } };
+      return { empresa: { nome: direction as Prisma.SortOrder } };
     }
 
     const propertyMap: Record<string, string> = {
       id: 'id',
       cor: 'cor',
+      tipo: 'tipo',
+      dtInicio: 'dtInicio',
+      dtFim: 'dtFim',
       isFeriado: 'isFeriado',
       descricao: 'descricao',
     };
 
     const property = propertyMap[sortProperty || 'descricao'] || 'descricao';
-    return { [property]: direction };
+    return { [property]: direction as Prisma.SortOrder };
   }
 }

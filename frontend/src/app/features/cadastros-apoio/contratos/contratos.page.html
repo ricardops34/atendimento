@@ -33,20 +33,14 @@
   </po-table>
 </po-page-list>
 
+<!-- Busca avançada -->
 <po-modal p-title="Busca avançada" #advancedFilterModal>
   <div class="po-row">
-    <po-input
-      class="po-md-6"
-      name="descricaoFiltro"
-      p-label="Contrato"
-      [ngModel]="filters.descricao"
-      (ngModelChange)="filters.descricao = $event">
+    <po-input class="po-md-6" name="descricaoFiltro" p-label="Descrição"
+      [ngModel]="filters.descricao" (ngModelChange)="filters.descricao = $event">
     </po-input>
 
-    <po-combo
-      class="po-md-6"
-      name="empresaFiltro"
-      p-label="Empresa"
+    <po-combo class="po-md-6" name="empresaFiltro" p-label="Empresa"
       [p-options]="empresas"
       [ngModel]="filters.empresaId"
       (ngModelChange)="filters.empresaId = $event">
@@ -54,14 +48,19 @@
   </div>
 
   <div class="po-row">
-    <po-combo
-      class="po-md-6"
-      name="isFeriadoFiltro"
-      p-label="Feriado"
-      [p-options]="feriadoOptions"
-      [ngModel]="filters.isFeriado"
-      (ngModelChange)="filters.isFeriado = $event">
+    <po-combo class="po-md-4" name="tipoFiltro" p-label="Tipo"
+      [p-options]="tipoOptions"
+      [ngModel]="filters.tipo"
+      (ngModelChange)="filters.tipo = $event">
     </po-combo>
+
+    <po-input class="po-md-4" name="dtInicioFiltro" p-label="Data de Início" p-type="date"
+      [ngModel]="filters.dtInicio" (ngModelChange)="filters.dtInicio = $event">
+    </po-input>
+
+    <po-input class="po-md-4" name="dtFimFiltro" p-label="Data de Fim" p-type="date"
+      [ngModel]="filters.dtFim" (ngModelChange)="filters.dtFim = $event">
+    </po-input>
   </div>
 
   <po-modal-footer>
@@ -70,16 +69,151 @@
   </po-modal-footer>
 </po-modal>
 
-<po-modal p-title="Contrato" #modal>
+<!-- Formulário de Contrato -->
+<po-modal p-title="Contrato" #modal [p-size]="'xl'">
+
+  <!-- Dados principais -->
   <div class="po-row">
-    <po-combo class="po-md-12" p-label="Empresa" [p-options]="empresas" [ngModel]="formData.empresaId" (ngModelChange)="formData.empresaId = $event"></po-combo>
+    <po-combo class="po-md-8" p-label="Empresa *"
+      [p-options]="empresas"
+      [ngModel]="formData.empresaId"
+      (ngModelChange)="formData.empresaId = $event">
+    </po-combo>
+
+    <po-input class="po-md-4" p-label="Cor (hex)"
+      [ngModel]="formData.cor"
+      (ngModelChange)="formData.cor = $event"
+      p-placeholder="#333333">
+    </po-input>
   </div>
+
   <div class="po-row">
-    <po-input class="po-md-12" p-label="Descricao" [ngModel]="formData.descricao" (ngModelChange)="formData.descricao = $event"></po-input>
+    <po-input class="po-md-12" p-label="Descrição *"
+      [ngModel]="formData.descricao"
+      (ngModelChange)="formData.descricao = $event">
+    </po-input>
   </div>
+
   <div class="po-row">
-    <po-input class="po-md-6" p-label="Cor" [ngModel]="formData.cor" (ngModelChange)="formData.cor = $event"></po-input>
-    <po-switch class="po-md-6" p-label="Feriado" [ngModel]="formData.isFeriado" (ngModelChange)="formData.isFeriado = $event"></po-switch>
+    <po-input class="po-md-3" p-label="Data de Início *" p-type="date"
+      [ngModel]="formData.dtInicio"
+      (ngModelChange)="formData.dtInicio = $event">
+    </po-input>
+
+    <po-input class="po-md-3" p-label="Data de Fim *" p-type="date"
+      [ngModel]="formData.dtFim"
+      (ngModelChange)="formData.dtFim = $event">
+    </po-input>
+
+    <po-combo class="po-md-3" p-label="Tipo *"
+      [p-options]="tipoOptions"
+      [ngModel]="formData.tipo"
+      (ngModelChange)="formData.tipo = $event">
+    </po-combo>
+
+    <po-switch class="po-md-3" p-label="Feriado"
+      [ngModel]="formData.isFeriado"
+      (ngModelChange)="formData.isFeriado = $event">
+    </po-switch>
+  </div>
+
+  <div class="po-row">
+    <po-decimal class="po-md-6" p-label="Valor Hora"
+      [ngModel]="formData.valorHora"
+      (ngModelChange)="formData.valorHora = $event"
+      [p-decimals-length]="2">
+    </po-decimal>
+
+    <po-decimal class="po-md-6" p-label="Valor Fixo"
+      [ngModel]="formData.valorFixo"
+      (ngModelChange)="formData.valorFixo = $event"
+      [p-decimals-length]="2">
+    </po-decimal>
+  </div>
+
+  <!-- Profissionais habilitados -->
+  <div class="po-row" style="margin-top: 8px;">
+    <po-multiselect class="po-md-12" p-label="Profissionais Habilitados"
+      [p-options]="profissionais"
+      [ngModel]="formData.profissionalIds"
+      (ngModelChange)="formData.profissionalIds = $event">
+    </po-multiselect>
+  </div>
+
+  <!-- Escala semanal -->
+  <div style="margin-top: 16px; border-top: 1px solid #ddd; padding-top: 12px;">
+    <p style="font-weight: 600; margin-bottom: 8px;">Escala Semanal</p>
+
+    <div class="po-row">
+      <po-combo class="po-md-3" p-label="Dia da Semana"
+        [p-options]="diasSemana"
+        [ngModel]="novaEscala.diaSemana"
+        (ngModelChange)="novaEscala.diaSemana = $event; onDiaSemanaChange()">
+      </po-combo>
+
+      <po-combo class="po-md-3" p-label="Profissional"
+        [p-options]="profissionais"
+        [ngModel]="novaEscala.profissionalId"
+        (ngModelChange)="novaEscala.profissionalId = $event">
+      </po-combo>
+
+      <po-input class="po-md-1" p-label="Hora Início"
+        [ngModel]="novaEscala.horaInicio"
+        (ngModelChange)="novaEscala.horaInicio = $event"
+        p-placeholder="08:30">
+      </po-input>
+
+      <po-input class="po-md-1" p-label="Interv. Ini"
+        [ngModel]="novaEscala.intervaloIni"
+        (ngModelChange)="novaEscala.intervaloIni = $event"
+        p-placeholder="11:30">
+      </po-input>
+
+      <po-input class="po-md-1" p-label="Interv. Fim"
+        [ngModel]="novaEscala.intervaloFim"
+        (ngModelChange)="novaEscala.intervaloFim = $event"
+        p-placeholder="13:00">
+      </po-input>
+
+      <po-input class="po-md-1" p-label="Hora Fim"
+        [ngModel]="novaEscala.horaFim"
+        (ngModelChange)="novaEscala.horaFim = $event"
+        p-placeholder="18:00">
+      </po-input>
+
+      <div class="po-md-2" style="display: flex; align-items: flex-end; padding-bottom: 4px;">
+        <po-button p-label="Adicionar" p-icon="po-icon-plus" (p-click)="addEscala()"></po-button>
+      </div>
+    </div>
+
+    <div *ngIf="formData.escalas?.length" style="margin-top: 8px;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+        <thead>
+          <tr style="background: #f5f5f5;">
+            <th style="padding: 4px 8px; text-align: left;">Dia</th>
+            <th style="padding: 4px 8px; text-align: left;">Profissional</th>
+            <th style="padding: 4px 8px;">Início</th>
+            <th style="padding: 4px 8px;">Int. Ini</th>
+            <th style="padding: 4px 8px;">Int. Fim</th>
+            <th style="padding: 4px 8px;">Fim</th>
+            <th style="padding: 4px 8px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let e of formData.escalas; let i = index" style="border-bottom: 1px solid #eee;">
+            <td style="padding: 4px 8px;">{{ getDiaSemanaLabel(e.diaSemana) }}</td>
+            <td style="padding: 4px 8px;">{{ getProfissionalLabel(e.profissionalId) }}</td>
+            <td style="padding: 4px 8px; text-align: center;">{{ e.horaInicio }}</td>
+            <td style="padding: 4px 8px; text-align: center;">{{ e.intervaloIni }}</td>
+            <td style="padding: 4px 8px; text-align: center;">{{ e.intervaloFim }}</td>
+            <td style="padding: 4px 8px; text-align: center;">{{ e.horaFim }}</td>
+            <td style="padding: 4px 8px; text-align: center;">
+              <po-button p-icon="po-icon-delete" p-kind="tertiary" (p-click)="removeEscala(i)"></po-button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <po-modal-footer>

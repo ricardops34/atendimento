@@ -23,16 +23,16 @@ export class AuthController {
     const user = await this.prisma.user.findUnique({
       where: { id: req.user.userId },
       include: {
+        profile: {
+          include: {
+            profileModules: {
+              include: { module: true },
+            },
+          },
+        },
         userTenants: {
           include: {
             tenant: true,
-            profile: {
-              include: {
-                profileModules: {
-                  include: { module: true },
-                },
-              },
-            },
           },
         },
       },
@@ -51,16 +51,16 @@ export class AuthController {
     const user = await this.prisma.user.findUnique({
       where: { id: req.user.userId },
       include: {
+        profile: {
+          include: {
+            profileModules: {
+              include: { module: true },
+            },
+          },
+        },
         userTenants: {
           include: {
             tenant: true,
-            profile: {
-              include: {
-                profileModules: {
-                  include: { module: true },
-                },
-              },
-            },
           },
         },
       },
@@ -70,6 +70,13 @@ export class AuthController {
       return null;
     }
 
+    return this.authService.buildSessionUser(user, req.user.tenantId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('me')
+  async updateProfile(@Request() req: any, @Body() body: { avatar?: string; password?: string }) {
+    const user = await this.authService.updateCurrentUser(req.user.userId, body);
     return this.authService.buildSessionUser(user, req.user.tenantId);
   }
 }

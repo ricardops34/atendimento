@@ -56,6 +56,9 @@ describe('EmpresasPage', () => {
   });
 
   it('defines sortable listing columns', () => {
-    expect(component.columns.every((column) => column.sortable === true)).toBe(true);
+    expect(component.columns.filter((column) => column.sortable === true).map((column) => column.property)).toEqual([
+      'id',
+      'nome',
+    ]);
   });
 });

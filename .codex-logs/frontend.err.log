@@ -6,3 +6,310 @@ Binding this server to an open connection can result in compromising your applic
 computer. Using a different host than the one passed to the "--host" flag might result in
 websocket connection issues.
     [39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'headerMenuItems' does not exist on type 'App'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.html:4:20:
+[37m      4 │     [p-menu-items]="[32mheaderMenuItems[37m"
+        ╵                     [32m~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component App.
+
+    src/app/app.ts:41:15:
+[37m      41 │   templateUrl: [32m'./app.html'[37m,
+         ╵                [32m~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2353: Object literal may only specify known properties, and 'tenantId' does not exist in type 'ProfileSearchParams'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracoes/perfis/perfis.page.ts:89:143:
+[37m      89 │ ...s.quickSearch || undefined, [32mtenantId[37m: this.filters.tenantId, na...
+         ╵                                [32m~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'tenantOptions' does not exist on type 'PerfisPage'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracoes/perfis/perfis.page.html:13:60:
+[37m      13 │ ...el="Tenant" [p-options]="[32mtenantOptions[37m" [ngModel]="filters.tena...
+         ╵                             [32m~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component PerfisPage.
+
+    src/app/features/configuracoes/perfis/perfis.page.ts:12:15:
+[37m      12 │   templateUrl: [32m'./perfis.page.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'tenantId' does not exist on type '{ name?: string | undefined; }'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracoes/perfis/perfis.page.html:13:94:
+[37m      13 │ ...Options" [ngModel]="filters.[32mtenantId[37m" (ngModelChange)="filters....
+         ╵                                [32m~~~~~~~~[0m
+
+  Error occurs in the template of component PerfisPage.
+
+    src/app/features/configuracoes/perfis/perfis.page.ts:12:15:
+[37m      12 │   templateUrl: [32m'./perfis.page.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'tenantId' does not exist on type '{ name?: string | undefined; }'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracoes/perfis/perfis.page.html:13:129:
+[37m      13 │ ....tenantId" (ngModelChange)="filters.[32mtenantId[37m = $event"></po-combo>
+         ╵                                        [32m~~~~~~~~[0m
+
+  Error occurs in the template of component PerfisPage.
+
+    src/app/features/configuracoes/perfis/perfis.page.ts:12:15:
+[37m      12 │   templateUrl: [32m'./perfis.page.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'tenantId' does not exist on type '{ name?: string | undefined; }'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracoes/perfis/perfis.page.html:13:129:
+[37m      13 │ ....tenantId" (ngModelChange)="filters.[32mtenantId[37m = $event"></po-combo>
+         ╵                                        [32m~~~~~~~~[0m
+
+  Error occurs in the template of component PerfisPage.
+
+    src/app/features/configuracoes/perfis/perfis.page.ts:12:15:
+[37m      12 │   templateUrl: [32m'./perfis.page.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'tenantOptions' does not exist on type 'PerfisPage'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracoes/perfis/perfis.page.html:20:60:
+[37m      20 │ ...el="Tenant" [p-options]="[32mtenantOptions[37m" [ngModel]="formData.ten...
+         ╵                             [32m~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component PerfisPage.
+
+    src/app/features/configuracoes/perfis/perfis.page.ts:12:15:
+[37m      12 │   templateUrl: [32m'./perfis.page.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'tenantOptions' does not exist on type 'PerfisPage'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracoes/perfis/perfis.page.html:13:60:
+[37m      13 │ ...el="Tenant" [p-options]="[32mtenantOptions[37m" [ngModel]="filters.tena...
+         ╵                             [32m~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component PerfisPage.
+
+    src/app/features/configuracoes/perfis/perfis.page.ts:12:15:
+[37m      12 │   templateUrl: [32m'./perfis.page.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'tenantId' does not exist on type '{ name?: string | undefined; }'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracoes/perfis/perfis.page.html:13:94:
+[37m      13 │ ...Options" [ngModel]="filters.[32mtenantId[37m" (ngModelChange)="filters....
+         ╵                                [32m~~~~~~~~[0m
+
+  Error occurs in the template of component PerfisPage.
+
+    src/app/features/configuracoes/perfis/perfis.page.ts:12:15:
+[37m      12 │   templateUrl: [32m'./perfis.page.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'tenantId' does not exist on type '{ name?: string | undefined; }'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracoes/perfis/perfis.page.html:13:129:
+[37m      13 │ ....tenantId" (ngModelChange)="filters.[32mtenantId[37m = $event"></po-combo>
+         ╵                                        [32m~~~~~~~~[0m
+
+  Error occurs in the template of component PerfisPage.
+
+    src/app/features/configuracoes/perfis/perfis.page.ts:12:15:
+[37m      12 │   templateUrl: [32m'./perfis.page.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'tenantId' does not exist on type '{ name?: string | undefined; }'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracoes/perfis/perfis.page.html:13:129:
+[37m      13 │ ....tenantId" (ngModelChange)="filters.[32mtenantId[37m = $event"></po-combo>
+         ╵                                        [32m~~~~~~~~[0m
+
+  Error occurs in the template of component PerfisPage.
+
+    src/app/features/configuracoes/perfis/perfis.page.ts:12:15:
+[37m      12 │   templateUrl: [32m'./perfis.page.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'tenantOptions' does not exist on type 'PerfisPage'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/configuracoes/perfis/perfis.page.html:20:60:
+[37m      20 │ ...el="Tenant" [p-options]="[32mtenantOptions[37m" [ngModel]="formData.ten...
+         ╵                             [32m~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component PerfisPage.
+
+    src/app/features/configuracoes/perfis/perfis.page.ts:12:15:
+[37m      12 │   templateUrl: [32m'./perfis.page.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2307: Cannot find module './features/configuracoes/usuarios/usuarios.page' or its corresponding type declarations.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.routes.ts:58:32:
+[37m      58 │ ...=> import([32m'./features/configuracoes/usuarios/usuarios.page'[37m).th...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "./features/configuracoes/usuarios/usuarios.page"[0m
+
+    src/app/app.routes.ts:56:36:
+[37m      56 │ ...=> import([32m'./features/configuracoes/usuarios/usuarios.page'[37m).th...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2307: Cannot find module './features/configuracoes/usuarios/usuarios.page' or its corresponding type declarations.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.routes.ts:58:32:
+[37m      58 │ ...=> import([32m'./features/configuracoes/usuarios/usuarios.page'[37m).th...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "./features/configuracoes/usuarios/usuarios.page"[0m
+
+    src/app/app.routes.ts:56:36:
+[37m      56 │ ...=> import([32m'./features/configuracoes/usuarios/usuarios.page'[37m).th...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2307: Cannot find module './features/configuracoes/usuarios/usuarios.page' or its corresponding type declarations.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.routes.ts:58:32:
+[37m      58 │ ...=> import([32m'./features/configuracoes/usuarios/usuarios.page'[37m).th...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "./features/configuracoes/usuarios/usuarios.page"[0m
+
+    src/app/app.routes.ts:56:36:
+[37m      56 │ ...=> import([32m'./features/configuracoes/usuarios/usuarios.page'[37m).th...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2307: Cannot find module './features/configuracoes/usuarios/usuarios.page' or its corresponding type declarations.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/app.routes.ts:58:32:
+[37m      58 │ ...=> import([32m'./features/configuracoes/usuarios/usuarios.page'[37m).th...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mCould not resolve "./features/configuracoes/usuarios/usuarios.page"[0m
+
+    src/app/app.routes.ts:56:36:
+[37m      56 │ ...=> import([32m'./features/configuracoes/usuarios/usuarios.page'[37m).th...
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'string' is not assignable to type 'number'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cadastros-apoio/empresas/empresas.page.html:74:123:
+[37m      74 │ ...odelChange)="formData.estado = $event" [32mp-maxlength[37m="2"></po-input>
+         ╵                                           [32m~~~~~~~~~~~[0m
+
+  Error occurs in the template of component EmpresasPage.
+
+    src/app/features/cadastros-apoio/empresas/empresas.page.ts:25:15:
+[37m      25 │   templateUrl: [32m'./empresas.page.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'string' is not assignable to type 'number'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cadastros-apoio/empresas/empresas.page.html:74:123:
+[37m      74 │ ...odelChange)="formData.estado = $event" [32mp-maxlength[37m="2"></po-input>
+         ╵                                           [32m~~~~~~~~~~~[0m
+
+  Error occurs in the template of component EmpresasPage.
+
+    src/app/features/cadastros-apoio/empresas/empresas.page.ts:25:15:
+[37m      25 │   templateUrl: [32m'./empresas.page.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'string' is not assignable to type 'number'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cadastros-apoio/empresas/empresas.page.html:74:123:
+[37m      74 │ ...odelChange)="formData.estado = $event" [32mp-maxlength[37m="2"></po-input>
+         ╵                                           [32m~~~~~~~~~~~[0m
+
+  Error occurs in the template of component EmpresasPage.
+
+    src/app/features/cadastros-apoio/empresas/empresas.page.ts:25:15:
+[37m      25 │   templateUrl: [32m'./empresas.page.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type 'string' is not assignable to type 'number'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cadastros-apoio/empresas/empresas.page.html:74:123:
+[37m      74 │ ...odelChange)="formData.estado = $event" [32mp-maxlength[37m="2"></po-input>
+         ╵                                           [32m~~~~~~~~~~~[0m
+
+  Error occurs in the template of component EmpresasPage.
+
+    src/app/features/cadastros-apoio/empresas/empresas.page.ts:25:15:
+[37m      25 │   templateUrl: [32m'./empresas.page.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2305: Module '"@po-ui/ng-components"' has no exported member 'PoMultiselectModule'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cadastros-apoio/contratos/contratos.page.ts:11:2:
+[37m      11 │   [32mPoMultiselectModule[37m,
+         ╵   [32m~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2305: Module '"@po-ui/ng-components"' has no exported member 'PoMultiselectModule'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cadastros-apoio/contratos/contratos.page.ts:11:2:
+[37m      11 │   [32mPoMultiselectModule[37m,
+         ╵   [32m~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cadastros-apoio/contratos/contratos.page.ts:43:130:
+[37m      43 │ ...oModalModule, PoFieldModule, PoSearchModule, [32mPoMultiselectModule[37m],
+         ╵                                                 [32m~~~~~~~~~~~~~~~~~~~[0m
+
+  Unknown reference.
+
+    src/app/features/cadastros-apoio/contratos/contratos.page.ts:43:130:
+[37m      43 │ ...oModalModule, PoFieldModule, PoSearchModule, [32mPoMultiselectModule[37m],
+         ╵                                                 [32m~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cadastros-apoio/contratos/contratos.page.ts:42:130:
+[37m      42 │ ...oModalModule, PoFieldModule, PoSearchModule, [32mPoMultiselectModule[37m],
+         ╵                                                 [32m~~~~~~~~~~~~~~~~~~~[0m
+
+  Unknown reference.
+
+    src/app/features/cadastros-apoio/contratos/contratos.page.ts:42:130:
+[37m      42 │ ...oModalModule, PoFieldModule, PoSearchModule, [32mPoMultiselectModule[37m],
+         ╵                                                 [32m~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'PoMultiselectModule'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/cadastros-apoio/contratos/contratos.page.ts:42:130:
+[37m      42 │ ...oModalModule, PoFieldModule, PoSearchModule, [32mPoMultiselectModule[37m],
+         ╵                                                 [32m~~~~~~~~~~~~~~~~~~~[0m
+
+[39m[22m

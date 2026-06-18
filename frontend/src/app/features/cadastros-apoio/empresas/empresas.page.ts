@@ -36,7 +36,7 @@ export class EmpresasPage implements OnInit {
   loadingShowMore = false;
   saving = false;
   isEdit = false;
-  formData: any = { nome: '' };
+  formData: any = { nome: '', razao: '', cor: '', endereco: '', cidade: '', estado: '' };
   quickSearch = '';
   page = 1;
   readonly pageSize = 20;
@@ -47,8 +47,10 @@ export class EmpresasPage implements OnInit {
   filters: { id?: number; nome?: string } = {};
 
   columns: PoTableColumn[] = [
-    { property: 'id', label: 'ID', sortable: true },
+    { property: 'id', label: 'ID', sortable: true, width: '70px' },
     { property: 'nome', label: 'Empresa', sortable: true },
+    { property: 'cidade', label: 'Cidade', sortable: false },
+    { property: 'endereco', label: 'Endereço', sortable: false },
   ];
 
   disclaimerGroup: PoDisclaimerGroup = {
@@ -142,13 +144,21 @@ export class EmpresasPage implements OnInit {
 
   openCreate() {
     this.isEdit = false;
-    this.formData = { nome: '' };
+    this.formData = { nome: '', razao: '', cor: '', endereco: '', cidade: '', estado: '' };
     this.modal.open();
   }
 
   openEdit(row: any) {
     this.isEdit = true;
-    this.formData = { id: row.id, nome: row.nome };
+    this.formData = {
+      id: row.id,
+      nome: row.nome || '',
+      razao: row.razao || '',
+      cor: row.cor || '',
+      endereco: row.endereco || '',
+      cidade: row.cidade || '',
+      estado: row.estado || '',
+    };
     this.modal.open();
   }
 
@@ -159,7 +169,13 @@ export class EmpresasPage implements OnInit {
     }
 
     this.saving = true;
-    const payload = { nome: this.formData.nome.trim() };
+    const payload: any = { nome: this.formData.nome.trim() };
+    if (this.formData.razao?.trim()) payload.razao = this.formData.razao.trim();
+    if (this.formData.cor?.trim()) payload.cor = this.formData.cor.trim();
+    if (this.formData.endereco?.trim()) payload.endereco = this.formData.endereco.trim();
+    if (this.formData.cidade?.trim()) payload.cidade = this.formData.cidade.trim();
+    if (this.formData.estado?.trim()) payload.estado = this.formData.estado.trim().toUpperCase().substring(0, 2);
+
     const request$ = this.isEdit
       ? this.empresaService.update(this.formData.id, payload)
       : this.empresaService.create(payload);
@@ -181,11 +197,11 @@ export class EmpresasPage implements OnInit {
   remove(row: any) {
     this.empresaService.remove(row.id).subscribe({
       next: () => {
-        this.poNotification.success('Empresa excluida com sucesso.');
+        this.poNotification.success('Empresa excluída com sucesso.');
         this.loadData(true);
       },
       error: () => {
-        this.poNotification.error('Erro ao excluir empresa.');
+        this.poNotification.error('Erro ao excluir empresa. Verifique se não há contratos vinculados.');
       },
     });
   }

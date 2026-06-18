@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import {
   PoButtonModule,
+  PoComboOption,
   PoDisclaimer,
   PoDisclaimerGroup,
   PoFieldModule,
@@ -17,6 +18,7 @@ import {
 } from '@po-ui/ng-components';
 import { FormsModule } from '@angular/forms';
 import { ProfissionalSearchParams, ProfissionalService } from '../../../core/services/profissional.service';
+import { UserService } from '../../../core/services/user.service';
 
 @Component({
   selector: 'app-profissionais-page',
@@ -29,14 +31,16 @@ export class ProfissionaisPage implements OnInit {
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
 
   private profissionalService = inject(ProfissionalService);
+  private userService = inject(UserService);
   private poNotification = inject(PoNotificationService);
 
   profissionais: any[] = [];
+  usuarios: PoComboOption[] = [];
   loading = false;
   loadingShowMore = false;
   saving = false;
   isEdit = false;
-  formData: any = { nome: '' };
+  formData: any = { nome: '', userId: null };
   quickSearch = '';
   page = 1;
   readonly pageSize = 20;
@@ -47,8 +51,9 @@ export class ProfissionaisPage implements OnInit {
   filters: { id?: number; nome?: string } = {};
 
   columns: PoTableColumn[] = [
-    { property: 'id', label: 'ID', sortable: true },
+    { property: 'id', label: 'ID', sortable: true, width: '70px' },
     { property: 'nome', label: 'Profissional', sortable: true },
+    { property: 'user.name', label: 'Usuário do Sistema', sortable: false },
   ];
 
   disclaimerGroup: PoDisclaimerGroup = {
@@ -64,7 +69,19 @@ export class ProfissionaisPage implements OnInit {
   ];
 
   ngOnInit() {
+    this.loadUsuarios();
     this.loadData(true);
+  }
+
+  loadUsuarios() {
+    this.userService.findAll().subscribe({
+      next: (data) => {
+        this.usuarios = (data || []).map((u) => ({ label: u.name, value: u.id }));
+      },
+      error: () => {
+        this.usuarios = [];
+      },
+    });
   }
 
   loadData(reset = false) {
@@ -142,13 +159,13 @@ export class ProfissionaisPage implements OnInit {
 
   openCreate() {
     this.isEdit = false;
-    this.formData = { nome: '' };
+    this.formData = { nome: '', userId: null };
     this.modal.open();
   }
 
   openEdit(row: any) {
     this.isEdit = true;
-    this.formData = { id: row.id, nome: row.nome };
+    this.formData = { id: row.id, nome: row.nome, userId: row.user?.id ?? null };
     this.modal.open();
   }
 
@@ -159,7 +176,9 @@ export class ProfissionaisPage implements OnInit {
     }
 
     this.saving = true;
-    const payload = { nome: this.formData.nome.trim() };
+    const payload: any = { nome: this.formData.nome.trim() };
+    if (this.formData.userId) payload.userId = Number(this.formData.userId);
+
     const request$ = this.isEdit
       ? this.profissionalService.update(this.formData.id, payload)
       : this.profissionalService.create(payload);
@@ -181,7 +200,7 @@ export class ProfissionaisPage implements OnInit {
   remove(row: any) {
     this.profissionalService.remove(row.id).subscribe({
       next: () => {
-        this.poNotification.success('Profissional excluido com sucesso.');
+        this.poNotification.success('Profissional excluído com sucesso.');
         this.loadData(true);
       },
       error: () => {

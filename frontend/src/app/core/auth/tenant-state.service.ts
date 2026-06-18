@@ -1,4 +1,4 @@
-import { Injectable, signal, WritableSignal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +11,8 @@ export class TenantStateService {
 
   setSession(data: any) {
     this.user.set(data.user);
-    this.tenantId.set(data.user.tenant?.id || null);
-    this.profileId.set(data.user.profile?.id || null); // Note: API might not return profile.id directly, but returns modules
+    this.tenantId.set(data.user.tenantId || data.user.tenant?.id || null);
+    this.profileId.set(data.user.profileId || null);
     this.modules.set(data.user.modules || []);
   }
 

@@ -34,6 +34,27 @@ export class AuthService {
     );
   }
 
+  switchTenant(tenantId: number): Observable<any> {
+    return this.http.post<any>(`${this.API_URL}/auth/switch-tenant`, { tenantId }).pipe(
+      tap(res => {
+        if (res && res.accessToken) {
+          localStorage.setItem('access_token', res.accessToken);
+          this.tenantState.setSession(res);
+        }
+      })
+    );
+  }
+
+  updateProfile(data: { avatar?: string; password?: string }): Observable<any> {
+    return this.http.post<any>(`${this.API_URL}/auth/me`, data).pipe(
+      tap(res => {
+        if (res) {
+          this.tenantState.setSession({ user: res });
+        }
+      })
+    );
+  }
+
   logout() {
     localStorage.removeItem('access_token');
     this.tenantState.clearSession();

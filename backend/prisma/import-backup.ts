@@ -12,6 +12,9 @@
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
+const DEFAULT_CONTRACT_START = new Date('2026-01-01');
+const DEFAULT_CONTRACT_END = new Date('2026-12-31');
+const DEFAULT_CONTRACT_TYPE = 'F';
 
 // ---------------------------------------------------------------------------
 // Dados extraídos do backup bjsoft18_portal.sql
@@ -102,8 +105,26 @@ async function main() {
   for (const con of contratos) {
     await prisma.contrato.upsert({
       where: { id: con.id },
-      update: { descricao: con.descricao, cor: con.cor, empresaId: con.empresaId, tenantId },
-      create: { id: con.id, descricao: con.descricao, cor: con.cor, empresaId: con.empresaId, tenantId, isFeriado: false },
+      update: {
+        descricao: con.descricao,
+        cor: con.cor,
+        empresaId: con.empresaId,
+        tenantId,
+        dtInicio: DEFAULT_CONTRACT_START,
+        dtFim: DEFAULT_CONTRACT_END,
+        tipo: DEFAULT_CONTRACT_TYPE
+      },
+      create: {
+        id: con.id,
+        descricao: con.descricao,
+        cor: con.cor,
+        empresaId: con.empresaId,
+        tenantId,
+        dtInicio: DEFAULT_CONTRACT_START,
+        dtFim: DEFAULT_CONTRACT_END,
+        tipo: DEFAULT_CONTRACT_TYPE,
+        isFeriado: false
+      },
     });
     console.log(`  ✓ [${con.id}] ${con.descricao}`);
   }

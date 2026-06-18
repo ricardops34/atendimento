@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { PoButtonModule, PoComboOption, PoDisclaimer, PoDisclaimerGroup, PoFieldModule, PoModalComponent, PoModalModule, PoNotificationService, PoPageModule, PoSearchModule, PoTableAction, PoTableColumn, PoTableColumnSort, PoTableModule } from '@po-ui/ng-components';
 import { ProfileSearchParams, ProfileService } from '../../../core/services/profile.service';
 import { SystemModuleService } from '../../../core/services/system-module.service';
-import { TenantService } from '../../../core/services/tenant.service';
 
 @Component({
   selector: 'app-perfis-page',
@@ -16,12 +15,10 @@ export class PerfisPage implements OnInit {
   @ViewChild('modal', { static: true }) modal!: PoModalComponent;
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
   private service = inject(ProfileService);
-  private tenantService = inject(TenantService);
   private moduleService = inject(SystemModuleService);
   private poNotification = inject(PoNotificationService);
 
   items: any[] = [];
-  tenantOptions: PoComboOption[] = [];
   moduleOptions: PoComboOption[] = [];
   loading = false;
   loadingShowMore = false;
@@ -33,12 +30,11 @@ export class PerfisPage implements OnInit {
   hasNext = false;
   sortProperty = 'name';
   sortDirection: 'ascending' | 'descending' = 'ascending';
-  filters: { tenantId?: number; name?: string } = {};
-  formData: any = { tenantId: null, name: '', moduleIds: [] as Array<number | string> };
+  filters: { name?: string } = {};
+  formData: any = { name: '', moduleIds: [] as Array<number | string> };
 
   columns: PoTableColumn[] = [
     { property: 'id', label: 'ID', sortable: true },
-    { property: 'tenant.name', label: 'Tenant', sortable: true },
     { property: 'name', label: 'Perfil', sortable: true },
     { property: 'modulesLabel', label: 'Modulos', sortable: false },
   ];
@@ -48,7 +44,6 @@ export class PerfisPage implements OnInit {
 
   ngOnInit() { this.loadDependencies(); this.loadData(true); }
   loadDependencies() {
-    this.tenantService.findAll().subscribe((data) => { this.tenantOptions = (data || []).map((item) => ({ label: item.name, value: item.id })); });
     this.moduleService.findAll().subscribe((data) => { this.moduleOptions = (data || []).map((item) => ({ label: item.name, value: item.id })); });
   }
   loadData(reset = false) {
@@ -76,16 +71,16 @@ export class PerfisPage implements OnInit {
   applyAdvancedFilters() { this.advancedFilterModal.close(); this.loadData(true); }
   clearFilters() { this.quickSearch = ''; this.filters = {}; this.syncDisclaimers(); this.loadData(true); }
   removeDisclaimer(disclaimer: PoDisclaimer) { const property = disclaimer.property as keyof typeof this.filters | 'search'; if (property === 'search') this.quickSearch = ''; else this.filters[property] = undefined; this.syncDisclaimers(); this.loadData(true); }
-  openCreate() { this.isEdit = false; this.formData = { tenantId: this.tenantOptions[0]?.value ?? null, name: '', moduleIds: [] }; this.modal.open(); }
-  openEdit(row: any) { this.isEdit = true; this.formData = { id: row.id, tenantId: row.tenantId, name: row.name, moduleIds: (row.profileModules || []).map((pm: any) => pm.moduleId) }; this.modal.open(); }
+  openCreate() { this.isEdit = false; this.formData = { name: '', moduleIds: [] }; this.modal.open(); }
+  openEdit(row: any) { this.isEdit = true; this.formData = { id: row.id, name: row.name, moduleIds: (row.profileModules || []).map((pm: any) => pm.moduleId) }; this.modal.open(); }
   save() {
-    if (!this.formData.tenantId || !this.formData.name?.trim()) { this.poNotification.warning('Preencha tenant e nome.'); return; }
+    if (!this.formData.name?.trim()) { this.poNotification.warning('Preencha o nome do perfil.'); return; }
     this.saving = true;
-    const payload = { tenantId: Number(this.formData.tenantId), name: this.formData.name.trim(), moduleIds: (this.formData.moduleIds || []).map((value: number | string) => Number(value)) };
+    const payload = { name: this.formData.name.trim(), moduleIds: (this.formData.moduleIds || []).map((value: number | string) => Number(value)) };
     const request$ = this.isEdit ? this.service.update(this.formData.id, payload) : this.service.create(payload);
     request$.subscribe({ next: () => { this.poNotification.success(this.isEdit ? 'Perfil atualizado com sucesso.' : 'Perfil criado com sucesso.'); this.saving = false; this.loadData(true); this.modal.close(); }, error: () => { this.poNotification.error('Erro ao salvar perfil.'); this.saving = false; } });
   }
   remove(row: any) { this.service.remove(row.id).subscribe({ next: () => { this.poNotification.success('Perfil excluido com sucesso.'); this.loadData(true); }, error: () => this.poNotification.error('Erro ao excluir perfil.') }); }
-  private buildSearchParams(): ProfileSearchParams { return { page: this.page, pageSize: this.pageSize, search: this.quickSearch || undefined, tenantId: this.filters.tenantId, name: this.filters.name, sortProperty: this.sortProperty, sortDirection: this.sortDirection }; }
-  private syncDisclaimers() { const disclaimers: PoDisclaimer[] = []; if (this.quickSearch) disclaimers.push({ property: 'search', label: 'Busca', value: this.quickSearch }); if (this.filters.tenantId) disclaimers.push({ property: 'tenantId', label: 'Tenant', value: this.tenantOptions.find((item) => item.value === this.filters.tenantId)?.label || this.filters.tenantId }); if (this.filters.name) disclaimers.push({ property: 'name', label: 'Perfil', value: this.filters.name }); this.disclaimerGroup = { ...this.disclaimerGroup, disclaimers }; }
+  private buildSearchParams(): ProfileSearchParams { return { page: this.page, pageSize: this.pageSize, search: this.quickSearch || undefined, name: this.filters.name, sortProperty: this.sortProperty, sortDirection: this.sortDirection }; }
+  private syncDisclaimers() { const disclaimers: PoDisclaimer[] = []; if (this.quickSearch) disclaimers.push({ property: 'search', label: 'Busca', value: this.quickSearch }); if (this.filters.name) disclaimers.push({ property: 'name', label: 'Perfil', value: this.filters.name }); this.disclaimerGroup = { ...this.disclaimerGroup, disclaimers }; }
 }

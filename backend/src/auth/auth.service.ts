@@ -15,8 +15,6 @@ export type SessionMenuItem = {
 export type TenantAccessOption = {
   tenantId: number;
   tenantName: string;
-  profileId: number;
-  profileName: string;
   isDefault: boolean;
 };
 
@@ -31,16 +29,16 @@ export class AuthService {
     const user = await this.prisma.user.findFirst({
       where: { email: loginDto.email },
       include: {
+        profile: {
+          include: {
+            profileModules: {
+              include: { module: true },
+            },
+          },
+        },
         userTenants: {
           include: {
             tenant: true,
-            profile: {
-              include: {
-                profileModules: {
-                  include: { module: true },
-                },
-              },
-            },
           },
         },
       },
@@ -71,7 +69,7 @@ export class AuthService {
 
   async login(user: any, tenantId?: number) {
     const availableTenants = this.buildTenantOptions(user);
-    const tenantLink = this.resolveSelectedTenant(user, tenantId);
+    const tenantLink = this.resolveRequestedTenant(user, tenantId);
 
     if (!tenantLink && availableTenants.length > 1) {
       return {
@@ -85,7 +83,7 @@ export class AuthService {
       sub: user.id,
       email: user.email,
       tenantId: selectedTenant.tenantId,
-      profileId: selectedTenant.profileId,
+      profileId: user.profileId,
     };
 
     const sessionUser = await this.buildSessionUser(user, selectedTenant.tenantId);
@@ -106,7 +104,7 @@ export class AuthService {
       throw new UnauthorizedException('Usuário sem vínculo com tenant.');
     }
 
-    const modules = tenantLink.profile.profileModules
+    const modules = (user.profile?.profileModules || [])
       .filter((pm: any) => pm.canRead)
       .map((pm: any) => pm.module.key);
 
@@ -116,20 +114,78 @@ export class AuthService {
       id: user.id,
       name: user.name,
       email: user.email,
+      avatar: user.avatar || 'avatar_01.png',
+      tenantId: tenantLink.tenantId,
+      profileId: user.profileId,
       tenant: tenantLink.tenant,
-      profile: tenantLink.profile.name,
+      profile: user.profile?.name,
       modules,
       menus,
       availableTenants: this.buildTenantOptions(user),
     };
   }
 
+  async updateCurrentUser(userId: number, data: { avatar?: string; password?: string }) {
+    const payload: any = {};
+
+    if (data.avatar?.trim()) {
+      payload.avatar = data.avatar.trim();
+    }
+
+    if (data.password?.trim()) {
+      payload.password = await bcrypt.hash(data.password.trim(), 10);
+    }
+
+    if (!Object.keys(payload).length) {
+      const currentUser = await this.prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+          profile: {
+            include: {
+              profileModules: {
+                include: { module: true },
+              },
+            },
+          },
+          userTenants: {
+            include: {
+              tenant: true,
+            },
+          },
+        },
+      });
+
+      if (!currentUser) {
+        throw new UnauthorizedException('Usuário não encontrado.');
+      }
+
+      return currentUser;
+    }
+
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: payload,
+      include: {
+        profile: {
+          include: {
+            profileModules: {
+              include: { module: true },
+            },
+          },
+        },
+        userTenants: {
+          include: {
+            tenant: true,
+          },
+        },
+      },
+    });
+  }
+
   private buildTenantOptions(user: any): TenantAccessOption[] {
     return (user.userTenants || []).map((item: any) => ({
       tenantId: item.tenantId,
       tenantName: item.tenant?.name,
-      profileId: item.profileId,
-      profileName: item.profile?.name,
       isDefault: !!item.isDefault,
     }));
   }
@@ -150,6 +206,24 @@ export class AuthService {
     }
 
     return userTenants.find((item: any) => item.isDefault) ?? null;
+  }
+
+  private resolveRequestedTenant(user: any, tenantId?: number) {
+    const userTenants = user.userTenants || [];
+
+    if (tenantId) {
+      const selected = userTenants.find((item: any) => item.tenantId === Number(tenantId));
+      if (!selected) {
+        throw new UnauthorizedException('Tenant informado não está vinculado ao usuário.');
+      }
+      return selected;
+    }
+
+    if (userTenants.length === 1) {
+      return userTenants[0];
+    }
+
+    return null;
   }
 
   private async getMenusForModules(moduleKeys: string[]): Promise<SessionMenuItem[]> {

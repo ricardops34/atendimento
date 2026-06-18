@@ -6,7 +6,6 @@ interface ProfileSearchQuery {
   page?: string;
   pageSize?: string;
   search?: string;
-  tenantId?: string;
   name?: string;
   sortProperty?: string;
   sortDirection?: string;
@@ -19,7 +18,7 @@ export class ProfilesService {
   async create(data: any) {
     return this.prisma.$transaction(async (tx) => {
       const profile = await tx.profile.create({
-        data: { tenantId: Number(data.tenantId), name: data.name },
+        data: { name: data.name },
       });
       const moduleIds = Array.isArray(data.moduleIds) ? data.moduleIds.map((id) => Number(id)) : [];
       if (moduleIds.length > 0) {
@@ -34,14 +33,14 @@ export class ProfilesService {
       }
       return tx.profile.findUnique({
         where: { id: profile.id },
-        include: { tenant: true, profileModules: { include: { module: true } } },
+        include: { profileModules: { include: { module: true } } },
       });
     });
   }
 
   findAll() {
     return this.prisma.profile.findMany({
-      include: { tenant: true, profileModules: { include: { module: true } } },
+      include: { profileModules: { include: { module: true } } },
       orderBy: { name: 'asc' },
     });
   }
@@ -53,7 +52,7 @@ export class ProfilesService {
     const total = await this.prisma.profile.count({ where });
     const items = await this.prisma.profile.findMany({
       where,
-      include: { tenant: true, profileModules: { include: { module: true } } },
+      include: { profileModules: { include: { module: true } } },
       orderBy: this.buildOrderBy(query.sortProperty, query.sortDirection),
       skip: (page - 1) * pageSize,
       take: pageSize,
@@ -64,7 +63,7 @@ export class ProfilesService {
   async findOne(id: number) {
     const item = await this.prisma.profile.findUnique({
       where: { id },
-      include: { tenant: true, profileModules: { include: { module: true } } },
+      include: { profileModules: { include: { module: true } } },
     });
     if (!item) throw new NotFoundException('Perfil não encontrado.');
     return item;
@@ -76,7 +75,6 @@ export class ProfilesService {
       await tx.profile.update({
         where: { id },
         data: {
-          tenantId: data.tenantId ? Number(data.tenantId) : undefined,
           name: data.name,
         },
       });
@@ -96,7 +94,7 @@ export class ProfilesService {
       }
       return tx.profile.findUnique({
         where: { id },
-        include: { tenant: true, profileModules: { include: { module: true } } },
+        include: { profileModules: { include: { module: true } } },
       });
     });
   }
@@ -113,18 +111,15 @@ export class ProfilesService {
       andFilters.push({
         OR: [
           { name: { contains: search, mode: 'insensitive' } },
-          { tenant: { name: { contains: search, mode: 'insensitive' } } },
         ],
       });
     }
-    if (query.tenantId) andFilters.push({ tenantId: Number(query.tenantId) });
     if (query.name?.trim()) andFilters.push({ name: { contains: query.name.trim(), mode: 'insensitive' } });
     return andFilters.length > 0 ? { AND: andFilters } : {};
   }
 
   private buildOrderBy(sortProperty?: string, sortDirection?: string) {
     const direction = sortDirection === 'descending' ? 'desc' : 'asc';
-    if (sortProperty === 'tenant.name') return { tenant: { name: direction } };
     return { [sortProperty === 'id' ? 'id' : 'name']: direction };
   }
 }

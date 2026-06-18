@@ -36,12 +36,12 @@ describe('AuthService', () => {
       email: 'admin@fallback.com',
       password: await bcrypt.hash('admin123', 4),
       isActive: true,
+      profileId: 1,
+      profile: { id: 1, name: 'Administrador', profileModules: [] },
       userTenants: [
         {
           tenantId: 1,
           tenant: { id: 1, name: 'Default Tenant' },
-          profileId: 1,
-          profile: { id: 1, name: 'Administrador', profileModules: [] },
         },
       ],
     });
@@ -57,12 +57,12 @@ describe('AuthService', () => {
       email: 'admin@fallback.com',
       password: await bcrypt.hash('admin123', 4),
       isActive: true,
+      profileId: 1,
+      profile: { id: 1, name: 'Administrador', profileModules: [] },
       userTenants: [
         {
           tenantId: 1,
           tenant: { id: 1, name: 'Default Tenant' },
-          profileId: 1,
-          profile: { id: 1, name: 'Administrador', profileModules: [] },
         },
       ],
     });
@@ -77,19 +77,17 @@ describe('AuthService', () => {
       id: 1,
       email: 'admin@fallback.com',
       name: 'Admin',
+      profileId: 1,
+      profile: { id: 1, name: 'Administrador', profileModules: [] },
       userTenants: [
         {
           tenantId: 1,
           tenant: { id: 1, name: 'Default Tenant' },
-          profileId: 1,
-          profile: { id: 1, name: 'Administrador', profileModules: [] },
           isDefault: true,
         },
         {
           tenantId: 2,
           tenant: { id: 2, name: 'Filial 2' },
-          profileId: 2,
-          profile: { id: 2, name: 'Operador', profileModules: [] },
           isDefault: false,
         },
       ],
@@ -98,8 +96,8 @@ describe('AuthService', () => {
     expect(result).toEqual({
       requiresTenantSelection: true,
       tenantOptions: [
-        { tenantId: 1, tenantName: 'Default Tenant', profileId: 1, profileName: 'Administrador', isDefault: true },
-        { tenantId: 2, tenantName: 'Filial 2', profileId: 2, profileName: 'Operador', isDefault: false },
+        { tenantId: 1, tenantName: 'Default Tenant', isDefault: true },
+        { tenantId: 2, tenantName: 'Filial 2', isDefault: false },
       ],
     });
   });
@@ -114,16 +112,16 @@ describe('AuthService', () => {
       id: 1,
       email: 'admin@fallback.com',
       name: 'Admin',
+      profileId: 1,
+      profile: {
+        id: 1,
+        name: 'Administrador',
+        profileModules: [{ canRead: true, module: { key: 'settings' } }],
+      },
       userTenants: [
         {
           tenantId: 1,
           tenant: { id: 1, name: 'Default Tenant' },
-          profileId: 1,
-          profile: {
-            id: 1,
-            name: 'Administrador',
-            profileModules: [{ canRead: true, module: { key: 'settings' } }],
-          },
           isDefault: true,
         },
       ],
@@ -146,7 +144,9 @@ describe('AuthService', () => {
       },
     ]);
     expect(result.user.availableTenants).toEqual([
-      { tenantId: 1, tenantName: 'Default Tenant', profileId: 1, profileName: 'Administrador', isDefault: true },
+      { tenantId: 1, tenantName: 'Default Tenant', isDefault: true },
     ]);
+    expect(result.user.profile).toBe('Administrador');
+    expect(result.user.profileId).toBe(1);
   });
 });

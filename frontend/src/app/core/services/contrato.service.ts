@@ -8,6 +8,9 @@ export interface ContratoSearchParams {
   search?: string;
   descricao?: string;
   empresaId?: number;
+  tipo?: string;
+  dtInicio?: string;
+  dtFim?: string;
   isFeriado?: boolean;
   sortProperty?: string;
   sortDirection?: 'ascending' | 'descending';
@@ -28,6 +31,10 @@ export class ContratoService {
 
   findAll() {
     return this.http.get<any[]>(this.apiUrl);
+  }
+
+  findOne(id: number) {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 
   search(params: ContratoSearchParams) {

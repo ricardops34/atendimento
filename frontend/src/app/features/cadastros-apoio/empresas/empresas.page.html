@@ -36,7 +36,7 @@
 <po-modal p-title="Busca avançada" #advancedFilterModal>
   <div class="po-row">
     <po-number
-      class="po-md-4"
+      class="po-md-3"
       name="id"
       p-label="ID"
       [ngModel]="filters.id"
@@ -44,7 +44,7 @@
     </po-number>
 
     <po-input
-      class="po-md-8"
+      class="po-md-9"
       name="nomeFiltro"
       p-label="Empresa"
       [ngModel]="filters.nome"
@@ -58,9 +58,20 @@
   </po-modal-footer>
 </po-modal>
 
-<po-modal p-title="Empresa" #modal>
+<po-modal p-title="Empresa" #modal [p-size]="'lg'">
   <div class="po-row">
-    <po-input class="po-md-12" p-label="Nome" [ngModel]="formData.nome" (ngModelChange)="formData.nome = $event"></po-input>
+    <po-input class="po-md-8" p-label="Nome *" [ngModel]="formData.nome" (ngModelChange)="formData.nome = $event"></po-input>
+    <po-input class="po-md-4" p-label="Cor na Agenda (hex)" [ngModel]="formData.cor" (ngModelChange)="formData.cor = $event" p-placeholder="#RRGGBB"></po-input>
+  </div>
+  <div class="po-row">
+    <po-input class="po-md-12" p-label="Razão Social" [ngModel]="formData.razao" (ngModelChange)="formData.razao = $event"></po-input>
+  </div>
+  <div class="po-row">
+    <po-input class="po-md-12" p-label="Endereço" [ngModel]="formData.endereco" (ngModelChange)="formData.endereco = $event"></po-input>
+  </div>
+  <div class="po-row">
+    <po-input class="po-md-9" p-label="Cidade" [ngModel]="formData.cidade" (ngModelChange)="formData.cidade = $event"></po-input>
+    <po-input class="po-md-3" p-label="Estado (UF)" [ngModel]="formData.estado" (ngModelChange)="formData.estado = $event" [p-maxlength]="2"></po-input>
   </div>
 
   <po-modal-footer>

@@ -4,6 +4,7 @@ import { vi } from 'vitest';
 import { ProfissionaisPage } from './profissionais.page';
 import { ProfissionalService } from '../../../core/services/profissional.service';
 import { PoNotificationService } from '@po-ui/ng-components';
+import { UserService } from '../../../core/services/user.service';
 
 describe('ProfissionaisPage', () => {
   let component: ProfissionaisPage;
@@ -22,6 +23,7 @@ describe('ProfissionaisPage', () => {
       imports: [ProfissionaisPage],
       providers: [
         { provide: ProfissionalService, useValue: profissionalService },
+        { provide: UserService, useValue: { findAll: () => of([]) } },
         {
           provide: PoNotificationService,
           useValue: { success: vi.fn(), warning: vi.fn(), error: vi.fn() },
@@ -56,6 +58,9 @@ describe('ProfissionaisPage', () => {
   });
 
   it('defines sortable listing columns', () => {
-    expect(component.columns.every((column) => column.sortable === true)).toBe(true);
+    expect(component.columns.filter((column) => column.sortable === true).map((column) => column.property)).toEqual([
+      'id',
+      'nome',
+    ]);
   });
 });

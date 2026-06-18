@@ -1,33 +1,82 @@
 import { CommonModule } from '@angular/common';
 import { Component, effect, inject, signal } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter } from 'rxjs';
 import {
+  PoBreadcrumb,
+  PoBreadcrumbItem,
+  PoBreadcrumbModule,
+  PoButtonModule,
+  PoComboOption,
+  PoFieldModule,
+  PoHeaderActionTool,
+  PoHeaderModule,
   PoMenuItem,
   PoMenuModule,
+  PoModalComponent,
+  PoModalModule,
   PoPageModule,
+  PoNotificationService,
   PoToolbarAction,
-  PoToolbarModule,
-  PoToolbarProfile,
 } from '@po-ui/ng-components';
+import { ViewChild } from '@angular/core';
 import { AuthService } from './core/auth/auth.service';
 import { TenantStateService } from './core/auth/tenant-state.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, PoMenuModule, PoPageModule, PoToolbarModule, CommonModule],
+  imports: [
+    RouterOutlet,
+    PoMenuModule,
+    PoPageModule,
+    PoHeaderModule,
+    PoBreadcrumbModule,
+    PoModalModule,
+    PoFieldModule,
+    PoButtonModule,
+    CommonModule,
+    FormsModule
+  ],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App {
+  @ViewChild('switchTenantModal', { static: false }) switchTenantModal?: PoModalComponent;
+  @ViewChild('profileModal', { static: false }) profileModal?: PoModalComponent;
   private authService = inject(AuthService);
   private tenantState = inject(TenantStateService);
   private router = inject(Router);
+  private poNotification = inject(PoNotificationService);
+  private readonly breadcrumbLabels: Record<string, string> = {
+    empresas: 'Empresas',
+    profissionais: 'Profissionais',
+    contratos: 'Contratos',
+    configuracoes: 'Configuracoes',
+    tenants: 'Tenants',
+    modulos: 'Modulos',
+    rotinas: 'Rotinas',
+    perfis: 'Perfis',
+    menus: 'Menus',
+    usuarios: 'Usuarios',
+    agendamentos: 'Agendamentos',
+    lista: 'Lista de Atendimentos',
+    calendario: 'Calendario'
+  };
 
   public isAuthenticated = signal(false);
-  public profile: PoToolbarProfile = { title: '', subtitle: '' };
-  public profileActions: PoToolbarAction[] = [
-    { label: 'Sair', icon: 'an an-sign-out', action: () => this.logout() }
-  ];
+  public headerBrand = { logo: '/logo_bj.png', smallLogo: '/logo_bj.png', title: 'BJ - Atendimento', link: '/' };
+  public profileActions: PoToolbarAction[] = [];
+  public headerActionsTools: PoHeaderActionTool[] = [];
+  public headerUser: any = undefined;
+  public breadcrumb = signal<PoBreadcrumb>({ items: [] });
+  public tenantOptions: PoComboOption[] = [];
+  public selectedTenantId: number | null = null;
+  public avatarOptions: PoComboOption[] = Array.from({ length: 12 }, (_, index) => {
+    const avatar = `avatar_${String(index + 1).padStart(2, '0')}.png`;
+    return { label: avatar, value: avatar };
+  });
+  public profileForm: any = { name: '', email: '', tenantName: '', profileName: '', avatar: 'avatar_01.png', password: '', confirmPassword: '' };
   public menus = signal<PoMenuItem[]>([]);
 
   private readonly menuCatalog: Record<string, PoMenuItem> = {
@@ -70,10 +119,15 @@ export class App {
 
   constructor() {
     this.syncSessionState(this.tenantState.user());
+    this.updateBreadcrumb(this.router.url);
 
     effect(() => {
       this.syncSessionState(this.tenantState.user());
     });
+
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe((event) => this.updateBreadcrumb(event.urlAfterRedirects));
 
     if (this.authService.isAuthenticated()) {
       this.authService.me().subscribe();
@@ -115,21 +169,157 @@ export class App {
     this.isAuthenticated.set(!!user);
 
     if (user) {
-      this.profile = {
-        title: user.name,
-        subtitle: user.tenant?.name
+      const availableTenants = user.availableTenants || [];
+      this.selectedTenantId = user.tenant?.id ?? availableTenants.find((item: any) => item.isDefault)?.tenantId ?? null;
+      this.tenantOptions = availableTenants.map((item: any) => ({
+        label: item.tenantName,
+        value: item.tenantId
+      }));
+      this.profileActions = this.buildProfileActions(availableTenants);
+      this.headerActionsTools = [];
+      this.profileForm = {
+        name: user.name || '',
+        email: user.email || '',
+        tenantName: user.tenant?.name || '',
+        profileName: user.profile || '',
+        avatar: user.avatar || 'avatar_01.png',
+        password: '',
+        confirmPassword: ''
+      };
+      this.headerUser = {
+        avatar: `/avatar/${user.avatar || 'avatar_01.png'}`,
+        customerBrand: '/logo_bj.png',
+        items: this.profileActions.map((item) => ({
+          label: item.label,
+          action: item.action!
+        })),
+        status: 'positive'
       };
 
       this.menus.set(this.buildMenus(user.modules || [], user.menus || []));
       return;
     }
 
-    this.profile = { title: '', subtitle: '' };
+    this.profileActions = [];
+    this.headerActionsTools = [];
+    this.headerUser = undefined;
+    this.tenantOptions = [];
+    this.selectedTenantId = null;
     this.menus.set([]);
+    this.breadcrumb.set({ items: [] });
+  }
+
+  private buildProfileActions(availableTenants: any[]): PoToolbarAction[] {
+    const actions: PoToolbarAction[] = [];
+
+    actions.push({
+      label: 'Meu perfil',
+      icon: 'an an-user-circle',
+      action: () => this.openProfileModal()
+    });
+
+    if (availableTenants.length > 1) {
+      actions.push({
+        label: 'Trocar tenant',
+        icon: 'an an-buildings',
+        action: () => this.openSwitchTenantModal()
+      });
+    }
+
+    actions.push({
+      label: 'Sair',
+      icon: 'an an-sign-out',
+      action: () => this.logout()
+    });
+
+    return actions;
+  }
+
+  openProfileModal() {
+    this.profileModal?.open();
+  }
+
+  openSwitchTenantModal() {
+    this.switchTenantModal?.open();
+  }
+
+  confirmSwitchTenant() {
+    if (!this.selectedTenantId) {
+      return;
+    }
+
+    this.authService.switchTenant(this.selectedTenantId).subscribe({
+      next: () => this.switchTenantModal?.close(),
+    });
+  }
+
+  saveProfile() {
+    if (this.profileForm.password || this.profileForm.confirmPassword) {
+      if (this.profileForm.password !== this.profileForm.confirmPassword) {
+        this.poNotification.warning('A confirmação da senha está diferente.');
+        return;
+      }
+    }
+
+    const payload: any = {
+      avatar: this.profileForm.avatar,
+    };
+
+    if (this.profileForm.password?.trim()) {
+      payload.password = this.profileForm.password.trim();
+    }
+
+    this.authService.updateProfile(payload).subscribe({
+      next: () => {
+        this.poNotification.success('Perfil atualizado com sucesso.');
+        this.profileForm.password = '';
+        this.profileForm.confirmPassword = '';
+        this.profileModal?.close();
+      },
+      error: () => this.poNotification.error('Erro ao atualizar perfil.')
+    });
   }
 
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
+  }
+
+  private updateBreadcrumb(url: string) {
+    if (!this.authService.isAuthenticated()) {
+      this.breadcrumb.set({ items: [] });
+      return;
+    }
+
+    const path = url.split('?')[0].split('#')[0];
+    const segments = path.split('/').filter(Boolean);
+    const items: PoBreadcrumbItem[] = [{ label: 'Inicio', link: '/agendamentos/lista' }];
+    let currentPath = '';
+
+    for (const segment of segments) {
+      if (segment === 'login') {
+        continue;
+      }
+
+      currentPath += `/${segment}`;
+      items.push({
+        label: this.breadcrumbLabels[segment] || this.toLabel(segment),
+        link: currentPath
+      });
+    }
+
+    if (items.length > 1) {
+      delete items[items.length - 1].link;
+    }
+
+    this.breadcrumb.set({ items });
+  }
+
+  private toLabel(value: string) {
+    return value
+      .split('-')
+      .filter(Boolean)
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
   }
 }

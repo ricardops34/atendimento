@@ -18,7 +18,6 @@ model Tenant {
   slug           String         @unique @db.VarChar(255)
   
   userTenants    UserTenant[]
-  profiles       Profile[]
   empresas       Empresa[]
   profissionais  Profissional[]
   contratos      Contrato[]
@@ -31,23 +30,25 @@ model User {
   id             Int            @id @default(autoincrement())
   name           String         @db.VarChar(255)
   email          String         @unique @db.VarChar(255)
+  profileId      Int            @map("profile_id")
+  profile        Profile        @relation(fields: [profileId], references: [id], onDelete: Restrict)
+  avatar         String         @default("avatar_01.png") @db.VarChar(100)
   password       String         @db.VarChar(255)
   isActive       Boolean        @default(true) @map("is_active")
   userTenants    UserTenant[]
+  profissionais  Profissional[]
 
   @@map("users")
 }
 
 model Profile {
   id             Int            @id @default(autoincrement())
-  tenantId       Int            @map("tenant_id")
-  tenant         Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   name           String         @db.VarChar(255)
   
   profileModules ProfileModule[]
-  userTenants    UserTenant[]
+  users          User[]
 
-  @@unique([tenantId, name])
+  @@unique([name])
   @@map("profiles")
 }
 
@@ -57,8 +58,6 @@ model UserTenant {
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   tenantId   Int      @map("tenant_id")
   tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  profileId  Int      @map("profile_id")
-  profile    Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
   isDefault  Boolean  @default(false) @map("is_default")
 
   @@unique([userId, tenantId])
@@ -135,6 +134,11 @@ model Empresa {
   tenantId  Int        @map("tenant_id")
   tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   nome      String     @db.VarChar(255)
+  razao     String?    @db.VarChar(255)
+  cor       String?    @db.VarChar(7)      // cor padrão na agenda (hex)
+  endereco  String?    @db.VarChar(500)
+  cidade    String?    @db.VarChar(255)
+  estado    String?    @db.VarChar(2)
   contratos Contrato[]
 
   @@map("empresa")
@@ -142,30 +146,51 @@ model Empresa {
 
 /// Representa o profissional executor (Cadastros de Apoio)
 model Profissional {
-  id           Int            @id @default(autoincrement())
-  tenantId     Int            @map("tenant_id")
-  tenant       Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  nome         String         @db.VarChar(255)
-  agendamentos Agendamento[]
-  escalas      ContratoItem[]
+  id               Int                    @id @default(autoincrement())
+  tenantId         Int                    @map("tenant_id")
+  tenant           Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId           Int?                   @map("user_id")
+  user             User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  nome             String                 @db.VarChar(255)
+  agendamentos     Agendamento[]
+  escalas          ContratoItem[]
+  contratos        ContratoProfissional[]
 
   @@map("profissional")
 }
 
 /// Representa o contrato de serviço (Cadastros de Apoio)
 model Contrato {
-  id           Int            @id @default(autoincrement())
-  tenantId     Int            @map("tenant_id")
-  tenant       Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  empresaId    Int            @map("empresa_id")
-  empresa      Empresa        @relation(fields: [empresaId], references: [id], onDelete: Restrict)
-  descricao    String         @db.VarChar(255)
-  cor          String         @default("#333333") @db.VarChar(7)
-  isFeriado    Boolean        @default(false) @map("is_feriado") // Flag para identificar dinamicamente o contrato de feriados
-  agendamentos Agendamento[]
-  escalas      ContratoItem[]
+  id             Int                    @id @default(autoincrement())
+  tenantId       Int                    @map("tenant_id")
+  tenant         Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  empresaId      Int                    @map("empresa_id")
+  empresa        Empresa                @relation(fields: [empresaId], references: [id], onDelete: Restrict)
+  descricao      String                 @db.VarChar(255)
+  cor            String                 @default("#333333") @db.VarChar(7)
+  dtInicio       DateTime               @map("dt_inicio") @db.Date
+  dtFim          DateTime               @map("dt_fim") @db.Date
+  tipo           String                 @db.VarChar(1)   // F (Fixo), H (Hora)
+  valorHora      Decimal?               @map("valor_hora") @db.Decimal(10, 2)
+  valorFixo      Decimal?               @map("valor_fixo") @db.Decimal(10, 2)
+  isFeriado      Boolean                @default(false) @map("is_feriado") // Flag para identificar dinamicamente o contrato de feriados
+  agendamentos   Agendamento[]
+  escalas        ContratoItem[]
+  profissionais  ContratoProfissional[]
 
   @@map("contrato")
+}
+
+/// Pivô many-to-many entre Contrato e Profissional (escala contratual de profissionais habilitados)
+model ContratoProfissional {
+  id             Int          @id @default(autoincrement())
+  contratoId     Int          @map("contrato_id")
+  contrato       Contrato     @relation(fields: [contratoId], references: [id], onDelete: Cascade)
+  profissionalId Int          @map("profissional_id")
+  profissional   Profissional @relation(fields: [profissionalId], references: [id], onDelete: Cascade)
+
+  @@unique([contratoId, profissionalId])
+  @@map("contrato_profissional")
 }
 
 /// Representa a escala semanal recorrente do profissional no contrato (Cadastros de Apoio)

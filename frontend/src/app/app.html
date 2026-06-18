@@ -1,9 +1,11 @@
 <div class="po-wrapper" *ngIf="isAuthenticated()">
-  <po-toolbar 
-    p-title="Sistema de Atendimento"
-    [p-profile]="profile"
-    [p-profile-actions]="profileActions">
-  </po-toolbar>
+  <po-header
+    [p-brand]="headerBrand"
+    [p-actions-tools]="headerActionsTools"
+    [p-header-user]="headerUser">
+  </po-header>
+
+  <po-breadcrumb [p-items]="breadcrumb().items"></po-breadcrumb>
 
   <po-menu  
     [p-collapsed]="true" 
@@ -12,6 +14,47 @@
     [p-menus]="menus()"></po-menu>
 
   <router-outlet></router-outlet>
+
+  <po-modal p-title="Trocar tenant" #switchTenantModal>
+    <div class="po-row">
+      <po-combo
+        class="po-md-12"
+        p-label="Tenant"
+        [p-options]="tenantOptions"
+        [ngModel]="selectedTenantId"
+        (ngModelChange)="selectedTenantId = $event">
+      </po-combo>
+    </div>
+    <po-modal-footer>
+      <po-button p-label="Confirmar" p-kind="primary" (p-click)="confirmSwitchTenant()"></po-button>
+    </po-modal-footer>
+  </po-modal>
+
+  <po-modal p-title="Meu perfil" #profileModal>
+    <div class="po-row">
+      <div class="po-md-12" style="text-align: center; margin-bottom: 16px;">
+        <img [src]="'/avatar/' + profileForm.avatar" alt="Avatar" style="width: 96px; height: 96px; border-radius: 50%;">
+      </div>
+    </div>
+    <div class="po-row">
+      <po-input class="po-md-6" p-label="Usuario" [ngModel]="profileForm.name" p-readonly="true"></po-input>
+      <po-email class="po-md-6" p-label="Email" [ngModel]="profileForm.email" p-readonly="true"></po-email>
+    </div>
+    <div class="po-row">
+      <po-input class="po-md-6" p-label="Tenant" [ngModel]="profileForm.tenantName" p-readonly="true"></po-input>
+      <po-input class="po-md-6" p-label="Perfil" [ngModel]="profileForm.profileName" p-readonly="true"></po-input>
+    </div>
+    <div class="po-row">
+      <po-combo class="po-md-12" p-label="Avatar" [p-options]="avatarOptions" [ngModel]="profileForm.avatar" (ngModelChange)="profileForm.avatar = $event"></po-combo>
+    </div>
+    <div class="po-row">
+      <po-password class="po-md-6" p-label="Nova senha" [ngModel]="profileForm.password" (ngModelChange)="profileForm.password = $event"></po-password>
+      <po-password class="po-md-6" p-label="Confirmar senha" [ngModel]="profileForm.confirmPassword" (ngModelChange)="profileForm.confirmPassword = $event"></po-password>
+    </div>
+    <po-modal-footer>
+      <po-button p-label="Salvar" p-kind="primary" (p-click)="saveProfile()"></po-button>
+    </po-modal-footer>
+  </po-modal>
 </div>
 
 <div *ngIf="!isAuthenticated()">

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateEmpresaDto } from './dto/create-empresa.dto';
@@ -18,14 +17,14 @@ interface EmpresaSearchQuery {
 export class EmpresasService {
   constructor(private prisma: PrismaService) {}
 
-  create(createEmpresaDto: CreateEmpresaDto) {
+  create(dto: CreateEmpresaDto) {
     return this.prisma.empresa.create({
-      data: createEmpresaDto as any,
+      data: { ...dto, tenantId: 1 },
     });
   }
 
   findAll() {
-    return this.prisma.empresa.findMany();
+    return this.prisma.empresa.findMany({ orderBy: { nome: 'asc' } });
   }
 
   async search(query: EmpresaSearchQuery) {
@@ -49,12 +48,9 @@ export class EmpresasService {
     return empresa;
   }
 
-  async update(id: number, updateEmpresaDto: UpdateEmpresaDto) {
+  async update(id: number, dto: UpdateEmpresaDto) {
     await this.findOne(id);
-    return this.prisma.empresa.update({
-      where: { id },
-      data: updateEmpresaDto,
-    });
+    return this.prisma.empresa.update({ where: { id }, data: dto });
   }
 
   async remove(id: number) {
@@ -66,15 +62,9 @@ export class EmpresasService {
     if (query.id) {
       return { id: Number(query.id) };
     }
-
     const nome = query.nome?.trim() || query.search?.trim();
-    if (!nome) {
-      return {};
-    }
-
-    return {
-      nome: { contains: nome, mode: 'insensitive' },
-    };
+    if (!nome) return {};
+    return { nome: { contains: nome, mode: 'insensitive' as const } };
   }
 
   private buildOrderBy(sortProperty?: string, sortDirection?: string) {

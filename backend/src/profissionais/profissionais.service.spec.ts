@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ProfissionaisService } from './profissionais.service';
 import { PrismaService } from '../prisma/prisma.service';
 
+const userSelect = { select: { id: true, name: true } };
+
 describe('ProfissionaisService', () => {
   let service: ProfissionaisService;
   let prisma: {
@@ -40,7 +42,7 @@ describe('ProfissionaisService', () => {
 
   it('returns paginated professionals with search and ordering', async () => {
     prisma.profissional.count.mockResolvedValue(25);
-    prisma.profissional.findMany.mockResolvedValue([{ id: 1, nome: 'Ana' }]);
+    prisma.profissional.findMany.mockResolvedValue([{ id: 1, nome: 'Ana', user: null }]);
 
     const result = await service.search({
       page: '1',
@@ -51,20 +53,17 @@ describe('ProfissionaisService', () => {
     });
 
     expect(prisma.profissional.count).toHaveBeenCalledWith({
-      where: {
-        nome: { contains: 'ana', mode: 'insensitive' },
-      },
+      where: { nome: { contains: 'ana', mode: 'insensitive' } },
     });
     expect(prisma.profissional.findMany).toHaveBeenCalledWith({
-      where: {
-        nome: { contains: 'ana', mode: 'insensitive' },
-      },
+      where: { nome: { contains: 'ana', mode: 'insensitive' } },
+      include: { user: userSelect },
       orderBy: { nome: 'asc' },
       skip: 0,
       take: 20,
     });
     expect(result).toEqual({
-      items: [{ id: 1, nome: 'Ana' }],
+      items: [{ id: 1, nome: 'Ana', user: null }],
       page: 1,
       pageSize: 20,
       total: 25,
