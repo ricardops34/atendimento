@@ -22,6 +22,41 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./features/cadastros-apoio/contratos/contratos.page').then((m) => m.ContratosPage),
   },
+  {
+    path: 'configuracoes',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/configuracoes.page').then((m) => m.ConfiguracoesPage),
+  },
+  {
+    path: 'configuracoes/tenants',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/tenants/tenants.page').then((m) => m.TenantsPage),
+  },
+  {
+    path: 'configuracoes/modulos',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/modulos/modulos.page').then((m) => m.ModulosPage),
+  },
+  {
+    path: 'configuracoes/rotinas',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/rotinas/rotinas.page').then((m) => m.RotinasPage),
+  },
+  {
+    path: 'configuracoes/perfis',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/perfis/perfis.page').then((m) => m.PerfisPage),
+  },
+  {
+    path: 'configuracoes/menus',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/menus/menus.page').then((m) => m.MenusPage),
+  },
+  {
+    path: 'configuracoes/usuarios',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/usuarios/usuarios.page').then((m) => m.UsuariosPage),
+  },
   { 
     path: 'agendamentos/lista', 
     canActivate: [authGuard],

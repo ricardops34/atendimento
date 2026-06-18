@@ -7,12 +7,15 @@ import { PrismaService } from '../prisma/prisma.service';
 
 describe('AuthService', () => {
   let service: AuthService;
-  let prisma: { user: { findFirst: jest.Mock } };
+  let prisma: { user: { findFirst: jest.Mock }, menu: { findMany: jest.Mock } };
 
   beforeEach(async () => {
     prisma = {
       user: {
         findFirst: jest.fn(),
+      },
+      menu: {
+        findMany: jest.fn(),
       },
     };
 
@@ -59,5 +62,43 @@ describe('AuthService', () => {
     await expect(
       service.validateUser({ email: 'admin@fallback.com', password: 'errada' }),
     ).rejects.toBeInstanceOf(UnauthorizedException);
+  });
+
+  it('returns menu tree based on registered menus for allowed modules', async () => {
+    prisma.menu.findMany.mockResolvedValue([
+      { id: 10, parentId: null, label: 'Configuracoes', shortLabel: 'CFG', icon: 'an an-gear', link: null },
+      { id: 11, parentId: 10, label: 'Usuarios', shortLabel: 'USR', icon: 'an an-users-three', link: '/configuracoes/usuarios' },
+    ]);
+
+    const result = await service.login({
+      id: 1,
+      tenantId: 1,
+      profileId: 1,
+      email: 'admin@fallback.com',
+      name: 'Admin',
+      tenant: { id: 1, name: 'Default Tenant' },
+      profile: {
+        id: 1,
+        name: 'Administrador',
+        profileModules: [{ canRead: true, module: { key: 'settings' } }],
+      },
+    } as any);
+
+    expect(prisma.menu.findMany).toHaveBeenCalled();
+    expect(result.user.menus).toEqual([
+      {
+        label: 'Configuracoes',
+        shortLabel: 'CFG',
+        icon: 'an an-gear',
+        subItems: [
+          {
+            label: 'Usuarios',
+            shortLabel: 'USR',
+            icon: 'an an-users-three',
+            link: '/configuracoes/usuarios',
+          },
+        ],
+      },
+    ]);
   });
 });

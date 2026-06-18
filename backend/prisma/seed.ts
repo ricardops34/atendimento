@@ -71,6 +71,160 @@ async function main() {
     });
   }
 
+  const allRoutines = await prisma.routine.findMany({
+    include: { module: true },
+    orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
+  });
+
+  const ensureMenu = async (key: string, data: any) => {
+    const existing = await prisma.menu.findFirst({
+      where: {
+        OR: [
+          data.routineId ? { routineId: data.routineId } : undefined,
+          { link: key },
+          { label: key },
+        ].filter(Boolean) as any,
+      },
+    });
+
+    if (existing) {
+      return prisma.menu.update({
+        where: { id: existing.id },
+        data,
+      });
+    }
+
+    return prisma.menu.create({ data });
+  };
+
+  const companiesRoutine = allRoutines.find((item) => item.key === 'companies-list');
+  const professionalsRoutine = allRoutines.find((item) => item.key === 'professionals-list');
+  const contractsRoutine = allRoutines.find((item) => item.key === 'contracts-list');
+  const appointmentsListRoutine = allRoutines.find((item) => item.key === 'appointments-list');
+  const appointmentsCalendarRoutine = allRoutines.find((item) => item.key === 'appointments-calendar');
+  const settingsHomeRoutine = allRoutines.find((item) => item.key === 'settings-home');
+  const settingsTenantsRoutine = allRoutines.find((item) => item.key === 'settings-tenants');
+  const settingsModulesRoutine = allRoutines.find((item) => item.key === 'settings-modules');
+  const settingsRoutinesRoutine = allRoutines.find((item) => item.key === 'settings-routines');
+  const settingsProfilesRoutine = allRoutines.find((item) => item.key === 'settings-profiles');
+  const settingsMenusRoutine = allRoutines.find((item) => item.key === 'settings-menus');
+  const settingsUsersRoutine = allRoutines.find((item) => item.key === 'settings-users');
+
+  await ensureMenu('/', {
+    label: 'Inicio',
+    shortLabel: 'INI',
+    icon: 'an an-house',
+    link: '/',
+    sortOrder: 1,
+    isActive: true,
+  });
+
+  if (companiesRoutine) {
+    await ensureMenu(companiesRoutine.path, {
+      moduleId: companiesRoutine.moduleId,
+      routineId: companiesRoutine.id,
+      label: companiesRoutine.name,
+      shortLabel: companiesRoutine.shortLabel,
+      icon: companiesRoutine.icon,
+      link: companiesRoutine.path,
+      sortOrder: companiesRoutine.sortOrder,
+      isActive: true,
+    });
+  }
+
+  if (professionalsRoutine) {
+    await ensureMenu(professionalsRoutine.path, {
+      moduleId: professionalsRoutine.moduleId,
+      routineId: professionalsRoutine.id,
+      label: professionalsRoutine.name,
+      shortLabel: professionalsRoutine.shortLabel,
+      icon: professionalsRoutine.icon,
+      link: professionalsRoutine.path,
+      sortOrder: professionalsRoutine.sortOrder,
+      isActive: true,
+    });
+  }
+
+  if (contractsRoutine) {
+    await ensureMenu(contractsRoutine.path, {
+      moduleId: contractsRoutine.moduleId,
+      routineId: contractsRoutine.id,
+      label: contractsRoutine.name,
+      shortLabel: contractsRoutine.shortLabel,
+      icon: contractsRoutine.icon,
+      link: contractsRoutine.path,
+      sortOrder: contractsRoutine.sortOrder,
+      isActive: true,
+    });
+  }
+
+  if (appointmentsListRoutine) {
+    await ensureMenu(appointmentsListRoutine.path, {
+      moduleId: appointmentsListRoutine.moduleId,
+      routineId: appointmentsListRoutine.id,
+      label: appointmentsListRoutine.name,
+      shortLabel: appointmentsListRoutine.shortLabel,
+      icon: appointmentsListRoutine.icon,
+      link: appointmentsListRoutine.path,
+      sortOrder: appointmentsListRoutine.sortOrder,
+      isActive: true,
+    });
+  }
+
+  if (appointmentsCalendarRoutine) {
+    await ensureMenu(appointmentsCalendarRoutine.path, {
+      moduleId: appointmentsCalendarRoutine.moduleId,
+      routineId: appointmentsCalendarRoutine.id,
+      label: appointmentsCalendarRoutine.name,
+      shortLabel: appointmentsCalendarRoutine.shortLabel,
+      icon: appointmentsCalendarRoutine.icon,
+      link: appointmentsCalendarRoutine.path,
+      sortOrder: appointmentsCalendarRoutine.sortOrder,
+      isActive: true,
+    });
+  }
+
+  let settingsMenuId: number | null = null;
+
+  if (settingsHomeRoutine) {
+    const settingsMenu = await ensureMenu(settingsHomeRoutine.path, {
+      moduleId: settingsHomeRoutine.moduleId,
+      routineId: settingsHomeRoutine.id,
+      label: settingsHomeRoutine.name,
+      shortLabel: settingsHomeRoutine.shortLabel,
+      icon: settingsHomeRoutine.icon,
+      link: null,
+      sortOrder: settingsHomeRoutine.sortOrder,
+      isActive: true,
+    });
+    settingsMenuId = settingsMenu.id;
+  }
+
+  for (const routine of [
+    settingsTenantsRoutine,
+    settingsModulesRoutine,
+    settingsRoutinesRoutine,
+    settingsProfilesRoutine,
+    settingsMenusRoutine,
+    settingsUsersRoutine,
+  ]) {
+    if (!routine) {
+      continue;
+    }
+
+    await ensureMenu(routine.path, {
+      moduleId: routine.moduleId,
+      routineId: routine.id,
+      parentId: settingsMenuId,
+      label: routine.name,
+      shortLabel: routine.shortLabel,
+      icon: routine.icon,
+      link: routine.path,
+      sortOrder: routine.sortOrder,
+      isActive: true,
+    });
+  }
+
   // 2. Tenant Default
   const tenant = await prisma.tenant.upsert({
     where: { slug: 'default' },

@@ -38,17 +38,6 @@ export class AuthController {
       return null;
     }
 
-    const modules = user.profile.profileModules
-      .filter((pm) => pm.canRead)
-      .map((pm) => pm.module.key);
-
-    return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      tenant: user.tenant,
-      profile: user.profile.name,
-      modules,
-    };
+    return this.authService.buildSessionUser(user);
   }
 }

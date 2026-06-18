@@ -29,7 +29,7 @@ async function bootstrap() {
     const tenantId = defaultTenant.id;
 
     // 2. Setup Modules and Admin Profile
-    const modules = ['dashboard', 'companies', 'professionals', 'contracts', 'appointments-calendar', 'appointments-list'];
+    const modules = ['dashboard', 'companies', 'professionals', 'contracts', 'appointments-calendar', 'appointments-list', 'settings'];
     for (const key of modules) {
       await prisma.module.upsert({
         where: { key },

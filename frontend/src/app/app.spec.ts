@@ -104,6 +104,14 @@ describe('App', () => {
             name: 'Administrador',
             tenant: { name: 'Tenant Demo' },
             modules: ['appointments-list'],
+            menus: [
+              {
+                label: 'Lista de Atendimentos',
+                shortLabel: 'LST',
+                icon: 'an an-list-dashes',
+                link: '/agendamentos/lista'
+              }
+            ]
           }),
         },
         {
@@ -119,5 +127,67 @@ describe('App', () => {
 
     expect(fixture.nativeElement.querySelector('po-menu')).toBeTruthy();
     expect(fixture.nativeElement.querySelector('po-page-default')).toBeNull();
+  });
+
+  it('prefers menu items returned by session over the static catalog', async () => {
+    TestBed.resetTestingModule();
+
+    await TestBed.configureTestingModule({
+      imports: [App],
+      providers: [
+        {
+          provide: AuthService,
+          useValue: {
+            isAuthenticated: () => false,
+            me: () => of(null),
+            logout: vi.fn(),
+          },
+        },
+        {
+          provide: TenantStateService,
+          useValue: createTenantState({
+            name: 'Administrador',
+            tenant: { name: 'Tenant Demo' },
+            modules: ['settings'],
+            menus: [
+              {
+                label: 'Configuracoes',
+                shortLabel: 'CFG',
+                icon: 'an an-gear',
+                subItems: [
+                  {
+                    label: 'Usuarios',
+                    shortLabel: 'USR',
+                    icon: 'an an-users-three',
+                    link: '/configuracoes/usuarios'
+                  }
+                ]
+              }
+            ]
+          }),
+        },
+        {
+          provide: Router,
+          useValue: createRouter(),
+        },
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(App);
+    const menus = fixture.componentInstance.menus();
+
+    expect(menus[1]).toEqual({
+      label: 'Configuracoes',
+      shortLabel: 'CFG',
+      icon: 'an an-gear',
+      subItems: [
+        {
+          label: 'Usuarios',
+          shortLabel: 'USR',
+          icon: 'an an-users-three',
+          link: '/configuracoes/usuarios'
+        }
+      ]
+    });
   });
 });

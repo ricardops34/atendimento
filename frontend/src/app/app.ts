@@ -47,6 +47,19 @@ export class App {
       icon: 'an an-calendar-blank',
       link: '/agendamentos/calendario'
     },
+    settings: {
+      label: 'Configuracoes',
+      shortLabel: 'CFG',
+      icon: 'an an-gear',
+      subItems: [
+        { label: 'Tenants', shortLabel: 'TEN', icon: 'an an-buildings', link: '/configuracoes/tenants' },
+        { label: 'Modulos', shortLabel: 'MOD', icon: 'an an-squares-four', link: '/configuracoes/modulos' },
+        { label: 'Rotinas', shortLabel: 'ROT', icon: 'an an-list-checks', link: '/configuracoes/rotinas' },
+        { label: 'Perfis', shortLabel: 'PRF', icon: 'an an-identification-card', link: '/configuracoes/perfis' },
+        { label: 'Menus', shortLabel: 'MNU', icon: 'an an-tree-structure', link: '/configuracoes/menus' },
+        { label: 'Usuarios', shortLabel: 'USR', icon: 'an an-users-three', link: '/configuracoes/usuarios' }
+      ]
+    },
     logout: {
       label: 'Sair',
       shortLabel: 'SAI',
@@ -56,18 +69,10 @@ export class App {
   };
 
   constructor() {
+    this.syncSessionState(this.tenantState.user());
+
     effect(() => {
-      const user = this.tenantState.user();
-      this.isAuthenticated.set(!!user);
-
-      if (user) {
-        this.profile = {
-          title: user.name,
-          subtitle: user.tenant?.name
-        };
-
-        this.menus.set(this.buildMenus(user.modules || []));
-      }
+      this.syncSessionState(this.tenantState.user());
     });
 
     if (this.authService.isAuthenticated()) {
@@ -75,20 +80,50 @@ export class App {
     }
   }
 
-  buildMenus(allowedModules: string[]): PoMenuItem[] {
+  buildMenus(allowedModules: string[], dynamicMenus: PoMenuItem[] = []): PoMenuItem[] {
     const menus: PoMenuItem[] = [{ ...this.menuCatalog['home'] }];
 
-    for (const moduleKey of allowedModules) {
-      const menuItem = this.menuCatalog[moduleKey];
+    const normalizedDynamicMenus = this.cloneMenus(dynamicMenus);
 
-      if (menuItem) {
-        menus.push({ ...menuItem });
+    if (normalizedDynamicMenus.length > 0) {
+      menus.push(...normalizedDynamicMenus);
+    } else {
+      for (const moduleKey of allowedModules) {
+        const menuItem = this.menuCatalog[moduleKey];
+
+        if (menuItem) {
+          menus.push({ ...menuItem });
+        }
       }
     }
 
     menus.push({ ...this.menuCatalog['logout'] });
 
     return menus;
+  }
+
+  private cloneMenus(items: PoMenuItem[]): PoMenuItem[] {
+    return items.map((item) => ({
+      ...item,
+      subItems: item.subItems ? this.cloneMenus(item.subItems) : undefined
+    }));
+  }
+
+  private syncSessionState(user: any) {
+    this.isAuthenticated.set(!!user);
+
+    if (user) {
+      this.profile = {
+        title: user.name,
+        subtitle: user.tenant?.name
+      };
+
+      this.menus.set(this.buildMenus(user.modules || [], user.menus || []));
+      return;
+    }
+
+    this.profile = { title: '', subtitle: '' };
+    this.menus.set([]);
   }
 
   logout() {

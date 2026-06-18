@@ -15,3 +15,5 @@
 - Itens do `po-menu` devem ter `icon`.
 - Itens do `po-menu` devem ter `shortLabel`.
 - O menu lateral deve expor uma opcao explicita de `Sair`/logoff.
+- O menu lateral deve ser carregado dinamicamente a partir do cadastro de `menus`, respeitando os modulos liberados no perfil do usuario.
+- A manutencao do menu deve ocorrer nas rotinas administrativas de `Modulos`, `Rotinas`, `Menus`, `Perfis`, `Tenants` e `Usuarios`.
