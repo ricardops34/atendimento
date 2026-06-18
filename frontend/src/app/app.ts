@@ -81,13 +81,14 @@ export class App {
   }
 
   buildMenus(allowedModules: string[], dynamicMenus: PoMenuItem[] = []): PoMenuItem[] {
-    const menus: PoMenuItem[] = [{ ...this.menuCatalog['home'] }];
-
     const normalizedDynamicMenus = this.cloneMenus(dynamicMenus);
+    const menus: PoMenuItem[] = [];
 
     if (normalizedDynamicMenus.length > 0) {
       menus.push(...normalizedDynamicMenus);
     } else {
+      menus.push({ ...this.menuCatalog['home'] });
+
       for (const moduleKey of allowedModules) {
         const menuItem = this.menuCatalog[moduleKey];
 
@@ -105,6 +106,7 @@ export class App {
   private cloneMenus(items: PoMenuItem[]): PoMenuItem[] {
     return items.map((item) => ({
       ...item,
+      action: item.action,
       subItems: item.subItems ? this.cloneMenus(item.subItems) : undefined
     }));
   }

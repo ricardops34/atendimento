@@ -17,7 +17,7 @@ model Tenant {
   name           String         @db.VarChar(255)
   slug           String         @unique @db.VarChar(255)
   
-  users          User[]
+  userTenants    UserTenant[]
   profiles       Profile[]
   empresas       Empresa[]
   profissionais  Profissional[]
@@ -29,16 +29,12 @@ model Tenant {
 
 model User {
   id             Int            @id @default(autoincrement())
-  tenantId       Int            @map("tenant_id")
-  tenant         Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  profileId      Int            @map("profile_id")
-  profile        Profile        @relation(fields: [profileId], references: [id], onDelete: Restrict)
   name           String         @db.VarChar(255)
-  email          String         @db.VarChar(255)
+  email          String         @unique @db.VarChar(255)
   password       String         @db.VarChar(255)
   isActive       Boolean        @default(true) @map("is_active")
+  userTenants    UserTenant[]
 
-  @@unique([tenantId, email])
   @@map("users")
 }
 
@@ -48,11 +44,25 @@ model Profile {
   tenant         Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   name           String         @db.VarChar(255)
   
-  users          User[]
   profileModules ProfileModule[]
+  userTenants    UserTenant[]
 
   @@unique([tenantId, name])
   @@map("profiles")
+}
+
+model UserTenant {
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenantId   Int      @map("tenant_id")
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  profileId  Int      @map("profile_id")
+  profile    Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  isDefault  Boolean  @default(false) @map("is_default")
+
+  @@unique([userId, tenantId])
+  @@map("user_tenants")
 }
 
 model Module {

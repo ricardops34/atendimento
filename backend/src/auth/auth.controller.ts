@@ -14,20 +14,24 @@ export class AuthController {
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     const user = await this.authService.validateUser(loginDto);
-    return this.authService.login(user);
+    return this.authService.login(user, loginDto.tenantId);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('me')
-  async getProfile(@Request() req: any) {
+  @Post('switch-tenant')
+  async switchTenant(@Request() req: any, @Body() body: { tenantId: number }) {
     const user = await this.prisma.user.findUnique({
       where: { id: req.user.userId },
       include: {
-        tenant: true,
-        profile: {
+        userTenants: {
           include: {
-            profileModules: {
-              include: { module: true },
+            tenant: true,
+            profile: {
+              include: {
+                profileModules: {
+                  include: { module: true },
+                },
+              },
             },
           },
         },
@@ -38,6 +42,34 @@ export class AuthController {
       return null;
     }
 
-    return this.authService.buildSessionUser(user);
+    return this.authService.login(user, Number(body.tenantId));
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me')
+  async getProfile(@Request() req: any) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: req.user.userId },
+      include: {
+        userTenants: {
+          include: {
+            tenant: true,
+            profile: {
+              include: {
+                profileModules: {
+                  include: { module: true },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      return null;
+    }
+
+    return this.authService.buildSessionUser(user, req.user.tenantId);
   }
 }

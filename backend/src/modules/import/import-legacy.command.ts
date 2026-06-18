@@ -55,12 +55,10 @@ async function bootstrap() {
     }
 
     // 3. Fallback Admin User
-    let adminUser = await prisma.user.findFirst({ where: { tenantId, email: 'admin@fallback.com' } });
+    let adminUser = await prisma.user.findUnique({ where: { email: 'admin@fallback.com' } });
     if (!adminUser) {
       adminUser = await prisma.user.create({
         data: {
-          tenantId,
-          profileId: adminProfile.id,
           name: 'Administrador (Fallback)',
           email: 'admin@fallback.com',
           password: 'hashed_password_placeholder', // Should be hashed with bcrypt in real app
@@ -69,6 +67,25 @@ async function bootstrap() {
       });
       console.log('Created fallback admin user.');
     }
+
+    await prisma.userTenant.upsert({
+      where: {
+        userId_tenantId: {
+          userId: adminUser.id,
+          tenantId,
+        },
+      },
+      update: {
+        profileId: adminProfile.id,
+        isDefault: true,
+      },
+      create: {
+        userId: adminUser.id,
+        tenantId,
+        profileId: adminProfile.id,
+        isDefault: true,
+      },
+    });
 
     // 4. Import Empresas
     console.log('Importing Empresas...');

@@ -48,7 +48,7 @@ export class MenusPage implements OnInit {
   ];
 
   disclaimerGroup: PoDisclaimerGroup = { title: 'Filtros aplicados', disclaimers: [], remove: (d: PoDisclaimer) => this.removeDisclaimer(d), removeAll: () => this.clearFilters() };
-  actions: PoTableAction[] = [{ label: 'Editar', icon: 'po-icon-edit', action: (row: any) => this.openEdit(row) }, { label: 'Excluir', icon: 'po-icon-delete', action: (row: any) => this.remove(row) }];
+  actions: PoTableAction[] = [{ label: 'Editar', icon: 'an an-pencil-simple', action: (row: any) => this.openEdit(row) }, { label: 'Excluir', icon: 'an an-trash', action: (row: any) => this.remove(row) }];
 
   ngOnInit() { this.loadDependencies(); this.loadData(true); }
   loadDependencies() {

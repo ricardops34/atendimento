@@ -149,6 +149,10 @@ describe('App', () => {
             name: 'Administrador',
             tenant: { name: 'Tenant Demo' },
             modules: ['settings'],
+            availableTenants: [
+              { tenantId: 1, tenantName: 'Tenant Demo', profileId: 1, profileName: 'Administrador', isDefault: true },
+              { tenantId: 2, tenantName: 'Tenant 2', profileId: 2, profileName: 'Operador', isDefault: false }
+            ],
             menus: [
               {
                 label: 'Configuracoes',
@@ -176,7 +180,7 @@ describe('App', () => {
     const fixture = TestBed.createComponent(App);
     const menus = fixture.componentInstance.menus();
 
-    expect(menus[1]).toEqual({
+    expect(menus[0]).toEqual({
       label: 'Configuracoes',
       shortLabel: 'CFG',
       icon: 'an an-gear',
@@ -189,5 +193,45 @@ describe('App', () => {
         }
       ]
     });
+    expect(menus.at(-1)?.label).toBe('Sair');
+  });
+
+  it('shows switch tenant action when session has more than one tenant', async () => {
+    TestBed.resetTestingModule();
+
+    await TestBed.configureTestingModule({
+      imports: [App],
+      providers: [
+        {
+          provide: AuthService,
+          useValue: {
+            isAuthenticated: () => false,
+            me: () => of(null),
+            logout: vi.fn(),
+          },
+        },
+        {
+          provide: TenantStateService,
+          useValue: createTenantState({
+            name: 'Administrador',
+            tenant: { name: 'Tenant Demo' },
+            modules: ['settings'],
+            availableTenants: [
+              { tenantId: 1, tenantName: 'Tenant Demo', profileId: 1, profileName: 'Administrador', isDefault: true },
+              { tenantId: 2, tenantName: 'Tenant 2', profileId: 2, profileName: 'Operador', isDefault: false }
+            ],
+            menus: []
+          }),
+        },
+        {
+          provide: Router,
+          useValue: createRouter(),
+        },
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(App);
+
+    expect(fixture.componentInstance.profileActions.some((item: any) => item.label === 'Trocar tenant')).toBe(true);
   });
 });

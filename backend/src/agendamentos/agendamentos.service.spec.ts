@@ -105,7 +105,7 @@ describe('AgendamentosService', () => {
     expect(Buffer.isBuffer(buffer)).toBe(true);
   });
 
-  it('blocks update for non-agendado entries', async () => {
+  it('allows update for non-agendado entries', async () => {
     prisma.agendamento.findUnique.mockResolvedValue({
       id: 1,
       tipo: 'R',
@@ -117,9 +117,18 @@ describe('AgendamentosService', () => {
       contrato: null,
       profissional: null,
     });
+    prisma.agendamento.update.mockResolvedValue({
+      id: 1,
+      tipo: 'R',
+      observacao: 'teste',
+    });
 
-    await expect(service.update(1, { observacao: 'teste' } as any)).rejects.toBeInstanceOf(HttpException);
-    expect(prisma.agendamento.update).not.toHaveBeenCalled();
+    await expect(service.update(1, { observacao: 'teste' } as any)).resolves.toMatchObject({
+      id: 1,
+      tipo: 'R',
+      observacao: 'teste',
+    });
+    expect(prisma.agendamento.update).toHaveBeenCalled();
   });
 
   it('returns paginated appointments with advanced filters', async () => {

@@ -272,24 +272,42 @@ async function main() {
   // 4. Usuário Admin Inicial
   const hashedPassword = await bcrypt.hash('admin123', 10);
   await prisma.user.upsert({
-    where: {
-      tenantId_email: {
-        tenantId: tenant.id,
-        email: 'admin@fallback.com',
-      },
-    },
+    where: { email: 'admin@fallback.com' },
     update: {
-      // password: hashedPassword, // Uncomment if you want to force reset password
+      // password: hashedPassword,
     },
     create: {
-      tenantId: tenant.id,
-      profileId: profile.id,
       name: 'Administrador (Fallback)',
       email: 'admin@fallback.com',
       password: hashedPassword,
       isActive: true,
     },
   });
+
+  const adminUser = await prisma.user.findUnique({
+    where: { email: 'admin@fallback.com' },
+  });
+
+  if (adminUser) {
+    await prisma.userTenant.upsert({
+      where: {
+        userId_tenantId: {
+          userId: adminUser.id,
+          tenantId: tenant.id,
+        },
+      },
+      update: {
+        profileId: profile.id,
+        isDefault: true,
+      },
+      create: {
+        userId: adminUser.id,
+        tenantId: tenant.id,
+        profileId: profile.id,
+        isDefault: true,
+      },
+    });
+  }
 
   console.log('Seed completed successfully!');
 }
