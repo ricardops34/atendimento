@@ -34,13 +34,13 @@ export class AgendamentosController {
   }
 
   @Get()
-  findAll() {
-    return this.agendamentosService.findAll();
+  findAll(@Request() req: any) {
+    return this.agendamentosService.findAll(req.tenantId as number);
   }
 
   @Get('search')
-  search(@Query() query: Record<string, string | undefined>) {
-    return this.agendamentosService.search(query);
+  search(@Query() query: Record<string, string | undefined>, @Request() req: any) {
+    return this.agendamentosService.search(query, req.tenantId as number);
   }
 
   @Get('export')
@@ -88,8 +88,8 @@ export class AgendamentosController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.agendamentosService.findOne(id);
+  findOne(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
+    return this.agendamentosService.findOne(id, req.tenantId as number);
   }
 
   @Patch(':id/confirmar')
@@ -98,12 +98,12 @@ export class AgendamentosController {
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateAgendamentoDto: UpdateAgendamentoDto) {
-    return this.agendamentosService.update(id, updateAgendamentoDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateAgendamentoDto: UpdateAgendamentoDto, @Request() req: any) {
+    return this.agendamentosService.update(id, updateAgendamentoDto, req.tenantId as number);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.agendamentosService.remove(id);
+  remove(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
+    return this.agendamentosService.remove(id, req.tenantId as number);
   }
 }

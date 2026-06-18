@@ -22,7 +22,7 @@ interface ContratoSearchQuery {
 export class ContratosService {
   constructor(private prisma: PrismaService) {}
 
-  async create(dto: CreateContratoDto) {
+  async create(dto: CreateContratoDto, tenantId: number) {
     const { profissionalIds, escalas, ...contratoData } = dto;
     return this.prisma.$transaction(async (tx) => {
       const contrato = await tx.contrato.create({
@@ -30,7 +30,7 @@ export class ContratosService {
           ...contratoData,
           cor: contratoData.cor || '#333333',
           isFeriado: contratoData.isFeriado ?? false,
-          tenantId: 1,
+          tenantId,
         },
       });
       if (profissionalIds?.length) {
@@ -48,14 +48,14 @@ export class ContratosService {
     });
   }
 
-  findAll() {
-    return this.prisma.contrato.findMany({ include: { empresa: true } });
+  findAll(tenantId: number) {
+    return this.prisma.contrato.findMany({ where: { tenantId }, include: { empresa: true } });
   }
 
-  async search(query: ContratoSearchQuery) {
+  async search(query: ContratoSearchQuery, tenantId: number) {
     const page = Math.max(Number(query.page) || 1, 1);
     const pageSize = Math.max(Number(query.pageSize) || 20, 1);
-    const where = this.buildWhere(query);
+    const where = this.buildWhere(query, tenantId);
     const total = await this.prisma.contrato.count({ where });
     const items = await this.prisma.contrato.findMany({
       where,
@@ -68,9 +68,12 @@ export class ContratosService {
     return { items, page, pageSize, total, hasNext: page * pageSize < total };
   }
 
-  async findOne(id: number) {
-    const contrato = await this.prisma.contrato.findUnique({
-      where: { id },
+  async findOne(id: number, tenantId?: number) {
+    const where: any = { id };
+    if (tenantId) where.tenantId = tenantId;
+
+    const contrato = await this.prisma.contrato.findFirst({
+      where,
       include: {
         empresa: true,
         profissionais: { include: { profissional: true } },
@@ -81,8 +84,8 @@ export class ContratosService {
     return contrato;
   }
 
-  async update(id: number, dto: UpdateContratoDto) {
-    await this.findOne(id);
+  async update(id: number, dto: UpdateContratoDto, tenantId?: number) {
+    await this.findOne(id, tenantId);
     const { profissionalIds, escalas, ...contratoData } = dto as any;
     return this.prisma.$transaction(async (tx) => {
       const contrato = await tx.contrato.update({ where: { id }, data: contratoData });
@@ -107,13 +110,15 @@ export class ContratosService {
     });
   }
 
-  async remove(id: number) {
-    await this.findOne(id);
+  async remove(id: number, tenantId?: number) {
+    await this.findOne(id, tenantId);
     return this.prisma.contrato.delete({ where: { id } });
   }
 
-  private buildWhere(query: ContratoSearchQuery) {
+  private buildWhere(query: ContratoSearchQuery, tenantId?: number) {
     const andFilters: object[] = [];
+    if (tenantId) andFilters.push({ tenantId });
+
     const search = query.search?.trim() || query.descricao?.trim();
 
     if (search) {

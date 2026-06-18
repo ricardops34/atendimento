@@ -69,7 +69,20 @@ async function runETL() {
       prisma.contrato.deleteMany(),
       prisma.profissional.deleteMany(),
       prisma.empresa.deleteMany(),
+      prisma.tenant.deleteMany(), // Limpa os tenants também, caso queira resetar tudo, ou deixe para usar upsert.
     ]);
+
+    // 1.5 Criar Tenant Padrão
+    console.log('Criando Tenant padrão...');
+    await prisma.tenant.upsert({
+      where: { id: DEFAULT_TENANT_ID },
+      update: {},
+      create: {
+        id: DEFAULT_TENANT_ID,
+        name: 'Tenant Padrão',
+        slug: 'default-tenant',
+      },
+    });
 
     // 2. Migração de Empresas
     console.log('Migrando Empresas...');

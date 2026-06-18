@@ -17,20 +17,20 @@ interface EmpresaSearchQuery {
 export class EmpresasService {
   constructor(private prisma: PrismaService) {}
 
-  create(dto: CreateEmpresaDto) {
+  create(dto: CreateEmpresaDto, tenantId: number) {
     return this.prisma.empresa.create({
-      data: { ...dto, tenantId: 1 },
+      data: { ...dto, tenantId },
     });
   }
 
-  findAll() {
-    return this.prisma.empresa.findMany({ orderBy: { nome: 'asc' } });
+  findAll(tenantId: number) {
+    return this.prisma.empresa.findMany({ where: { tenantId }, orderBy: { nome: 'asc' } });
   }
 
-  async search(query: EmpresaSearchQuery) {
+  async search(query: EmpresaSearchQuery, tenantId: number) {
     const page = Math.max(Number(query.page) || 1, 1);
     const pageSize = Math.max(Number(query.pageSize) || 20, 1);
-    const where = this.buildWhere(query);
+    const where = this.buildWhere(query, tenantId);
     const total = await this.prisma.empresa.count({ where });
     const items = await this.prisma.empresa.findMany({
       where,
@@ -42,29 +42,37 @@ export class EmpresasService {
     return { items, page, pageSize, total, hasNext: page * pageSize < total };
   }
 
-  async findOne(id: number) {
-    const empresa = await this.prisma.empresa.findUnique({ where: { id } });
+  async findOne(id: number, tenantId?: number) {
+    const where: any = { id };
+    if (tenantId) where.tenantId = tenantId;
+
+    const empresa = await this.prisma.empresa.findFirst({ where });
     if (!empresa) throw new NotFoundException('Empresa não encontrada.');
     return empresa;
   }
 
-  async update(id: number, dto: UpdateEmpresaDto) {
-    await this.findOne(id);
+  async update(id: number, dto: UpdateEmpresaDto, tenantId?: number) {
+    await this.findOne(id, tenantId);
     return this.prisma.empresa.update({ where: { id }, data: dto });
   }
 
-  async remove(id: number) {
-    await this.findOne(id);
+  async remove(id: number, tenantId?: number) {
+    await this.findOne(id, tenantId);
     return this.prisma.empresa.delete({ where: { id } });
   }
 
-  private buildWhere(query: EmpresaSearchQuery) {
+  private buildWhere(query: EmpresaSearchQuery, tenantId?: number) {
+    const where: any = {};
+    if (tenantId) where.tenantId = tenantId;
+
     if (query.id) {
-      return { id: Number(query.id) };
+      where.id = Number(query.id);
+      return where;
     }
     const nome = query.nome?.trim() || query.search?.trim();
-    if (!nome) return {};
-    return { nome: { contains: nome, mode: 'insensitive' as const } };
+    if (!nome) return where;
+    where.nome = { contains: nome, mode: 'insensitive' as const };
+    return where;
   }
 
   private buildOrderBy(sortProperty?: string, sortDirection?: string) {

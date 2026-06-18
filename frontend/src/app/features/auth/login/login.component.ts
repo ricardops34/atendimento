@@ -11,6 +11,9 @@ import {
   PoNotificationService,
 } from '@po-ui/ng-components';
 import { AuthService } from '../../../core/auth/auth.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
+import { PoPageLoginCustomField } from '@po-ui/ng-templates';
 
 @Component({
   selector: 'app-login',
@@ -20,7 +23,8 @@ import { AuthService } from '../../../core/auth/auth.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  @ViewChild('tenantModal', { static: true }) tenantModal!: PoModalComponent;
+  private API_URL = environment.apiUrl || 'http://localhost:3000';
+  private http = inject(HttpClient);
 
   private authService = inject(AuthService);
   private router = inject(Router);
@@ -30,20 +34,28 @@ export class LoginComponent {
   selectedTenantId: number | null = null;
   pendingCredentials: { email: string; password: string } | null = null;
 
-  loginSubmit(formData: PoPageLogin) {
+  customField: PoPageLoginCustomField = {
+    property: 'tenantId',
+    placeholder: 'Selecione a Empresa',
+    type: 'select',
+    options: []
+  };
+
+  ngOnInit() {
+    this.http.get<any[]>(`${this.API_URL}/tenants`).subscribe({
+      next: (res) => {
+        this.customField.options = res.map(t => ({ label: t.name, value: t.id }));
+        this.customField = { ...this.customField };
+      }
+    });
+  }
+
+  loginSubmit(formData: any) {
     this.pendingCredentials = {
       email: formData.login,
       password: formData.password
     };
-    this.submitLogin();
-  }
-
-  confirmTenantSelection() {
-    if (!this.pendingCredentials || !this.selectedTenantId) {
-      return;
-    }
-
-    this.submitLogin(this.selectedTenantId);
+    this.submitLogin(formData.customField);
   }
 
   private submitLogin(tenantId?: number) {
@@ -58,19 +70,10 @@ export class LoginComponent {
     }).subscribe({
       next: (res) => {
         if (res?.requiresTenantSelection) {
-          this.tenantOptions = (res.tenantOptions || []).map((item: any) => ({
-            label: item.tenantName,
-            value: item.tenantId
-          }));
-          this.selectedTenantId =
-            res.tenantOptions?.find((item: any) => item.isDefault)?.tenantId ??
-            res.tenantOptions?.[0]?.tenantId ??
-            null;
-          this.tenantModal.open();
+          this.poNotification.warning('Por favor, selecione uma empresa válida.');
           return;
         }
 
-        this.tenantModal.close();
         this.poNotification.success('Login realizado com sucesso!');
         this.router.navigate(['/']);
       },
