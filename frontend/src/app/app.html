@@ -5,15 +5,18 @@
     [p-header-user]="headerUser">
   </po-header>
 
-  <po-breadcrumb [p-items]="breadcrumb().items"></po-breadcrumb>
-
   <po-menu  
     [p-collapsed]="true" 
     [p-filter]="true" 
     [p-automatic-toggle]="true" 
     [p-menus]="menus()"></po-menu>
 
-  <router-outlet></router-outlet>
+  <div style="margin-top: 64px;">
+    <div style="padding: 16px 16px 0 16px;" *ngIf="breadcrumb().items.length > 0">
+      <po-breadcrumb [p-items]="breadcrumb().items" style="display: block;"></po-breadcrumb>
+    </div>
+    <router-outlet></router-outlet>
+  </div>
 
   <po-modal p-title="Trocar tenant" #switchTenantModal>
     <div class="po-row">
