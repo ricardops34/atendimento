@@ -8,6 +8,12 @@ import { ProfissionaisModule } from './profissionais/profissionais.module';
 import { ContratosModule } from './contratos/contratos.module';
 import { AgendamentosModule } from './agendamentos/agendamentos.module';
 import { RealizadosModule } from './realizados/realizados.module';
+import { TenantsModule } from './tenants/tenants.module';
+import { SystemModulesModule } from './system-modules/system-modules.module';
+import { RoutinesModule } from './routines/routines.module';
+import { MenusModule } from './menus/menus.module';
+import { ProfilesModule } from './profiles/profiles.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -17,7 +23,13 @@ import { RealizadosModule } from './realizados/realizados.module';
     ProfissionaisModule, 
     ContratosModule, 
     AgendamentosModule, 
-    RealizadosModule
+    RealizadosModule,
+    TenantsModule,
+    SystemModulesModule,
+    RoutinesModule,
+    MenusModule,
+    ProfilesModule,
+    UsersModule
   ],
   controllers: [AppController],
   providers: [AppService],

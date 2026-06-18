@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
 import { ProfissionaisService } from './profissionais.service';
 import { CreateProfissionalDto } from './dto/create-profissional.dto';
 import { UpdateProfissionalDto } from './dto/update-profissional.dto';
@@ -15,6 +15,11 @@ export class ProfissionaisController {
   @Get()
   findAll() {
     return this.profissionaisService.findAll();
+  }
+
+  @Get('search')
+  search(@Query() query: Record<string, string | undefined>) {
+    return this.profissionaisService.search(query);
   }
 
   @Get(':id')

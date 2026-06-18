@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpException } from '@nestjs/common';
 import { AgendamentosService } from './agendamentos.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { Response } from 'express';
 
 describe('AgendamentosService', () => {
   let service: AgendamentosService;
@@ -13,7 +14,9 @@ describe('AgendamentosService', () => {
       findUnique: jest.Mock;
       update: jest.Mock;
       delete: jest.Mock;
+      count: jest.Mock;
     };
+    $transaction: jest.Mock;
   };
 
   beforeEach(async () => {
@@ -25,7 +28,9 @@ describe('AgendamentosService', () => {
         findUnique: jest.fn(),
         update: jest.fn(),
         delete: jest.fn(),
+        count: jest.fn(),
       },
+      $transaction: jest.fn((fn: (tx: any) => any) => fn(prisma)),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -37,6 +42,12 @@ describe('AgendamentosService', () => {
 
     service = module.get(AgendamentosService);
   });
+
+  const expectedStartDate = new Date('2026-06-01');
+  expectedStartDate.setHours(0, 0, 0, 0);
+
+  const expectedEndDate = new Date('2026-06-30');
+  expectedEndDate.setHours(23, 59, 59, 999);
 
   it('inherits contract description and color on create', async () => {
     prisma.contrato.findUnique.mockResolvedValue({
@@ -63,6 +74,37 @@ describe('AgendamentosService', () => {
     expect(result.duracaoMinutos).toBe(120);
   });
 
+  it('confirmar transitions status A to R', async () => {
+    const agendamento = { id: 5, tipo: 'A', tenantId: 1 };
+    prisma.agendamento.findUnique.mockResolvedValue(agendamento);
+    prisma.agendamento.update.mockResolvedValue({ ...agendamento, tipo: 'R' });
+
+    const result = await service.confirmar(5, 1);
+
+    expect(prisma.agendamento.update).toHaveBeenCalledWith({
+      where: { id: 5 },
+      data: { tipo: 'R' },
+      include: { contrato: true, profissional: true },
+    });
+    expect(result.tipo).toBe('R');
+  });
+
+  it('confirmar throws 422 when status is not A', async () => {
+    prisma.agendamento.findUnique.mockResolvedValue({ id: 5, tipo: 'R', tenantId: 1 });
+
+    await expect(service.confirmar(5, 1)).rejects.toMatchObject({ status: 422 });
+    expect(prisma.agendamento.update).not.toHaveBeenCalled();
+  });
+
+  it('generateExport returns a Buffer for csv with no records', async () => {
+    prisma.agendamento.findMany.mockResolvedValue([]);
+    prisma.agendamento.count.mockResolvedValue(0);
+
+    const buffer = await service.generateExport({}, 'csv');
+
+    expect(Buffer.isBuffer(buffer)).toBe(true);
+  });
+
   it('blocks update for non-agendado entries', async () => {
     prisma.agendamento.findUnique.mockResolvedValue({
       id: 1,
@@ -78,5 +120,80 @@ describe('AgendamentosService', () => {
 
     await expect(service.update(1, { observacao: 'teste' } as any)).rejects.toBeInstanceOf(HttpException);
     expect(prisma.agendamento.update).not.toHaveBeenCalled();
+  });
+
+  it('returns paginated appointments with advanced filters', async () => {
+    prisma.agendamento.count.mockResolvedValue(1);
+    prisma.agendamento.findMany.mockResolvedValue([{ id: 99 }]);
+
+    const result = await service.search({
+      page: '2',
+      pageSize: '10',
+      search: 'fallback',
+      tipo: 'A',
+      local: 'P',
+      contratoId: '8',
+      profissionalId: '1',
+      dataInicial: '2026-06-01',
+      dataFinal: '2026-06-30',
+    } as any);
+
+    expect(prisma.agendamento.count).toHaveBeenCalledWith({
+      where: {
+        AND: [
+          {
+            OR: [
+              { descricao: { contains: 'fallback', mode: 'insensitive' } },
+              { contrato: { descricao: { contains: 'fallback', mode: 'insensitive' } } },
+              { profissional: { nome: { contains: 'fallback', mode: 'insensitive' } } },
+            ],
+          },
+          { tipo: 'A' },
+          { local: 'P' },
+          { contratoId: 8 },
+          { profissionalId: 1 },
+          {
+            dataAgenda: {
+              gte: expectedStartDate,
+              lte: expectedEndDate,
+            },
+          },
+        ],
+      },
+    });
+    expect(prisma.agendamento.findMany).toHaveBeenCalledWith({
+      where: {
+        AND: [
+          {
+            OR: [
+              { descricao: { contains: 'fallback', mode: 'insensitive' } },
+              { contrato: { descricao: { contains: 'fallback', mode: 'insensitive' } } },
+              { profissional: { nome: { contains: 'fallback', mode: 'insensitive' } } },
+            ],
+          },
+          { tipo: 'A' },
+          { local: 'P' },
+          { contratoId: 8 },
+          { profissionalId: 1 },
+          {
+            dataAgenda: {
+              gte: expectedStartDate,
+              lte: expectedEndDate,
+            },
+          },
+        ],
+      },
+      include: { contrato: true, profissional: true },
+      orderBy: [{ dataAgenda: 'desc' }, { horaInicio: 'desc' }],
+      skip: 10,
+      take: 10,
+    });
+    expect(result).toEqual({
+      items: [{ id: 99 }],
+      page: 2,
+      pageSize: 10,
+      total: 1,
+      hasNext: false,
+    });
   });
 });

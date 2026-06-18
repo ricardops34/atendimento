@@ -1,0 +1,13 @@
+<po-page-default p-title="Configuracoes">
+  <div class="po-row">
+    <div class="po-md-4 po-sm-6 po-xs-12" *ngFor="let section of sections" style="margin-bottom: 16px;">
+      <po-button
+        [p-label]="section.label"
+        [p-icon]="section.icon"
+        p-kind="secondary"
+        style="width: 100%;"
+        (p-click)="goTo(section.route)">
+      </po-button>
+    </div>
+  </div>
+</po-page-default>

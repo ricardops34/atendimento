@@ -1,10 +1,62 @@
-<po-page-list p-title="Empresas">
-  <div class="po-row" style="margin-bottom: 16px;">
-    <po-button p-label="Nova Empresa" p-icon="po-icon-plus" (p-click)="openCreate()"></po-button>
+<po-page-list p-title="Empresas" [p-disclaimer-group]="disclaimerGroup">
+  <div class="po-row" style="align-items: end; margin-bottom: 16px; row-gap: 12px;">
+    <div class="po-md-6 po-sm-12" style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <po-button p-label="Nova Empresa" p-icon="po-icon-plus" (p-click)="openCreate()"></po-button>
+    </div>
+
+    <div class="po-md-6 po-sm-12" style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <div style="min-width: 280px; width: 280px; max-width: 100%;">
+        <po-search
+          p-placeholder="Pesquisar"
+          [(ngModel)]="quickSearch"
+          (p-filter)="onQuickSearch($event)"
+          (p-change-model)="quickSearch = $event">
+        </po-search>
+      </div>
+
+      <po-button p-label="Busca avançada" p-kind="tertiary" (p-click)="openAdvancedFilters()"></po-button>
+    </div>
   </div>
 
-  <po-table [p-items]="empresas" [p-columns]="columns" [p-actions]="actions" [p-loading]="loading"></po-table>
+  <po-table
+    [p-items]="empresas"
+    [p-columns]="columns"
+    [p-actions]="actions"
+    [p-loading]="loading"
+    [p-loading-show-more]="loadingShowMore"
+    [p-show-more-disabled]="!hasNext"
+    [p-sort]="true"
+    [p-hide-detail]="true"
+    [p-hide-table-search]="true"
+    (p-show-more)="onShowMore()"
+    (p-sort-by)="onSortChange($event)">
+  </po-table>
 </po-page-list>
+
+<po-modal p-title="Busca avançada" #advancedFilterModal>
+  <div class="po-row">
+    <po-number
+      class="po-md-4"
+      name="id"
+      p-label="ID"
+      [ngModel]="filters.id"
+      (ngModelChange)="filters.id = $event">
+    </po-number>
+
+    <po-input
+      class="po-md-8"
+      name="nomeFiltro"
+      p-label="Empresa"
+      [ngModel]="filters.nome"
+      (ngModelChange)="filters.nome = $event">
+    </po-input>
+  </div>
+
+  <po-modal-footer>
+    <po-button p-label="Limpar" (p-click)="clearFilters()"></po-button>
+    <po-button p-label="Aplicar filtros" p-kind="primary" (p-click)="applyAdvancedFilters()"></po-button>
+  </po-modal-footer>
+</po-modal>
 
 <po-modal p-title="Empresa" #modal>
   <div class="po-row">

@@ -10,43 +10,59 @@ describe('ContratosPage', () => {
   let component: ContratosPage;
   let fixture: ComponentFixture<ContratosPage>;
 
+  const contratoService = {
+    findAll: () => of([{ id: 1, descricao: 'Contrato A', empresa: { nome: 'Empresa A' } }]),
+    search: vi.fn(),
+    create: () => of({}),
+    update: () => of({}),
+    remove: () => of({}),
+  };
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ContratosPage],
       providers: [
-        {
-          provide: ContratoService,
-          useValue: {
-            findAll: () => of([{ id: 1, descricao: 'Contrato A', empresa: { nome: 'Empresa A' } }]),
-            create: () => of({}),
-            update: () => of({}),
-            remove: () => of({}),
-          },
-        },
+        { provide: ContratoService, useValue: contratoService },
         {
           provide: EmpresaService,
-          useValue: {
-            findAll: () => of([{ id: 1, nome: 'Empresa A' }]),
-          },
+          useValue: { findAll: () => of([{ id: 1, nome: 'Empresa A' }]) },
         },
         {
           provide: PoNotificationService,
-          useValue: {
-            success: vi.fn(),
-            warning: vi.fn(),
-            error: vi.fn(),
-          },
+          useValue: { success: vi.fn(), warning: vi.fn(), error: vi.fn() },
         },
       ],
     }).overrideComponent(ContratosPage, { set: { template: '' } }).compileComponents();
+
+    contratoService.search.mockReset();
+    contratoService.search.mockReturnValue(
+      of({ items: [{ id: 1, descricao: 'Contrato A', empresa: { nome: 'Empresa A' } }], page: 1, pageSize: 20, total: 1, hasNext: false })
+    );
 
     fixture = TestBed.createComponent(ContratosPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should load contracts', () => {
-    component.loadData();
+  it('loads paginated contracts using the standard search params', () => {
+    component.quickSearch = 'Contrato';
+    component.filters.empresaId = 1;
+    component.loadData(true);
+
+    expect(contratoService.search).toHaveBeenLastCalledWith({
+      page: 1,
+      pageSize: 20,
+      search: 'Contrato',
+      empresaId: 1,
+      isFeriado: undefined,
+      descricao: undefined,
+      sortProperty: 'descricao',
+      sortDirection: 'ascending',
+    });
     expect(component.contratos.length).toBe(1);
+  });
+
+  it('defines sortable listing columns', () => {
+    expect(component.columns.every((column) => column.sortable === true)).toBe(true);
   });
 });

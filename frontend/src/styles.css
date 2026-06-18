@@ -1,2 +1,22 @@
 /* You can add global styles to this file, and also import other style files */
 @import "@po-ui/style/css/po-theme-default.min.css";
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body,
+app-root,
+po-page-login {
+  display: block;
+  min-height: 100vh;
+}
+
+po-page-login .po-page-login-container,
+po-page-login .po-page-login-panel,
+po-page-login .po-page-login-highlight-image,
+po-page-login .po-page-login-highlight-image-off {
+  min-height: 100vh;
+}

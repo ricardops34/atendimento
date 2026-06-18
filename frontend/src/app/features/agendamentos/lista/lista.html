@@ -1,8 +1,26 @@
-<po-page-list p-title="Atendimentos Operacionais">
-  
-  <div class="po-row" style="margin-bottom: 16px; gap: 8px;">
-    <po-button p-label="Novo Agendamento" p-icon="po-icon-plus" (p-click)="onNew()"></po-button>
-    <po-button p-label="Fechar Lote" p-icon="po-icon-ok" (p-click)="onFecharLote()"></po-button>
+<po-page-list
+  p-title="Atendimentos Operacionais"
+  [p-disclaimer-group]="disclaimerGroup">
+
+  <div class="po-row" style="align-items: end; margin-bottom: 16px; row-gap: 12px;">
+    <div class="po-md-6 po-sm-12" style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <po-button p-label="Novo Agendamento" p-icon="po-icon-plus" (p-click)="onNew()"></po-button>
+      <po-button p-label="Fechar Lote" p-icon="po-icon-ok" p-kind="secondary" (p-click)="onFecharLote()"></po-button>
+      <po-dropdown p-label="Exportar" [p-actions]="exportActions"></po-dropdown>
+    </div>
+
+    <div class="po-md-6 po-sm-12" style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <div style="min-width: 280px; width: 280px; max-width: 100%;">
+        <po-search
+          p-placeholder="Pesquisar"
+          [(ngModel)]="quickSearch"
+          (p-filter)="onQuickSearch($event)"
+          (p-change-model)="quickSearch = $event">
+        </po-search>
+      </div>
+
+      <po-button p-label="Busca avançada" p-kind="tertiary" (p-click)="openAdvancedFilters()"></po-button>
+    </div>
   </div>
 
   <po-table
@@ -10,10 +28,82 @@
     [p-columns]="columns"
     [p-actions]="actions"
     [p-loading]="loading"
+    [p-loading-show-more]="loadingShowMore"
+    [p-show-more-disabled]="!hasNext"
+    [p-sort]="true"
     [p-striped]="true"
-    [p-hide-detail]="true">
+    [p-hide-detail]="true"
+    [p-hide-table-search]="true"
+    (p-show-more)="onShowMore()">
   </po-table>
 
 </po-page-list>
 
-<app-form-sidebar (saved)="loadData()"></app-form-sidebar>
+<po-modal p-title="Busca avançada" #advancedFilterModal>
+  <div class="po-row">
+    <po-datepicker
+      class="po-md-6"
+      name="dataInicial"
+      p-label="Data inicial"
+      [ngModel]="filters.dataInicial"
+      (ngModelChange)="filters.dataInicial = $event">
+    </po-datepicker>
+
+    <po-datepicker
+      class="po-md-6"
+      name="dataFinal"
+      p-label="Data final"
+      [ngModel]="filters.dataFinal"
+      (ngModelChange)="filters.dataFinal = $event">
+    </po-datepicker>
+  </div>
+
+  <div class="po-row">
+    <po-combo
+      class="po-md-6"
+      name="tipo"
+      p-label="Status"
+      [p-options]="statusOptions"
+      [ngModel]="filters.tipo"
+      (ngModelChange)="filters.tipo = $event">
+    </po-combo>
+
+    <po-combo
+      class="po-md-6"
+      name="local"
+      p-label="Modalidade"
+      [p-options]="modalidadeOptions"
+      [ngModel]="filters.local"
+      (ngModelChange)="filters.local = $event">
+    </po-combo>
+  </div>
+
+  <div class="po-row">
+    <po-combo
+      class="po-md-12"
+      name="contratoId"
+      p-label="Contrato"
+      [p-options]="contratos"
+      [ngModel]="filters.contratoId"
+      (ngModelChange)="filters.contratoId = $event">
+    </po-combo>
+  </div>
+
+  <div class="po-row">
+    <po-combo
+      class="po-md-12"
+      name="profissionalId"
+      p-label="Profissional"
+      [p-options]="profissionais"
+      [ngModel]="filters.profissionalId"
+      (ngModelChange)="filters.profissionalId = $event">
+    </po-combo>
+  </div>
+
+  <po-modal-footer>
+    <po-button p-label="Limpar" (p-click)="clearFilters()"></po-button>
+    <po-button p-label="Aplicar filtros" p-kind="primary" (p-click)="applyAdvancedFilters()"></po-button>
+  </po-modal-footer>
+</po-modal>
+
+<app-form-sidebar (saved)="loadData(true)"></app-form-sidebar>

@@ -61,6 +61,8 @@ model Module {
   key            String         @unique @db.VarChar(255) // ex: 'companies', 'appointments-calendar'
 
   profileModules ProfileModule[]
+  routines       Routine[]
+  menus          Menu[]
 
   @@map("modules")
 }
@@ -76,6 +78,41 @@ model ProfileModule {
 
   @@unique([profileId, moduleId])
   @@map("profile_modules")
+}
+
+model Routine {
+  id         Int      @id @default(autoincrement())
+  moduleId   Int      @map("module_id")
+  module     Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  name       String   @db.VarChar(255)
+  key        String   @unique @db.VarChar(255)
+  path       String   @db.VarChar(255)
+  icon       String?  @db.VarChar(100)
+  shortLabel String?  @map("short_label") @db.VarChar(20)
+  sortOrder  Int      @default(0) @map("sort_order")
+  isActive   Boolean  @default(true) @map("is_active")
+  menus      Menu[]
+
+  @@map("routines")
+}
+
+model Menu {
+  id         Int      @id @default(autoincrement())
+  moduleId   Int?     @map("module_id")
+  module     Module?  @relation(fields: [moduleId], references: [id], onDelete: SetNull)
+  routineId  Int?     @map("routine_id")
+  routine    Routine? @relation(fields: [routineId], references: [id], onDelete: SetNull)
+  parentId   Int?     @map("parent_id")
+  parent     Menu?    @relation("MenuHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children   Menu[]   @relation("MenuHierarchy")
+  label      String   @db.VarChar(255)
+  shortLabel String?  @map("short_label") @db.VarChar(20)
+  icon       String?  @db.VarChar(100)
+  link       String?  @db.VarChar(255)
+  sortOrder  Int      @default(0) @map("sort_order")
+  isActive   Boolean  @default(true) @map("is_active")
+
+  @@map("menus")
 }
 
 // ----------------------------------------------------------------------------

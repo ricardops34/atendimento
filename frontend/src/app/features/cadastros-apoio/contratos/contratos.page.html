@@ -1,10 +1,74 @@
-<po-page-list p-title="Contratos">
-  <div class="po-row" style="margin-bottom: 16px;">
-    <po-button p-label="Novo Contrato" p-icon="po-icon-plus" (p-click)="openCreate()"></po-button>
+<po-page-list p-title="Contratos" [p-disclaimer-group]="disclaimerGroup">
+  <div class="po-row" style="align-items: end; margin-bottom: 16px; row-gap: 12px;">
+    <div class="po-md-6 po-sm-12" style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <po-button p-label="Novo Contrato" p-icon="po-icon-plus" (p-click)="openCreate()"></po-button>
+    </div>
+
+    <div class="po-md-6 po-sm-12" style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <div style="min-width: 280px; width: 280px; max-width: 100%;">
+        <po-search
+          p-placeholder="Pesquisar"
+          [(ngModel)]="quickSearch"
+          (p-filter)="onQuickSearch($event)"
+          (p-change-model)="quickSearch = $event">
+        </po-search>
+      </div>
+
+      <po-button p-label="Busca avançada" p-kind="tertiary" (p-click)="openAdvancedFilters()"></po-button>
+    </div>
   </div>
 
-  <po-table [p-items]="contratos" [p-columns]="columns" [p-actions]="actions" [p-loading]="loading"></po-table>
+  <po-table
+    [p-items]="contratos"
+    [p-columns]="columns"
+    [p-actions]="actions"
+    [p-loading]="loading"
+    [p-loading-show-more]="loadingShowMore"
+    [p-show-more-disabled]="!hasNext"
+    [p-sort]="true"
+    [p-hide-detail]="true"
+    [p-hide-table-search]="true"
+    (p-show-more)="onShowMore()"
+    (p-sort-by)="onSortChange($event)">
+  </po-table>
 </po-page-list>
+
+<po-modal p-title="Busca avançada" #advancedFilterModal>
+  <div class="po-row">
+    <po-input
+      class="po-md-6"
+      name="descricaoFiltro"
+      p-label="Contrato"
+      [ngModel]="filters.descricao"
+      (ngModelChange)="filters.descricao = $event">
+    </po-input>
+
+    <po-combo
+      class="po-md-6"
+      name="empresaFiltro"
+      p-label="Empresa"
+      [p-options]="empresas"
+      [ngModel]="filters.empresaId"
+      (ngModelChange)="filters.empresaId = $event">
+    </po-combo>
+  </div>
+
+  <div class="po-row">
+    <po-combo
+      class="po-md-6"
+      name="isFeriadoFiltro"
+      p-label="Feriado"
+      [p-options]="feriadoOptions"
+      [ngModel]="filters.isFeriado"
+      (ngModelChange)="filters.isFeriado = $event">
+    </po-combo>
+  </div>
+
+  <po-modal-footer>
+    <po-button p-label="Limpar" (p-click)="clearFilters()"></po-button>
+    <po-button p-label="Aplicar filtros" p-kind="primary" (p-click)="applyAdvancedFilters()"></po-button>
+  </po-modal-footer>
+</po-modal>
 
 <po-modal p-title="Contrato" #modal>
   <div class="po-row">

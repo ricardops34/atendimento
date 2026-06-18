@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
 import { ContratosService } from './contratos.service';
 import { CreateContratoDto } from './dto/create-contrato.dto';
 import { UpdateContratoDto } from './dto/update-contrato.dto';
@@ -15,6 +15,11 @@ export class ContratosController {
   @Get()
   findAll() {
     return this.contratosService.findAll();
+  }
+
+  @Get('search')
+  search(@Query() query: Record<string, string | undefined>) {
+    return this.contratosService.search(query);
   }
 
   @Get(':id')

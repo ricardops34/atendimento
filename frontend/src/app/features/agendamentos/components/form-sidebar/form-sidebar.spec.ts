@@ -53,4 +53,30 @@ describe('FormSidebar', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  describe('open()', () => {
+    beforeEach(() => {
+      component.pageSlide = { open: vi.fn(), close: vi.fn() } as any;
+    });
+
+    it('deve abrir o slide para agendamento Agendado (A)', () => {
+      component.open({ tipo: 'A', dataAgenda: '2026-06-17T00:00:00Z' });
+      expect(component.pageSlide.open).toHaveBeenCalled();
+    });
+
+    it('deve abrir o slide para agendamento Realizado (R)', () => {
+      component.open({ tipo: 'R', dataAgenda: '2026-06-17T00:00:00Z' });
+      expect(component.pageSlide.open).toHaveBeenCalled();
+    });
+
+    it('deve abrir o slide para agendamento Cancelado (C)', () => {
+      component.open({ tipo: 'C', dataAgenda: '2026-06-17T00:00:00Z' });
+      expect(component.pageSlide.open).toHaveBeenCalled();
+    });
+
+    it('deve abrir o slide para novo agendamento (sem dados)', () => {
+      component.open();
+      expect(component.pageSlide.open).toHaveBeenCalled();
+    });
+  });
 });

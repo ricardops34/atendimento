@@ -1,32 +1,145 @@
-<po-modal p-title="Lançamento de Atendimento">
+<po-page-slide p-title="Calendário" p-size="md" p-click-out="true">
+
+  <!-- Row 1: Contrato | Profissional | Cor | Modalidade -->
   <div class="po-row">
-    <po-combo class="po-md-12" name="contratoId" p-label="Contrato" [p-options]="contratos" [ngModel]="formData.contratoId" (ngModelChange)="formData.contratoId = $event" [p-required]="true"></po-combo>
+    <po-combo
+      class="po-md-4"
+      name="contratoId"
+      p-label="Contrato"
+      [p-options]="contratos"
+      [ngModel]="formData.contratoId"
+      (ngModelChange)="onContratoChange($event)"
+      [p-required]="true">
+    </po-combo>
+    <po-combo
+      class="po-md-4"
+      name="profissionalId"
+      p-label="Profissional"
+      [p-options]="profissionais"
+      [ngModel]="formData.profissionalId"
+      (ngModelChange)="formData.profissionalId = $event">
+    </po-combo>
+    <div class="po-md-2" style="display: flex; flex-direction: column; gap: 4px;">
+      <label class="po-label">Cor</label>
+      <input
+        type="color"
+        name="cor"
+        [(ngModel)]="formData.cor"
+        style="width: 100%; height: 40px; cursor: pointer; border: 1px solid #c9d3dc; border-radius: 4px; padding: 2px;">
+    </div>
+    <po-combo
+      class="po-md-2"
+      name="local"
+      p-label="Tipo"
+      [p-options]="modalidadeOptions"
+      [ngModel]="formData.local"
+      (ngModelChange)="formData.local = $event">
+    </po-combo>
   </div>
+
+  <!-- Row 2: Descrição | Data -->
   <div class="po-row">
-    <po-combo class="po-md-12" name="profissionalId" p-label="Profissional" [p-options]="profissionais" [ngModel]="formData.profissionalId" (ngModelChange)="formData.profissionalId = $event"></po-combo>
+    <po-input
+      class="po-md-9"
+      name="descricao"
+      p-label="Descrição"
+      required
+      [ngModel]="formData.descricao"
+      (ngModelChange)="formData.descricao = $event">
+    </po-input>
+    <po-datepicker
+      class="po-md-3"
+      name="dataAgenda"
+      p-label="Data"
+      [ngModel]="formData.dataAgenda"
+      (ngModelChange)="formData.dataAgenda = $event">
+    </po-datepicker>
   </div>
+
+  <!-- Row 3: Hora Início | Intervalo Início | Intervalo Fim | Hora Fim | Total -->
   <div class="po-row">
-    <po-input class="po-md-12" name="descricao" p-label="Descrição do Atendimento" [ngModel]="formData.descricao" (ngModelChange)="formData.descricao = $event"></po-input>
+    <po-input
+      class="po-md-3"
+      name="horaInicio"
+      p-label="Horário Inicial"
+      p-mask="99:99"
+      required
+      [ngModel]="formData.horaInicio"
+      (ngModelChange)="formData.horaInicio = $event; onHoraChange()">
+    </po-input>
+    <po-input
+      class="po-md-2"
+      name="horaIntervaloInicial"
+      p-label="Intervalo Início"
+      p-mask="99:99"
+      [ngModel]="formData.horaIntervaloInicial"
+      (ngModelChange)="formData.horaIntervaloInicial = $event; onHoraChange()">
+    </po-input>
+    <po-input
+      class="po-md-2"
+      name="horaIntervaloFinal"
+      p-label="Intervalo Fim"
+      p-mask="99:99"
+      [ngModel]="formData.horaIntervaloFinal"
+      (ngModelChange)="formData.horaIntervaloFinal = $event; onHoraChange()">
+    </po-input>
+    <po-input
+      class="po-md-3"
+      name="horaFim"
+      p-label="Horário Final"
+      p-mask="99:99"
+      required
+      [ngModel]="formData.horaFim"
+      (ngModelChange)="formData.horaFim = $event; onHoraChange()">
+    </po-input>
+    <po-input
+      class="po-md-2"
+      name="horaTotal"
+      p-label="Total"
+      disabled
+      [ngModel]="formData.horaTotal">
+    </po-input>
   </div>
+
+  <!-- Row 4: Tipo de Atividade (status - read-only) -->
   <div class="po-row">
-    <po-datepicker class="po-md-12" name="dataAgenda" p-label="Data do Apontamento" [ngModel]="formData.dataAgenda" (ngModelChange)="formData.dataAgenda = $event"></po-datepicker>
+    <po-combo
+      class="po-md-3"
+      name="tipo"
+      p-label="Tipo de Atividade"
+      [p-options]="tipoOptions"
+      [p-disabled]="true"
+      [ngModel]="formData.tipo">
+    </po-combo>
   </div>
+
+  <!-- Row 5: Observações -->
   <div class="po-row">
-    <po-input class="po-md-6" name="horaInicio" p-label="Hora Início" p-mask="99:99" [ngModel]="formData.horaInicio" (ngModelChange)="formData.horaInicio = $event"></po-input>
-    <po-input class="po-md-6" name="horaFim" p-label="Hora Fim" p-mask="99:99" [ngModel]="formData.horaFim" (ngModelChange)="formData.horaFim = $event"></po-input>
+    <po-rich-text
+      class="po-md-12"
+      name="observacao"
+      p-label="Observações"
+      [ngModel]="formData.observacao"
+      (ngModelChange)="formData.observacao = $event">
+    </po-rich-text>
   </div>
-  <div class="po-row">
-    <po-input class="po-md-6" name="horaIntervaloInicial" p-label="Intervalo Início" p-mask="99:99" [ngModel]="formData.horaIntervaloInicial" (ngModelChange)="formData.horaIntervaloInicial = $event"></po-input>
-    <po-input class="po-md-6" name="horaIntervaloFinal" p-label="Intervalo Fim" p-mask="99:99" [ngModel]="formData.horaIntervaloFinal" (ngModelChange)="formData.horaIntervaloFinal = $event"></po-input>
-  </div>
-  <div class="po-row">
-    <po-combo class="po-md-12" name="local" p-label="Modalidade" [p-options]="modalidadeOptions" [ngModel]="formData.local" (ngModelChange)="formData.local = $event"></po-combo>
-  </div>
-  <div class="po-row">
-    <po-textarea class="po-md-12" name="observacao" p-label="Observações" [ngModel]="formData.observacao" (ngModelChange)="formData.observacao = $event"></po-textarea>
-  </div>
-  
-  <po-modal-footer>
-    <po-button p-label="Salvar" (p-click)="save()"></po-button>
-  </po-modal-footer>
-</po-modal>
+
+  <po-page-slide-footer>
+    <po-button p-label="Salvar" p-kind="primary" p-icon="po-icon-save" (p-click)="save()"></po-button>
+    <po-button
+      *ngIf="isEdit && formData.tipo === 'A'"
+      p-label="Confirmar"
+      p-kind="secondary"
+      p-icon="po-icon-ok"
+      (p-click)="confirmar()">
+    </po-button>
+    <po-button
+      *ngIf="isEdit"
+      p-label="Excluir"
+      p-kind="danger"
+      p-icon="po-icon-delete"
+      (p-click)="excluir()">
+    </po-button>
+  </po-page-slide-footer>
+
+</po-page-slide>

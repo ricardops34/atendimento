@@ -1,6 +1,24 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
+
+export interface ProfissionalSearchParams {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  id?: number;
+  nome?: string;
+  sortProperty?: string;
+  sortDirection?: 'ascending' | 'descending';
+}
+
+export interface ProfissionalSearchResult {
+  items: any[];
+  page: number;
+  pageSize: number;
+  total: number;
+  hasNext: boolean;
+}
 
 @Injectable({ providedIn: 'root' })
 export class ProfissionalService {
@@ -9,6 +27,18 @@ export class ProfissionalService {
 
   findAll() {
     return this.http.get<any[]>(this.apiUrl);
+  }
+
+  search(params: ProfissionalSearchParams) {
+    let httpParams = new HttpParams();
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        httpParams = httpParams.set(key, String(value));
+      }
+    });
+
+    return this.http.get<ProfissionalSearchResult>(`${this.apiUrl}/search`, { params: httpParams });
   }
 
   create(data: any) {

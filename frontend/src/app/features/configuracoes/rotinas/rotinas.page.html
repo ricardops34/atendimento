@@ -1,0 +1,37 @@
+<po-page-list p-title="Rotinas" [p-disclaimer-group]="disclaimerGroup">
+  <div class="po-row" style="align-items: end; margin-bottom: 16px; row-gap: 12px;">
+    <div class="po-md-6 po-sm-12"><po-button p-label="Nova Rotina" p-icon="po-icon-plus" (p-click)="openCreate()"></po-button></div>
+    <div class="po-md-6 po-sm-12" style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <div style="min-width: 280px; width: 280px; max-width: 100%;"><po-search p-placeholder="Pesquisar" [(ngModel)]="quickSearch" (p-filter)="onQuickSearch($event)" (p-change-model)="quickSearch = $event"></po-search></div>
+      <po-button p-label="Busca avançada" p-kind="tertiary" (p-click)="openAdvancedFilters()"></po-button>
+    </div>
+  </div>
+  <po-table [p-items]="items" [p-columns]="columns" [p-actions]="actions" [p-loading]="loading" [p-loading-show-more]="loadingShowMore" [p-show-more-disabled]="!hasNext" [p-sort]="true" [p-hide-detail]="true" [p-hide-table-search]="true" (p-show-more)="onShowMore()" (p-sort-by)="onSortChange($event)"></po-table>
+</po-page-list>
+<po-modal p-title="Busca avançada" #advancedFilterModal>
+  <div class="po-row">
+    <po-combo class="po-md-6" p-label="Modulo" [p-options]="moduleOptions" [ngModel]="filters.moduleId" (ngModelChange)="filters.moduleId = $event"></po-combo>
+    <po-combo class="po-md-6" p-label="Status" [p-options]="activeOptions" [ngModel]="filters.isActive" (ngModelChange)="filters.isActive = $event"></po-combo>
+  </div>
+  <div class="po-row">
+    <po-input class="po-md-4" p-label="Rotina" [ngModel]="filters.name" (ngModelChange)="filters.name = $event"></po-input>
+    <po-input class="po-md-4" p-label="Key" [ngModel]="filters.key" (ngModelChange)="filters.key = $event"></po-input>
+    <po-input class="po-md-4" p-label="Path" [ngModel]="filters.path" (ngModelChange)="filters.path = $event"></po-input>
+  </div>
+  <po-modal-footer><po-button p-label="Limpar" (p-click)="clearFilters()"></po-button><po-button p-label="Aplicar filtros" p-kind="primary" (p-click)="applyAdvancedFilters()"></po-button></po-modal-footer>
+</po-modal>
+<po-modal p-title="Rotina" #modal>
+  <div class="po-row">
+    <po-combo class="po-md-4" p-label="Modulo" [p-options]="moduleOptions" [ngModel]="formData.moduleId" (ngModelChange)="formData.moduleId = $event"></po-combo>
+    <po-input class="po-md-4" p-label="Nome" [ngModel]="formData.name" (ngModelChange)="formData.name = $event"></po-input>
+    <po-input class="po-md-4" p-label="Key" [ngModel]="formData.key" (ngModelChange)="formData.key = $event"></po-input>
+  </div>
+  <div class="po-row">
+    <po-input class="po-md-5" p-label="Path" [ngModel]="formData.path" (ngModelChange)="formData.path = $event"></po-input>
+    <po-input class="po-md-3" p-label="Icone" [ngModel]="formData.icon" (ngModelChange)="formData.icon = $event"></po-input>
+    <po-input class="po-md-2" p-label="ShortLabel" [ngModel]="formData.shortLabel" (ngModelChange)="formData.shortLabel = $event"></po-input>
+    <po-number class="po-md-2" p-label="Ordem" [ngModel]="formData.sortOrder" (ngModelChange)="formData.sortOrder = $event"></po-number>
+  </div>
+  <div class="po-row"><po-switch class="po-md-4" p-label="Ativa" [ngModel]="formData.isActive" (ngModelChange)="formData.isActive = $event"></po-switch></div>
+  <po-modal-footer><po-button p-label="Salvar" p-kind="primary" [p-loading]="saving" (p-click)="save()"></po-button></po-modal-footer>
+</po-modal>

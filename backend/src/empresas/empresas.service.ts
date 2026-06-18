@@ -4,6 +4,16 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateEmpresaDto } from './dto/create-empresa.dto';
 import { UpdateEmpresaDto } from './dto/update-empresa.dto';
 
+interface EmpresaSearchQuery {
+  page?: string;
+  pageSize?: string;
+  search?: string;
+  id?: string;
+  nome?: string;
+  sortProperty?: string;
+  sortDirection?: string;
+}
+
 @Injectable()
 export class EmpresasService {
   constructor(private prisma: PrismaService) {}
@@ -16,6 +26,21 @@ export class EmpresasService {
 
   findAll() {
     return this.prisma.empresa.findMany();
+  }
+
+  async search(query: EmpresaSearchQuery) {
+    const page = Math.max(Number(query.page) || 1, 1);
+    const pageSize = Math.max(Number(query.pageSize) || 20, 1);
+    const where = this.buildWhere(query);
+    const total = await this.prisma.empresa.count({ where });
+    const items = await this.prisma.empresa.findMany({
+      where,
+      orderBy: this.buildOrderBy(query.sortProperty, query.sortDirection),
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    });
+
+    return { items, page, pageSize, total, hasNext: page * pageSize < total };
   }
 
   async findOne(id: number) {
@@ -35,5 +60,26 @@ export class EmpresasService {
   async remove(id: number) {
     await this.findOne(id);
     return this.prisma.empresa.delete({ where: { id } });
+  }
+
+  private buildWhere(query: EmpresaSearchQuery) {
+    if (query.id) {
+      return { id: Number(query.id) };
+    }
+
+    const nome = query.nome?.trim() || query.search?.trim();
+    if (!nome) {
+      return {};
+    }
+
+    return {
+      nome: { contains: nome, mode: 'insensitive' },
+    };
+  }
+
+  private buildOrderBy(sortProperty?: string, sortDirection?: string) {
+    const direction = sortDirection === 'descending' ? 'desc' : 'asc';
+    const property = sortProperty === 'id' ? 'id' : 'nome';
+    return { [property]: direction };
   }
 }

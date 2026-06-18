@@ -1,9 +1,16 @@
-import { Component, signal, effect, inject } from '@angular/core';
-import { RouterOutlet, Router } from '@angular/router';
-import { PoMenuItem, PoMenuModule, PoPageModule, PoToolbarModule, PoToolbarProfile, PoToolbarAction } from '@po-ui/ng-components';
+import { CommonModule } from '@angular/common';
+import { Component, effect, inject, signal } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
+import {
+  PoMenuItem,
+  PoMenuModule,
+  PoPageModule,
+  PoToolbarAction,
+  PoToolbarModule,
+  PoToolbarProfile,
+} from '@po-ui/ng-components';
 import { AuthService } from './core/auth/auth.service';
 import { TenantStateService } from './core/auth/tenant-state.service';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -19,10 +26,34 @@ export class App {
   public isAuthenticated = signal(false);
   public profile: PoToolbarProfile = { title: '', subtitle: '' };
   public profileActions: PoToolbarAction[] = [
-    { label: 'Sair', icon: 'po-icon-exit', action: () => this.logout() }
+    { label: 'Sair', icon: 'an an-sign-out', action: () => this.logout() }
   ];
-
   public menus = signal<PoMenuItem[]>([]);
+
+  private readonly menuCatalog: Record<string, PoMenuItem> = {
+    home: { label: 'Inicio', shortLabel: 'INI', icon: 'an an-house', link: '/' },
+    companies: { label: 'Empresas', shortLabel: 'EMP', icon: 'an an-buildings', link: '/empresas' },
+    professionals: { label: 'Profissionais', shortLabel: 'PRO', icon: 'an an-user', link: '/profissionais' },
+    contracts: { label: 'Contratos', shortLabel: 'CON', icon: 'an an-file-text', link: '/contratos' },
+    'appointments-list': {
+      label: 'Lista de Atendimentos',
+      shortLabel: 'LST',
+      icon: 'an an-list-dashes',
+      link: '/agendamentos/lista'
+    },
+    'appointments-calendar': {
+      label: 'Calendario',
+      shortLabel: 'CAL',
+      icon: 'an an-calendar-blank',
+      link: '/agendamentos/calendario'
+    },
+    logout: {
+      label: 'Sair',
+      shortLabel: 'SAI',
+      icon: 'an an-sign-out',
+      action: () => this.logout()
+    }
+  };
 
   constructor() {
     effect(() => {
@@ -35,34 +66,29 @@ export class App {
           subtitle: user.tenant?.name
         };
 
-        const allowedModules = user.modules || [];
-        const dynamicMenus: PoMenuItem[] = [];
-
-        dynamicMenus.push({ label: 'Início', icon: 'po-icon-home', link: '/' });
-
-        if (allowedModules.includes('companies')) {
-          dynamicMenus.push({ label: 'Empresas', icon: 'po-icon-company', link: '/empresas' });
-        }
-        if (allowedModules.includes('professionals')) {
-          dynamicMenus.push({ label: 'Profissionais', icon: 'po-icon-user', link: '/profissionais' });
-        }
-        if (allowedModules.includes('contracts')) {
-          dynamicMenus.push({ label: 'Contratos', icon: 'po-icon-document-filled', link: '/contratos' });
-        }
-        if (allowedModules.includes('appointments-list')) {
-          dynamicMenus.push({ label: 'Lista de Atendimentos', icon: 'po-icon-list', link: '/agendamentos/lista' });
-        }
-        if (allowedModules.includes('appointments-calendar')) {
-          dynamicMenus.push({ label: 'Calendário', icon: 'po-icon-calendar', link: '/agendamentos/calendario' });
-        }
-
-        this.menus.set(dynamicMenus);
+        this.menus.set(this.buildMenus(user.modules || []));
       }
     });
 
     if (this.authService.isAuthenticated()) {
       this.authService.me().subscribe();
     }
+  }
+
+  buildMenus(allowedModules: string[]): PoMenuItem[] {
+    const menus: PoMenuItem[] = [{ ...this.menuCatalog['home'] }];
+
+    for (const moduleKey of allowedModules) {
+      const menuItem = this.menuCatalog[moduleKey];
+
+      if (menuItem) {
+        menus.push({ ...menuItem });
+      }
+    }
+
+    menus.push({ ...this.menuCatalog['logout'] });
+
+    return menus;
   }
 
   logout() {

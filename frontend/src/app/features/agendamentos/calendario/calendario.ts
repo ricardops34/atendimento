@@ -7,6 +7,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 
+import ptBrLocale from '@fullcalendar/core/locales/pt-br';
 import { AgendamentoService } from '../../../core/services/agendamento.service';
 import { FormSidebar } from '../components/form-sidebar/form-sidebar';
 
@@ -21,13 +22,14 @@ export class Calendario implements OnInit {
   private agendamentoService = inject(AgendamentoService);
 
   calendarOptions: CalendarOptions = {
-    initialView: 'dayGridMonth',
+    initialView: 'timeGridWeek',
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
     headerToolbar: {
       left: 'prev,next today',
       center: 'title',
       right: 'dayGridMonth,timeGridWeek,timeGridDay'
     },
+    locales: [ptBrLocale],
     locale: 'pt-br',
     dateClick: this.handleDateClick.bind(this),
     eventClick: this.handleEventClick.bind(this),
