@@ -47,7 +47,7 @@ export class TenantsPage implements OnInit {
 
   columns: PoTableColumn[] = [
     { property: 'id', label: 'ID', sortable: true },
-    { property: 'name', label: 'Tenant', sortable: true },
+    { property: 'name', label: 'Empresa', sortable: true },
     { property: 'slug', label: 'Slug', sortable: true },
   ];
 
@@ -189,7 +189,7 @@ export class TenantsPage implements OnInit {
   private syncDisclaimers() {
     const disclaimers: PoDisclaimer[] = [];
     if (this.quickSearch) disclaimers.push({ property: 'search', label: 'Busca', value: this.quickSearch });
-    if (this.filters.name) disclaimers.push({ property: 'name', label: 'Tenant', value: this.filters.name });
+    if (this.filters.name) disclaimers.push({ property: 'name', label: 'Empresa', value: this.filters.name });
     if (this.filters.slug) disclaimers.push({ property: 'slug', label: 'Slug', value: this.filters.slug });
     this.disclaimerGroup = { ...this.disclaimerGroup, disclaimers };
   }

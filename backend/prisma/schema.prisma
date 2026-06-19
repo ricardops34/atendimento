@@ -23,7 +23,7 @@ model Tenant {
   contratos      Contrato[]
   agendamentos   Agendamento[]
 
-  @@map("tenants")
+  @@map("empresas")
 }
 
 model User {
@@ -56,12 +56,12 @@ model UserTenant {
   id         Int      @id @default(autoincrement())
   userId     Int      @map("user_id")
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tenantId   Int      @map("tenant_id")
+  tenantId   Int      @map("empresa_id")
   tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   isDefault  Boolean  @default(false) @map("is_default")
 
   @@unique([userId, tenantId])
-  @@map("user_tenants")
+  @@map("user_empresas")
 }
 
 model Module {
@@ -131,7 +131,7 @@ model Menu {
 /// Representa o cliente (Cadastros de Apoio)
 model Cliente {
   id        Int        @id @default(autoincrement())
-  tenantId  Int        @map("tenant_id")
+  tenantId  Int        @map("empresa_id")
   tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   nome      String     @db.VarChar(255)
   razao     String?    @db.VarChar(255)
@@ -147,7 +147,7 @@ model Cliente {
 /// Representa o profissional executor (Cadastros de Apoio)
 model Profissional {
   id               Int                    @id @default(autoincrement())
-  tenantId         Int                    @map("tenant_id")
+  tenantId         Int                    @map("empresa_id")
   tenant           Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   userId           Int?                   @map("user_id")
   user             User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
@@ -162,7 +162,7 @@ model Profissional {
 /// Representa o contrato de serviço (Cadastros de Apoio)
 model Contrato {
   id             Int                    @id @default(autoincrement())
-  tenantId       Int                    @map("tenant_id")
+  tenantId       Int                    @map("empresa_id")
   tenant         Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   clienteId      Int                    @map("cliente_id")
   cliente        Cliente                @relation(fields: [clienteId], references: [id], onDelete: Restrict)
@@ -212,7 +212,7 @@ model ContratoItem {
 /// Representa os apontamentos de atendimentos (Agendamentos)
 model Agendamento {
   id                   Int           @id @default(autoincrement())
-  tenantId             Int           @map("tenant_id")
+  tenantId             Int           @map("empresa_id")
   tenant               Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   contratoId           Int?          @map("contrato_id")
   contrato             Contrato?     @relation(fields: [contratoId], references: [id], onDelete: SetNull)

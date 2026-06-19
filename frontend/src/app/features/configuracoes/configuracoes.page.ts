@@ -13,7 +13,7 @@ export class ConfiguracoesPage {
   private router = inject(Router);
 
   sections = [
-    { label: 'Tenants', icon: 'an an-buildings', route: '/configuracoes/tenants' },
+    { label: 'Empresas', icon: 'an an-buildings', route: '/configuracoes/empresas' },
     { label: 'Modulos', icon: 'an an-squares-four', route: '/configuracoes/modulos' },
     { label: 'Rotinas', icon: 'an an-list-checks', route: '/configuracoes/rotinas' },
     { label: 'Perfis', icon: 'an an-identification-card', route: '/configuracoes/perfis' },

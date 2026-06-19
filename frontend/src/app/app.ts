@@ -240,7 +240,7 @@ export class App {
 
     if (availableTenants.length > 1) {
       actions.push({
-        label: 'Trocar tenant',
+        label: 'Trocar empresa',
         icon: 'an an-buildings',
         action: () => this.openSwitchTenantModal()
       });

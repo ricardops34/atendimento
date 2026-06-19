@@ -1,4 +1,4 @@
-<po-page-list p-title="Usuarios" [p-disclaimer-group]="disclaimerGroup">
+﻿<po-page-list p-title="Usuarios" [p-disclaimer-group]="disclaimerGroup">
   <div class="po-row" style="align-items: end; margin-bottom: 16px; row-gap: 12px;">
     <div class="po-md-6 po-sm-12"><po-button p-label="Novo Usuario" p-icon="an an-plus" (p-click)="openCreate()"></po-button></div>
     <div class="po-md-6 po-sm-12" style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap;">
@@ -24,7 +24,7 @@
 
 <po-modal p-title="Busca avancada" #advancedFilterModal>
   <div class="po-row">
-    <po-combo class="po-md-4" p-label="Tenant" [p-options]="tenantOptions" [ngModel]="filters.tenantId" (ngModelChange)="filters.tenantId = $event"></po-combo>
+    <po-combo class="po-md-4" p-label="Empresa" [p-options]="tenantOptions" [ngModel]="filters.tenantId" (ngModelChange)="filters.tenantId = $event"></po-combo>
     <po-combo class="po-md-4" p-label="Perfil" [p-options]="profileOptions" [ngModel]="filters.profileId" (ngModelChange)="filters.profileId = $event"></po-combo>
     <po-combo class="po-md-4" p-label="Status" [p-options]="activeOptions" [ngModel]="filters.isActive" (ngModelChange)="filters.isActive = $event"></po-combo>
   </div>
@@ -52,7 +52,7 @@
   </div>
 
   <div class="po-row">
-    <po-combo class="po-md-10" p-label="Tenant" [p-options]="tenantOptions" [ngModel]="formData.selectedTenantId" (ngModelChange)="formData.selectedTenantId = $event"></po-combo>
+    <po-combo class="po-md-10" p-label="Empresa" [p-options]="tenantOptions" [ngModel]="formData.selectedTenantId" (ngModelChange)="formData.selectedTenantId = $event"></po-combo>
     <div class="po-md-2" style="display: flex; align-items: end;">
       <po-button p-label="Adicionar" p-kind="tertiary" (p-click)="addTenantLink()"></po-button>
     </div>

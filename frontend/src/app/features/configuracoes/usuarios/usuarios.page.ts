@@ -58,7 +58,7 @@ export class UsuariosPage implements OnInit {
     { property: 'name', label: 'Usuario', sortable: true },
     { property: 'email', label: 'Email', sortable: true },
     { property: 'profileLabel', label: 'Perfil', sortable: false },
-    { property: 'tenantsLabel', label: 'Tenants', sortable: false },
+    { property: 'tenantsLabel', label: 'Empresas', sortable: false },
     { property: 'isActiveLabel', label: 'Status', sortable: true },
   ];
 
@@ -102,7 +102,7 @@ export class UsuariosPage implements OnInit {
           isActiveLabel: item.isActive ? 'Ativo' : 'Inativo',
           profileLabel: item.profile?.name || '',
           tenantsLabel: (item.userTenants || [])
-            .map((link: any) => `${link.tenant?.name || 'Tenant'}${link.isDefault ? ' (Padrao)' : ''}`)
+            .map((link: any) => `${link.tenant?.name || 'Empresa'}${link.isDefault ? ' (Padrao)' : ''}`)
             .join(', ')
         }));
         this.items = this.page === 1 ? mapped : [...this.items, ...mapped];
@@ -314,7 +314,7 @@ export class UsuariosPage implements OnInit {
   private syncDisclaimers() {
     const disclaimers: PoDisclaimer[] = [];
     if (this.quickSearch) disclaimers.push({ property: 'search', label: 'Busca', value: this.quickSearch });
-    if (this.filters.tenantId) disclaimers.push({ property: 'tenantId', label: 'Tenant', value: this.resolveTenantName(this.filters.tenantId) });
+    if (this.filters.tenantId) disclaimers.push({ property: 'tenantId', label: 'Empresa', value: this.resolveTenantName(this.filters.tenantId) });
     if (this.filters.profileId) disclaimers.push({ property: 'profileId', label: 'Perfil', value: this.resolveProfileName(this.filters.profileId) });
     if (this.filters.name) disclaimers.push({ property: 'name', label: 'Usuario', value: this.filters.name });
     if (this.filters.email) disclaimers.push({ property: 'email', label: 'Email', value: this.filters.email });

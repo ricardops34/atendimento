@@ -258,7 +258,7 @@ async function main() {
     where: { slug: 'default-tenant' },
     update: {},
     create: {
-      name: 'Tenant Padrão',
+      name: 'Empresa Padrão',
       slug: 'default-tenant',
     },
   });
