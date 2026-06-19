@@ -1,7 +1,7 @@
-<po-page-list p-title="Tenants" [p-disclaimer-group]="disclaimerGroup">
+<po-page-list p-title="Empresas" [p-disclaimer-group]="disclaimerGroup">
   <div class="po-row" style="align-items: end; margin-bottom: 16px; row-gap: 12px;">
     <div class="po-md-6 po-sm-12" style="display: flex; gap: 8px;">
-      <po-button p-label="Novo Tenant" p-icon="po-icon-plus" (p-click)="openCreate()"></po-button>
+      <po-button p-label="Novo Empresa" p-icon="po-icon-plus" (p-click)="openCreate()"></po-button>
     </div>
     <div class="po-md-6 po-sm-12" style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap;">
       <div style="min-width: 280px; width: 280px; max-width: 100%;">
@@ -27,7 +27,7 @@
 
 <po-modal p-title="Busca avançada" #advancedFilterModal>
   <div class="po-row">
-    <po-input class="po-md-6" name="nameFilter" p-label="Tenant" [ngModel]="filters.name" (ngModelChange)="filters.name = $event"></po-input>
+    <po-input class="po-md-6" name="nameFilter" p-label="Empresa" [ngModel]="filters.name" (ngModelChange)="filters.name = $event"></po-input>
     <po-input class="po-md-6" name="slugFilter" p-label="Slug" [ngModel]="filters.slug" (ngModelChange)="filters.slug = $event"></po-input>
   </div>
   <po-modal-footer>
@@ -36,7 +36,7 @@
   </po-modal-footer>
 </po-modal>
 
-<po-modal p-title="Tenant" #modal>
+<po-modal p-title="Empresa" #modal>
   <div class="po-row">
     <po-input class="po-md-8" p-label="Nome" [ngModel]="formData.name" (ngModelChange)="formData.name = $event"></po-input>
     <po-input class="po-md-4" p-label="Slug" [ngModel]="formData.slug" (ngModelChange)="formData.slug = $event"></po-input>

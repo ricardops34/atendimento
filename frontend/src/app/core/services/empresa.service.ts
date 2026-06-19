@@ -29,6 +29,10 @@ export class EmpresaService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
+  findOne(id: number) {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
   search(params: EmpresaSearchParams) {
     let httpParams = new HttpParams();
 

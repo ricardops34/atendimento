@@ -1,0 +1,71 @@
+<po-page-default p-title="Início">
+
+  <!-- Saudação -->
+  <div style="margin-bottom: 24px;">
+    <h2 style="font-size: 1.4rem; font-weight: 600; color: #333; margin: 0;">
+      Olá, {{ userName }}! Bem-vindo ao BJ Atendimento.
+    </h2>
+    <p style="color: #666; margin: 4px 0 0;">
+      Confira o resumo do sistema e acesse rapidamente o que precisa.
+    </p>
+  </div>
+
+  <!-- Indicadores -->
+  <div class="po-row" style="margin-bottom: 32px;">
+    <div class="po-md-3 po-sm-6">
+      <div class="bj-card-indicador" (click)="navegar('/clientes')">
+        <i class="an an-buildings bj-card-icon"></i>
+        <div class="bj-card-valor">
+          <po-loading-overlay *ngIf="loading" [p-screen-lock]="false"></po-loading-overlay>
+          <span *ngIf="!loading">{{ indicadores.clientes }}</span>
+        </div>
+        <div class="bj-card-label">Clientes</div>
+      </div>
+    </div>
+
+    <div class="po-md-3 po-sm-6">
+      <div class="bj-card-indicador" (click)="navegar('/contratos')">
+        <i class="an an-file-text bj-card-icon"></i>
+        <div class="bj-card-valor">
+          <span *ngIf="!loading">{{ indicadores.contratos }}</span>
+        </div>
+        <div class="bj-card-label">Contratos</div>
+      </div>
+    </div>
+
+    <div class="po-md-3 po-sm-6">
+      <div class="bj-card-indicador" (click)="navegar('/profissionais')">
+        <i class="an an-user bj-card-icon"></i>
+        <div class="bj-card-valor">
+          <span *ngIf="!loading">{{ indicadores.profissionais }}</span>
+        </div>
+        <div class="bj-card-label">Profissionais</div>
+      </div>
+    </div>
+
+    <div class="po-md-3 po-sm-6">
+      <div class="bj-card-indicador" (click)="navegar('/agendamentos/lista')">
+        <i class="an an-calendar-check bj-card-icon"></i>
+        <div class="bj-card-valor">
+          <span *ngIf="!loading">{{ indicadores.agendamentosHoje }}</span>
+        </div>
+        <div class="bj-card-label">Atendimentos Hoje</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Atalhos -->
+  <div style="margin-bottom: 12px;">
+    <h3 style="font-size: 1rem; font-weight: 600; color: #555; margin: 0 0 16px;">Acesso Rápido</h3>
+    <div class="po-row">
+      <div *ngFor="let atalho of atalhos" class="po-md-2 po-sm-4" style="margin-bottom: 12px;">
+        <div class="bj-atalho" (click)="navegar(atalho.link)">
+          <i [class]="atalho.icon + ' bj-atalho-icon'"></i>
+          <span class="bj-atalho-label">{{ atalho.label }}</span>
+          <small class="bj-atalho-desc">{{ atalho.descricao }}</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</po-page-default>

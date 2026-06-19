@@ -1,7 +1,7 @@
 import { IsHexColor, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class CreateEmpresaDto {
-  @IsNotEmpty({ message: 'O nome da empresa é obrigatório.' })
+  @IsNotEmpty({ message: 'O nome do cliente é obrigatório.' })
   @IsString()
   nome: string;
 

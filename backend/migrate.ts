@@ -68,7 +68,7 @@ async function runETL() {
       prisma.contratoItem.deleteMany(),
       prisma.contrato.deleteMany(),
       prisma.profissional.deleteMany(),
-      prisma.empresa.deleteMany(),
+      prisma.cliente.deleteMany(),
       prisma.tenant.deleteMany(), // Limpa os tenants também, caso queira resetar tudo, ou deixe para usar upsert.
     ]);
 
@@ -92,7 +92,7 @@ async function runETL() {
       tenantId: DEFAULT_TENANT_ID,
       nome: String(e.nome).trim(),
     }));
-    await prisma.empresa.createMany({ data: empresasToInsert });
+    await prisma.cliente.createMany({ data: empresasToInsert });
     console.log(`> Inseridas ${empresasToInsert.length} empresas.`);
 
     // 3. Migração de Profissionais
@@ -112,7 +112,7 @@ async function runETL() {
     const contratosToInsert = contratosLegacy.map((c) => ({
       id: c.id,
       tenantId: DEFAULT_TENANT_ID,
-      empresaId: c.empresa_id,
+      clienteId: c.empresa_id,
       descricao: String(c.descricao).trim(),
       cor: sanitizeColor(c.cor),
       dtInicio: c.dt_inicio ? new Date(c.dt_inicio) : DEFAULT_CONTRACT_START,

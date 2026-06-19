@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Put, Param, Delete, ParseIntPipe, Query, Request } from '@nestjs/common';
 import { ProfissionaisService } from './profissionais.service';
 import { CreateProfissionalDto } from './dto/create-profissional.dto';
 import { UpdateProfissionalDto } from './dto/update-profissional.dto';
@@ -29,6 +29,11 @@ export class ProfissionaisController {
 
   @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() updateProfissionalDto: UpdateProfissionalDto, @Request() req: any) {
+    return this.profissionaisService.update(id, updateProfissionalDto, req.tenantId as number);
+  }
+
+  @Put(':id')
+  updatePut(@Param('id', ParseIntPipe) id: number, @Body() updateProfissionalDto: UpdateProfissionalDto, @Request() req: any) {
     return this.profissionaisService.update(id, updateProfissionalDto, req.tenantId as number);
   }
 

@@ -9,7 +9,7 @@ interface ContratoSearchQuery {
   pageSize?: string;
   search?: string;
   descricao?: string;
-  empresaId?: string;
+  clienteId?: string;
   tipo?: string;
   dtInicio?: string;
   dtFim?: string;
@@ -49,7 +49,7 @@ export class ContratosService {
   }
 
   findAll(tenantId: number) {
-    return this.prisma.contrato.findMany({ where: { tenantId }, include: { empresa: true } });
+    return this.prisma.contrato.findMany({ where: { tenantId }, include: { cliente: true } });
   }
 
   async search(query: ContratoSearchQuery, tenantId: number) {
@@ -59,7 +59,7 @@ export class ContratosService {
     const total = await this.prisma.contrato.count({ where });
     const items = await this.prisma.contrato.findMany({
       where,
-      include: { empresa: true },
+      include: { cliente: true },
       orderBy: this.buildOrderBy(query.sortProperty, query.sortDirection),
       skip: (page - 1) * pageSize,
       take: pageSize,
@@ -75,7 +75,7 @@ export class ContratosService {
     const contrato = await this.prisma.contrato.findFirst({
       where,
       include: {
-        empresa: true,
+        cliente: true,
         profissionais: { include: { profissional: true } },
         escalas: { include: { profissional: true } },
       },
@@ -125,13 +125,13 @@ export class ContratosService {
       andFilters.push({
         OR: [
           { descricao: { contains: search, mode: 'insensitive' } },
-          { empresa: { nome: { contains: search, mode: 'insensitive' } } },
+          { cliente: { nome: { contains: search, mode: 'insensitive' } } },
         ],
       });
     }
 
-    if (query.empresaId) {
-      andFilters.push({ empresaId: Number(query.empresaId) });
+    if (query.clienteId) {
+      andFilters.push({ clienteId: Number(query.clienteId) });
     }
 
     if (query.tipo) {
@@ -156,8 +156,8 @@ export class ContratosService {
   private buildOrderBy(sortProperty?: string, sortDirection?: string) {
     const direction = sortDirection === 'descending' ? 'desc' : 'asc';
 
-    if (sortProperty === 'empresa.nome') {
-      return { empresa: { nome: direction as Prisma.SortOrder } };
+    if (sortProperty === 'cliente.nome') {
+      return { cliente: { nome: direction as Prisma.SortOrder } };
     }
 
     const propertyMap: Record<string, string> = {

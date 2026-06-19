@@ -2,21 +2,17 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
-export interface ContratoSearchParams {
+export interface ClienteSearchParams {
   page?: number;
   pageSize?: number;
   search?: string;
-  descricao?: string;
-  clienteId?: number;
-  tipo?: string;
-  dtInicio?: string;
-  dtFim?: string;
-  isFeriado?: boolean;
+  id?: number;
+  nome?: string;
   sortProperty?: string;
   sortDirection?: 'ascending' | 'descending';
 }
 
-export interface ContratoSearchResult {
+export interface ClienteSearchResult {
   items: any[];
   page: number;
   pageSize: number;
@@ -25,19 +21,15 @@ export interface ContratoSearchResult {
 }
 
 @Injectable({ providedIn: 'root' })
-export class ContratoService {
+export class ClienteService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/contratos`;
+  private apiUrl = `${environment.apiUrl}/clientes`;
 
   findAll() {
     return this.http.get<any[]>(this.apiUrl);
   }
 
-  findOne(id: number) {
-    return this.http.get<any>(`${this.apiUrl}/${id}`);
-  }
-
-  search(params: ContratoSearchParams) {
+  search(params: ClienteSearchParams) {
     let httpParams = new HttpParams();
 
     Object.entries(params).forEach(([key, value]) => {
@@ -46,7 +38,7 @@ export class ContratoService {
       }
     });
 
-    return this.http.get<ContratoSearchResult>(`${this.apiUrl}/search`, { params: httpParams });
+    return this.http.get<ClienteSearchResult>(`${this.apiUrl}/search`, { params: httpParams });
   }
 
   create(data: any) {

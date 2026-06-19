@@ -26,7 +26,7 @@ export class LoginComponent {
   private readonly EMAIL_RE = /^[^@]+@[^@]+\.[a-zA-Z]{2,}$/;
 
   customField: PoPageLoginCustomField = {
-    property: 'tenantId',
+    property: 'empresaId',
     placeholder: 'Selecione a Empresa',
     options: []
   };
@@ -53,7 +53,7 @@ export class LoginComponent {
     this.authService.login({
       email: formData.login,
       password: formData.password,
-      tenantId: formData.customField || undefined
+      tenantId: formData.empresaId || undefined
     }).subscribe({
       next: (res) => {
         if (res?.requiresTenantSelection) {

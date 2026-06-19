@@ -28,13 +28,13 @@ async function main() {
   const allModules = await prisma.module.findMany();
 
   const defaultRoutines = [
-    { moduleKey: 'companies', name: 'Empresas', key: 'companies-list', path: '/empresas', icon: 'an an-buildings', shortLabel: 'EMP', sortOrder: 10 },
+    { moduleKey: 'companies', name: 'Clientes', key: 'companies-list', path: '/clientes', icon: 'an an-buildings', shortLabel: 'CLI', sortOrder: 10 },
     { moduleKey: 'professionals', name: 'Profissionais', key: 'professionals-list', path: '/profissionais', icon: 'an an-user', shortLabel: 'PRO', sortOrder: 20 },
     { moduleKey: 'contracts', name: 'Contratos', key: 'contracts-list', path: '/contratos', icon: 'an an-file-text', shortLabel: 'CON', sortOrder: 30 },
     { moduleKey: 'appointments-list', name: 'Lista de Atendimentos', key: 'appointments-list', path: '/agendamentos/lista', icon: 'an an-list-dashes', shortLabel: 'LST', sortOrder: 40 },
     { moduleKey: 'appointments-calendar', name: 'Calendario', key: 'appointments-calendar', path: '/agendamentos/calendario', icon: 'an an-calendar-blank', shortLabel: 'CAL', sortOrder: 50 },
     { moduleKey: 'settings', name: 'Configuracoes', key: 'settings-home', path: '/configuracoes', icon: 'an an-gear', shortLabel: 'CFG', sortOrder: 60 },
-    { moduleKey: 'settings', name: 'Tenants', key: 'settings-tenants', path: '/configuracoes/tenants', icon: 'an an-buildings', shortLabel: 'TEN', sortOrder: 61 },
+    { moduleKey: 'settings', name: 'Empresas', key: 'settings-tenants', path: '/configuracoes/empresas', icon: 'an an-buildings', shortLabel: 'EMP', sortOrder: 61 },
     { moduleKey: 'settings', name: 'Modulos', key: 'settings-modules', path: '/configuracoes/modulos', icon: 'an an-squares-four', shortLabel: 'MOD', sortOrder: 62 },
     { moduleKey: 'settings', name: 'Rotinas', key: 'settings-routines', path: '/configuracoes/rotinas', icon: 'an an-list-checks', shortLabel: 'ROT', sortOrder: 63 },
     { moduleKey: 'settings', name: 'Perfis', key: 'settings-profiles', path: '/configuracoes/perfis', icon: 'an an-identification-card', shortLabel: 'PRF', sortOrder: 64 },
@@ -111,19 +111,31 @@ async function main() {
   const settingsMenusRoutine = allRoutines.find((item) => item.key === 'settings-menus');
   const settingsUsersRoutine = allRoutines.find((item) => item.key === 'settings-users');
 
-  await ensureMenu('/', {
+  await ensureMenu('/inicio', {
     label: 'Inicio',
     shortLabel: 'INI',
     icon: 'an an-house',
-    link: '/',
+    link: '/inicio',
     sortOrder: 1,
     isActive: true,
   });
+
+  // Menu pai "Cadastros" (sem link, sem rotina) — key = label para o findFirst pelo label
+  const cadastrosMenu = await ensureMenu('Cadastros', {
+    label: 'Cadastros',
+    shortLabel: 'CAD',
+    icon: 'an an-folder',
+    link: null,
+    sortOrder: 5,
+    isActive: true,
+  });
+  const cadastrosMenuId = cadastrosMenu.id;
 
   if (companiesRoutine) {
     await ensureMenu(companiesRoutine.path, {
       moduleId: companiesRoutine.moduleId,
       routineId: companiesRoutine.id,
+      parentId: cadastrosMenuId,
       label: companiesRoutine.name,
       shortLabel: companiesRoutine.shortLabel,
       icon: companiesRoutine.icon,
@@ -137,6 +149,7 @@ async function main() {
     await ensureMenu(professionalsRoutine.path, {
       moduleId: professionalsRoutine.moduleId,
       routineId: professionalsRoutine.id,
+      parentId: cadastrosMenuId,
       label: professionalsRoutine.name,
       shortLabel: professionalsRoutine.shortLabel,
       icon: professionalsRoutine.icon,
@@ -150,6 +163,7 @@ async function main() {
     await ensureMenu(contractsRoutine.path, {
       moduleId: contractsRoutine.moduleId,
       routineId: contractsRoutine.id,
+      parentId: cadastrosMenuId,
       label: contractsRoutine.name,
       shortLabel: contractsRoutine.shortLabel,
       icon: contractsRoutine.icon,
@@ -159,10 +173,22 @@ async function main() {
     });
   }
 
+  // Menu pai "Atendimentos" (sem link, sem rotina) — key = label para o findFirst pelo label
+  const atendimentosMenu = await ensureMenu('Atendimentos', {
+    label: 'Atendimentos',
+    shortLabel: 'ATE',
+    icon: 'an an-calendar-check',
+    link: null,
+    sortOrder: 40,
+    isActive: true,
+  });
+  const atendimentosMenuId = atendimentosMenu.id;
+
   if (appointmentsListRoutine) {
     await ensureMenu(appointmentsListRoutine.path, {
       moduleId: appointmentsListRoutine.moduleId,
       routineId: appointmentsListRoutine.id,
+      parentId: atendimentosMenuId,
       label: appointmentsListRoutine.name,
       shortLabel: appointmentsListRoutine.shortLabel,
       icon: appointmentsListRoutine.icon,
@@ -176,6 +202,7 @@ async function main() {
     await ensureMenu(appointmentsCalendarRoutine.path, {
       moduleId: appointmentsCalendarRoutine.moduleId,
       routineId: appointmentsCalendarRoutine.id,
+      parentId: atendimentosMenuId,
       label: appointmentsCalendarRoutine.name,
       shortLabel: appointmentsCalendarRoutine.shortLabel,
       icon: appointmentsCalendarRoutine.icon,

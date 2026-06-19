@@ -1,0 +1,74 @@
+.bj-card-indicador {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.bj-card-indicador:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #c9b8e8;
+}
+
+.bj-card-icon {
+  font-size: 1.8rem;
+  color: #753399;
+}
+
+.bj-card-valor {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  min-height: 2.4rem;
+  display: flex;
+  align-items: center;
+}
+
+.bj-card-label {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.bj-atalho {
+  background: #f9f5ff;
+  border: 1px solid #e0d0f0;
+  border-radius: 8px;
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: box-shadow 0.2s, background 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.bj-atalho:hover {
+  background: #ede0ff;
+  box-shadow: 0 2px 8px rgba(117, 51, 153, 0.15);
+}
+
+.bj-atalho-icon {
+  font-size: 1.5rem;
+  color: #753399;
+}
+
+.bj-atalho-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.bj-atalho-desc {
+  font-size: 0.75rem;
+  color: #888;
+}

@@ -99,7 +99,7 @@ async function bootstrap() {
     console.log('Importing Empresas...');
     const [empresas]: any = await legacyDb.execute('SELECT * FROM empresa');
     for (const row of empresas) {
-      await prisma.empresa.upsert({
+      await prisma.cliente.upsert({
         where: { id: row.id },
         update: { nome: row.nome_fantasia || row.razao_social || 'Sem Nome' },
         create: { id: row.id, tenantId, nome: row.nome_fantasia || row.razao_social || 'Sem Nome' }
@@ -128,7 +128,7 @@ async function bootstrap() {
       await prisma.contrato.upsert({
         where: { id: row.id },
         update: {
-          empresaId: row.empresa_id,
+          clienteId: row.empresa_id,
           descricao: row.descricao || 'Sem descrição',
           cor: row.cor || '#333333',
           dtInicio: row.dt_inicio ? new Date(row.dt_inicio) : DEFAULT_CONTRACT_START,
@@ -139,7 +139,7 @@ async function bootstrap() {
         create: {
           id: row.id,
           tenantId,
-          empresaId: row.empresa_id,
+          clienteId: row.empresa_id,
           descricao: row.descricao || 'Sem descrição',
           cor: row.cor || '#333333',
           dtInicio: row.dt_inicio ? new Date(row.dt_inicio) : DEFAULT_CONTRACT_START,

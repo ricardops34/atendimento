@@ -29,6 +29,10 @@ export class ProfissionalService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
+  findOne(id: number) {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
   search(params: ProfissionalSearchParams) {
     let httpParams = new HttpParams();
 

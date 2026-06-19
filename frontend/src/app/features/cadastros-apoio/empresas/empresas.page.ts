@@ -1,5 +1,6 @@
-import { CommonModule } from '@angular/common';
+﻿import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   PoButtonModule,
   PoDisclaimer,
@@ -25,18 +26,15 @@ import { EmpresaSearchParams, EmpresaService } from '../../../core/services/empr
   templateUrl: './empresas.page.html',
 })
 export class EmpresasPage implements OnInit {
-  @ViewChild('modal', { static: true }) modal!: PoModalComponent;
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
 
   private empresaService = inject(EmpresaService);
   private poNotification = inject(PoNotificationService);
+  readonly router = inject(Router);
 
   empresas: any[] = [];
   loading = false;
   loadingShowMore = false;
-  saving = false;
-  isEdit = false;
-  formData: any = { nome: '', razao: '', cor: '', endereco: '', cidade: '', estado: '' };
   quickSearch = '';
   page = 1;
   readonly pageSize = 20;
@@ -61,8 +59,9 @@ export class EmpresasPage implements OnInit {
   };
 
   actions: PoTableAction[] = [
-    { label: 'Editar', icon: 'po-icon-edit', action: (row: any) => this.openEdit(row) },
-    { label: 'Excluir', icon: 'po-icon-delete', action: (row: any) => this.remove(row) },
+    { label: 'Visualizar', icon: 'po-icon-eye', action: (row: any) => this.navigateTo(['/clientes', row.id]) },
+    { label: 'Editar', icon: 'po-icon-edit', action: (row: any) => this.navigateTo(['/clientes', row.id, 'editar']) },
+    { label: 'Excluir', icon: 'po-icon-delete', action: (row: any) => this.navigateTo(['/clientes', row.id, 'excluir']) },
   ];
 
   ngOnInit() {
@@ -142,68 +141,8 @@ export class EmpresasPage implements OnInit {
     this.loadData(true);
   }
 
-  openCreate() {
-    this.isEdit = false;
-    this.formData = { nome: '', razao: '', cor: '', endereco: '', cidade: '', estado: '' };
-    this.modal.open();
-  }
-
-  openEdit(row: any) {
-    this.isEdit = true;
-    this.formData = {
-      id: row.id,
-      nome: row.nome || '',
-      razao: row.razao || '',
-      cor: row.cor || '',
-      endereco: row.endereco || '',
-      cidade: row.cidade || '',
-      estado: row.estado || '',
-    };
-    this.modal.open();
-  }
-
-  save() {
-    if (!this.formData.nome?.trim()) {
-      this.poNotification.warning('Informe o nome da empresa.');
-      return;
-    }
-
-    this.saving = true;
-    const payload: any = { nome: this.formData.nome.trim() };
-    if (this.formData.razao?.trim()) payload.razao = this.formData.razao.trim();
-    if (this.formData.cor?.trim()) payload.cor = this.formData.cor.trim();
-    if (this.formData.endereco?.trim()) payload.endereco = this.formData.endereco.trim();
-    if (this.formData.cidade?.trim()) payload.cidade = this.formData.cidade.trim();
-    if (this.formData.estado?.trim()) payload.estado = this.formData.estado.trim().toUpperCase().substring(0, 2);
-
-    const request$ = this.isEdit
-      ? this.empresaService.update(this.formData.id, payload)
-      : this.empresaService.create(payload);
-
-    request$.subscribe({
-      next: () => {
-        this.poNotification.success(this.isEdit ? 'Empresa atualizada com sucesso.' : 'Empresa criada com sucesso.');
-        this.saving = false;
-        this.loadData(true);
-        this.modal.close();
-      },
-      error: () => {
-        this.poNotification.error('Erro ao salvar empresa.');
-        this.saving = false;
-      },
-    });
-  }
-
-  remove(row: any) {
-    this.empresaService.remove(row.id).subscribe({
-      next: () => {
-        this.poNotification.success('Empresa excluída com sucesso.');
-        this.loadData(true);
-      },
-      error: () => {
-        this.poNotification.error('Erro ao excluir empresa. Verifique se não há contratos vinculados.');
-      },
-    });
+  navigateTo(commands: any[]) {
+    this.router.navigate(commands);
   }
 
   private buildSearchParams(): EmpresaSearchParams {

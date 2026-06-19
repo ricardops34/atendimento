@@ -23,7 +23,7 @@ export interface TenantSearchResult {
 @Injectable({ providedIn: 'root' })
 export class TenantService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/tenants`;
+  private apiUrl = `${environment.apiUrl}/empresas`;
 
   findAll() {
     return this.http.get<any[]>(this.apiUrl);

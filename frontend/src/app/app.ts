@@ -49,11 +49,12 @@ export class App {
   private router = inject(Router);
   private poNotification = inject(PoNotificationService);
   private readonly breadcrumbLabels: Record<string, string> = {
-    empresas: 'Empresas',
+    clientes: 'Clientes',
     profissionais: 'Profissionais',
     contratos: 'Contratos',
     configuracoes: 'Configuracoes',
-    tenants: 'Tenants',
+    tenants: 'Empresas',
+    empresas: 'Empresas',
     modulos: 'Modulos',
     rotinas: 'Rotinas',
     perfis: 'Perfis',
@@ -81,9 +82,28 @@ export class App {
 
   private readonly menuCatalog: Record<string, PoMenuItem> = {
     home: { label: 'Inicio', shortLabel: 'INI', icon: 'an an-house', link: '/' },
-    companies: { label: 'Empresas', shortLabel: 'EMP', icon: 'an an-buildings', link: '/empresas' },
+    cadastros: {
+      label: 'Cadastros',
+      shortLabel: 'CAD',
+      icon: 'an an-folder',
+      subItems: [
+        { label: 'Clientes', shortLabel: 'CLI', icon: 'an an-buildings', link: '/clientes' },
+        { label: 'Profissionais', shortLabel: 'PRO', icon: 'an an-user', link: '/profissionais' },
+        { label: 'Contratos', shortLabel: 'CON', icon: 'an an-file-text', link: '/contratos' },
+      ]
+    },
+    companies: { label: 'Clientes', shortLabel: 'CLI', icon: 'an an-buildings', link: '/clientes' },
     professionals: { label: 'Profissionais', shortLabel: 'PRO', icon: 'an an-user', link: '/profissionais' },
     contracts: { label: 'Contratos', shortLabel: 'CON', icon: 'an an-file-text', link: '/contratos' },
+    atendimentos: {
+      label: 'Atendimentos',
+      shortLabel: 'ATE',
+      icon: 'an an-calendar-check',
+      subItems: [
+        { label: 'Lista de Atendimentos', shortLabel: 'LST', icon: 'an an-list-dashes', link: '/agendamentos/lista' },
+        { label: 'Calendario', shortLabel: 'CAL', icon: 'an an-calendar-blank', link: '/agendamentos/calendario' },
+      ]
+    },
     'appointments-list': {
       label: 'Lista de Atendimentos',
       shortLabel: 'LST',
@@ -101,7 +121,7 @@ export class App {
       shortLabel: 'CFG',
       icon: 'an an-gear',
       subItems: [
-        { label: 'Tenants', shortLabel: 'TEN', icon: 'an an-buildings', link: '/configuracoes/tenants' },
+        { label: 'Empresas', shortLabel: 'EMP', icon: 'an an-buildings', link: '/configuracoes/empresas' },
         { label: 'Modulos', shortLabel: 'MOD', icon: 'an an-squares-four', link: '/configuracoes/modulos' },
         { label: 'Rotinas', shortLabel: 'ROT', icon: 'an an-list-checks', link: '/configuracoes/rotinas' },
         { label: 'Perfis', shortLabel: 'PRF', icon: 'an an-identification-card', link: '/configuracoes/perfis' },

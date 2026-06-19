@@ -18,7 +18,7 @@ model Tenant {
   slug           String         @unique @db.VarChar(255)
   
   userTenants    UserTenant[]
-  empresas       Empresa[]
+  clientes       Cliente[]
   profissionais  Profissional[]
   contratos      Contrato[]
   agendamentos   Agendamento[]
@@ -128,20 +128,20 @@ model Menu {
 // DOMAIN MODELS
 // ----------------------------------------------------------------------------
 
-/// Representa a empresa cliente (Cadastros de Apoio)
-model Empresa {
+/// Representa o cliente (Cadastros de Apoio)
+model Cliente {
   id        Int        @id @default(autoincrement())
   tenantId  Int        @map("tenant_id")
   tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   nome      String     @db.VarChar(255)
   razao     String?    @db.VarChar(255)
-  cor       String?    @db.VarChar(7)      // cor padrão na agenda (hex)
+  cor       String?    @db.VarChar(7)
   endereco  String?    @db.VarChar(500)
   cidade    String?    @db.VarChar(255)
   estado    String?    @db.VarChar(2)
   contratos Contrato[]
 
-  @@map("empresa")
+  @@map("cliente")
 }
 
 /// Representa o profissional executor (Cadastros de Apoio)
@@ -164,8 +164,8 @@ model Contrato {
   id             Int                    @id @default(autoincrement())
   tenantId       Int                    @map("tenant_id")
   tenant         Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  empresaId      Int                    @map("empresa_id")
-  empresa        Empresa                @relation(fields: [empresaId], references: [id], onDelete: Restrict)
+  clienteId      Int                    @map("cliente_id")
+  cliente        Cliente                @relation(fields: [clienteId], references: [id], onDelete: Restrict)
   descricao      String                 @db.VarChar(255)
   cor            String                 @default("#333333") @db.VarChar(7)
   dtInicio       DateTime               @map("dt_inicio") @db.Date
