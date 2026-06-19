@@ -45,8 +45,8 @@ export class LoginComponent {
     });
   }
 
-  onEmailChange(email: any) {
-    this.emailChange$.next(typeof email === 'string' ? email : '');
+  onEmailChange(email: string) {
+    this.emailChange$.next(email ?? '');
   }
 
   loginSubmit(formData: any) {
