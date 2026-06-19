@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, Request } from '@nestjs/common';
 import { ContratosService } from './contratos.service';
 import { CreateContratoDto } from './dto/create-contrato.dto';
 import { UpdateContratoDto } from './dto/update-contrato.dto';
@@ -8,32 +8,32 @@ export class ContratosController {
   constructor(private readonly contratosService: ContratosService) {}
 
   @Post()
-  create(@Body() createContratoDto: CreateContratoDto) {
-    return this.contratosService.create(createContratoDto);
+  create(@Body() createContratoDto: CreateContratoDto, @Request() req: any) {
+    return this.contratosService.create(createContratoDto, req.tenantId as number);
   }
 
   @Get()
-  findAll() {
-    return this.contratosService.findAll();
+  findAll(@Request() req: any) {
+    return this.contratosService.findAll(req.tenantId as number);
   }
 
   @Get('search')
-  search(@Query() query: Record<string, string | undefined>) {
-    return this.contratosService.search(query);
+  search(@Query() query: Record<string, string | undefined>, @Request() req: any) {
+    return this.contratosService.search(query, req.tenantId as number);
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.contratosService.findOne(id);
+  findOne(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
+    return this.contratosService.findOne(id, req.tenantId as number);
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateContratoDto: UpdateContratoDto) {
-    return this.contratosService.update(id, updateContratoDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateContratoDto: UpdateContratoDto, @Request() req: any) {
+    return this.contratosService.update(id, updateContratoDto, req.tenantId as number);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.contratosService.remove(id);
+  remove(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
+    return this.contratosService.remove(id, req.tenantId as number);
   }
 }

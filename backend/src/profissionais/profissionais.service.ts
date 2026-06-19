@@ -19,24 +19,25 @@ const userSelect = { select: { id: true, name: true } } as const;
 export class ProfissionaisService {
   constructor(private prisma: PrismaService) {}
 
-  create(dto: CreateProfissionalDto) {
+  create(dto: CreateProfissionalDto, tenantId: number) {
     return this.prisma.profissional.create({
-      data: { ...dto, tenantId: 1 },
+      data: { ...dto, tenantId },
       include: { user: userSelect },
     });
   }
 
-  findAll() {
+  findAll(tenantId: number) {
     return this.prisma.profissional.findMany({
+      where: { tenantId },
       orderBy: { nome: 'asc' },
       include: { user: userSelect },
     });
   }
 
-  async search(query: ProfissionalSearchQuery) {
+  async search(query: ProfissionalSearchQuery, tenantId: number) {
     const page = Math.max(Number(query.page) || 1, 1);
     const pageSize = Math.max(Number(query.pageSize) || 20, 1);
-    const where = this.buildWhere(query);
+    const where = this.buildWhere(query, tenantId);
     const total = await this.prisma.profissional.count({ where });
     const items = await this.prisma.profissional.findMany({
       where,
@@ -49,17 +50,20 @@ export class ProfissionaisService {
     return { items, page, pageSize, total, hasNext: page * pageSize < total };
   }
 
-  async findOne(id: number) {
-    const profissional = await this.prisma.profissional.findUnique({
-      where: { id },
+  async findOne(id: number, tenantId?: number) {
+    const where: any = { id };
+    if (tenantId) where.tenantId = tenantId;
+
+    const profissional = await this.prisma.profissional.findFirst({
+      where,
       include: { user: userSelect },
     });
     if (!profissional) throw new NotFoundException('Profissional não encontrado.');
     return profissional;
   }
 
-  async update(id: number, dto: UpdateProfissionalDto) {
-    await this.findOne(id);
+  async update(id: number, dto: UpdateProfissionalDto, tenantId?: number) {
+    await this.findOne(id, tenantId);
     return this.prisma.profissional.update({
       where: { id },
       data: dto,
@@ -67,16 +71,23 @@ export class ProfissionaisService {
     });
   }
 
-  async remove(id: number) {
-    await this.findOne(id);
+  async remove(id: number, tenantId?: number) {
+    await this.findOne(id, tenantId);
     return this.prisma.profissional.delete({ where: { id } });
   }
 
-  private buildWhere(query: ProfissionalSearchQuery) {
-    if (query.id) return { id: Number(query.id) };
+  private buildWhere(query: ProfissionalSearchQuery, tenantId?: number) {
+    const where: any = {};
+    if (tenantId) where.tenantId = tenantId;
+
+    if (query.id) {
+      where.id = Number(query.id);
+      return where;
+    }
     const nome = query.nome?.trim() || query.search?.trim();
-    if (!nome) return {};
-    return { nome: { contains: nome, mode: 'insensitive' as const } };
+    if (!nome) return where;
+    where.nome = { contains: nome, mode: 'insensitive' as const };
+    return where;
   }
 
   private buildOrderBy(sortProperty?: string, sortDirection?: string) {

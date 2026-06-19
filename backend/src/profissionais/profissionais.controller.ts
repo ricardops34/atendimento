@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, Request } from '@nestjs/common';
 import { ProfissionaisService } from './profissionais.service';
 import { CreateProfissionalDto } from './dto/create-profissional.dto';
 import { UpdateProfissionalDto } from './dto/update-profissional.dto';
@@ -8,32 +8,32 @@ export class ProfissionaisController {
   constructor(private readonly profissionaisService: ProfissionaisService) {}
 
   @Post()
-  create(@Body() createProfissionalDto: CreateProfissionalDto) {
-    return this.profissionaisService.create(createProfissionalDto);
+  create(@Body() createProfissionalDto: CreateProfissionalDto, @Request() req: any) {
+    return this.profissionaisService.create(createProfissionalDto, req.tenantId as number);
   }
 
   @Get()
-  findAll() {
-    return this.profissionaisService.findAll();
+  findAll(@Request() req: any) {
+    return this.profissionaisService.findAll(req.tenantId as number);
   }
 
   @Get('search')
-  search(@Query() query: Record<string, string | undefined>) {
-    return this.profissionaisService.search(query);
+  search(@Query() query: Record<string, string | undefined>, @Request() req: any) {
+    return this.profissionaisService.search(query, req.tenantId as number);
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.profissionaisService.findOne(id);
+  findOne(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
+    return this.profissionaisService.findOne(id, req.tenantId as number);
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateProfissionalDto: UpdateProfissionalDto) {
-    return this.profissionaisService.update(id, updateProfissionalDto);
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateProfissionalDto: UpdateProfissionalDto, @Request() req: any) {
+    return this.profissionaisService.update(id, updateProfissionalDto, req.tenantId as number);
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) {
-    return this.profissionaisService.remove(id);
+  remove(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
+    return this.profissionaisService.remove(id, req.tenantId as number);
   }
 }

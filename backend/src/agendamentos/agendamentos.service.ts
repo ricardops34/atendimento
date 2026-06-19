@@ -139,13 +139,14 @@ export class AgendamentosService {
     });
   }
 
-  findAll(): Promise<Agendamento[]> {
+  findAll(tenantId: number): Promise<Agendamento[]> {
     return this.prisma.agendamento.findMany({
+      where: { tenantId },
       include: { contrato: true, profissional: true },
     });
   }
 
-  async search(query: SearchQuery): Promise<{
+  async search(query: SearchQuery, tenantId: number): Promise<{
     items: Agendamento[];
     page: number;
     pageSize: number;
@@ -163,6 +164,7 @@ export class AgendamentosService {
       profissionalId: this.parseNumber(query.profissionalId),
       dataInicial: query.dataInicial,
       dataFinal: query.dataFinal,
+      tenantId,
     };
 
     const where = this.buildWhereFromFilters(filters);
@@ -178,17 +180,20 @@ export class AgendamentosService {
     return { items, page, pageSize, total, hasNext: page * pageSize < total };
   }
 
-  async findOne(id: number): Promise<Agendamento> {
-    const agendamento = await this.prisma.agendamento.findUnique({
-      where: { id },
+  async findOne(id: number, tenantId?: number): Promise<Agendamento> {
+    const where: any = { id };
+    if (tenantId) where.tenantId = tenantId;
+
+    const agendamento = await this.prisma.agendamento.findFirst({
+      where,
       include: { contrato: true, profissional: true },
     });
     if (!agendamento) throw new NotFoundException('Agendamento não encontrado.');
     return agendamento;
   }
 
-  async update(id: number, dto: UpdateAgendamentoDto): Promise<Agendamento> {
-    const current = await this.findOne(id);
+  async update(id: number, dto: UpdateAgendamentoDto, tenantId?: number): Promise<Agendamento> {
+    const current = await this.findOne(id, tenantId);
 
     const dataAgenda = dto.dataAgenda ? new Date(dto.dataAgenda) : current.dataAgenda;
     const horaInicio = dto.horaInicio || current.horaInicio;
@@ -212,8 +217,8 @@ export class AgendamentosService {
     });
   }
 
-  async remove(id: number): Promise<Agendamento> {
-    await this.findOne(id);
+  async remove(id: number, tenantId?: number): Promise<Agendamento> {
+    await this.findOne(id, tenantId);
     return this.prisma.agendamento.delete({ where: { id } });
   }
 

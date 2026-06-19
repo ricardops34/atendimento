@@ -228,11 +228,11 @@ async function main() {
 
   // 2. Tenant Default
   const tenant = await prisma.tenant.upsert({
-    where: { slug: 'default' },
+    where: { slug: 'default-tenant' },
     update: {},
     create: {
-      name: 'Default Tenant',
-      slug: 'default',
+      name: 'Tenant Padrão',
+      slug: 'default-tenant',
     },
   });
 
