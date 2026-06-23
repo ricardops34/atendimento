@@ -60,7 +60,7 @@
 
 <po-modal p-title="Profissional" #modal>
   <div class="po-row">
-    <po-input class="po-md-12" p-label="Nome *" [ngModel]="formData.nome" (ngModelChange)="formData.nome = $event"></po-input>
+    <po-input class="po-md-12" p-label="Nome" p-required="true" [p-show-required]="true" [p-required-field-error-message]="true" [ngModel]="formData.nome" (ngModelChange)="formData.nome = $event"></po-input>
   </div>
   <div class="po-row">
     <po-combo

@@ -87,6 +87,48 @@ export class AgendamentosController {
     }
   }
 
+  @Get('export-extrato')
+  async exportExtrato(
+    @Query('format') format: string,
+    @Query() query: Record<string, string | undefined>,
+    @Request() req: any,
+    @Res() res: Response,
+  ) {
+    const validFormats = ['xls', 'pdf'];
+    if (!format || !validFormats.includes(format)) {
+      res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro format inválido para extrato. Use: xls ou pdf.' });
+      return;
+    }
+
+    const contentTypeMap: Record<string, string> = {
+      xls: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      pdf: 'application/pdf',
+    };
+    const extMap: Record<string, string> = { xls: 'xlsx', pdf: 'pdf' };
+
+    const filters = {
+      search: query.search?.trim(),
+      tipo: query.tipo?.trim(),
+      local: query.local?.trim(),
+      contratoId: query.contratoId ? Number(query.contratoId) : undefined,
+      profissionalId: query.profissionalId ? Number(query.profissionalId) : undefined,
+      dataInicial: query.dataInicial,
+      dataFinal: query.dataFinal,
+      tenantId: req.tenantId as number,
+    };
+
+    try {
+      const buffer = await this.agendamentosService.generateExportExtrato(filters, format as any);
+      res.setHeader('Content-Type', contentTypeMap[format]);
+      res.setHeader('Content-Disposition', `attachment; filename="extrato.${extMap[format]}"`);
+      res.send(buffer);
+    } catch (e: any) {
+      const status = e?.status || 500;
+      const message = e?.message || 'Erro interno ao gerar extrato.';
+      res.status(status).json({ message });
+    }
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
     return this.agendamentosService.findOne(id, req.tenantId as number);

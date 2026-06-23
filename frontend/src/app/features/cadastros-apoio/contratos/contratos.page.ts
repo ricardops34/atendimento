@@ -92,7 +92,7 @@ export class ContratosPage implements OnInit {
   novaEscala: any = { diaSemana: null, profissionalId: null, horaInicio: '08:30', horaFim: '18:00', intervaloIni: '11:30', intervaloFim: '13:00' };
 
   columns: PoTableColumn[] = [
-    { property: 'empresa.nome', label: 'Empresa', sortable: true },
+    { property: 'empresa.nome', label: 'Cliente', sortable: true },
     { property: 'descricao', label: 'Descrição', sortable: true },
     { property: 'tipo', label: 'Tipo', sortable: true, width: '80px' },
     { property: 'dtInicioFmt', label: 'Início', sortable: false, width: '110px' },
@@ -296,7 +296,7 @@ export class ContratosPage implements OnInit {
 
   save() {
     if (!this.formData.empresaId || !this.formData.descricao?.trim()) {
-      this.poNotification.warning('Preencha empresa e descrição.');
+      this.poNotification.warning('Preencha cliente e descrição.');
       return;
     }
     if (!this.formData.dtInicio || !this.formData.dtFim) {
@@ -321,10 +321,12 @@ export class ContratosPage implements OnInit {
       escalas: this.formData.escalas || [],
     };
     if (this.formData.valorHora !== null && this.formData.valorHora !== '') {
-      payload.valorHora = Number(this.formData.valorHora);
+      let v = String(this.formData.valorHora).replace(/\./g, '').replace(',', '.');
+      payload.valorHora = Number(v);
     }
     if (this.formData.valorFixo !== null && this.formData.valorFixo !== '') {
-      payload.valorFixo = Number(this.formData.valorFixo);
+      let v = String(this.formData.valorFixo).replace(/\./g, '').replace(',', '.');
+      payload.valorFixo = Number(v);
     }
 
     const request$ = this.isEdit
@@ -338,8 +340,12 @@ export class ContratosPage implements OnInit {
         this.loadData(true);
         this.modal.close();
       },
-      error: () => {
-        this.poNotification.error('Erro ao salvar contrato.');
+      error: (err: any) => {
+        let msg = 'Erro ao salvar contrato.';
+        if (err.error && err.error.message) {
+          msg = Array.isArray(err.error.message) ? err.error.message.join(', ') : err.error.message;
+        }
+        this.poNotification.error(msg);
         this.saving = false;
       },
     });
@@ -389,7 +395,7 @@ export class ContratosPage implements OnInit {
     if (this.filters.empresaId) {
       disclaimers.push({
         property: 'empresaId',
-        label: 'Empresa',
+        label: 'Cliente',
         value: this.empresas.find((e) => e.value === this.filters.empresaId)?.label || this.filters.empresaId,
       });
     }

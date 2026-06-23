@@ -28,6 +28,8 @@ export class ContratosService {
       const contrato = await tx.contrato.create({
         data: {
           ...contratoData,
+          dtInicio: new Date(contratoData.dtInicio),
+          dtFim: new Date(contratoData.dtFim),
           cor: contratoData.cor || '#333333',
           isFeriado: contratoData.isFeriado ?? false,
           tenantId,
@@ -88,6 +90,9 @@ export class ContratosService {
     await this.findOne(id, tenantId);
     const { profissionalIds, escalas, ...contratoData } = dto as any;
     return this.prisma.$transaction(async (tx) => {
+      if (contratoData.dtInicio) contratoData.dtInicio = new Date(contratoData.dtInicio);
+      if (contratoData.dtFim) contratoData.dtFim = new Date(contratoData.dtFim);
+      
       const contrato = await tx.contrato.update({ where: { id }, data: contratoData });
       if (profissionalIds !== undefined) {
         await tx.contratoProfissional.deleteMany({ where: { contratoId: id } });

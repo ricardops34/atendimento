@@ -44,6 +44,7 @@ import { ProfissionalService } from '../../../core/services/profissional.service
 export class Lista implements OnInit {
   @ViewChild(FormSidebar) formSidebar!: FormSidebar;
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
+  @ViewChild('extratoModal', { static: true }) extratoModal!: PoModalComponent;
 
   private agendamentoService = inject(AgendamentoService);
   private contratoService = inject(ContratoService);
@@ -69,6 +70,11 @@ export class Lista implements OnInit {
     { label: 'XML', action: () => this.onExport('xml') }
   ];
 
+  extratoActions: PoDropdownAction[] = [
+    { label: 'Extrato (XLS)', action: () => this.openExtratoModal('xls') },
+    { label: 'Extrato (PDF)', action: () => this.openExtratoModal('pdf') }
+  ];
+
   readonly statusOptions: PoComboOption[] = [
     { label: 'Agendada', value: 'A' },
     { label: 'Realizada', value: 'R' },
@@ -90,6 +96,15 @@ export class Lista implements OnInit {
     dataInicial?: string;
     dataFinal?: string;
   } = {};
+
+  extratoFilters: {
+    dataInicial?: string;
+    dataFinal?: string;
+    contratoId?: number;
+    profissionalId?: number;
+  } = {};
+
+  extratoFormat: 'xls' | 'pdf' = 'xls';
 
   disclaimerGroup: PoDisclaimerGroup = {
     title: 'Filtros aplicados',
@@ -138,9 +153,36 @@ export class Lista implements OnInit {
     }
   ];
 
+  private readonly STORAGE_KEY_FILTERS = 'agendamentos_lista_filters';
+  private readonly STORAGE_KEY_EXTRATO = 'agendamentos_extrato_filters';
+
   ngOnInit() {
     this.loadDependencies();
+    this.restoreParams();
     this.loadData(true);
+  }
+
+  private restoreParams() {
+    try {
+      const savedFilters = localStorage.getItem(this.STORAGE_KEY_FILTERS);
+      if (savedFilters) {
+        const parsed = JSON.parse(savedFilters);
+        this.filters = parsed.filters || {};
+        this.quickSearch = parsed.quickSearch || '';
+        this.syncDisclaimers();
+      }
+      
+      const savedExtrato = localStorage.getItem(this.STORAGE_KEY_EXTRATO);
+      if (savedExtrato) {
+        this.extratoFilters = JSON.parse(savedExtrato);
+      }
+    } catch (e) {
+      console.error('Erro ao restaurar filtros salvos:', e);
+    }
+  }
+
+  private saveParams(key: string, data: any) {
+    localStorage.setItem(key, JSON.stringify(data));
   }
 
   loadDependencies() {
@@ -188,8 +230,10 @@ export class Lista implements OnInit {
     this.loadData();
   }
 
-  onQuickSearch(value: string) {
-    this.quickSearch = value?.trim() || '';
+  onQuickSearch(filter: string) {
+    this.quickSearch = filter;
+    this.saveParams(this.STORAGE_KEY_FILTERS, { filters: this.filters, quickSearch: this.quickSearch });
+    this.syncDisclaimers();
     this.loadData(true);
   }
 
@@ -198,6 +242,7 @@ export class Lista implements OnInit {
   }
 
   applyAdvancedFilters() {
+    this.saveParams(this.STORAGE_KEY_FILTERS, { filters: this.filters, quickSearch: this.quickSearch });
     this.advancedFilterModal.close();
     this.loadData(true);
   }
@@ -205,6 +250,7 @@ export class Lista implements OnInit {
   clearFilters() {
     this.quickSearch = '';
     this.filters = {};
+    localStorage.removeItem(this.STORAGE_KEY_FILTERS);
     this.syncDisclaimers();
     this.loadData(true);
   }
@@ -252,6 +298,58 @@ export class Lista implements OnInit {
       },
       error: async (err) => {
         let message = 'Erro ao exportar atendimentos.';
+        if (err.error instanceof Blob) {
+          try {
+            const text = await err.error.text();
+            const json = JSON.parse(text);
+            message = json.message || message;
+          } catch {}
+        }
+        this.poNotification.error(message);
+      }
+    });
+  }
+
+  openExtratoModal(format: 'xls' | 'pdf') {
+    this.extratoFormat = format;
+    
+    // Se não tiver nenhum dado de data inicial salvo, podemos puxar da busca avançada
+    if (!this.extratoFilters.dataInicial && !this.extratoFilters.dataFinal) {
+      this.extratoFilters = {
+        dataInicial: this.filters.dataInicial,
+        dataFinal: this.filters.dataFinal,
+        contratoId: this.filters.contratoId,
+        profissionalId: this.filters.profissionalId
+      };
+    }
+    this.extratoModal.open();
+  }
+
+  generateExtrato() {
+    this.saveParams(this.STORAGE_KEY_EXTRATO, this.extratoFilters);
+    this.extratoModal.close();
+    
+    const params: AgendamentoSearchParams = {
+      page: 1,
+      pageSize: 2000,
+      dataInicial: this.extratoFilters.dataInicial,
+      dataFinal: this.extratoFilters.dataFinal,
+      contratoId: this.extratoFilters.contratoId,
+      profissionalId: this.extratoFilters.profissionalId
+    };
+
+    this.agendamentoService.exportExtrato(params, this.extratoFormat).subscribe({
+      next: (blob) => {
+        const extMap: Record<'xls'|'pdf', string> = { xls: 'xlsx', pdf: 'pdf' };
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `extrato_faturamento.${extMap[this.extratoFormat]}`;
+        a.click();
+        URL.revokeObjectURL(url);
+      },
+      error: async (err) => {
+        let message = 'Erro ao exportar extrato.';
         if (err.error instanceof Blob) {
           try {
             const text = await err.error.text();

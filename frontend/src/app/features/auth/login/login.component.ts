@@ -37,7 +37,6 @@ export class LoginComponent {
   customField: PoPageLoginCustomField = {
     property: 'tenantId',
     placeholder: 'Selecione a Empresa',
-    type: 'select',
     options: []
   };
 
@@ -55,7 +54,7 @@ export class LoginComponent {
       email: formData.login,
       password: formData.password
     };
-    this.submitLogin(formData.customField);
+    this.submitLogin(formData.tenantId || formData.customField);
   }
 
   private submitLogin(tenantId?: number) {

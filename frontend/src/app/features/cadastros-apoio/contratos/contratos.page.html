@@ -40,7 +40,7 @@
       [ngModel]="filters.descricao" (ngModelChange)="filters.descricao = $event">
     </po-input>
 
-    <po-combo class="po-md-6" name="empresaFiltro" p-label="Empresa"
+    <po-combo class="po-md-6" name="empresaFiltro" p-label="Cliente"
       [p-options]="empresas"
       [ngModel]="filters.empresaId"
       (ngModelChange)="filters.empresaId = $event">
@@ -54,13 +54,13 @@
       (ngModelChange)="filters.tipo = $event">
     </po-combo>
 
-    <po-input class="po-md-4" name="dtInicioFiltro" p-label="Data de Início" p-type="date"
+    <po-datepicker class="po-md-4" name="dtInicioFiltro" p-label="Data de Início"
       [ngModel]="filters.dtInicio" (ngModelChange)="filters.dtInicio = $event">
-    </po-input>
+    </po-datepicker>
 
-    <po-input class="po-md-4" name="dtFimFiltro" p-label="Data de Fim" p-type="date"
+    <po-datepicker class="po-md-4" name="dtFimFiltro" p-label="Data de Fim"
       [ngModel]="filters.dtFim" (ngModelChange)="filters.dtFim = $event">
-    </po-input>
+    </po-datepicker>
   </div>
 
   <po-modal-footer>
@@ -74,7 +74,7 @@
 
   <!-- Dados principais -->
   <div class="po-row">
-    <po-combo class="po-md-8" p-label="Empresa *"
+    <po-combo class="po-md-8" p-label="Cliente" [p-required]="true"
       [p-options]="empresas"
       [ngModel]="formData.empresaId"
       (ngModelChange)="formData.empresaId = $event">
@@ -88,24 +88,24 @@
   </div>
 
   <div class="po-row">
-    <po-input class="po-md-12" p-label="Descrição *"
+    <po-input class="po-md-12" p-label="Descrição" p-required="true" [p-show-required]="true" [p-required-field-error-message]="true"
       [ngModel]="formData.descricao"
       (ngModelChange)="formData.descricao = $event">
     </po-input>
   </div>
 
   <div class="po-row">
-    <po-input class="po-md-3" p-label="Data de Início *" p-type="date"
+    <po-datepicker class="po-md-3" p-label="Data de Início" p-required="true" [p-show-required]="true" [p-required-field-error-message]="true"
       [ngModel]="formData.dtInicio"
       (ngModelChange)="formData.dtInicio = $event">
-    </po-input>
+    </po-datepicker>
 
-    <po-input class="po-md-3" p-label="Data de Fim *" p-type="date"
+    <po-datepicker class="po-md-3" p-label="Data de Fim" p-required="true" [p-show-required]="true" [p-required-field-error-message]="true"
       [ngModel]="formData.dtFim"
       (ngModelChange)="formData.dtFim = $event">
-    </po-input>
+    </po-datepicker>
 
-    <po-combo class="po-md-3" p-label="Tipo *"
+    <po-combo class="po-md-3" p-label="Tipo" [p-required]="true"
       [p-options]="tipoOptions"
       [ngModel]="formData.tipo"
       (ngModelChange)="formData.tipo = $event">
