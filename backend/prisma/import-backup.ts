@@ -68,7 +68,7 @@ async function resetSequence(table: string, column = 'id') {
 
 async function main() {
   // Busca o tenant padrão (criado pelo seed.ts)
-  const tenant = await prisma.tenant.findFirst({ where: { slug: 'default' } });
+  const tenant = await prisma.tenant.findFirst({ where: { slug: 'default-tenant' } });
   if (!tenant) {
     throw new Error('Tenant "default" não encontrado. Rode "npx prisma db seed" primeiro.');
   }

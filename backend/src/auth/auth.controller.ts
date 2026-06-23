@@ -11,6 +11,20 @@ export class AuthController {
     private readonly prisma: PrismaService,
   ) {}
 
+  @Post('tenant-options')
+  async tenantOptions(@Body('email') email: string) {
+    if (!email) return [];
+    const user = await this.prisma.user.findFirst({
+      where: { email, isActive: true },
+      include: { userTenants: { include: { tenant: true } } },
+    });
+    if (!user) return [];
+    return user.userTenants.map((ut) => ({
+      label: ut.tenant.name,
+      value: ut.tenantId,
+    }));
+  }
+
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     const user = await this.authService.validateUser(loginDto);
