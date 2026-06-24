@@ -409,7 +409,7 @@ export class AgendamentosService {
         data: a.dataAgenda ? new Date(a.dataAgenda).toLocaleDateString('pt-BR') : '',
         contrato: a.contrato?.descricao || 'Sem Cliente',
         profissional: a.profissional?.nome || 'Sem Profissional',
-        status: a.tipo === 'R' ? 'Realizada' : (a.tipo === 'A' ? 'Agendada' : a.tipo),
+        status: a.local === 'P' ? 'Presencial' : (a.local === 'R' ? 'Remoto' : (a.local === 'F' ? 'Falta' : a.local || '')),
         horasRealizadas: horasDecimais,
         valorHora: valorHora,
         valorTotal: valorTotal,
