@@ -13,38 +13,39 @@ generator client {
 // ----------------------------------------------------------------------------
 
 model Tenant {
-  id             Int            @id @default(autoincrement())
-  name           String         @db.VarChar(255)
-  slug           String         @unique @db.VarChar(255)
-  
-  userTenants    UserTenant[]
-  empresas       Empresa[]
-  profissionais  Profissional[]
-  contratos      Contrato[]
-  agendamentos   Agendamento[]
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(255)
+  slug String @unique @db.VarChar(255)
+
+  userTenants   UserTenant[]
+  empresas      Empresa[]
+  profissionais Profissional[]
+  contratos     Contrato[]
+  agendamentos  Agendamento[]
+  feriados      Feriado[]
 
   @@map("tenants")
 }
 
 model User {
-  id             Int            @id @default(autoincrement())
-  name           String         @db.VarChar(255)
-  email          String         @unique @db.VarChar(255)
-  profileId      Int            @map("profile_id")
-  profile        Profile        @relation(fields: [profileId], references: [id], onDelete: Restrict)
-  avatar         String         @default("avatar_01.png") @db.VarChar(100)
-  password       String         @db.VarChar(255)
-  isActive       Boolean        @default(true) @map("is_active")
-  userTenants    UserTenant[]
-  profissionais  Profissional[]
+  id            Int            @id @default(autoincrement())
+  name          String         @db.VarChar(255)
+  email         String         @unique @db.VarChar(255)
+  profileId     Int            @map("profile_id")
+  profile       Profile        @relation(fields: [profileId], references: [id], onDelete: Restrict)
+  avatar        String         @default("avatar_01.png") @db.VarChar(100)
+  password      String         @db.VarChar(255)
+  isActive      Boolean        @default(true) @map("is_active")
+  userTenants   UserTenant[]
+  profissionais Profissional[]
 
   @@map("users")
 }
 
 model Profile {
-  id             Int            @id @default(autoincrement())
-  name           String         @db.VarChar(255)
-  
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(255)
+
   profileModules ProfileModule[]
   users          User[]
 
@@ -53,21 +54,21 @@ model Profile {
 }
 
 model UserTenant {
-  id         Int      @id @default(autoincrement())
-  userId     Int      @map("user_id")
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tenantId   Int      @map("tenant_id")
-  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  isDefault  Boolean  @default(false) @map("is_default")
+  id        Int     @id @default(autoincrement())
+  userId    Int     @map("user_id")
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenantId  Int     @map("tenant_id")
+  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  isDefault Boolean @default(false) @map("is_default")
 
   @@unique([userId, tenantId])
   @@map("user_tenants")
 }
 
 model Module {
-  id             Int            @id @default(autoincrement())
-  name           String         @db.VarChar(255)
-  key            String         @unique @db.VarChar(255) // ex: 'companies', 'appointments-calendar'
+  id   Int    @id @default(autoincrement())
+  name String @db.VarChar(255)
+  key  String @unique @db.VarChar(255) // ex: 'companies', 'appointments-calendar'
 
   profileModules ProfileModule[]
   routines       Routine[]
@@ -77,29 +78,29 @@ model Module {
 }
 
 model ProfileModule {
-  id             Int            @id @default(autoincrement())
-  profileId      Int            @map("profile_id")
-  profile        Profile        @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  moduleId       Int            @map("module_id")
-  module         Module         @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  canRead        Boolean        @default(true) @map("can_read")
-  canWrite       Boolean        @default(false) @map("can_write")
+  id        Int     @id @default(autoincrement())
+  profileId Int     @map("profile_id")
+  profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  moduleId  Int     @map("module_id")
+  module    Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  canRead   Boolean @default(true) @map("can_read")
+  canWrite  Boolean @default(false) @map("can_write")
 
   @@unique([profileId, moduleId])
   @@map("profile_modules")
 }
 
 model Routine {
-  id         Int      @id @default(autoincrement())
-  moduleId   Int      @map("module_id")
-  module     Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  name       String   @db.VarChar(255)
-  key        String   @unique @db.VarChar(255)
-  path       String   @db.VarChar(255)
-  icon       String?  @db.VarChar(100)
-  shortLabel String?  @map("short_label") @db.VarChar(20)
-  sortOrder  Int      @default(0) @map("sort_order")
-  isActive   Boolean  @default(true) @map("is_active")
+  id         Int     @id @default(autoincrement())
+  moduleId   Int     @map("module_id")
+  module     Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  name       String  @db.VarChar(255)
+  key        String  @unique @db.VarChar(255)
+  path       String  @db.VarChar(255)
+  icon       String? @db.VarChar(100)
+  shortLabel String? @map("short_label") @db.VarChar(20)
+  sortOrder  Int     @default(0) @map("sort_order")
+  isActive   Boolean @default(true) @map("is_active")
   menus      Menu[]
 
   @@map("routines")
@@ -135,7 +136,7 @@ model Empresa {
   tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   nome      String     @db.VarChar(255)
   razao     String?    @db.VarChar(255)
-  cor       String?    @db.VarChar(7)      // cor padrão na agenda (hex)
+  cor       String?    @db.VarChar(7) // cor padrão na agenda (hex)
   endereco  String?    @db.VarChar(500)
   cidade    String?    @db.VarChar(255)
   estado    String?    @db.VarChar(2)
@@ -146,37 +147,37 @@ model Empresa {
 
 /// Representa o profissional executor (Cadastros de Apoio)
 model Profissional {
-  id               Int                    @id @default(autoincrement())
-  tenantId         Int                    @map("tenant_id")
-  tenant           Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  userId           Int?                   @map("user_id")
-  user             User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
-  nome             String                 @db.VarChar(255)
-  agendamentos     Agendamento[]
-  escalas          ContratoItem[]
-  contratos        ContratoProfissional[]
+  id           Int                    @id @default(autoincrement())
+  tenantId     Int                    @map("tenant_id")
+  tenant       Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userId       Int?                   @map("user_id")
+  user         User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
+  nome         String                 @db.VarChar(255)
+  agendamentos Agendamento[]
+  escalas      ContratoItem[]
+  contratos    ContratoProfissional[]
 
   @@map("profissional")
 }
 
 /// Representa o contrato de serviço (Cadastros de Apoio)
 model Contrato {
-  id             Int                    @id @default(autoincrement())
-  tenantId       Int                    @map("tenant_id")
-  tenant         Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  empresaId      Int                    @map("empresa_id")
-  empresa        Empresa                @relation(fields: [empresaId], references: [id], onDelete: Restrict)
-  descricao      String                 @db.VarChar(255)
-  cor            String                 @default("#333333") @db.VarChar(7)
-  dtInicio       DateTime               @map("dt_inicio") @db.Date
-  dtFim          DateTime               @map("dt_fim") @db.Date
-  tipo           String                 @db.VarChar(1)   // F (Fixo), H (Hora)
-  valorHora      Decimal?               @map("valor_hora") @db.Decimal(10, 2)
-  valorFixo      Decimal?               @map("valor_fixo") @db.Decimal(10, 2)
-  isFeriado      Boolean                @default(false) @map("is_feriado") // Flag para identificar dinamicamente o contrato de feriados
-  agendamentos   Agendamento[]
-  escalas        ContratoItem[]
-  profissionais  ContratoProfissional[]
+  id            Int                    @id @default(autoincrement())
+  tenantId      Int                    @map("tenant_id")
+  tenant        Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  empresaId     Int                    @map("empresa_id")
+  empresa       Empresa                @relation(fields: [empresaId], references: [id], onDelete: Restrict)
+  descricao     String                 @db.VarChar(255)
+  cor           String                 @default("#333333") @db.VarChar(7)
+  dtInicio      DateTime               @map("dt_inicio") @db.Date
+  dtFim         DateTime               @map("dt_fim") @db.Date
+  tipo          String                 @db.VarChar(1) // F (Fixo), H (Hora)
+  valorHora     Decimal?               @map("valor_hora") @db.Decimal(10, 2)
+  valorFixo     Decimal?               @map("valor_fixo") @db.Decimal(10, 2)
+  isFeriado     Boolean                @default(false) @map("is_feriado") // Flag para identificar dinamicamente o contrato de feriados
+  agendamentos  Agendamento[]
+  escalas       ContratoItem[]
+  profissionais ContratoProfissional[]
 
   @@map("contrato")
 }
@@ -244,4 +245,18 @@ model Realizado {
   horasDecimais Decimal     @map("horas_decimais") @db.Decimal(5, 2) // Novo! Horas líquidas decimais para faturamento
 
   @@map("realizado")
+}
+
+model Feriado {
+  id        Int      @id @default(autoincrement())
+  tenantId  Int      @map("tenant_id")
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  data      DateTime @db.Date
+  descricao String   @db.VarChar(255)
+  tipo      String   @default("N") @db.VarChar(1) // N (Nacional), M (Municipal), E (Estadual), C (Customizado)
+  fixo      Boolean  @default(true)
+  municipio String?  @db.VarChar(255)
+
+  @@unique([tenantId, data])
+  @@map("feriado")
 }

@@ -7,12 +7,13 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Seeding MVP modules and default access...');
 
-  // 1. Módulos
   const moduleKeys = [
     'dashboard',
+    'cadastros',
     'companies',
     'professionals',
     'contracts',
+    'holidays',
     'appointments-calendar',
     'appointments-list',
     'settings',
@@ -28,9 +29,11 @@ async function main() {
   const allModules = await prisma.module.findMany();
 
   const defaultRoutines = [
-    { moduleKey: 'companies', name: 'Empresas', key: 'companies-list', path: '/empresas', icon: 'an an-buildings', shortLabel: 'EMP', sortOrder: 10 },
-    { moduleKey: 'professionals', name: 'Profissionais', key: 'professionals-list', path: '/profissionais', icon: 'an an-user', shortLabel: 'PRO', sortOrder: 20 },
-    { moduleKey: 'contracts', name: 'Contratos', key: 'contracts-list', path: '/contratos', icon: 'an an-file-text', shortLabel: 'CON', sortOrder: 30 },
+    { moduleKey: 'cadastros', name: 'Cadastros', key: 'cadastros-home', path: '/cadastros', icon: 'an an-folders', shortLabel: 'CAD', sortOrder: 10 },
+    { moduleKey: 'companies', name: 'Empresas', key: 'companies-list', path: '/empresas', icon: 'an an-buildings', shortLabel: 'EMP', sortOrder: 11 },
+    { moduleKey: 'professionals', name: 'Profissionais', key: 'professionals-list', path: '/profissionais', icon: 'an an-user', shortLabel: 'PRO', sortOrder: 12 },
+    { moduleKey: 'contracts', name: 'Contratos', key: 'contracts-list', path: '/contratos', icon: 'an an-file-text', shortLabel: 'CON', sortOrder: 13 },
+    { moduleKey: 'holidays', name: 'Feriados', key: 'holidays-list', path: '/feriados', icon: 'an an-calendar-x', shortLabel: 'FER', sortOrder: 14 },
     { moduleKey: 'appointments-list', name: 'Lista de Atendimentos', key: 'appointments-list', path: '/agendamentos/lista', icon: 'an an-list-dashes', shortLabel: 'LST', sortOrder: 40 },
     { moduleKey: 'appointments-calendar', name: 'Calendario', key: 'appointments-calendar', path: '/agendamentos/calendario', icon: 'an an-calendar-blank', shortLabel: 'CAL', sortOrder: 50 },
     { moduleKey: 'settings', name: 'Configuracoes', key: 'settings-home', path: '/configuracoes', icon: 'an an-gear', shortLabel: 'CFG', sortOrder: 60 },
@@ -98,9 +101,11 @@ async function main() {
     return prisma.menu.create({ data });
   };
 
+  const cadastrosHomeRoutine = allRoutines.find((item) => item.key === 'cadastros-home');
   const companiesRoutine = allRoutines.find((item) => item.key === 'companies-list');
   const professionalsRoutine = allRoutines.find((item) => item.key === 'professionals-list');
   const contractsRoutine = allRoutines.find((item) => item.key === 'contracts-list');
+  const holidaysRoutine = allRoutines.find((item) => item.key === 'holidays-list');
   const appointmentsListRoutine = allRoutines.find((item) => item.key === 'appointments-list');
   const appointmentsCalendarRoutine = allRoutines.find((item) => item.key === 'appointments-calendar');
   const settingsHomeRoutine = allRoutines.find((item) => item.key === 'settings-home');
@@ -120,41 +125,38 @@ async function main() {
     isActive: true,
   });
 
-  if (companiesRoutine) {
-    await ensureMenu(companiesRoutine.path, {
-      moduleId: companiesRoutine.moduleId,
-      routineId: companiesRoutine.id,
-      label: companiesRoutine.name,
-      shortLabel: companiesRoutine.shortLabel,
-      icon: companiesRoutine.icon,
-      link: companiesRoutine.path,
-      sortOrder: companiesRoutine.sortOrder,
+  let cadastrosMenuId: number | null = null;
+
+  if (cadastrosHomeRoutine) {
+    const cadastrosMenu = await ensureMenu(cadastrosHomeRoutine.path, {
+      moduleId: cadastrosHomeRoutine.moduleId,
+      routineId: cadastrosHomeRoutine.id,
+      label: cadastrosHomeRoutine.name,
+      shortLabel: cadastrosHomeRoutine.shortLabel,
+      icon: cadastrosHomeRoutine.icon,
+      link: null, // parent
+      sortOrder: cadastrosHomeRoutine.sortOrder,
       isActive: true,
     });
+    cadastrosMenuId = cadastrosMenu.id;
   }
 
-  if (professionalsRoutine) {
-    await ensureMenu(professionalsRoutine.path, {
-      moduleId: professionalsRoutine.moduleId,
-      routineId: professionalsRoutine.id,
-      label: professionalsRoutine.name,
-      shortLabel: professionalsRoutine.shortLabel,
-      icon: professionalsRoutine.icon,
-      link: professionalsRoutine.path,
-      sortOrder: professionalsRoutine.sortOrder,
-      isActive: true,
-    });
-  }
-
-  if (contractsRoutine) {
-    await ensureMenu(contractsRoutine.path, {
-      moduleId: contractsRoutine.moduleId,
-      routineId: contractsRoutine.id,
-      label: contractsRoutine.name,
-      shortLabel: contractsRoutine.shortLabel,
-      icon: contractsRoutine.icon,
-      link: contractsRoutine.path,
-      sortOrder: contractsRoutine.sortOrder,
+  for (const routine of [
+    companiesRoutine,
+    professionalsRoutine,
+    contractsRoutine,
+    holidaysRoutine,
+  ]) {
+    if (!routine) continue;
+    await ensureMenu(routine.path, {
+      moduleId: routine.moduleId,
+      routineId: routine.id,
+      parentId: cadastrosMenuId,
+      label: routine.name,
+      shortLabel: routine.shortLabel,
+      icon: routine.icon,
+      link: routine.path,
+      sortOrder: routine.sortOrder,
       isActive: true,
     });
   }
@@ -301,6 +303,56 @@ async function main() {
         userId: adminUser.id,
         tenantId: tenant.id,
         isDefault: true,
+      },
+    });
+  }
+
+  // 5. Feriados (2026 e 2027)
+  const feriadosNacionais = [
+    // 2026 Fixos
+    { data: new Date('2026-01-01T00:00:00Z'), descricao: 'Confraternização Universal', tipo: 'N' },
+    { data: new Date('2026-04-21T00:00:00Z'), descricao: 'Tiradentes', tipo: 'N' },
+    { data: new Date('2026-05-01T00:00:00Z'), descricao: 'Dia do Trabalho', tipo: 'N' },
+    { data: new Date('2026-09-07T00:00:00Z'), descricao: 'Independência do Brasil', tipo: 'N' },
+    { data: new Date('2026-10-12T00:00:00Z'), descricao: 'Nossa Sr.a Aparecida', tipo: 'N' },
+    { data: new Date('2026-11-02T00:00:00Z'), descricao: 'Finados', tipo: 'N' },
+    { data: new Date('2026-11-15T00:00:00Z'), descricao: 'Proclamação da República', tipo: 'N' },
+    { data: new Date('2026-12-25T00:00:00Z'), descricao: 'Natal', tipo: 'N' },
+    // 2026 Móveis
+    { data: new Date('2026-02-17T00:00:00Z'), descricao: 'Carnaval', tipo: 'N', fixo: false },
+    { data: new Date('2026-04-03T00:00:00Z'), descricao: 'Paixão de Cristo', tipo: 'N', fixo: false },
+    { data: new Date('2026-06-04T00:00:00Z'), descricao: 'Corpus Christi', tipo: 'N', fixo: false },
+    
+    // 2027 Fixos
+    { data: new Date('2027-01-01T00:00:00Z'), descricao: 'Confraternização Universal', tipo: 'N' },
+    { data: new Date('2027-04-21T00:00:00Z'), descricao: 'Tiradentes', tipo: 'N' },
+    { data: new Date('2027-05-01T00:00:00Z'), descricao: 'Dia do Trabalho', tipo: 'N' },
+    { data: new Date('2027-09-07T00:00:00Z'), descricao: 'Independência do Brasil', tipo: 'N' },
+    { data: new Date('2027-10-12T00:00:00Z'), descricao: 'Nossa Sr.a Aparecida', tipo: 'N' },
+    { data: new Date('2027-11-02T00:00:00Z'), descricao: 'Finados', tipo: 'N' },
+    { data: new Date('2027-11-15T00:00:00Z'), descricao: 'Proclamação da República', tipo: 'N' },
+    { data: new Date('2027-12-25T00:00:00Z'), descricao: 'Natal', tipo: 'N' },
+    // 2027 Móveis
+    { data: new Date('2027-02-09T00:00:00Z'), descricao: 'Carnaval', tipo: 'N', fixo: false },
+    { data: new Date('2027-03-26T00:00:00Z'), descricao: 'Paixão de Cristo', tipo: 'N', fixo: false },
+    { data: new Date('2027-05-27T00:00:00Z'), descricao: 'Corpus Christi', tipo: 'N', fixo: false },
+  ];
+
+  for (const feriado of feriadosNacionais) {
+    await prisma.feriado.upsert({
+      where: {
+        tenantId_data: {
+          tenantId: tenant.id,
+          data: feriado.data,
+        },
+      },
+      update: {},
+      create: {
+        tenantId: tenant.id,
+        data: feriado.data,
+        descricao: feriado.descricao,
+        tipo: feriado.tipo,
+        fixo: feriado.fixo ?? true,
       },
     });
   }
