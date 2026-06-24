@@ -1,1 +1,67 @@
-<p>feriados.page works!</p>
+<po-page-list p-title="Feriados" [p-disclaimer-group]="disclaimerGroup">
+  <div class="po-row" style="align-items: end; margin-bottom: 16px; row-gap: 12px;">
+    <div class="po-md-6 po-sm-12" style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <po-button p-label="Novo Feriado" p-icon="po-icon-plus" (p-click)="openCreate()"></po-button>
+    </div>
+
+    <div class="po-md-6 po-sm-12" style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <div style="min-width: 280px; width: 280px; max-width: 100%;">
+        <po-search
+          p-placeholder="Buscar feriado por descrição..."
+          [(ngModel)]="quickSearch"
+          (p-filter)="onQuickSearch($event)"
+          (p-change-model)="quickSearch = $event">
+        </po-search>
+      </div>
+
+      <po-button p-label="Busca avançada" p-kind="tertiary" (p-click)="openAdvancedFilters()"></po-button>
+    </div>
+  </div>
+
+  <po-table
+    [p-items]="feriados"
+    [p-columns]="columns"
+    [p-actions]="actions"
+    [p-loading]="loading"
+    [p-show-more-disabled]="!hasNext"
+    [p-loading-show-more]="loadingShowMore"
+    (p-show-more)="onShowMore()"
+    (p-sort-by)="onSortChange($event)"
+    [p-hide-detail]="true"
+    [p-hide-table-search]="true"
+    [p-sort]="true"
+    [p-striped]="true"
+  >
+  </po-table>
+</po-page-list>
+
+<po-modal #modal [p-title]="isEdit ? 'Editar Feriado' : 'Novo Feriado'">
+  <form>
+    <div class="po-row">
+      <po-datepicker class="po-md-4" name="data" p-label="Data" [ngModel]="formData.data" (ngModelChange)="formData.data = $event" p-required="true" [p-show-required]="true"></po-datepicker>
+      <po-input class="po-md-8" name="descricao" p-label="Descrição" [ngModel]="formData.descricao" (ngModelChange)="formData.descricao = $event" p-required="true" [p-show-required]="true"></po-input>
+    </div>
+    <div class="po-row">
+      <po-select class="po-md-4" name="tipo" p-label="Tipo" [ngModel]="formData.tipo" (ngModelChange)="formData.tipo = $event" [p-options]="tiposOptions"></po-select>
+      <po-switch class="po-md-2" name="fixo" p-label="Feriado Fixo" [ngModel]="formData.fixo" (ngModelChange)="formData.fixo = $event" p-label-on="Sim" p-label-off="Não" p-tooltip="Se for fixo, repete no mesmo dia todo ano"></po-switch>
+      <po-input *ngIf="formData.tipo === 'M'" class="po-md-6" name="municipio" p-label="Município" [ngModel]="formData.municipio" (ngModelChange)="formData.municipio = $event" p-required="true" [p-show-required]="true"></po-input>
+    </div>
+  </form>
+  <po-modal-footer>
+    <po-button p-label="Cancelar" (p-click)="modal.close()"></po-button>
+    <po-button p-label="Salvar" p-kind="primary" [p-loading]="saving" (p-click)="save()"></po-button>
+  </po-modal-footer>
+</po-modal>
+
+<po-modal #advancedFilterModal p-title="Filtro Avançado">
+  <form>
+    <div class="po-row">
+      <po-number class="po-md-4" name="filterId" p-label="ID" [ngModel]="filters.id" (ngModelChange)="filters.id = $event"></po-number>
+      <po-input class="po-md-8" name="filterDescricao" p-label="Descrição" [ngModel]="filters.descricao" (ngModelChange)="filters.descricao = $event"></po-input>
+    </div>
+  </form>
+  <po-modal-footer>
+    <po-button p-label="Limpar" (p-click)="clearFilters()"></po-button>
+    <po-button p-label="Aplicar" p-kind="primary" (p-click)="applyAdvancedFilters()"></po-button>
+  </po-modal-footer>
+</po-modal>
