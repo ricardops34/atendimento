@@ -14,6 +14,7 @@ import { RoutinesModule } from './routines/routines.module';
 import { MenusModule } from './menus/menus.module';
 import { ProfilesModule } from './profiles/profiles.module';
 import { UsersModule } from './users/users.module';
+import { FeriadosModule } from './feriados/feriados.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { UsersModule } from './users/users.module';
     RoutinesModule,
     MenusModule,
     ProfilesModule,
-    UsersModule
+    UsersModule,
+    FeriadosModule
   ],
   controllers: [AppController],
   providers: [AppService],

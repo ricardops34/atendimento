@@ -3,7 +3,6 @@
   <div class="po-row" style="align-items: end; margin-bottom: 16px; row-gap: 12px;">
     <div class="po-md-6 po-sm-12" style="display: flex; flex-wrap: wrap; gap: 8px;">
       <po-button p-label="Novo Agendamento" p-icon="po-icon-plus" (p-click)="onNew()"></po-button>
-      <po-button p-label="Fechar Lote" p-icon="po-icon-ok" p-kind="secondary" (p-click)="onFecharLote()"></po-button>
       <po-dropdown p-label="Exportar" [p-actions]="exportActions"></po-dropdown>
       <po-dropdown p-label="Relatórios" [p-actions]="extratoActions" p-icon="po-icon-finance"></po-dropdown>
     </div>
@@ -68,8 +67,8 @@
 
 <po-modal p-title="Gerar Extrato" #extratoModal>
   <div class="po-row">
-    <po-datepicker class="po-md-6" name="extratoDataInicial" p-label="Data inicial" [ngModel]="extratoFilters.dataInicial"
-      (ngModelChange)="extratoFilters.dataInicial = $event">
+    <po-datepicker class="po-md-6" name="extratoDataInicial" p-label="Data inicial"
+      [ngModel]="extratoFilters.dataInicial" (ngModelChange)="extratoFilters.dataInicial = $event">
     </po-datepicker>
 
     <po-datepicker class="po-md-6" name="extratoDataFinal" p-label="Data final" [ngModel]="extratoFilters.dataFinal"
