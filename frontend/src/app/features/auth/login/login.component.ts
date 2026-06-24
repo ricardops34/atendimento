@@ -6,7 +6,7 @@ import { PoNotificationService } from '@po-ui/ng-components';
 import { AuthService } from '../../../core/auth/auth.service';
 import { PoPageLoginCustomField } from '@po-ui/ng-templates';
 import { environment } from '../../../../environments/environment';
-import { debounceTime, distinctUntilChanged, Subject, switchMap, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, switchMap, of, catchError } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -37,10 +37,12 @@ export class LoginComponent {
       distinctUntilChanged(),
       switchMap(email =>
         this.EMAIL_RE.test(email)
-          ? this.http.post<{ label: string; value: number }[]>(`${this.API_URL}/auth/tenant-options`, { email })
+          ? this.http.post<{ label: string; value: number }[]>(`${this.API_URL}/auth/tenant-options`, { email }).pipe(
+              catchError(() => of([]))
+            )
           : of([])
       )
-    ).subscribe(options => {
+    ).subscribe((options: any) => {
       this.customField = { ...this.customField, options };
     });
   }

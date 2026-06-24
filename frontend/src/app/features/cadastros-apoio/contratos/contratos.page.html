@@ -187,32 +187,13 @@
     </div>
 
     <div *ngIf="formData.escalas?.length" style="margin-top: 8px;">
-      <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-        <thead>
-          <tr style="background: #f5f5f5;">
-            <th style="padding: 4px 8px; text-align: left;">Dia</th>
-            <th style="padding: 4px 8px; text-align: left;">Profissional</th>
-            <th style="padding: 4px 8px;">Início</th>
-            <th style="padding: 4px 8px;">Int. Ini</th>
-            <th style="padding: 4px 8px;">Int. Fim</th>
-            <th style="padding: 4px 8px;">Fim</th>
-            <th style="padding: 4px 8px;"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let e of formData.escalas; let i = index" style="border-bottom: 1px solid #eee;">
-            <td style="padding: 4px 8px;">{{ getDiaSemanaLabel(e.diaSemana) }}</td>
-            <td style="padding: 4px 8px;">{{ getProfissionalLabel(e.profissionalId) }}</td>
-            <td style="padding: 4px 8px; text-align: center;">{{ e.horaInicio }}</td>
-            <td style="padding: 4px 8px; text-align: center;">{{ e.intervaloIni }}</td>
-            <td style="padding: 4px 8px; text-align: center;">{{ e.intervaloFim }}</td>
-            <td style="padding: 4px 8px; text-align: center;">{{ e.horaFim }}</td>
-            <td style="padding: 4px 8px; text-align: center;">
-              <po-button p-icon="po-icon-delete" p-kind="tertiary" (p-click)="removeEscala(i)"></po-button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <po-table
+        [p-items]="formData.escalas"
+        [p-columns]="escalaColumns"
+        [p-actions]="escalaActions"
+        [p-hide-columns-manager]="true"
+        [p-sort]="false">
+      </po-table>
     </div>
   </div>
 

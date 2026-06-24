@@ -226,6 +226,19 @@ export class ContratosPage implements OnInit {
     this.modal.open();
   }
 
+  escalaColumns: PoTableColumn[] = [
+    { property: '_diaSemanaLabel', label: 'Dia' },
+    { property: '_profissionalLabel', label: 'Profissional' },
+    { property: 'horaInicio', label: 'Início', width: '80px' },
+    { property: 'intervaloIni', label: 'Int. Ini', width: '80px' },
+    { property: 'intervaloFim', label: 'Int. Fim', width: '80px' },
+    { property: 'horaFim', label: 'Fim', width: '80px' }
+  ];
+
+  escalaActions: PoTableAction[] = [
+    { label: 'Excluir', icon: 'po-icon-delete', type: 'danger', action: (row: any) => this.removeEscala(row) }
+  ];
+
   openEdit(row: any) {
     this.isEdit = true;
     this.saving = true;
@@ -251,6 +264,8 @@ export class ContratosPage implements OnInit {
             horaFim: e.horaFim,
             intervaloIni: e.intervaloIni,
             intervaloFim: e.intervaloFim,
+            _diaSemanaLabel: this.getDiaSemanaLabel(e.diaSemana),
+            _profissionalLabel: this.getProfissionalLabel(e.profissionalId)
           })),
         };
         this.resetNovaEscala();
@@ -275,15 +290,23 @@ export class ContratosPage implements OnInit {
       this.poNotification.warning('Selecione o dia da semana e o profissional.');
       return;
     }
+    const diaNum = Number(this.novaEscala.diaSemana);
+    const profNum = Number(this.novaEscala.profissionalId);
     this.formData.escalas = [
       ...this.formData.escalas,
-      { ...this.novaEscala, diaSemana: Number(this.novaEscala.diaSemana), profissionalId: Number(this.novaEscala.profissionalId) },
+      { 
+        ...this.novaEscala, 
+        diaSemana: diaNum, 
+        profissionalId: profNum,
+        _diaSemanaLabel: this.getDiaSemanaLabel(diaNum),
+        _profissionalLabel: this.getProfissionalLabel(profNum)
+      },
     ];
     this.resetNovaEscala();
   }
 
-  removeEscala(index: number) {
-    this.formData.escalas = this.formData.escalas.filter((_: any, i: number) => i !== index);
+  removeEscala(row: any) {
+    this.formData.escalas = this.formData.escalas.filter((e: any) => e !== row);
   }
 
   getDiaSemanaLabel(value: number): string {

@@ -13,6 +13,7 @@ export class AuthController {
 
   @Post('tenant-options')
   async tenantOptions(@Body('email') email: string) {
+    console.log('tenantOptions chamado com email:', email);
     if (!email) return [];
     const user = await this.prisma.user.findFirst({
       where: { email, isActive: true },

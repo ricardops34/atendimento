@@ -84,13 +84,23 @@ async function runETL() {
       },
     });
 
+    console.log('Associando admin@fallback.com ao Tenant padrão...');
+    const adminUser = await prisma.user.findFirst({ where: { email: 'admin@fallback.com' } });
+    if (adminUser) {
+      await prisma.userTenant.upsert({
+        where: { userId_tenantId: { userId: adminUser.id, tenantId: DEFAULT_TENANT_ID } },
+        update: {},
+        create: { userId: adminUser.id, tenantId: DEFAULT_TENANT_ID },
+      });
+    }
+
     // 2. Migração de Empresas
     console.log('Migrando Empresas...');
     const [empresasLegacy] = await legacyConn.execute<any[]>('SELECT * FROM empresa');
     const empresasToInsert = empresasLegacy.map((e) => ({
       id: e.id,
       tenantId: DEFAULT_TENANT_ID,
-      nome: String(e.nome).trim(),
+      nome: String(e.nome).trim() || 'Empresa Não Informada',
     }));
     await prisma.empresa.createMany({ data: empresasToInsert });
     console.log(`> Inseridas ${empresasToInsert.length} empresas.`);
@@ -101,7 +111,7 @@ async function runETL() {
     const profissionaisToInsert = profissionaisLegacy.map((p) => ({
       id: p.id,
       tenantId: DEFAULT_TENANT_ID,
-      nome: String(p.nome).trim(),
+      nome: String(p.nome).trim() || 'Profissional Não Informado',
     }));
     await prisma.profissional.createMany({ data: profissionaisToInsert });
     console.log(`> Inseridos ${profissionaisToInsert.length} profissionais.`);
@@ -154,7 +164,7 @@ async function runETL() {
         id: a.id,
         tenantId: DEFAULT_TENANT_ID,
         contratoId: a.contrato_id || null,
-        profissionalId: a.profissional_id || null,
+        profissionalId: a.profissional_id || 1,
         descricao: String(a.descricao || '').trim().substring(0, 500),
         dataAgenda: new Date(a.data_agenda),
         horaInicio: String(a.hora_inicio || '00:00').substring(0, 5),
