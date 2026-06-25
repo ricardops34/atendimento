@@ -49,16 +49,19 @@ export class App {
   private router = inject(Router);
   private poNotification = inject(PoNotificationService);
   private readonly breadcrumbLabels: Record<string, string> = {
-    empresas: 'Empresas',
+    clientes: 'Clientes',
     profissionais: 'Profissionais',
     contratos: 'Contratos',
     configuracoes: 'Configuracoes',
-    tenants: 'Tenants',
+    empresas: 'Empresas',
     modulos: 'Modulos',
     rotinas: 'Rotinas',
     perfis: 'Perfis',
     menus: 'Menus',
     usuarios: 'Usuarios',
+    estados: 'Estados',
+    municipios: 'Municípios',
+    ceps: 'CEPs',
     agendamentos: 'Agendamentos',
     lista: 'Lista de Atendimentos',
     calendario: 'Calendario'
@@ -81,7 +84,7 @@ export class App {
 
   private readonly menuCatalog: Record<string, PoMenuItem> = {
     home: { label: 'Inicio', shortLabel: 'INI', icon: 'an an-house', link: '/' },
-    companies: { label: 'Empresas', shortLabel: 'EMP', icon: 'an an-buildings', link: '/empresas' },
+    companies: { label: 'Clientes', shortLabel: 'CLI', icon: 'an an-buildings', link: '/clientes' },
     professionals: { label: 'Profissionais', shortLabel: 'PRO', icon: 'an an-user', link: '/profissionais' },
     contracts: { label: 'Contratos', shortLabel: 'CON', icon: 'an an-file-text', link: '/contratos' },
     'appointments-list': {
@@ -101,12 +104,15 @@ export class App {
       shortLabel: 'CFG',
       icon: 'an an-gear',
       subItems: [
-        { label: 'Tenants', shortLabel: 'TEN', icon: 'an an-buildings', link: '/configuracoes/tenants' },
+        { label: 'Empresas', shortLabel: 'EMP', icon: 'an an-buildings', link: '/configuracoes/empresas' },
         { label: 'Modulos', shortLabel: 'MOD', icon: 'an an-squares-four', link: '/configuracoes/modulos' },
         { label: 'Rotinas', shortLabel: 'ROT', icon: 'an an-list-checks', link: '/configuracoes/rotinas' },
         { label: 'Perfis', shortLabel: 'PRF', icon: 'an an-identification-card', link: '/configuracoes/perfis' },
         { label: 'Menus', shortLabel: 'MNU', icon: 'an an-tree-structure', link: '/configuracoes/menus' },
-        { label: 'Usuarios', shortLabel: 'USR', icon: 'an an-users-three', link: '/configuracoes/usuarios' }
+        { label: 'Usuarios', shortLabel: 'USR', icon: 'an an-users-three', link: '/configuracoes/usuarios' },
+        { label: 'Estados', shortLabel: 'EST', icon: 'an an-map-pin', link: '/configuracoes/estados' },
+        { label: 'Municipios', shortLabel: 'MUN', icon: 'an an-map-trifold', link: '/configuracoes/municipios' },
+        { label: 'CEPs', shortLabel: 'CEP', icon: 'an an-mailbox', link: '/configuracoes/ceps' }
       ]
     },
     logout: {
@@ -220,7 +226,7 @@ export class App {
 
     if (availableTenants.length > 1) {
       actions.push({
-        label: 'Trocar tenant',
+        label: 'Trocar empresa',
         icon: 'an an-buildings',
         action: () => this.openSwitchTenantModal()
       });
@@ -248,7 +254,7 @@ export class App {
       return;
     }
 
-    this.authService.switchTenant(this.selectedTenantId).subscribe({
+    this.authService.switchEmpresa(this.selectedTenantId).subscribe({
       next: () => this.switchTenantModal?.close(),
     });
   }

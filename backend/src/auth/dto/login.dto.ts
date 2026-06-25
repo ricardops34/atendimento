@@ -13,5 +13,5 @@ export class LoginDto {
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  tenantId?: number;
+  empresaId?: number;
 }

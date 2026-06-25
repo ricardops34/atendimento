@@ -19,25 +19,25 @@ const userSelect = { select: { id: true, name: true } } as const;
 export class ProfissionaisService {
   constructor(private prisma: PrismaService) {}
 
-  create(dto: CreateProfissionalDto, tenantId: number) {
+  create(dto: CreateProfissionalDto, empresaId: number) {
     return this.prisma.profissional.create({
-      data: { ...dto, tenantId },
+      data: { ...dto, empresaId },
       include: { user: userSelect },
     });
   }
 
-  findAll(tenantId: number) {
+  findAll(empresaId: number) {
     return this.prisma.profissional.findMany({
-      where: { tenantId },
+      where: { empresaId },
       orderBy: { nome: 'asc' },
       include: { user: userSelect },
     });
   }
 
-  async search(query: ProfissionalSearchQuery, tenantId: number) {
+  async search(query: ProfissionalSearchQuery, empresaId: number) {
     const page = Math.max(Number(query.page) || 1, 1);
     const pageSize = Math.max(Number(query.pageSize) || 20, 1);
-    const where = this.buildWhere(query, tenantId);
+    const where = this.buildWhere(query, empresaId);
     const total = await this.prisma.profissional.count({ where });
     const items = await this.prisma.profissional.findMany({
       where,
@@ -50,9 +50,9 @@ export class ProfissionaisService {
     return { items, page, pageSize, total, hasNext: page * pageSize < total };
   }
 
-  async findOne(id: number, tenantId?: number) {
+  async findOne(id: number, empresaId?: number) {
     const where: any = { id };
-    if (tenantId) where.tenantId = tenantId;
+    if (empresaId) where.empresaId = empresaId;
 
     const profissional = await this.prisma.profissional.findFirst({
       where,
@@ -62,8 +62,8 @@ export class ProfissionaisService {
     return profissional;
   }
 
-  async update(id: number, dto: UpdateProfissionalDto, tenantId?: number) {
-    await this.findOne(id, tenantId);
+  async update(id: number, dto: UpdateProfissionalDto, empresaId?: number) {
+    await this.findOne(id, empresaId);
     return this.prisma.profissional.update({
       where: { id },
       data: dto,
@@ -71,14 +71,14 @@ export class ProfissionaisService {
     });
   }
 
-  async remove(id: number, tenantId?: number) {
-    await this.findOne(id, tenantId);
+  async remove(id: number, empresaId?: number) {
+    await this.findOne(id, empresaId);
     return this.prisma.profissional.delete({ where: { id } });
   }
 
-  private buildWhere(query: ProfissionalSearchQuery, tenantId?: number) {
+  private buildWhere(query: ProfissionalSearchQuery, empresaId?: number) {
     const where: any = {};
-    if (tenantId) where.tenantId = tenantId;
+    if (empresaId) where.empresaId = empresaId;
 
     if (query.id) {
       where.id = Number(query.id);

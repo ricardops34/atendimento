@@ -46,11 +46,11 @@ describe('ContratosService', () => {
       page: '1',
       pageSize: '20',
       search: 'empresa',
-      empresaId: '3',
+      clienteId: '3',
       isFeriado: 'true',
-      sortProperty: 'empresa.nome',
+      sortProperty: 'cliente.nome',
       sortDirection: 'ascending',
-    });
+    }, 1);
 
     expect(prisma.contrato.count).toHaveBeenCalledWith({
       where: {
@@ -58,11 +58,12 @@ describe('ContratosService', () => {
           {
             OR: [
               { descricao: { contains: 'empresa', mode: 'insensitive' } },
-              { empresa: { nome: { contains: 'empresa', mode: 'insensitive' } } },
+              { cliente: { nome: { contains: 'empresa', mode: 'insensitive' } } },
             ],
           },
-          { empresaId: 3 },
+          { clienteId: 3 },
           { isFeriado: true },
+          { empresaId: 1 },
         ],
       },
     });
@@ -72,15 +73,16 @@ describe('ContratosService', () => {
           {
             OR: [
               { descricao: { contains: 'empresa', mode: 'insensitive' } },
-              { empresa: { nome: { contains: 'empresa', mode: 'insensitive' } } },
+              { cliente: { nome: { contains: 'empresa', mode: 'insensitive' } } },
             ],
           },
-          { empresaId: 3 },
+          { clienteId: 3 },
           { isFeriado: true },
+          { empresaId: 1 },
         ],
       },
-      include: { empresa: true },
-      orderBy: { empresa: { nome: 'asc' } },
+      include: { cliente: true },
+      orderBy: { cliente: { nome: 'asc' } },
       skip: 0,
       take: 20,
     });
@@ -97,10 +99,10 @@ describe('ContratosService', () => {
     prisma.contrato.count.mockResolvedValue(5);
     prisma.contrato.findMany.mockResolvedValue([{ id: 1, tipo: 'F' }]);
 
-    await service.search({ tipo: 'F' });
+    await service.search({ tipo: 'F' }, 1);
 
     expect(prisma.contrato.count).toHaveBeenCalledWith({
-      where: { AND: [{ tipo: 'F' }] },
+      where: { AND: [{ empresaId: 1 }, { tipo: 'F' }] },
     });
   });
 
@@ -108,11 +110,12 @@ describe('ContratosService', () => {
     prisma.contrato.count.mockResolvedValue(2);
     prisma.contrato.findMany.mockResolvedValue([]);
 
-    await service.search({ dtInicio: '2026-01-01', dtFim: '2026-12-31' });
+    await service.search({ dtInicio: '2026-01-01', dtFim: '2026-12-31' }, 1);
 
     expect(prisma.contrato.count).toHaveBeenCalledWith({
       where: {
         AND: [
+          { empresaId: 1 },
           { dtInicio: new Date('2026-01-01') },
           { dtFim: new Date('2026-12-31') },
         ],

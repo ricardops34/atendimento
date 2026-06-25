@@ -11,30 +11,30 @@ export class AuthController {
     private readonly prisma: PrismaService,
   ) {}
 
-  @Post('tenant-options')
-  async tenantOptions(@Body('email') email: string) {
-    console.log('tenantOptions chamado com email:', email);
+  @Post('empresa-options')
+  async empresaOptions(@Body('email') email: string) {
+    console.log('empresaOptions chamado com email:', email);
     if (!email) return [];
     const user = await this.prisma.user.findFirst({
       where: { email, isActive: true },
-      include: { userTenants: { include: { tenant: true } } },
+      include: { userEmpresas: { include: { empresa: true } } },
     });
     if (!user) return [];
-    return user.userTenants.map((ut) => ({
-      label: ut.tenant.name,
-      value: ut.tenantId,
+    return user.userEmpresas.map((ut) => ({
+      label: ut.empresa.name,
+      value: ut.empresaId,
     }));
   }
 
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     const user = await this.authService.validateUser(loginDto);
-    return this.authService.login(user, loginDto.tenantId);
+    return this.authService.login(user, loginDto.empresaId);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('switch-tenant')
-  async switchTenant(@Request() req: any, @Body() body: { tenantId: number }) {
+  @Post('switch-empresa')
+  async switchEmpresa(@Request() req: any, @Body() body: { empresaId: number }) {
     const user = await this.prisma.user.findUnique({
       where: { id: req.user.userId },
       include: {
@@ -45,9 +45,9 @@ export class AuthController {
             },
           },
         },
-        userTenants: {
+        userEmpresas: {
           include: {
-            tenant: true,
+            empresa: true,
           },
         },
       },
@@ -57,7 +57,7 @@ export class AuthController {
       return null;
     }
 
-    return this.authService.login(user, Number(body.tenantId));
+    return this.authService.login(user, Number(body.empresaId));
   }
 
   @UseGuards(JwtAuthGuard)
@@ -73,9 +73,9 @@ export class AuthController {
             },
           },
         },
-        userTenants: {
+        userEmpresas: {
           include: {
-            tenant: true,
+            empresa: true,
           },
         },
       },
@@ -85,13 +85,13 @@ export class AuthController {
       return null;
     }
 
-    return this.authService.buildSessionUser(user, req.user.tenantId);
+    return this.authService.buildSessionUser(user, req.user.empresaId);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('me')
   async updateProfile(@Request() req: any, @Body() body: { avatar?: string; password?: string }) {
     const user = await this.authService.updateCurrentUser(req.user.userId, body);
-    return this.authService.buildSessionUser(user, req.user.tenantId);
+    return this.authService.buildSessionUser(user, req.user.empresaId);
   }
 }

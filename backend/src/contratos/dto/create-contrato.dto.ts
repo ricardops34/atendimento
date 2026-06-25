@@ -41,9 +41,9 @@ export class EscalaItemDto {
 }
 
 export class CreateContratoDto {
-  @IsNotEmpty({ message: 'A empresa é obrigatória.' })
+  @IsNotEmpty({ message: 'O cliente é obrigatório.' })
   @IsInt()
-  empresaId: number;
+  clienteId: number;
 
   @IsNotEmpty({ message: 'A descrição do contrato é obrigatória.' })
   @IsString()

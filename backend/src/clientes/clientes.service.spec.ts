@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EmpresasService } from './empresas.service';
+import { ClientesService } from './clientes.service';
 import { PrismaService } from '../prisma/prisma.service';
 
-describe('EmpresasService', () => {
-  let service: EmpresasService;
+describe('ClientesService', () => {
+  let service: ClientesService;
   let prisma: {
-    empresa: {
+    cliente: {
       create: jest.Mock;
       findMany: jest.Mock;
       findUnique: jest.Mock;
@@ -17,7 +17,7 @@ describe('EmpresasService', () => {
 
   beforeEach(async () => {
     prisma = {
-      empresa: {
+      cliente: {
         create: jest.fn(),
         findMany: jest.fn(),
         findUnique: jest.fn(),
@@ -28,10 +28,10 @@ describe('EmpresasService', () => {
     };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EmpresasService, { provide: PrismaService, useValue: prisma }],
+      providers: [ClientesService, { provide: PrismaService, useValue: prisma }],
     }).compile();
 
-    service = module.get(EmpresasService);
+    service = module.get(ClientesService);
   });
 
   it('should be defined', () => {
@@ -39,8 +39,8 @@ describe('EmpresasService', () => {
   });
 
   it('returns paginated companies with search and ordering', async () => {
-    prisma.empresa.count.mockResolvedValue(3);
-    prisma.empresa.findMany.mockResolvedValue([{ id: 2, nome: 'Beta' }]);
+    prisma.cliente.count.mockResolvedValue(3);
+    prisma.cliente.findMany.mockResolvedValue([{ id: 2, nome: 'Beta' }]);
 
     const result = await service.search({
       page: '2',
@@ -48,15 +48,17 @@ describe('EmpresasService', () => {
       search: 'beta',
       sortProperty: 'nome',
       sortDirection: 'descending',
-    });
+    }, 1);
 
-    expect(prisma.empresa.count).toHaveBeenCalledWith({
+    expect(prisma.cliente.count).toHaveBeenCalledWith({
       where: {
+        empresaId: 1,
         nome: { contains: 'beta', mode: 'insensitive' },
       },
     });
-    expect(prisma.empresa.findMany).toHaveBeenCalledWith({
+    expect(prisma.cliente.findMany).toHaveBeenCalledWith({
       where: {
+        empresaId: 1,
         nome: { contains: 'beta', mode: 'insensitive' },
       },
       orderBy: { nome: 'desc' },

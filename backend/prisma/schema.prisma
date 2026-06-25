@@ -12,19 +12,19 @@ generator client {
 // SECURITY / AUTH MODELS
 // ----------------------------------------------------------------------------
 
-model Tenant {
+model Empresa {
   id   Int    @id @default(autoincrement())
   name String @db.VarChar(255)
   slug String @unique @db.VarChar(255)
 
-  userTenants   UserTenant[]
-  empresas      Empresa[]
+  userEmpresas  UserEmpresa[]
+  clientes      Cliente[]
   profissionais Profissional[]
   contratos     Contrato[]
   agendamentos  Agendamento[]
   feriados      Feriado[]
 
-  @@map("tenants")
+  @@map("empresas")
 }
 
 model User {
@@ -36,7 +36,7 @@ model User {
   avatar        String         @default("avatar_01.png") @db.VarChar(100)
   password      String         @db.VarChar(255)
   isActive      Boolean        @default(true) @map("is_active")
-  userTenants   UserTenant[]
+  userEmpresas  UserEmpresa[]
   profissionais Profissional[]
 
   @@map("users")
@@ -53,16 +53,16 @@ model Profile {
   @@map("profiles")
 }
 
-model UserTenant {
+model UserEmpresa {
   id        Int     @id @default(autoincrement())
   userId    Int     @map("user_id")
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tenantId  Int     @map("tenant_id")
-  tenant    Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  empresaId Int     @map("empresa_id")
+  empresa   Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   isDefault Boolean @default(false) @map("is_default")
 
-  @@unique([userId, tenantId])
-  @@map("user_tenants")
+  @@unique([userId, empresaId])
+  @@map("user_empresas")
 }
 
 model Module {
@@ -130,26 +130,35 @@ model Menu {
 // ----------------------------------------------------------------------------
 
 /// Representa a empresa cliente (Cadastros de Apoio)
-model Empresa {
-  id        Int        @id @default(autoincrement())
-  tenantId  Int        @map("tenant_id")
-  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  nome      String     @db.VarChar(255)
-  razao     String?    @db.VarChar(255)
-  cor       String?    @db.VarChar(7) // cor padrão na agenda (hex)
-  endereco  String?    @db.VarChar(500)
-  cidade    String?    @db.VarChar(255)
-  estado    String?    @db.VarChar(2)
-  contratos Contrato[]
+model Cliente {
+  id             Int        @id @default(autoincrement())
+  empresaId      Int        @map("empresa_id")
+  empresa        Empresa    @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  nome           String     @db.VarChar(255)
+  razao          String?    @db.VarChar(255)
+  tipoPessoa     String     @default("J") @map("tipo_pessoa") @db.VarChar(1)
+  documento      String?    @db.VarChar(20)
+  dataNascimento DateTime?  @map("data_nascimento") @db.Date
+  cep            String?    @db.VarChar(8)
+  bairro         String?    @db.VarChar(255)
+  numero         String?    @db.VarChar(50)
+  complemento    String?    @db.VarChar(255)
+  telefone       String?    @db.VarChar(20)
+  email          String?    @db.VarChar(255)
+  cor            String?    @db.VarChar(7) // cor padrão na agenda (hex)
+  endereco       String?    @db.VarChar(500)
+  cidade         String?    @db.VarChar(255)
+  estado         String?    @db.VarChar(2)
+  contratos      Contrato[]
 
-  @@map("empresa")
+  @@map("cliente")
 }
 
 /// Representa o profissional executor (Cadastros de Apoio)
 model Profissional {
   id           Int                    @id @default(autoincrement())
-  tenantId     Int                    @map("tenant_id")
-  tenant       Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  empresaId    Int                    @map("empresa_id")
+  empresa      Empresa                @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   userId       Int?                   @map("user_id")
   user         User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
   nome         String                 @db.VarChar(255)
@@ -163,10 +172,10 @@ model Profissional {
 /// Representa o contrato de serviço (Cadastros de Apoio)
 model Contrato {
   id            Int                    @id @default(autoincrement())
-  tenantId      Int                    @map("tenant_id")
-  tenant        Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   empresaId     Int                    @map("empresa_id")
-  empresa       Empresa                @relation(fields: [empresaId], references: [id], onDelete: Restrict)
+  empresa       Empresa                @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  clienteId     Int                    @map("cliente_id")
+  cliente       Cliente                @relation(fields: [clienteId], references: [id], onDelete: Restrict)
   descricao     String                 @db.VarChar(255)
   cor           String                 @default("#333333") @db.VarChar(7)
   dtInicio      DateTime               @map("dt_inicio") @db.Date
@@ -213,8 +222,8 @@ model ContratoItem {
 /// Representa os apontamentos de atendimentos (Agendamentos)
 model Agendamento {
   id                   Int           @id @default(autoincrement())
-  tenantId             Int           @map("tenant_id")
-  tenant               Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  empresaId            Int           @map("empresa_id")
+  empresa              Empresa       @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   contratoId           Int?          @map("contrato_id")
   contrato             Contrato?     @relation(fields: [contratoId], references: [id], onDelete: SetNull)
   profissionalId       Int?          @map("profissional_id")
@@ -249,14 +258,52 @@ model Realizado {
 
 model Feriado {
   id        Int      @id @default(autoincrement())
-  tenantId  Int      @map("tenant_id")
-  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  empresaId Int      @map("empresa_id")
+  empresa   Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   data      DateTime @db.Date
   descricao String   @db.VarChar(255)
   tipo      String   @default("N") @db.VarChar(1) // N (Nacional), M (Municipal), E (Estadual), C (Customizado)
   fixo      Boolean  @default(true)
   municipio String?  @db.VarChar(255)
 
-  @@unique([tenantId, data])
+  @@unique([empresaId, data])
   @@map("feriado")
+}
+
+// ----------------------------------------------------------------------------
+// GLOBAL SUPPORT MODELS (Cadastros Globais sem Tenant)
+// ----------------------------------------------------------------------------
+
+model Estado {
+  id    Int    @id
+  nome  String @db.VarChar(255)
+  sigla String @unique @db.VarChar(2)
+
+  municipios Municipio[]
+  ceps       Cep[]
+
+  @@map("estado")
+}
+
+model Municipio {
+  id       Int    @id
+  estadoId Int    @map("estado_id")
+  estado   Estado @relation(fields: [estadoId], references: [id], onDelete: Restrict)
+  nome     String @db.VarChar(255)
+
+  ceps Cep[]
+
+  @@map("municipio")
+}
+
+model Cep {
+  cep         String    @id @db.VarChar(8)
+  logradouro  String    @db.VarChar(255)
+  bairro      String    @db.VarChar(255)
+  municipioId Int       @map("municipio_id")
+  municipio   Municipio @relation(fields: [municipioId], references: [id], onDelete: Restrict)
+  estadoId    Int       @map("estado_id")
+  estado      Estado    @relation(fields: [estadoId], references: [id], onDelete: Restrict)
+
+  @@map("cep")
 }

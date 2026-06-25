@@ -5,7 +5,7 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 const prisma = new PrismaClient();
-const DEFAULT_TENANT_ID = 1;
+const DEFAULT_EMPRESA_ID = 1;
 const DEFAULT_CONTRACT_START = new Date('2026-01-01');
 const DEFAULT_CONTRACT_END = new Date('2026-12-31');
 const DEFAULT_CONTRACT_TYPE = 'F';
@@ -69,40 +69,40 @@ async function runETL() {
       prisma.contrato.deleteMany(),
       prisma.profissional.deleteMany(),
       prisma.empresa.deleteMany(),
-      prisma.tenant.deleteMany(), // Limpa os tenants também, caso queira resetar tudo, ou deixe para usar upsert.
+      prisma.empresa.deleteMany(), // Limpa as empresas também, caso queira resetar tudo, ou deixe para usar upsert.
     ]);
 
-    // 1.5 Criar Tenant Padrão
-    console.log('Criando Tenant padrão...');
-    await prisma.tenant.upsert({
-      where: { id: DEFAULT_TENANT_ID },
+    // 1.5 Criar Empresa Padrão
+    console.log('Criando Empresa padrão...');
+    await prisma.empresa.upsert({
+      where: { id: DEFAULT_EMPRESA_ID },
       update: {},
       create: {
-        id: DEFAULT_TENANT_ID,
-        name: 'Tenant Padrão',
-        slug: 'default-tenant',
+        id: DEFAULT_EMPRESA_ID,
+        name: 'Empresa Padrão',
+        slug: 'default',
       },
     });
 
-    console.log('Associando admin@fallback.com ao Tenant padrão...');
+    console.log('Associando admin@fallback.com a Empresa padrão...');
     const adminUser = await prisma.user.findFirst({ where: { email: 'admin@fallback.com' } });
     if (adminUser) {
-      await prisma.userTenant.upsert({
-        where: { userId_tenantId: { userId: adminUser.id, tenantId: DEFAULT_TENANT_ID } },
+      await prisma.userEmpresa.upsert({
+        where: { userId_empresaId: { userId: adminUser.id, empresaId: DEFAULT_EMPRESA_ID } },
         update: {},
-        create: { userId: adminUser.id, tenantId: DEFAULT_TENANT_ID },
+        create: { userId: adminUser.id, empresaId: DEFAULT_EMPRESA_ID },
       });
     }
 
-    // 2. Migração de Empresas
-    console.log('Migrando Empresas...');
+    // 2. Migração de Clientes
+    console.log('Migrando Clientes...');
     const [empresasLegacy] = await legacyConn.execute<any[]>('SELECT * FROM empresa');
     const empresasToInsert = empresasLegacy.map((e) => ({
       id: e.id,
-      tenantId: DEFAULT_TENANT_ID,
+      empresaId: DEFAULT_EMPRESA_ID,
       nome: String(e.nome).trim() || 'Empresa Não Informada',
     }));
-    await prisma.empresa.createMany({ data: empresasToInsert });
+    await prisma.cliente.createMany({ data: empresasToInsert });
     console.log(`> Inseridas ${empresasToInsert.length} empresas.`);
 
     // 3. Migração de Profissionais
@@ -110,7 +110,7 @@ async function runETL() {
     const [profissionaisLegacy] = await legacyConn.execute<any[]>('SELECT * FROM profissional');
     const profissionaisToInsert = profissionaisLegacy.map((p) => ({
       id: p.id,
-      tenantId: DEFAULT_TENANT_ID,
+      empresaId: DEFAULT_EMPRESA_ID,
       nome: String(p.nome).trim() || 'Profissional Não Informado',
     }));
     await prisma.profissional.createMany({ data: profissionaisToInsert });
@@ -121,8 +121,8 @@ async function runETL() {
     const [contratosLegacy] = await legacyConn.execute<any[]>('SELECT * FROM contrato');
     const contratosToInsert = contratosLegacy.map((c) => ({
       id: c.id,
-      tenantId: DEFAULT_TENANT_ID,
-      empresaId: c.empresa_id,
+      empresaId: DEFAULT_EMPRESA_ID,
+      clienteId: c.empresa_id,
       descricao: String(c.descricao).trim(),
       cor: sanitizeColor(c.cor),
       dtInicio: c.dt_inicio ? new Date(c.dt_inicio) : DEFAULT_CONTRACT_START,
@@ -162,7 +162,7 @@ async function runETL() {
 
       return {
         id: a.id,
-        tenantId: DEFAULT_TENANT_ID,
+        empresaId: DEFAULT_EMPRESA_ID,
         contratoId: a.contrato_id || null,
         profissionalId: a.profissional_id || 1,
         descricao: String(a.descricao || '').trim().substring(0, 500),

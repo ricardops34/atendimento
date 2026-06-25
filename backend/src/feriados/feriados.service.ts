@@ -17,10 +17,10 @@ interface FeriadoSearchQuery {
 export class FeriadosService {
   constructor(private prisma: PrismaService) {}
 
-  create(dto: CreateFeriadoDto, tenantId: number) {
+  create(dto: CreateFeriadoDto, empresaId: number) {
     return this.prisma.feriado.create({
       data: {
-        tenantId,
+        empresaId,
         data: new Date(dto.data),
         descricao: dto.descricao,
         tipo: dto.tipo,
@@ -30,17 +30,17 @@ export class FeriadosService {
     });
   }
 
-  findAll(tenantId: number) {
+  findAll(empresaId: number) {
     return this.prisma.feriado.findMany({ 
-      where: { tenantId }, 
+      where: { empresaId }, 
       orderBy: { data: 'asc' } 
     });
   }
 
-  async search(query: FeriadoSearchQuery, tenantId: number) {
+  async search(query: FeriadoSearchQuery, empresaId: number) {
     const page = Math.max(Number(query.page) || 1, 1);
     const pageSize = Math.max(Number(query.pageSize) || 20, 1);
-    const where = this.buildWhere(query, tenantId);
+    const where = this.buildWhere(query, empresaId);
     
     const total = await this.prisma.feriado.count({ where });
     const items = await this.prisma.feriado.findMany({
@@ -53,17 +53,17 @@ export class FeriadosService {
     return { items, page, pageSize, total, hasNext: page * pageSize < total };
   }
 
-  async findOne(id: number, tenantId?: number) {
+  async findOne(id: number, empresaId?: number) {
     const where: any = { id };
-    if (tenantId) where.tenantId = tenantId;
+    if (empresaId) where.empresaId = empresaId;
 
     const feriado = await this.prisma.feriado.findFirst({ where });
     if (!feriado) throw new NotFoundException('Feriado não encontrado.');
     return feriado;
   }
 
-  async update(id: number, dto: UpdateFeriadoDto, tenantId?: number) {
-    await this.findOne(id, tenantId);
+  async update(id: number, dto: UpdateFeriadoDto, empresaId?: number) {
+    await this.findOne(id, empresaId);
     return this.prisma.feriado.update({ 
       where: { id }, 
       data: {
@@ -76,14 +76,14 @@ export class FeriadosService {
     });
   }
 
-  async remove(id: number, tenantId?: number) {
-    await this.findOne(id, tenantId);
+  async remove(id: number, empresaId?: number) {
+    await this.findOne(id, empresaId);
     return this.prisma.feriado.delete({ where: { id } });
   }
 
-  private buildWhere(query: FeriadoSearchQuery, tenantId?: number) {
+  private buildWhere(query: FeriadoSearchQuery, empresaId?: number) {
     const where: any = {};
-    if (tenantId) where.tenantId = tenantId;
+    if (empresaId) where.empresaId = empresaId;
 
     if (query.id) {
       where.id = Number(query.id);

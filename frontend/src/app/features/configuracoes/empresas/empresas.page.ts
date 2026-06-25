@@ -5,6 +5,7 @@ import {
   PoButtonModule,
   PoDisclaimer,
   PoDisclaimerGroup,
+  PoDisclaimerGroupModule,
   PoFieldModule,
   PoModalComponent,
   PoModalModule,
@@ -19,12 +20,12 @@ import {
 import { TenantSearchParams, TenantService } from '../../../core/services/tenant.service';
 
 @Component({
-  selector: 'app-tenants-page',
+  selector: 'app-config-empresas-page',
   standalone: true,
-  imports: [CommonModule, FormsModule, PoPageModule, PoTableModule, PoButtonModule, PoModalModule, PoFieldModule, PoSearchModule],
-  templateUrl: './tenants.page.html',
+  imports: [CommonModule, FormsModule, PoPageModule, PoTableModule, PoButtonModule, PoModalModule, PoFieldModule, PoSearchModule, PoDisclaimerGroupModule],
+  templateUrl: './empresas.page.html',
 })
-export class TenantsPage implements OnInit {
+export class ConfigEmpresasPage implements OnInit {
   @ViewChild('modal', { static: true }) modal!: PoModalComponent;
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
 
@@ -47,7 +48,7 @@ export class TenantsPage implements OnInit {
 
   columns: PoTableColumn[] = [
     { property: 'id', label: 'ID', sortable: true },
-    { property: 'name', label: 'Tenant', sortable: true },
+    { property: 'name', label: 'Empresa', sortable: true },
     { property: 'slug', label: 'Slug', sortable: true },
   ];
 
@@ -152,13 +153,13 @@ export class TenantsPage implements OnInit {
     const request$ = this.isEdit ? this.service.update(this.formData.id, payload) : this.service.create(payload);
     request$.subscribe({
       next: () => {
-        this.poNotification.success(this.isEdit ? 'Tenant atualizado com sucesso.' : 'Tenant criado com sucesso.');
+        this.poNotification.success(this.isEdit ? 'Empresa atualizada com sucesso.' : 'Empresa criada com sucesso.');
         this.saving = false;
         this.loadData(true);
         this.modal.close();
       },
       error: () => {
-        this.poNotification.error('Erro ao salvar tenant.');
+        this.poNotification.error('Erro ao salvar empresa.');
         this.saving = false;
       },
     });
@@ -167,10 +168,10 @@ export class TenantsPage implements OnInit {
   remove(row: any) {
     this.service.remove(row.id).subscribe({
       next: () => {
-        this.poNotification.success('Tenant excluido com sucesso.');
+        this.poNotification.success('Empresa excluida com sucesso.');
         this.loadData(true);
       },
-      error: () => this.poNotification.error('Erro ao excluir tenant.'),
+      error: () => this.poNotification.error('Erro ao excluir empresa.'),
     });
   }
 
@@ -189,7 +190,7 @@ export class TenantsPage implements OnInit {
   private syncDisclaimers() {
     const disclaimers: PoDisclaimer[] = [];
     if (this.quickSearch) disclaimers.push({ property: 'search', label: 'Busca', value: this.quickSearch });
-    if (this.filters.name) disclaimers.push({ property: 'name', label: 'Tenant', value: this.filters.name });
+    if (this.filters.name) disclaimers.push({ property: 'name', label: 'Empresa', value: this.filters.name });
     if (this.filters.slug) disclaimers.push({ property: 'slug', label: 'Slug', value: this.filters.slug });
     this.disclaimerGroup = { ...this.disclaimerGroup, disclaimers };
   }

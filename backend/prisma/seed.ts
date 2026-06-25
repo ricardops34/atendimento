@@ -30,19 +30,22 @@ async function main() {
 
   const defaultRoutines = [
     { moduleKey: 'cadastros', name: 'Cadastros', key: 'cadastros-home', path: '/cadastros', icon: 'an an-folders', shortLabel: 'CAD', sortOrder: 10 },
-    { moduleKey: 'companies', name: 'Empresas', key: 'companies-list', path: '/empresas', icon: 'an an-buildings', shortLabel: 'EMP', sortOrder: 11 },
+    { moduleKey: 'companies', name: 'Clientes', key: 'companies-list', path: '/clientes', icon: 'an an-buildings', shortLabel: 'CLI', sortOrder: 11 },
     { moduleKey: 'professionals', name: 'Profissionais', key: 'professionals-list', path: '/profissionais', icon: 'an an-user', shortLabel: 'PRO', sortOrder: 12 },
     { moduleKey: 'contracts', name: 'Contratos', key: 'contracts-list', path: '/contratos', icon: 'an an-file-text', shortLabel: 'CON', sortOrder: 13 },
     { moduleKey: 'holidays', name: 'Feriados', key: 'holidays-list', path: '/feriados', icon: 'an an-calendar-x', shortLabel: 'FER', sortOrder: 14 },
     { moduleKey: 'appointments-list', name: 'Lista de Atendimentos', key: 'appointments-list', path: '/agendamentos/lista', icon: 'an an-list-dashes', shortLabel: 'LST', sortOrder: 40 },
     { moduleKey: 'appointments-calendar', name: 'Calendario', key: 'appointments-calendar', path: '/agendamentos/calendario', icon: 'an an-calendar-blank', shortLabel: 'CAL', sortOrder: 50 },
     { moduleKey: 'settings', name: 'Configuracoes', key: 'settings-home', path: '/configuracoes', icon: 'an an-gear', shortLabel: 'CFG', sortOrder: 60 },
-    { moduleKey: 'settings', name: 'Tenants', key: 'settings-tenants', path: '/configuracoes/tenants', icon: 'an an-buildings', shortLabel: 'TEN', sortOrder: 61 },
+    { moduleKey: 'settings', name: 'Empresas', key: 'settings-empresas', path: '/configuracoes/empresas', icon: 'an an-buildings', shortLabel: 'EMP', sortOrder: 61 },
     { moduleKey: 'settings', name: 'Modulos', key: 'settings-modules', path: '/configuracoes/modulos', icon: 'an an-squares-four', shortLabel: 'MOD', sortOrder: 62 },
     { moduleKey: 'settings', name: 'Rotinas', key: 'settings-routines', path: '/configuracoes/rotinas', icon: 'an an-list-checks', shortLabel: 'ROT', sortOrder: 63 },
     { moduleKey: 'settings', name: 'Perfis', key: 'settings-profiles', path: '/configuracoes/perfis', icon: 'an an-identification-card', shortLabel: 'PRF', sortOrder: 64 },
     { moduleKey: 'settings', name: 'Menus', key: 'settings-menus', path: '/configuracoes/menus', icon: 'an an-tree-structure', shortLabel: 'MNU', sortOrder: 65 },
     { moduleKey: 'settings', name: 'Usuarios', key: 'settings-users', path: '/configuracoes/usuarios', icon: 'an an-users-three', shortLabel: 'USR', sortOrder: 66 },
+    { moduleKey: 'settings', name: 'Estados', key: 'settings-estados', path: '/configuracoes/estados', icon: 'an an-map-trifold', shortLabel: 'UF', sortOrder: 67 },
+    { moduleKey: 'settings', name: 'Municípios', key: 'settings-municipios', path: '/configuracoes/municipios', icon: 'an an-map-pin', shortLabel: 'MUN', sortOrder: 68 },
+    { moduleKey: 'settings', name: 'CEPs', key: 'settings-ceps', path: '/configuracoes/ceps', icon: 'an an-mailbox', shortLabel: 'CEP', sortOrder: 69 },
   ];
 
   for (const routine of defaultRoutines) {
@@ -109,12 +112,15 @@ async function main() {
   const appointmentsListRoutine = allRoutines.find((item) => item.key === 'appointments-list');
   const appointmentsCalendarRoutine = allRoutines.find((item) => item.key === 'appointments-calendar');
   const settingsHomeRoutine = allRoutines.find((item) => item.key === 'settings-home');
-  const settingsTenantsRoutine = allRoutines.find((item) => item.key === 'settings-tenants');
+  const settingsEmpresasRoutine = allRoutines.find((item) => item.key === 'settings-empresas');
   const settingsModulesRoutine = allRoutines.find((item) => item.key === 'settings-modules');
   const settingsRoutinesRoutine = allRoutines.find((item) => item.key === 'settings-routines');
   const settingsProfilesRoutine = allRoutines.find((item) => item.key === 'settings-profiles');
   const settingsMenusRoutine = allRoutines.find((item) => item.key === 'settings-menus');
   const settingsUsersRoutine = allRoutines.find((item) => item.key === 'settings-users');
+  const settingsEstadosRoutine = allRoutines.find((item) => item.key === 'settings-estados');
+  const settingsMunicipiosRoutine = allRoutines.find((item) => item.key === 'settings-municipios');
+  const settingsCepsRoutine = allRoutines.find((item) => item.key === 'settings-ceps');
 
   await ensureMenu('/', {
     label: 'Inicio',
@@ -204,12 +210,15 @@ async function main() {
   }
 
   for (const routine of [
-    settingsTenantsRoutine,
+    settingsEmpresasRoutine,
     settingsModulesRoutine,
     settingsRoutinesRoutine,
     settingsProfilesRoutine,
     settingsMenusRoutine,
     settingsUsersRoutine,
+    settingsEstadosRoutine,
+    settingsMunicipiosRoutine,
+    settingsCepsRoutine,
   ]) {
     if (!routine) {
       continue;
@@ -228,13 +237,13 @@ async function main() {
     });
   }
 
-  // 2. Tenant Default
-  const tenant = await prisma.tenant.upsert({
-    where: { slug: 'default-tenant' },
-    update: {},
+  // 2. Empresa Default
+  const empresa = await prisma.empresa.upsert({
+    where: { slug: 'empresa-padrao' },
+    update: { name: 'Empresa Padrão' },
     create: {
-      name: 'Tenant Padrão',
-      slug: 'default-tenant',
+      name: 'Empresa Padrão',
+      slug: 'empresa-padrao',
     },
   });
 
@@ -289,11 +298,11 @@ async function main() {
   });
 
   if (adminUser) {
-    await prisma.userTenant.upsert({
+    await prisma.userEmpresa.upsert({
       where: {
-        userId_tenantId: {
+        userId_empresaId: {
           userId: adminUser.id,
-          tenantId: tenant.id,
+          empresaId: empresa.id,
         },
       },
       update: {
@@ -301,7 +310,7 @@ async function main() {
       },
       create: {
         userId: adminUser.id,
-        tenantId: tenant.id,
+        empresaId: empresa.id,
         isDefault: true,
       },
     });
@@ -341,20 +350,65 @@ async function main() {
   for (const feriado of feriadosNacionais) {
     await prisma.feriado.upsert({
       where: {
-        tenantId_data: {
-          tenantId: tenant.id,
+        empresaId_data: {
+          empresaId: empresa.id,
           data: feriado.data,
         },
       },
       update: {},
       create: {
-        tenantId: tenant.id,
+        empresaId: empresa.id,
         data: feriado.data,
         descricao: feriado.descricao,
         tipo: feriado.tipo,
         fixo: feriado.fixo ?? true,
       },
     });
+  }
+
+  // 6. IBGE Data (Estados e Municipios)
+  console.log('Fetching IBGE data for Estados...');
+  try {
+    const estadosRes = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados');
+    if (estadosRes.ok) {
+      const estados = await estadosRes.json();
+      console.log(`Loaded ${estados.length} estados from IBGE API. Saving...`);
+      for (const estado of estados) {
+        await prisma.estado.upsert({
+          where: { id: estado.id },
+          update: { nome: estado.nome, sigla: estado.sigla },
+          create: { id: estado.id, nome: estado.nome, sigla: estado.sigla },
+        });
+      }
+
+      console.log('Fetching IBGE data for Municipios...');
+      const municipiosRes = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/municipios');
+      if (municipiosRes.ok) {
+        const municipios = await municipiosRes.json();
+        console.log(`Loaded ${municipios.length} municipios from IBGE API. Saving (this may take a few seconds)...`);
+        
+        // Optimizing inserts using createMany where possible, or transacting
+        // Since we want upsert (idempotent), we can map to a batch
+        for (const mun of municipios) {
+          const estadoId = mun.microrregiao?.mesorregiao?.UF?.id || mun['regiao-imediata']?.['regiao-intermediaria']?.UF?.id;
+          if (!estadoId) {
+            console.warn(`Could not determine estadoId for municipio ${mun.nome}`);
+            continue;
+          }
+          await prisma.municipio.upsert({
+            where: { id: mun.id },
+            update: { nome: mun.nome, estadoId: estadoId },
+            create: { id: mun.id, nome: mun.nome, estadoId: estadoId },
+          });
+        }
+      } else {
+        console.warn('Failed to fetch Municipios from IBGE');
+      }
+    } else {
+      console.warn('Failed to fetch Estados from IBGE');
+    }
+  } catch (error) {
+    console.error('Error fetching IBGE data:', error);
   }
 
   console.log('Seed completed successfully!');

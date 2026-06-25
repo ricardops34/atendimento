@@ -26,7 +26,7 @@ export class LoginComponent {
   private readonly EMAIL_RE = /^[^@]+@[^@]+\.[a-zA-Z]{2,}$/;
 
   customField: PoPageLoginCustomField = {
-    property: 'tenantId',
+    property: 'empresaId',
     placeholder: 'Selecione a Empresa',
     options: []
   };
@@ -37,7 +37,7 @@ export class LoginComponent {
       distinctUntilChanged(),
       switchMap(email =>
         this.EMAIL_RE.test(email)
-          ? this.http.post<{ label: string; value: number }[]>(`${this.API_URL}/auth/tenant-options`, { email }).pipe(
+          ? this.http.post<{ label: string; value: number }[]>(`${this.API_URL}/auth/empresa-options`, { email }).pipe(
               catchError(() => of([]))
             )
           : of([])
@@ -55,10 +55,10 @@ export class LoginComponent {
     this.authService.login({
       email: formData.login,
       password: formData.password,
-      tenantId: formData.customField || undefined
+      empresaId: formData.customField || undefined
     }).subscribe({
       next: (res) => {
-        if (res?.requiresTenantSelection) {
+        if (res?.requiresEmpresaSelection) {
           this.poNotification.warning('Selecione a empresa e clique em Entrar novamente.');
           return;
         }

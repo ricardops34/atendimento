@@ -21,15 +21,15 @@ async function bootstrap() {
     });
     console.log('Connected to legacy MySQL database.');
 
-    // 1. Create Default Tenant
-    let defaultTenant = await prisma.tenant.findUnique({ where: { slug: 'default' } });
-    if (!defaultTenant) {
-      defaultTenant = await prisma.tenant.create({
-        data: { name: 'Default Tenant', slug: 'default' }
+    // 1. Create Default Empresa
+    let defaultEmpresa = await prisma.empresa.findFirst({ where: { slug: 'default' } });
+    if (!defaultEmpresa) {
+      defaultEmpresa = await prisma.empresa.create({
+        data: { name: 'Empresa Fallback', slug: 'default' }
       });
-      console.log('Created default tenant.');
+      console.log('Created default empresa.');
     }
-    const tenantId = defaultTenant.id;
+    const empresaId = defaultEmpresa.id;
 
     // 2. Setup Modules and Admin Profile
     const modules = ['dashboard', 'companies', 'professionals', 'contracts', 'appointments-calendar', 'appointments-list', 'settings'];
@@ -78,11 +78,11 @@ async function bootstrap() {
       });
     }
 
-    await prisma.userTenant.upsert({
+    await prisma.userEmpresa.upsert({
       where: {
-        userId_tenantId: {
+        userId_empresaId: {
           userId: adminUser.id,
-          tenantId,
+          empresaId,
         },
       },
       update: {
@@ -90,19 +90,19 @@ async function bootstrap() {
       },
       create: {
         userId: adminUser.id,
-        tenantId,
+        empresaId,
         isDefault: true,
       },
     });
 
-    // 4. Import Empresas
-    console.log('Importing Empresas...');
+    // 4. Import Clientes
+    console.log('Importing Clientes...');
     const [empresas]: any = await legacyDb.execute('SELECT * FROM empresa');
     for (const row of empresas) {
-      await prisma.empresa.upsert({
+      await prisma.cliente.upsert({
         where: { id: row.id },
         update: { nome: row.nome_fantasia || row.razao_social || 'Sem Nome' },
-        create: { id: row.id, tenantId, nome: row.nome_fantasia || row.razao_social || 'Sem Nome' }
+        create: { id: row.id, empresaId, nome: row.nome_fantasia || row.razao_social || 'Sem Nome' }
       });
     }
 
@@ -113,7 +113,7 @@ async function bootstrap() {
       await prisma.profissional.upsert({
         where: { id: row.id },
         update: { nome: row.nome },
-        create: { id: row.id, tenantId, nome: row.nome }
+        create: { id: row.id, empresaId, nome: row.nome }
       });
     }
 
@@ -128,7 +128,7 @@ async function bootstrap() {
       await prisma.contrato.upsert({
         where: { id: row.id },
         update: {
-          empresaId: row.empresa_id,
+          clienteId: row.empresa_id,
           descricao: row.descricao || 'Sem descrição',
           cor: row.cor || '#333333',
           dtInicio: row.dt_inicio ? new Date(row.dt_inicio) : DEFAULT_CONTRACT_START,
@@ -138,8 +138,8 @@ async function bootstrap() {
         },
         create: {
           id: row.id,
-          tenantId,
-          empresaId: row.empresa_id,
+          empresaId,
+          clienteId: row.empresa_id,
           descricao: row.descricao || 'Sem descrição',
           cor: row.cor || '#333333',
           dtInicio: row.dt_inicio ? new Date(row.dt_inicio) : DEFAULT_CONTRACT_START,
@@ -223,7 +223,7 @@ async function bootstrap() {
         },
         create: {
           id: row.id,
-          tenantId,
+          empresaId,
           contratoId: row.contrato_id,
           profissionalId: row.profissional_id,
           descricao: row.descricao || '',

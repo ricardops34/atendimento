@@ -67,34 +67,34 @@ async function resetSequence(table: string, column = 'id') {
 }
 
 async function main() {
-  // Busca o tenant padrão (criado pelo seed.ts)
-  const tenant = await prisma.tenant.findFirst({ where: { slug: 'default-tenant' } });
-  if (!tenant) {
-    throw new Error('Tenant "default" não encontrado. Rode "npx prisma db seed" primeiro.');
+  // Busca a empresa padrão (criado pelo seed.ts)
+  const empresaDefault = await prisma.empresa.findFirst({ where: { slug: 'default' } });
+  if (!empresaDefault) {
+    throw new Error('Empresa fallback não encontrada. Rode "npx prisma db seed" primeiro.');
   }
-  const tenantId = tenant.id;
+  const empresaId = empresaDefault.id;
 
-  console.log(`Importando dados para tenant "${tenant.name}" (id=${tenantId})...`);
+  console.log(`Importando dados para empresa "${empresaDefault.name}" (id=${empresaId})...`);
 
   // 1. Empresas
   console.log('\n→ Empresas...');
   for (const emp of empresas) {
-    await prisma.empresa.upsert({
+    await prisma.cliente.upsert({
       where: { id: emp.id },
-      update: { nome: emp.nome, tenantId },
-      create: { id: emp.id, nome: emp.nome, tenantId },
+      update: { nome: emp.nome, empresaId },
+      create: { id: emp.id, nome: emp.nome, empresaId },
     });
     console.log(`  ✓ [${emp.id}] ${emp.nome}`);
   }
-  await resetSequence('empresa');
+  await resetSequence('cliente');
 
   // 2. Profissionais
   console.log('\n→ Profissionais...');
   for (const pro of profissionais) {
     await prisma.profissional.upsert({
       where: { id: pro.id },
-      update: { nome: pro.nome, tenantId },
-      create: { id: pro.id, nome: pro.nome, tenantId },
+      update: { nome: pro.nome, empresaId },
+      create: { id: pro.id, nome: pro.nome, empresaId },
     });
     console.log(`  ✓ [${pro.id}] ${pro.nome}`);
   }
@@ -108,8 +108,8 @@ async function main() {
       update: {
         descricao: con.descricao,
         cor: con.cor,
-        empresaId: con.empresaId,
-        tenantId,
+        clienteId: con.empresaId,
+        empresaId,
         dtInicio: DEFAULT_CONTRACT_START,
         dtFim: DEFAULT_CONTRACT_END,
         tipo: DEFAULT_CONTRACT_TYPE
@@ -118,8 +118,8 @@ async function main() {
         id: con.id,
         descricao: con.descricao,
         cor: con.cor,
-        empresaId: con.empresaId,
-        tenantId,
+        clienteId: con.empresaId,
+        empresaId,
         dtInicio: DEFAULT_CONTRACT_START,
         dtFim: DEFAULT_CONTRACT_END,
         tipo: DEFAULT_CONTRACT_TYPE,

@@ -17,7 +17,7 @@ interface AgendamentoExportFilters {
   profissionalId?: number;
   dataInicial?: string;
   dataFinal?: string;
-  tenantId?: number;
+  empresaId?: number;
 }
 
 interface SearchQuery {
@@ -63,8 +63,8 @@ export class AgendamentosService {
   private buildWhereFromFilters(filters: AgendamentoExportFilters): object {
     const andFilters: object[] = [];
 
-    if (filters.tenantId) {
-      andFilters.push({ tenantId: filters.tenantId });
+    if (filters.empresaId) {
+      andFilters.push({ empresaId: filters.empresaId });
     }
 
     if (filters.search) {
@@ -119,7 +119,7 @@ export class AgendamentosService {
 
     return this.prisma.agendamento.create({
       data: {
-        tenantId: (dto as any).tenantId ?? 1,
+        empresaId: (dto as any).empresaId ?? 1,
         contratoId: dto.contratoId ?? null,
         profissionalId: dto.profissionalId ?? null,
         descricao: descricao || 'Agendamento sem descrição',
@@ -139,9 +139,9 @@ export class AgendamentosService {
     });
   }
 
-  async findAll(tenantId: number): Promise<Agendamento[]> {
+  async findAll(empresaId: number): Promise<Agendamento[]> {
     const items = await this.prisma.agendamento.findMany({
-      where: { tenantId },
+      where: { empresaId },
       include: { contrato: true, profissional: true },
     });
     return items.map(item => ({
@@ -150,7 +150,7 @@ export class AgendamentosService {
     }));
   }
 
-  async search(query: SearchQuery, tenantId: number): Promise<{
+  async search(query: SearchQuery, empresaId: number): Promise<{
     items: Agendamento[];
     page: number;
     pageSize: number;
@@ -168,7 +168,7 @@ export class AgendamentosService {
       profissionalId: this.parseNumber(query.profissionalId),
       dataInicial: query.dataInicial,
       dataFinal: query.dataFinal,
-      tenantId,
+      empresaId,
     };
 
     const where = this.buildWhereFromFilters(filters);
@@ -189,9 +189,9 @@ export class AgendamentosService {
     return { items: itemsMapped, page, pageSize, total, hasNext: page * pageSize < total };
   }
 
-  async findOne(id: number, tenantId?: number): Promise<Agendamento> {
+  async findOne(id: number, empresaId?: number): Promise<Agendamento> {
     const where: any = { id };
-    if (tenantId) where.tenantId = tenantId;
+    if (empresaId) where.empresaId = empresaId;
 
     const agendamento = await this.prisma.agendamento.findFirst({
       where,
@@ -204,8 +204,8 @@ export class AgendamentosService {
     return agendamento;
   }
 
-  async update(id: number, dto: UpdateAgendamentoDto, tenantId?: number): Promise<Agendamento> {
-    const current = await this.findOne(id, tenantId);
+  async update(id: number, dto: UpdateAgendamentoDto, empresaId?: number): Promise<Agendamento> {
+    const current = await this.findOne(id, empresaId);
 
     const dataAgenda = dto.dataAgenda ? new Date(dto.dataAgenda) : current.dataAgenda;
     const horaInicio = dto.horaInicio || current.horaInicio;
@@ -229,15 +229,15 @@ export class AgendamentosService {
     });
   }
 
-  async remove(id: number, tenantId?: number): Promise<Agendamento> {
-    await this.findOne(id, tenantId);
+  async remove(id: number, empresaId?: number): Promise<Agendamento> {
+    await this.findOne(id, empresaId);
     return this.prisma.agendamento.delete({ where: { id } });
   }
 
-  async confirmar(id: number, tenantId: number): Promise<Agendamento> {
+  async confirmar(id: number, empresaId: number): Promise<Agendamento> {
     return this.prisma.$transaction(async (tx) => {
       const agendamento = await tx.agendamento.findUnique({
-        where: { id, tenantId },
+        where: { id, empresaId } as any, // Temporary fix for Prisma types if composite unique is not defined properly
         include: { contrato: true, profissional: true },
       });
       if (!agendamento) throw new NotFoundException('Agendamento não encontrado.');

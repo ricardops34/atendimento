@@ -8,9 +8,9 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/login/login.component').then((m) => m.LoginComponent),
   },
   {
-    path: 'empresas',
+    path: 'clientes',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/cadastros-apoio/empresas/empresas.page').then((m) => m.EmpresasPage),
+    loadComponent: () => import('./features/cadastros-apoio/clientes/clientes.page').then((m) => m.ClientesPage),
   },
   {
     path: 'profissionais',
@@ -33,9 +33,9 @@ export const routes: Routes = [
     loadComponent: () => import('./features/configuracoes/configuracoes.page').then((m) => m.ConfiguracoesPage),
   },
   {
-    path: 'configuracoes/tenants',
+    path: 'configuracoes/empresas',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/configuracoes/tenants/tenants.page').then((m) => m.TenantsPage),
+    loadComponent: () => import('./features/configuracoes/empresas/empresas.page').then((m) => m.ConfigEmpresasPage),
   },
   {
     path: 'configuracoes/modulos',
@@ -61,6 +61,21 @@ export const routes: Routes = [
     path: 'configuracoes/usuarios',
     canActivate: [authGuard],
     loadComponent: () => import('./features/configuracoes/usuarios/usuarios.page').then((m) => m.UsuariosPage),
+  },
+  {
+    path: 'configuracoes/estados',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/estados/estados.page').then((m) => m.EstadosPage),
+  },
+  {
+    path: 'configuracoes/municipios',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/municipios/municipios.page').then((m) => m.MunicipiosPage),
+  },
+  {
+    path: 'configuracoes/ceps',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/ceps/ceps.page').then((m) => m.CepsPage),
   },
   { 
     path: 'agendamentos/lista', 

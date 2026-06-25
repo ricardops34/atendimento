@@ -1,0 +1,63 @@
+<po-page-default p-title="Empresas">
+  <po-table
+    [p-items]="items"
+    [p-columns]="columns"
+    [p-actions]="actions"
+    [p-loading]="loading"
+    [p-loading-show-more]="loadingShowMore"
+    [p-show-more-disabled]="!hasNext"
+    (p-show-more)="onShowMore()"
+    (p-sort-by)="onSortChange($event)"
+  >
+    <ng-template p-table-header-action>
+      <div class="po-row po-mb-2">
+        <po-button p-label="Nova Empresa" p-icon="po-icon-plus" (p-click)="openCreate()"></po-button>
+        <div class="po-ml-auto po-flex po-align-center">
+          <po-search
+            class="po-mr-1"
+            p-placeholder="Buscar empresa..."
+            (p-change-model)="onQuickSearch($event)"
+          ></po-search>
+          <po-button p-icon="po-icon-filter" (p-click)="openAdvancedFilters()"></po-button>
+        </div>
+      </div>
+      <po-disclaimer-group
+        *ngIf="disclaimerGroup.disclaimers.length > 0"
+        [p-disclaimers]="disclaimerGroup.disclaimers"
+        [p-title]="disclaimerGroup.title"
+        (p-remove)="removeDisclaimer($event)"
+        (p-remove-all)="clearFilters()"
+      ></po-disclaimer-group>
+    </ng-template>
+  </po-table>
+</po-page-default>
+
+<po-modal
+  #modal
+  [p-title]="isEdit ? 'Editar Empresa' : 'Nova Empresa'"
+  p-size="md"
+  [p-primary-action]="{ label: 'Salvar', action: save.bind(this), loading: saving }"
+  [p-secondary-action]="{ label: 'Cancelar', action: modal.close.bind(modal) }"
+>
+  <div class="po-row">
+    <po-input class="po-md-12" name="name" p-label="Nome da Empresa" [(ngModel)]="formData.name" p-required></po-input>
+  </div>
+  <div class="po-row po-mt-2">
+    <po-input class="po-md-12" name="slug" p-label="Slug (Identificador)" [(ngModel)]="formData.slug" p-required></po-input>
+  </div>
+</po-modal>
+
+<po-modal
+  #advancedFilterModal
+  p-title="Filtros Avançados"
+  p-size="sm"
+  [p-primary-action]="{ label: 'Aplicar', action: applyAdvancedFilters.bind(this) }"
+  [p-secondary-action]="{ label: 'Cancelar', action: advancedFilterModal.close.bind(advancedFilterModal) }"
+>
+  <div class="po-row">
+    <po-input class="po-md-12" name="filterName" p-label="Nome da Empresa" [(ngModel)]="filters.name"></po-input>
+  </div>
+  <div class="po-row po-mt-2">
+    <po-input class="po-md-12" name="filterSlug" p-label="Slug" [(ngModel)]="filters.slug"></po-input>
+  </div>
+</po-modal>

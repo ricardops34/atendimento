@@ -34,8 +34,8 @@ export class AuthService {
     );
   }
 
-  switchTenant(tenantId: number): Observable<any> {
-    return this.http.post<any>(`${this.API_URL}/auth/switch-tenant`, { tenantId }).pipe(
+  switchEmpresa(empresaId: number): Observable<any> {
+    return this.http.post<any>(`${this.API_URL}/auth/switch-empresa`, { empresaId }).pipe(
       tap(res => {
         if (res && res.accessToken) {
           localStorage.setItem('access_token', res.accessToken);

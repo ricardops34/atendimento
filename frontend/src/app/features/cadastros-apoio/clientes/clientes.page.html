@@ -1,0 +1,104 @@
+<po-page-list p-title="Clientes" [p-disclaimer-group]="disclaimerGroup">
+  <div class="po-row" style="align-items: end; margin-bottom: 16px; row-gap: 12px;">
+    <div class="po-md-6 po-sm-12" style="display: flex; flex-wrap: wrap; gap: 8px;">
+      <po-button p-label="Novo Cliente" p-icon="po-icon-plus" (p-click)="openCreate()"></po-button>
+    </div>
+
+    <div class="po-md-6 po-sm-12" style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <div style="min-width: 280px; width: 280px; max-width: 100%;">
+        <po-search
+          p-placeholder="Pesquisar"
+          [(ngModel)]="quickSearch"
+          (p-filter)="onQuickSearch($event)"
+          (p-change-model)="quickSearch = $event">
+        </po-search>
+      </div>
+
+      <po-button p-label="Busca avançada" p-kind="tertiary" (p-click)="openAdvancedFilters()"></po-button>
+    </div>
+  </div>
+
+  <po-table
+    [p-items]="empresas"
+    [p-columns]="columns"
+    [p-actions]="actions"
+    [p-loading]="loading"
+    [p-loading-show-more]="loadingShowMore"
+    [p-show-more-disabled]="!hasNext"
+    [p-sort]="true"
+    [p-hide-detail]="true"
+    [p-hide-table-search]="true"
+    (p-show-more)="onShowMore()"
+    (p-sort-by)="onSortChange($event)">
+  </po-table>
+</po-page-list>
+
+<po-modal p-title="Busca avançada" #advancedFilterModal>
+  <div class="po-row">
+    <po-number
+      class="po-md-3"
+      name="id"
+      p-label="ID"
+      [ngModel]="filters.id"
+      (ngModelChange)="filters.id = $event">
+    </po-number>
+
+    <po-input
+      class="po-md-9"
+      name="nomeFiltro"
+      p-label="Empresa"
+      [ngModel]="filters.nome"
+      (ngModelChange)="filters.nome = $event">
+    </po-input>
+  </div>
+
+  <po-modal-footer>
+    <po-button p-label="Limpar" (p-click)="clearFilters()"></po-button>
+    <po-button p-label="Aplicar filtros" p-kind="primary" (p-click)="applyAdvancedFilters()"></po-button>
+  </po-modal-footer>
+</po-modal>
+
+<po-modal p-title="Cliente" #modal [p-size]="'xl'">
+  <div class="po-row">
+    <po-radio-group
+      class="po-md-3"
+      name="tipoPessoa"
+      p-label="Tipo de Pessoa"
+      [p-options]="tipoPessoaOptions"
+      [ngModel]="formData.tipoPessoa"
+      (ngModelChange)="formData.tipoPessoa = $event">
+    </po-radio-group>
+    <po-input class="po-md-6" p-label="Nome / Nome Fantasia" p-required="true" [p-show-required]="true" [ngModel]="formData.nome" (ngModelChange)="formData.nome = $event"></po-input>
+    <po-input class="po-md-3" p-label="Cor na Agenda (hex)" [ngModel]="formData.cor" (ngModelChange)="formData.cor = $event" p-placeholder="#RRGGBB"></po-input>
+  </div>
+
+  <div class="po-row">
+    <po-input *ngIf="formData.tipoPessoa === 'J'" class="po-md-8" p-label="Razão Social" [ngModel]="formData.razao" (ngModelChange)="formData.razao = $event"></po-input>
+    <po-input *ngIf="formData.tipoPessoa === 'J'" class="po-md-4" p-label="CNPJ" p-mask="99.999.999/9999-99" [ngModel]="formData.documento" (ngModelChange)="formData.documento = $event"></po-input>
+
+    <po-input *ngIf="formData.tipoPessoa === 'F'" class="po-md-8" p-label="CPF" p-mask="999.999.999-99" [ngModel]="formData.documento" (ngModelChange)="formData.documento = $event"></po-input>
+    <po-input *ngIf="formData.tipoPessoa === 'F'" class="po-md-4" p-label="Data de Nascimento" type="date" [ngModel]="formData.dataNascimento" (ngModelChange)="formData.dataNascimento = $event"></po-input>
+  </div>
+
+  <div class="po-row">
+    <po-input class="po-md-4" p-label="Telefone (WhatsApp)" p-mask="(99) 99999-9999" [ngModel]="formData.telefone" (ngModelChange)="formData.telefone = $event"></po-input>
+    <po-input class="po-md-8" p-label="E-mail" type="email" [ngModel]="formData.email" (ngModelChange)="formData.email = $event"></po-input>
+  </div>
+
+  <div class="po-row">
+    <po-input class="po-md-3" p-label="CEP" p-mask="99999-999" [ngModel]="formData.cep" (ngModelChange)="formData.cep = $event" (p-blur)="searchCep()"></po-input>
+    <po-input class="po-md-7" p-label="Endereço (Logradouro)" [ngModel]="formData.endereco" (ngModelChange)="formData.endereco = $event"></po-input>
+    <po-input class="po-md-2" p-label="Número" [ngModel]="formData.numero" (ngModelChange)="formData.numero = $event"></po-input>
+  </div>
+  
+  <div class="po-row">
+    <po-input class="po-md-4" p-label="Complemento" [ngModel]="formData.complemento" (ngModelChange)="formData.complemento = $event"></po-input>
+    <po-input class="po-md-3" p-label="Bairro" [ngModel]="formData.bairro" (ngModelChange)="formData.bairro = $event"></po-input>
+    <po-input class="po-md-4" p-label="Cidade" [ngModel]="formData.cidade" (ngModelChange)="formData.cidade = $event"></po-input>
+    <po-input class="po-md-1" p-label="UF" [ngModel]="formData.estado" (ngModelChange)="formData.estado = $event" [p-maxlength]="2"></po-input>
+  </div>
+
+  <po-modal-footer>
+    <po-button p-label="Salvar" p-kind="primary" [p-loading]="saving" (p-click)="save()"></po-button>
+  </po-modal-footer>
+</po-modal>
