@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
-import {
-  PoButtonModule,
+import { PoDialogService, PoButtonModule,
   PoComboOption,
   PoDisclaimer,
   PoDisclaimerGroup,
@@ -14,8 +13,7 @@ import {
   PoTableAction,
   PoTableColumn,
   PoTableColumnSort,
-  PoTableModule,
-} from '@po-ui/ng-components';
+  PoTableModule, } from '@po-ui/ng-components';
 import { ContratoSearchParams, ContratoService } from '../../../core/services/contrato.service';
 import { EmpresaService } from '../../../core/services/empresa.service';
 import { ProfissionalService } from '../../../core/services/profissional.service';
@@ -47,6 +45,7 @@ export class ContratosPage implements OnInit {
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
 
   private contratoService = inject(ContratoService);
+  private poDialog = inject(PoDialogService);
   private empresaService = inject(EmpresaService);
   private profissionalService = inject(ProfissionalService);
   private poNotification = inject(PoNotificationService);
@@ -344,12 +343,10 @@ export class ContratosPage implements OnInit {
       escalas: this.formData.escalas || [],
     };
     if (this.formData.valorHora !== null && this.formData.valorHora !== '') {
-      let v = String(this.formData.valorHora).replace(/\./g, '').replace(',', '.');
-      payload.valorHora = Number(v);
+      payload.valorHora = Number(this.formData.valorHora);
     }
     if (this.formData.valorFixo !== null && this.formData.valorFixo !== '') {
-      let v = String(this.formData.valorFixo).replace(/\./g, '').replace(',', '.');
-      payload.valorFixo = Number(v);
+      payload.valorFixo = Number(this.formData.valorFixo);
     }
 
     const request$ = this.isEdit
@@ -375,7 +372,11 @@ export class ContratosPage implements OnInit {
   }
 
   remove(row: any) {
-    this.contratoService.remove(row.id).subscribe({
+    this.poDialog.confirm({
+      title: 'Confirmar exclusão',
+      message: 'Tem certeza que deseja excluir este registro?',
+      confirm: () => {
+        this.contratoService.remove(row.id).subscribe({
       next: () => {
         this.poNotification.success('Contrato excluído com sucesso.');
         this.loadData(true);
@@ -383,6 +384,8 @@ export class ContratosPage implements OnInit {
       error: () => {
         this.poNotification.error('Erro ao excluir contrato.');
       },
+    });
+      }
     });
   }
 

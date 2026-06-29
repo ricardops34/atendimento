@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  PoButtonModule,
+import { PoDialogService, PoButtonModule,
   PoDisclaimer,
   PoDisclaimerGroup,
   PoFieldModule,
@@ -14,8 +13,7 @@ import {
   PoTableAction,
   PoTableColumn,
   PoTableColumnSort,
-  PoTableModule,
-} from '@po-ui/ng-components';
+  PoTableModule, } from '@po-ui/ng-components';
 import { EstadoService } from '../../../core/services/estado.service';
 
 @Component({
@@ -28,6 +26,7 @@ export class EstadosPage implements OnInit {
   @ViewChild('modal', { static: true }) modal!: PoModalComponent;
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
   private service = inject(EstadoService);
+  private poDialog = inject(PoDialogService);
   private poNotification = inject(PoNotificationService);
 
   items: any[] = [];
@@ -100,7 +99,15 @@ export class EstadosPage implements OnInit {
     });
   }
 
-  remove(row: any) { this.service.deleteEstado(row.id).subscribe({ next: () => { this.poNotification.success('Estado excluido.'); this.loadData(true); }, error: () => this.poNotification.error('Erro ao excluir estado.') }); }
+  remove(row: any) {
+    this.poDialog.confirm({
+      title: 'Confirmar exclusão',
+      message: 'Tem certeza que deseja excluir este registro?',
+      confirm: () => {
+        this.service.deleteEstado(row.id).subscribe({ next: () => { this.poNotification.success('Estado excluido.'); this.loadData(true); }, error: () => this.poNotification.error('Erro ao excluir estado.') });
+      }
+    });
+  }
   private buildSearchParams() { return { page: this.page, limit: this.pageSize, search: this.quickSearch || undefined, nome: this.filters.nome, sigla: this.filters.sigla, sortProperty: this.sortProperty, sortDirection: this.sortDirection }; }
   private syncDisclaimers() { const disclaimers: PoDisclaimer[] = []; if (this.quickSearch) disclaimers.push({ property: 'search', label: 'Busca', value: this.quickSearch }); if (this.filters.nome) disclaimers.push({ property: 'nome', label: 'Nome', value: this.filters.nome }); if (this.filters.sigla) disclaimers.push({ property: 'sigla', label: 'Sigla', value: this.filters.sigla }); this.disclaimerGroup = { ...this.disclaimerGroup, disclaimers }; }
 }

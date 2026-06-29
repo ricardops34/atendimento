@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  PoButtonModule,
+import { PoDialogService, PoButtonModule,
   PoDisclaimer,
   PoDisclaimerGroup,
   PoDisclaimerGroupModule,
@@ -15,8 +14,7 @@ import {
   PoTableAction,
   PoTableColumn,
   PoTableColumnSort,
-  PoTableModule,
-} from '@po-ui/ng-components';
+  PoTableModule, } from '@po-ui/ng-components';
 import { TenantSearchParams, TenantService } from '../../../core/services/tenant.service';
 
 @Component({
@@ -30,6 +28,7 @@ export class ConfigEmpresasPage implements OnInit {
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
 
   private service = inject(TenantService);
+  private poDialog = inject(PoDialogService);
   private poNotification = inject(PoNotificationService);
 
   items: any[] = [];
@@ -166,12 +165,18 @@ export class ConfigEmpresasPage implements OnInit {
   }
 
   remove(row: any) {
-    this.service.remove(row.id).subscribe({
+    this.poDialog.confirm({
+      title: 'Confirmar exclusão',
+      message: 'Tem certeza que deseja excluir este registro?',
+      confirm: () => {
+        this.service.remove(row.id).subscribe({
       next: () => {
         this.poNotification.success('Empresa excluida com sucesso.');
         this.loadData(true);
       },
       error: () => this.poNotification.error('Erro ao excluir empresa.'),
+    });
+      }
     });
   }
 

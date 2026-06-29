@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  PoButtonModule,
+import { PoDialogService, PoButtonModule,
   PoDisclaimer,
   PoDisclaimerGroup,
   PoFieldModule,
@@ -15,8 +14,7 @@ import {
   PoTableColumn,
   PoTableColumnSort,
   PoTableModule,
-  PoComboOption
-} from '@po-ui/ng-components';
+  PoComboOption } from '@po-ui/ng-components';
 import { CepService } from '../../../core/services/cep.service';
 
 @Component({
@@ -28,6 +26,7 @@ import { CepService } from '../../../core/services/cep.service';
 export class CepsPage implements OnInit {
   @ViewChild('modal', { static: true }) modal!: PoModalComponent;
   private service = inject(CepService);
+  private poDialog = inject(PoDialogService);
   private poNotification = inject(PoNotificationService);
 
   items: any[] = [];
@@ -106,7 +105,15 @@ export class CepsPage implements OnInit {
     });
   }
 
-  remove(row: any) { this.service.deleteCep(row.cep).subscribe({ next: () => { this.poNotification.success('CEP excluido.'); this.loadData(true); }, error: () => this.poNotification.error('Erro ao excluir CEP.') }); }
+  remove(row: any) {
+    this.poDialog.confirm({
+      title: 'Confirmar exclusão',
+      message: 'Tem certeza que deseja excluir este registro?',
+      confirm: () => {
+        this.service.deleteCep(row.cep).subscribe({ next: () => { this.poNotification.success('CEP excluido.'); this.loadData(true); }, error: () => this.poNotification.error('Erro ao excluir CEP.') });
+      }
+    });
+  }
   
   searchViaCep() {
     if (!this.searchCepStr || this.searchCepStr.length < 8) {

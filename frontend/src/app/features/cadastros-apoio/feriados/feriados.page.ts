@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
-import {
-  PoButtonModule,
+import { PoDialogService, PoButtonModule,
   PoDisclaimer,
   PoDisclaimerGroup,
   PoFieldModule,
@@ -13,8 +12,7 @@ import {
   PoTableAction,
   PoTableColumn,
   PoTableColumnSort,
-  PoTableModule,
-} from '@po-ui/ng-components';
+  PoTableModule, } from '@po-ui/ng-components';
 import { FormsModule } from '@angular/forms';
 import { FeriadoSearchParams, FeriadoService } from '../../../core/services/feriado.service';
 
@@ -38,6 +36,7 @@ export class FeriadosPage implements OnInit {
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
 
   private feriadoService = inject(FeriadoService);
+  private poDialog = inject(PoDialogService);
   private poNotification = inject(PoNotificationService);
 
   feriados: any[] = [];
@@ -240,7 +239,11 @@ export class FeriadosPage implements OnInit {
   }
 
   remove(row: any) {
-    this.feriadoService.remove(row.id).subscribe({
+    this.poDialog.confirm({
+      title: 'Confirmar exclusão',
+      message: 'Tem certeza que deseja excluir este registro?',
+      confirm: () => {
+        this.feriadoService.remove(row.id).subscribe({
       next: () => {
         this.poNotification.success('Feriado excluído com sucesso.');
         this.loadData(true);
@@ -248,6 +251,8 @@ export class FeriadosPage implements OnInit {
       error: () => {
         this.poNotification.error('Erro ao excluir feriado.');
       },
+    });
+      }
     });
   }
 

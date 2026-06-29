@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { PoButtonModule, PoComboOption, PoDisclaimer, PoDisclaimerGroup, PoFieldModule, PoModalComponent, PoModalModule, PoNotificationService, PoPageModule, PoSearchModule, PoTableAction, PoTableColumn, PoTableColumnSort, PoTableModule } from '@po-ui/ng-components';
+import { PoDialogService, PoButtonModule, PoComboOption, PoDisclaimer, PoDisclaimerGroup, PoFieldModule, PoModalComponent, PoModalModule, PoNotificationService, PoPageModule, PoSearchModule, PoTableAction, PoTableColumn, PoTableColumnSort, PoTableModule } from '@po-ui/ng-components';
 import { RoutineSearchParams, RoutineService } from '../../../core/services/routine.service';
 import { SystemModuleService } from '../../../core/services/system-module.service';
 
@@ -15,6 +15,7 @@ export class RotinasPage implements OnInit {
   @ViewChild('modal', { static: true }) modal!: PoModalComponent;
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
   private service = inject(RoutineService);
+  private poDialog = inject(PoDialogService);
   private moduleService = inject(SystemModuleService);
   private poNotification = inject(PoNotificationService);
 
@@ -79,7 +80,15 @@ export class RotinasPage implements OnInit {
     const request$ = this.isEdit ? this.service.update(this.formData.id, payload) : this.service.create(payload);
     request$.subscribe({ next: () => { this.poNotification.success(this.isEdit ? 'Rotina atualizada com sucesso.' : 'Rotina criada com sucesso.'); this.saving = false; this.loadData(true); this.modal.close(); }, error: () => { this.poNotification.error('Erro ao salvar rotina.'); this.saving = false; } });
   }
-  remove(row: any) { this.service.remove(row.id).subscribe({ next: () => { this.poNotification.success('Rotina excluida com sucesso.'); this.loadData(true); }, error: () => this.poNotification.error('Erro ao excluir rotina.') }); }
+  remove(row: any) {
+    this.poDialog.confirm({
+      title: 'Confirmar exclusão',
+      message: 'Tem certeza que deseja excluir este registro?',
+      confirm: () => {
+        this.service.remove(row.id).subscribe({ next: () => { this.poNotification.success('Rotina excluida com sucesso.'); this.loadData(true); }, error: () => this.poNotification.error('Erro ao excluir rotina.') });
+      }
+    });
+  }
   private buildSearchParams(): RoutineSearchParams { return { page: this.page, pageSize: this.pageSize, search: this.quickSearch || undefined, moduleId: this.filters.moduleId, name: this.filters.name, key: this.filters.key, path: this.filters.path, isActive: this.filters.isActive === undefined ? undefined : this.filters.isActive === 'true', sortProperty: this.sortProperty, sortDirection: this.sortDirection }; }
   private syncDisclaimers() { const disclaimers: PoDisclaimer[] = []; if (this.quickSearch) disclaimers.push({ property: 'search', label: 'Busca', value: this.quickSearch }); if (this.filters.moduleId) disclaimers.push({ property: 'moduleId', label: 'Modulo', value: this.moduleOptions.find((item) => item.value === this.filters.moduleId)?.label || this.filters.moduleId }); if (this.filters.name) disclaimers.push({ property: 'name', label: 'Rotina', value: this.filters.name }); if (this.filters.key) disclaimers.push({ property: 'key', label: 'Key', value: this.filters.key }); if (this.filters.path) disclaimers.push({ property: 'path', label: 'Path', value: this.filters.path }); if (this.filters.isActive !== undefined) disclaimers.push({ property: 'isActive', label: 'Status', value: this.filters.isActive === 'true' ? 'Ativo' : 'Inativo' }); this.disclaimerGroup = { ...this.disclaimerGroup, disclaimers }; }
 }

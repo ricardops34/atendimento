@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
-import {
-  PoButtonModule,
+import { PoDialogService, PoButtonModule,
   PoDisclaimer,
   PoDisclaimerGroup,
   PoFieldModule,
@@ -14,10 +13,9 @@ import {
   PoTableColumn,
   PoTableColumnSort,
   PoTableModule,
-  PoDisclaimerGroupModule
-} from '@po-ui/ng-components';
+  PoDisclaimerGroupModule } from '@po-ui/ng-components';
 import { FormsModule } from '@angular/forms';
-import { EmpresaSearchParams, EmpresaService } from '../../../core/services/empresa.service';
+import { ClienteSearchParams, ClienteService } from '../../../core/services/cliente.service';
 import { CepService } from '../../../core/services/cep.service';
 
 @Component({
@@ -30,7 +28,8 @@ export class ClientesPage implements OnInit {
   @ViewChild('modal', { static: true }) modal!: PoModalComponent;
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
 
-  private empresaService = inject(EmpresaService);
+  private clienteService = inject(ClienteService);
+  private poDialog = inject(PoDialogService);
   private cepService = inject(CepService);
   private poNotification = inject(PoNotificationService);
 
@@ -93,7 +92,7 @@ export class ClientesPage implements OnInit {
       this.loadingShowMore = true;
     }
 
-    this.empresaService.search(this.buildSearchParams()).subscribe({
+    this.clienteService.search(this.buildSearchParams()).subscribe({
       next: (result) => {
         this.empresas = this.page === 1 ? result.items : [...this.empresas, ...result.items];
         this.total = result.total;
@@ -227,8 +226,8 @@ export class ClientesPage implements OnInit {
     if (this.formData.estado?.trim()) payload.estado = this.formData.estado.trim().toUpperCase().substring(0, 2);
 
     const request$ = this.isEdit
-      ? this.empresaService.update(this.formData.id, payload)
-      : this.empresaService.create(payload);
+      ? this.clienteService.update(this.formData.id, payload)
+      : this.clienteService.create(payload);
 
     request$.subscribe({
       next: () => {
@@ -237,26 +236,38 @@ export class ClientesPage implements OnInit {
         this.loadData(true);
         this.modal.close();
       },
-      error: () => {
-        this.poNotification.error('Erro ao salvar cliente.');
+      error: (err) => {
+        let msg = 'Erro ao salvar cliente.';
+        if (err.error && err.error.message) {
+          msg = Array.isArray(err.error.message) ? err.error.message.join(', ') : err.error.message;
+        } else if (err.message) {
+          msg = err.message;
+        }
+        this.poNotification.error(msg);
         this.saving = false;
       },
     });
   }
 
   remove(row: any) {
-    this.empresaService.remove(row.id).subscribe({
-      next: () => {
-        this.poNotification.success('Cliente excluído com sucesso.');
-        this.loadData(true);
-      },
-      error: () => {
-        this.poNotification.error('Erro ao excluir cliente. Verifique se não há contratos vinculados.');
-      },
+    this.poDialog.confirm({
+      title: 'Confirmar exclusão',
+      message: 'Tem certeza que deseja excluir este registro?',
+      confirm: () => {
+        this.clienteService.remove(row.id).subscribe({
+          next: () => {
+            this.poNotification.success('Cliente excluído com sucesso.');
+            this.loadData(true);
+          },
+          error: () => {
+            this.poNotification.error('Erro ao excluir cliente. Verifique se não há contratos vinculados.');
+          },
+        });
+      }
     });
   }
 
-  private buildSearchParams(): EmpresaSearchParams {
+  private buildSearchParams(): ClienteSearchParams {
     return {
       page: this.page,
       pageSize: this.pageSize,

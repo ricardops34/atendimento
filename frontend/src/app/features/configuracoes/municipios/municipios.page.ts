@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  PoButtonModule,
+import { PoDialogService, PoButtonModule,
   PoDisclaimer,
   PoDisclaimerGroup,
   PoFieldModule,
@@ -15,8 +14,7 @@ import {
   PoTableColumn,
   PoTableColumnSort,
   PoTableModule,
-  PoComboOption
-} from '@po-ui/ng-components';
+  PoComboOption } from '@po-ui/ng-components';
 import { MunicipioService } from '../../../core/services/municipio.service';
 import { EstadoService } from '../../../core/services/estado.service';
 
@@ -30,6 +28,7 @@ export class MunicipiosPage implements OnInit {
   @ViewChild('modal', { static: true }) modal!: PoModalComponent;
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
   private service = inject(MunicipioService);
+  private poDialog = inject(PoDialogService);
   private estadoService = inject(EstadoService);
   private poNotification = inject(PoNotificationService);
 
@@ -113,7 +112,15 @@ export class MunicipiosPage implements OnInit {
     });
   }
 
-  remove(row: any) { this.service.deleteMunicipio(row.id).subscribe({ next: () => { this.poNotification.success('Município excluido.'); this.loadData(true); }, error: () => this.poNotification.error('Erro ao excluir município.') }); }
+  remove(row: any) {
+    this.poDialog.confirm({
+      title: 'Confirmar exclusão',
+      message: 'Tem certeza que deseja excluir este registro?',
+      confirm: () => {
+        this.service.deleteMunicipio(row.id).subscribe({ next: () => { this.poNotification.success('Município excluido.'); this.loadData(true); }, error: () => this.poNotification.error('Erro ao excluir município.') });
+      }
+    });
+  }
   private buildSearchParams() { return { page: this.page, limit: this.pageSize, search: this.quickSearch || undefined, estadoId: this.filters.estadoId, sortProperty: this.sortProperty, sortDirection: this.sortDirection }; }
   private syncDisclaimers() { 
     const disclaimers: PoDisclaimer[] = []; 

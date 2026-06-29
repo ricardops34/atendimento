@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  PoButtonModule,
+import { PoDialogService, PoButtonModule,
   PoComboOption,
   PoDisclaimer,
   PoDisclaimerGroup,
@@ -15,8 +14,7 @@ import {
   PoTableAction,
   PoTableColumn,
   PoTableColumnSort,
-  PoTableModule
-} from '@po-ui/ng-components';
+  PoTableModule } from '@po-ui/ng-components';
 import { ProfileService } from '../../../core/services/profile.service';
 import { TenantService } from '../../../core/services/tenant.service';
 import { UserSearchParams, UserService } from '../../../core/services/user.service';
@@ -32,6 +30,7 @@ export class UsuariosPage implements OnInit {
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
 
   private service = inject(UserService);
+  private poDialog = inject(PoDialogService);
   private tenantService = inject(TenantService);
   private profileService = inject(ProfileService);
   private poNotification = inject(PoNotificationService);
@@ -267,12 +266,18 @@ export class UsuariosPage implements OnInit {
   }
 
   remove(row: any) {
-    this.service.remove(row.id).subscribe({
+    this.poDialog.confirm({
+      title: 'Confirmar exclusão',
+      message: 'Tem certeza que deseja excluir este registro?',
+      confirm: () => {
+        this.service.remove(row.id).subscribe({
       next: () => {
         this.poNotification.success('Usuario excluido com sucesso.');
         this.loadData(true);
       },
       error: () => this.poNotification.error('Erro ao excluir usuario.')
+    });
+      }
     });
   }
 

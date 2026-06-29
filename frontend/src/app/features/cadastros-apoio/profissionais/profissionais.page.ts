@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
-import {
-  PoButtonModule,
+import { PoDialogService, PoButtonModule,
   PoComboOption,
   PoDisclaimer,
   PoDisclaimerGroup,
@@ -14,8 +13,7 @@ import {
   PoTableAction,
   PoTableColumn,
   PoTableColumnSort,
-  PoTableModule,
-} from '@po-ui/ng-components';
+  PoTableModule, } from '@po-ui/ng-components';
 import { FormsModule } from '@angular/forms';
 import { ProfissionalSearchParams, ProfissionalService } from '../../../core/services/profissional.service';
 import { UserService } from '../../../core/services/user.service';
@@ -31,6 +29,7 @@ export class ProfissionaisPage implements OnInit {
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
 
   private profissionalService = inject(ProfissionalService);
+  private poDialog = inject(PoDialogService);
   private userService = inject(UserService);
   private poNotification = inject(PoNotificationService);
 
@@ -198,7 +197,11 @@ export class ProfissionaisPage implements OnInit {
   }
 
   remove(row: any) {
-    this.profissionalService.remove(row.id).subscribe({
+    this.poDialog.confirm({
+      title: 'Confirmar exclusão',
+      message: 'Tem certeza que deseja excluir este registro?',
+      confirm: () => {
+        this.profissionalService.remove(row.id).subscribe({
       next: () => {
         this.poNotification.success('Profissional excluído com sucesso.');
         this.loadData(true);
@@ -206,6 +209,8 @@ export class ProfissionaisPage implements OnInit {
       error: () => {
         this.poNotification.error('Erro ao excluir profissional.');
       },
+    });
+      }
     });
   }
 

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { PoButtonModule, PoComboOption, PoDisclaimer, PoDisclaimerGroup, PoFieldModule, PoModalComponent, PoModalModule, PoNotificationService, PoPageModule, PoSearchModule, PoTableAction, PoTableColumn, PoTableColumnSort, PoTableModule } from '@po-ui/ng-components';
+import { PoDialogService, PoButtonModule, PoComboOption, PoDisclaimer, PoDisclaimerGroup, PoFieldModule, PoModalComponent, PoModalModule, PoNotificationService, PoPageModule, PoSearchModule, PoTableAction, PoTableColumn, PoTableColumnSort, PoTableModule } from '@po-ui/ng-components';
 import { MenuSearchParams, MenuService } from '../../../core/services/menu.service';
 import { RoutineService } from '../../../core/services/routine.service';
 import { SystemModuleService } from '../../../core/services/system-module.service';
@@ -16,6 +16,7 @@ export class MenusPage implements OnInit {
   @ViewChild('modal', { static: true }) modal!: PoModalComponent;
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
   private service = inject(MenuService);
+  private poDialog = inject(PoDialogService);
   private moduleService = inject(SystemModuleService);
   private routineService = inject(RoutineService);
   private poNotification = inject(PoNotificationService);
@@ -87,7 +88,15 @@ export class MenusPage implements OnInit {
     const request$ = this.isEdit ? this.service.update(this.formData.id, payload) : this.service.create(payload);
     request$.subscribe({ next: () => { this.poNotification.success(this.isEdit ? 'Menu atualizado com sucesso.' : 'Menu criado com sucesso.'); this.saving = false; this.loadData(true); this.loadDependencies(); this.modal.close(); }, error: () => { this.poNotification.error('Erro ao salvar menu.'); this.saving = false; } });
   }
-  remove(row: any) { this.service.remove(row.id).subscribe({ next: () => { this.poNotification.success('Menu excluido com sucesso.'); this.loadData(true); this.loadDependencies(); }, error: () => this.poNotification.error('Erro ao excluir menu.') }); }
+  remove(row: any) {
+    this.poDialog.confirm({
+      title: 'Confirmar exclusão',
+      message: 'Tem certeza que deseja excluir este registro?',
+      confirm: () => {
+        this.service.remove(row.id).subscribe({ next: () => { this.poNotification.success('Menu excluido com sucesso.'); this.loadData(true); this.loadDependencies(); }, error: () => this.poNotification.error('Erro ao excluir menu.') });
+      }
+    });
+  }
   private buildSearchParams(): MenuSearchParams { return { page: this.page, pageSize: this.pageSize, search: this.quickSearch || undefined, moduleId: this.filters.moduleId, routineId: this.filters.routineId, label: this.filters.label, link: this.filters.link, isActive: this.filters.isActive === undefined ? undefined : this.filters.isActive === 'true', sortProperty: this.sortProperty, sortDirection: this.sortDirection }; }
   private syncDisclaimers() { const disclaimers: PoDisclaimer[] = []; if (this.quickSearch) disclaimers.push({ property: 'search', label: 'Busca', value: this.quickSearch }); if (this.filters.moduleId) disclaimers.push({ property: 'moduleId', label: 'Modulo', value: this.moduleOptions.find((item) => item.value === this.filters.moduleId)?.label || this.filters.moduleId }); if (this.filters.routineId) disclaimers.push({ property: 'routineId', label: 'Rotina', value: this.routineOptions.find((item) => item.value === this.filters.routineId)?.label || this.filters.routineId }); if (this.filters.label) disclaimers.push({ property: 'label', label: 'Menu', value: this.filters.label }); if (this.filters.link) disclaimers.push({ property: 'link', label: 'Link', value: this.filters.link }); if (this.filters.isActive !== undefined) disclaimers.push({ property: 'isActive', label: 'Status', value: this.filters.isActive === 'true' ? 'Ativo' : 'Inativo' }); this.disclaimerGroup = { ...this.disclaimerGroup, disclaimers }; }
 }
