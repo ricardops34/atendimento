@@ -18,3 +18,4 @@ node_modules/
 .idea/
 .vscode/
 Thumbs.db
+.claude/worktrees/agent-af0aeed72e20cbc1e
