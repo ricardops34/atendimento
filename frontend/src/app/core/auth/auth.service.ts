@@ -66,6 +66,8 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     const token = this.getToken();
-    return !!token && token !== 'null' && token !== 'undefined';
+    const isAuth = !!token && token !== 'null' && token !== 'undefined';
+    console.log('AuthService.isAuthenticated -> token:', token, 'isAuth?', isAuth);
+    return isAuth;
   }
 }
