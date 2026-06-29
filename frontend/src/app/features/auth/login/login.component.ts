@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { PoTemplatesModule } from '@po-ui/ng-templates';
@@ -6,7 +6,7 @@ import { PoNotificationService } from '@po-ui/ng-components';
 import { AuthService } from '../../../core/auth/auth.service';
 import { PoPageLoginCustomField } from '@po-ui/ng-templates';
 import { environment } from '../../../../environments/environment';
-import { debounceTime, distinctUntilChanged, Subject, switchMap, of, catchError } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, switchMap, of, catchError, tap } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -20,6 +20,7 @@ export class LoginComponent {
   private router = inject(Router);
   private poNotification = inject(PoNotificationService);
   private http = inject(HttpClient);
+  private cdr = inject(ChangeDetectorRef);
   private readonly API_URL = environment.apiUrl || 'http://localhost:3000';
 
   private emailChange$ = new Subject<string>();
@@ -35,20 +36,33 @@ export class LoginComponent {
     this.emailChange$.pipe(
       debounceTime(600),
       distinctUntilChanged(),
-      switchMap(email =>
-        this.EMAIL_RE.test(email)
-          ? this.http.post<{ label: string; value: number }[]>(`${this.API_URL}/auth/empresa-options`, { email }).pipe(
-              catchError(() => of([]))
-            )
-          : of([])
-      )
+      tap(email => console.log('[Login] Email após debounce:', email)),
+      switchMap(email => {
+        if (!this.EMAIL_RE.test(email)) {
+          console.log('[Login] Falhou no Regex:', email);
+          return of([]);
+        }
+        console.log('[Login] Buscando empresas para:', email);
+        return this.http.post<{ label: string; value: number }[]>(`${this.API_URL}/auth/empresa-options`, { email }).pipe(
+          tap(res => console.log('[Login] Resposta da API:', res)),
+          catchError((err) => {
+            console.error('[Login] Erro na API:', err);
+            return of([]);
+          })
+        );
+      })
     ).subscribe((options: any) => {
+      console.log('[Login] Atualizando customField com:', options);
       this.customField = { ...this.customField, options };
+      this.cdr.detectChanges();
     });
   }
 
-  onEmailChange(email: any) {
-    this.emailChange$.next(typeof email === 'string' ? email : '');
+  onEmailChange(event: any) {
+    let email = typeof event === 'string' ? event : (event?.login || '');
+    email = email.trim();
+    console.log('[Login] onEmailChange disparado! Valor extraído:', email);
+    this.emailChange$.next(email);
   }
 
   loginSubmit(formData: any) {
