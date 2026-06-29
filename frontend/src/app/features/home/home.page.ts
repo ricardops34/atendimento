@@ -10,7 +10,7 @@ import {
 } from '@po-ui/ng-components';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/auth/auth.service';
-import { TenantStateService } from '../../core/auth/tenant-state.service';
+import { EmpresaStateService } from '../../core/auth/empresa-state.service';
 
 @Component({
   selector: 'app-home',
@@ -22,7 +22,7 @@ import { TenantStateService } from '../../core/auth/tenant-state.service';
 export class HomePage implements OnInit {
   private router = inject(Router);
   private http = inject(HttpClient);
-  private tenantState = inject(TenantStateService);
+  private empresaState = inject(EmpresaStateService);
 
   userName = '';
   loading = true;
@@ -43,7 +43,7 @@ export class HomePage implements OnInit {
   ];
 
   ngOnInit() {
-    const user = this.tenantState.user();
+    const user = this.empresaState.user();
     this.userName = user?.name?.split(' ')[0] || 'usuário';
     this.loadIndicadores();
   }

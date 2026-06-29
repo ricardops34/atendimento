@@ -38,10 +38,10 @@ describe('AuthService', () => {
       isActive: true,
       profileId: 1,
       profile: { id: 1, name: 'Administrador', profileModules: [] },
-      userTenants: [
+      userEmpresas: [
         {
-          tenantId: 1,
-          tenant: { id: 1, name: 'Default Tenant' },
+          empresaId: 1,
+          empresa: { id: 1, name: 'Empresa Padrao' },
         },
       ],
     });
@@ -59,10 +59,10 @@ describe('AuthService', () => {
       isActive: true,
       profileId: 1,
       profile: { id: 1, name: 'Administrador', profileModules: [] },
-      userTenants: [
+      userEmpresas: [
         {
-          tenantId: 1,
-          tenant: { id: 1, name: 'Default Tenant' },
+          empresaId: 1,
+          empresa: { id: 1, name: 'Empresa Padrao' },
         },
       ],
     });
@@ -72,37 +72,37 @@ describe('AuthService', () => {
     ).rejects.toBeInstanceOf(UnauthorizedException);
   });
 
-  it('requires tenant selection when user has access to multiple tenants', async () => {
+  it('requires empresa selection when user has access to multiple empresas', async () => {
     const result = await service.login({
       id: 1,
       email: 'admin@fallback.com',
       name: 'Admin',
       profileId: 1,
       profile: { id: 1, name: 'Administrador', profileModules: [] },
-      userTenants: [
+      userEmpresas: [
         {
-          tenantId: 1,
-          tenant: { id: 1, name: 'Default Tenant' },
+          empresaId: 1,
+          empresa: { id: 1, name: 'Empresa Padrao' },
           isDefault: true,
         },
         {
-          tenantId: 2,
-          tenant: { id: 2, name: 'Filial 2' },
+          empresaId: 2,
+          empresa: { id: 2, name: 'Filial 2' },
           isDefault: false,
         },
       ],
     } as any);
 
     expect(result).toEqual({
-      requiresTenantSelection: true,
-      tenantOptions: [
-        { tenantId: 1, tenantName: 'Default Tenant', isDefault: true },
-        { tenantId: 2, tenantName: 'Filial 2', isDefault: false },
+      requiresEmpresaSelection: true,
+      empresaOptions: [
+        { empresaId: 1, empresaName: 'Empresa Padrao', isDefault: true },
+        { empresaId: 2, empresaName: 'Filial 2', isDefault: false },
       ],
     });
   });
 
-  it('returns menu tree based on registered menus for selected tenant', async () => {
+  it('returns menu tree based on registered menus for selected empresa', async () => {
     prisma.menu.findMany.mockResolvedValue([
       { id: 10, parentId: null, label: 'Configuracoes', shortLabel: 'CFG', icon: 'an an-gear', link: null },
       { id: 11, parentId: 10, label: 'Usuarios', shortLabel: 'USR', icon: 'an an-users-three', link: '/configuracoes/usuarios' },
@@ -118,10 +118,10 @@ describe('AuthService', () => {
         name: 'Administrador',
         profileModules: [{ canRead: true, module: { key: 'settings' } }],
       },
-      userTenants: [
+      userEmpresas: [
         {
-          tenantId: 1,
-          tenant: { id: 1, name: 'Default Tenant' },
+          empresaId: 1,
+          empresa: { id: 1, name: 'Empresa Padrao' },
           isDefault: true,
         },
       ],
@@ -143,8 +143,8 @@ describe('AuthService', () => {
         ],
       },
     ]);
-    expect(result.user.availableTenants).toEqual([
-      { tenantId: 1, tenantName: 'Default Tenant', isDefault: true },
+    expect(result.user.availableEmpresas).toEqual([
+      { empresaId: 1, empresaName: 'Empresa Padrao', isDefault: true },
     ]);
     expect(result.user.profile).toBe('Administrador');
     expect(result.user.profileId).toBe(1);

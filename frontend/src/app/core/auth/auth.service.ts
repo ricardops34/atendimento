@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { tap, Observable } from 'rxjs';
-import { TenantStateService } from './tenant-state.service';
+import { EmpresaStateService } from './empresa-state.service';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private tenantState = inject(TenantStateService);
+  private empresaState = inject(EmpresaStateService);
 
   private readonly API_URL = environment.apiUrl || 'http://localhost:3000';
 
@@ -18,7 +18,7 @@ export class AuthService {
       tap(res => {
         if (res && res.accessToken) {
           localStorage.setItem('access_token', res.accessToken);
-          this.tenantState.setSession(res);
+          this.empresaState.setSession(res);
         }
       })
     );
@@ -28,18 +28,18 @@ export class AuthService {
     return this.http.get<any>(`${this.API_URL}/auth/me`).pipe(
       tap(res => {
         if (res) {
-          this.tenantState.setSession({ user: res });
+          this.empresaState.setSession({ user: res });
         }
       })
     );
   }
 
-  switchTenant(tenantId: number): Observable<any> {
-    return this.http.post<any>(`${this.API_URL}/auth/switch-tenant`, { tenantId }).pipe(
+  switchEmpresa(empresaId: number): Observable<any> {
+    return this.http.post<any>(`${this.API_URL}/auth/switch-empresa`, { empresaId }).pipe(
       tap(res => {
         if (res && res.accessToken) {
           localStorage.setItem('access_token', res.accessToken);
-          this.tenantState.setSession(res);
+          this.empresaState.setSession(res);
         }
       })
     );
@@ -49,7 +49,7 @@ export class AuthService {
     return this.http.post<any>(`${this.API_URL}/auth/me`, data).pipe(
       tap(res => {
         if (res) {
-          this.tenantState.setSession({ user: res });
+          this.empresaState.setSession({ user: res });
         }
       })
     );
@@ -57,7 +57,7 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('access_token');
-    this.tenantState.clearSession();
+    this.empresaState.clearSession();
   }
 
   getToken(): string | null {

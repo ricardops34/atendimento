@@ -22,7 +22,7 @@ import {
 } from '@po-ui/ng-components';
 import { ViewChild } from '@angular/core';
 import { AuthService } from './core/auth/auth.service';
-import { TenantStateService } from './core/auth/tenant-state.service';
+import { EmpresaStateService } from './core/auth/empresa-state.service';
 
 @Component({
   selector: 'app-root',
@@ -42,10 +42,10 @@ import { TenantStateService } from './core/auth/tenant-state.service';
   styleUrl: './app.css'
 })
 export class App {
-  @ViewChild('switchTenantModal', { static: false }) switchTenantModal?: PoModalComponent;
+  @ViewChild('switchEmpresaModal', { static: false }) switchEmpresaModal?: PoModalComponent;
   @ViewChild('profileModal', { static: false }) profileModal?: PoModalComponent;
   private authService = inject(AuthService);
-  private tenantState = inject(TenantStateService);
+  private empresaState = inject(EmpresaStateService);
   private router = inject(Router);
   private poNotification = inject(PoNotificationService);
   private readonly breadcrumbLabels: Record<string, string> = {
@@ -53,7 +53,6 @@ export class App {
     profissionais: 'Profissionais',
     contratos: 'Contratos',
     configuracoes: 'Configuracoes',
-    tenants: 'Empresas',
     empresas: 'Empresas',
     modulos: 'Modulos',
     rotinas: 'Rotinas',
@@ -71,13 +70,13 @@ export class App {
   public headerActionsTools: PoHeaderActionTool[] = [];
   public headerUser: any = undefined;
   public breadcrumb = signal<PoBreadcrumb>({ items: [] });
-  public tenantOptions: PoComboOption[] = [];
-  public selectedTenantId: number | null = null;
+  public empresaOptions: PoComboOption[] = [];
+  public selectedEmpresaId: number | null = null;
   public avatarOptions: PoComboOption[] = Array.from({ length: 12 }, (_, index) => {
     const avatar = `avatar_${String(index + 1).padStart(2, '0')}.png`;
     return { label: avatar, value: avatar };
   });
-  public profileForm: any = { name: '', email: '', tenantName: '', profileName: '', avatar: 'avatar_01.png', password: '', confirmPassword: '' };
+  public profileForm: any = { name: '', email: '', empresaName: '', profileName: '', avatar: 'avatar_01.png', password: '', confirmPassword: '' };
   public menus = signal<PoMenuItem[]>([]);
 
   private readonly menuCatalog: Record<string, PoMenuItem> = {
@@ -138,11 +137,11 @@ export class App {
   };
 
   constructor() {
-    this.syncSessionState(this.tenantState.user());
+    this.syncSessionState(this.empresaState.user());
     this.updateBreadcrumb(this.router.url);
 
     effect(() => {
-      this.syncSessionState(this.tenantState.user());
+      this.syncSessionState(this.empresaState.user());
     });
 
     this.router.events
@@ -189,18 +188,18 @@ export class App {
     this.isAuthenticated.set(!!user);
 
     if (user) {
-      const availableTenants = user.availableTenants || [];
-      this.selectedTenantId = user.tenant?.id ?? availableTenants.find((item: any) => item.isDefault)?.tenantId ?? null;
-      this.tenantOptions = availableTenants.map((item: any) => ({
-        label: item.tenantName,
-        value: item.tenantId
+      const availableEmpresas = user.availableEmpresas || [];
+      this.selectedEmpresaId = user.empresa?.id ?? availableEmpresas.find((item: any) => item.isDefault)?.empresaId ?? null;
+      this.empresaOptions = availableEmpresas.map((item: any) => ({
+        label: item.empresaName,
+        value: item.empresaId
       }));
-      this.profileActions = this.buildProfileActions(availableTenants);
+      this.profileActions = this.buildProfileActions(availableEmpresas);
       this.headerActionsTools = [];
       this.profileForm = {
         name: user.name || '',
         email: user.email || '',
-        tenantName: user.tenant?.name || '',
+        empresaName: user.empresa?.name || '',
         profileName: user.profile || '',
         avatar: user.avatar || 'avatar_01.png',
         password: '',
@@ -223,13 +222,13 @@ export class App {
     this.profileActions = [];
     this.headerActionsTools = [];
     this.headerUser = undefined;
-    this.tenantOptions = [];
-    this.selectedTenantId = null;
+    this.empresaOptions = [];
+    this.selectedEmpresaId = null;
     this.menus.set([]);
     this.breadcrumb.set({ items: [] });
   }
 
-  private buildProfileActions(availableTenants: any[]): PoToolbarAction[] {
+  private buildProfileActions(availableEmpresas: any[]): PoToolbarAction[] {
     const actions: PoToolbarAction[] = [];
 
     actions.push({
@@ -238,11 +237,11 @@ export class App {
       action: () => this.openProfileModal()
     });
 
-    if (availableTenants.length > 1) {
+    if (availableEmpresas.length > 1) {
       actions.push({
         label: 'Trocar empresa',
         icon: 'an an-buildings',
-        action: () => this.openSwitchTenantModal()
+        action: () => this.openSwitchEmpresaModal()
       });
     }
 
@@ -259,17 +258,17 @@ export class App {
     this.profileModal?.open();
   }
 
-  openSwitchTenantModal() {
-    this.switchTenantModal?.open();
+  openSwitchEmpresaModal() {
+    this.switchEmpresaModal?.open();
   }
 
-  confirmSwitchTenant() {
-    if (!this.selectedTenantId) {
+  confirmSwitchEmpresa() {
+    if (!this.selectedEmpresaId) {
       return;
     }
 
-    this.authService.switchTenant(this.selectedTenantId).subscribe({
-      next: () => this.switchTenantModal?.close(),
+    this.authService.switchEmpresa(this.selectedEmpresaId).subscribe({
+      next: () => this.switchEmpresaModal?.close(),
     });
   }
 

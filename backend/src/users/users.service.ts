@@ -7,7 +7,7 @@ interface UserSearchQuery {
   page?: string;
   pageSize?: string;
   search?: string;
-  tenantId?: string;
+  empresaId?: string;
   profileId?: string;
   name?: string;
   email?: string;
@@ -34,18 +34,18 @@ export class UsersService {
         },
       });
 
-      await this.syncTenantLinks(tx, user.id, data.tenantLinks || []);
+      await this.syncEmpresaLinks(tx, user.id, data.empresaLinks || []);
 
       return tx.user.findUnique({
         where: { id: user.id },
-        include: { profile: true, userTenants: { include: { tenant: true } } },
+        include: { profile: true, userEmpresas: { include: { empresa: true } } },
       });
     });
   }
 
   findAll() {
     return this.prisma.user.findMany({
-      include: { profile: true, userTenants: { include: { tenant: true } } },
+      include: { profile: true, userEmpresas: { include: { empresa: true } } },
       orderBy: { name: 'asc' },
     });
   }
@@ -57,7 +57,7 @@ export class UsersService {
     const total = await this.prisma.user.count({ where });
     const items = await this.prisma.user.findMany({
       where,
-      include: { profile: true, userTenants: { include: { tenant: true } } },
+      include: { profile: true, userEmpresas: { include: { empresa: true } } },
       orderBy: this.buildOrderBy(query.sortProperty, query.sortDirection),
       skip: (page - 1) * pageSize,
       take: pageSize,
@@ -68,7 +68,7 @@ export class UsersService {
   async findOne(id: number) {
     const item = await this.prisma.user.findUnique({
       where: { id },
-      include: { profile: true, userTenants: { include: { tenant: true } } },
+      include: { profile: true, userEmpresas: { include: { empresa: true } } },
     });
     if (!item) throw new NotFoundException('Usuário não encontrado.');
     return item;
@@ -93,14 +93,14 @@ export class UsersService {
         data: payload,
       });
 
-      if (Array.isArray(data.tenantLinks)) {
-        await tx.userTenant.deleteMany({ where: { userId: id } });
-        await this.syncTenantLinks(tx, id, data.tenantLinks);
+      if (Array.isArray(data.empresaLinks)) {
+        await tx.userEmpresa.deleteMany({ where: { userId: id } });
+        await this.syncEmpresaLinks(tx, id, data.empresaLinks);
       }
 
       return tx.user.findUnique({
         where: { id },
-        include: { profile: true, userTenants: { include: { tenant: true } } },
+        include: { profile: true, userEmpresas: { include: { empresa: true } } },
       });
     });
   }
@@ -110,23 +110,23 @@ export class UsersService {
     return this.prisma.user.delete({ where: { id } });
   }
 
-  private async syncTenantLinks(tx: any, userId: number, tenantLinks: any[]) {
-    const normalizedLinks = (tenantLinks || [])
-      .filter((item) => item?.tenantId)
+  private async syncEmpresaLinks(tx: any, userId: number, empresaLinks: any[]) {
+    const normalizedLinks = (empresaLinks || [])
+      .filter((item) => item?.empresaId)
       .map((item, index) => ({
-        tenantId: Number(item.tenantId),
+        empresaId: Number(item.empresaId),
         isDefault: !!item.isDefault || index === 0,
       }));
 
-    const defaultTenantId =
-      normalizedLinks.find((item) => item.isDefault)?.tenantId ?? normalizedLinks[0]?.tenantId ?? null;
+    const defaultEmpresaId =
+      normalizedLinks.find((item) => item.isDefault)?.empresaId ?? normalizedLinks[0]?.empresaId ?? null;
 
     for (const link of normalizedLinks) {
-      await tx.userTenant.create({
+      await tx.userEmpresa.create({
         data: {
           userId,
-          tenantId: link.tenantId,
-          isDefault: link.tenantId === defaultTenantId,
+          empresaId: link.empresaId,
+          isDefault: link.empresaId === defaultEmpresaId,
         },
       });
     }
@@ -140,12 +140,12 @@ export class UsersService {
         OR: [
           { name: { contains: search, mode: 'insensitive' } },
           { email: { contains: search, mode: 'insensitive' } },
-          { userTenants: { some: { tenant: { name: { contains: search, mode: 'insensitive' } } } } },
+          { userEmpresas: { some: { empresa: { name: { contains: search, mode: 'insensitive' } } } } },
           { profile: { name: { contains: search, mode: 'insensitive' } } },
         ],
       });
     }
-    if (query.tenantId) andFilters.push({ userTenants: { some: { tenantId: Number(query.tenantId) } } });
+    if (query.empresaId) andFilters.push({ userEmpresas: { some: { empresaId: Number(query.empresaId) } } });
     if (query.profileId) andFilters.push({ profileId: Number(query.profileId) });
     if (query.name?.trim()) andFilters.push({ name: { contains: query.name.trim(), mode: 'insensitive' } });
     if (query.email?.trim()) andFilters.push({ email: { contains: query.email.trim(), mode: 'insensitive' } });

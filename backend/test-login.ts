@@ -17,8 +17,8 @@ async function checkLogin() {
             profileModules: { include: { module: true } },
           },
         },
-        userTenants: {
-          include: { tenant: true },
+        userEmpresas: {
+          include: { empresa: true },
         },
       },
     });
@@ -29,14 +29,14 @@ async function checkLogin() {
     }
 
     console.log('Usuario encontrado:', user.email, 'isActive:', user.isActive);
-    console.log('Qtd Tenants:', user.userTenants?.length);
+    console.log('Qtd Tenants:', user.userEmpresas?.length);
     console.log('Hash da senha:', user.password);
 
     const isMatch = await bcrypt.compare(password, user.password);
     console.log('Senha confere?', isMatch);
 
     // Simulando login
-    const tenantId = user.userTenants[0].tenantId;
+    const empresaId = user.userEmpresas[0].empresaId;
     const modules = (user.profile?.profileModules || [])
       .filter((pm: any) => pm.canRead)
       .map((pm: any) => pm.module.key);

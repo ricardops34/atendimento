@@ -54,7 +54,7 @@ spec.component:
       children:
         - component: po-button
           props:
-            p-label: "Novo Agendamento"
+            p-label: "Novo"
             p-type: primary
             p-icon: "po-icon-plus"
           action: sidebar.open(SCR-0004)

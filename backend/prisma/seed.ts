@@ -253,8 +253,8 @@ async function main() {
     });
   }
 
-  // 2. Tenant Default
-  const tenant = await prisma.tenant.upsert({
+  // 2. Empresa Default
+  const tenant = await prisma.empresa.upsert({
     where: { slug: 'default-tenant' },
     update: {},
     create: {
@@ -314,11 +314,11 @@ async function main() {
   });
 
   if (adminUser) {
-    await prisma.userTenant.upsert({
+    await prisma.userEmpresa.upsert({
       where: {
-        userId_tenantId: {
+        userId_empresaId: {
           userId: adminUser.id,
-          tenantId: tenant.id,
+          empresaId: tenant.id,
         },
       },
       update: {
@@ -326,7 +326,7 @@ async function main() {
       },
       create: {
         userId: adminUser.id,
-        tenantId: tenant.id,
+        empresaId: tenant.id,
         isDefault: true,
       },
     });

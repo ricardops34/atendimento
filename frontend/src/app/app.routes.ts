@@ -17,27 +17,27 @@ export const routes: Routes = [
   {
     path: 'clientes',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/cadastros-apoio/empresas/empresas.page').then((m) => m.EmpresasPage),
+    loadComponent: () => import('./features/cadastros-apoio/clientes/clientes.page').then((m) => m.ClientesPage),
   },
   {
     path: 'clientes/novo',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/cadastros-apoio/empresas/empresas-edit.page').then((m) => m.EmpresasEditPage),
+    loadComponent: () => import('./features/cadastros-apoio/clientes/clientes-edit.page').then((m) => m.ClientesEditPage),
   },
   {
     path: 'clientes/:id',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/cadastros-apoio/empresas/empresas-detail.page').then((m) => m.EmpresasDetailPage),
+    loadComponent: () => import('./features/cadastros-apoio/clientes/clientes-detail.page').then((m) => m.ClientesDetailPage),
   },
   {
     path: 'clientes/:id/editar',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/cadastros-apoio/empresas/empresas-edit.page').then((m) => m.EmpresasEditPage),
+    loadComponent: () => import('./features/cadastros-apoio/clientes/clientes-edit.page').then((m) => m.ClientesEditPage),
   },
   {
     path: 'clientes/:id/excluir',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/cadastros-apoio/empresas/empresas-excluir.page').then((m) => m.EmpresasExcluirPage),
+    loadComponent: () => import('./features/cadastros-apoio/clientes/clientes-excluir.page').then((m) => m.ClientesExcluirPage),
   },
 
   // ── Profissionais ─────────────────────────────────────────────────────────
@@ -103,7 +103,22 @@ export const routes: Routes = [
   {
     path: 'configuracoes/empresas',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/configuracoes/tenants/tenants.page').then((m) => m.TenantsPage),
+    loadComponent: () => import('./features/configuracoes/empresas/empresas.page').then((m) => m.EmpresasAdminPage),
+  },
+  {
+    path: 'configuracoes/empresas/novo',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/empresas/empresas-edit.page').then((m) => m.EmpresasAdminEditPage),
+  },
+  {
+    path: 'configuracoes/empresas/:id',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/empresas/empresas-edit.page').then((m) => m.EmpresasAdminEditPage),
+  },
+  {
+    path: 'configuracoes/empresas/:id/editar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/empresas/empresas-edit.page').then((m) => m.EmpresasAdminEditPage),
   },
   {
     path: 'configuracoes/modulos',

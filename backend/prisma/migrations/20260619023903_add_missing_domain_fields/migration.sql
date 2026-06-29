@@ -14,7 +14,7 @@ ADD COLUMN     "valor_fixo" DECIMAL(10,2),
 ADD COLUMN     "valor_hora" DECIMAL(10,2);
 
 -- AlterTable
-ALTER TABLE "empresa" ADD COLUMN     "cidade" VARCHAR(255),
+ALTER TABLE "cliente" ADD COLUMN     "cidade" VARCHAR(255),
 ADD COLUMN     "cor" VARCHAR(7),
 ADD COLUMN     "endereco" VARCHAR(500),
 ADD COLUMN     "estado" VARCHAR(2),

@@ -37,7 +37,7 @@ export class LoginComponent {
       distinctUntilChanged(),
       switchMap(email =>
         this.EMAIL_RE.test(email)
-          ? this.http.post<{ label: string; value: number }[]>(`${this.API_URL}/auth/tenant-options`, { email })
+          ? this.http.post<{ label: string; value: number }[]>(`${this.API_URL}/auth/empresa-options`, { email })
           : of([])
       )
     ).subscribe(options => {
@@ -53,10 +53,10 @@ export class LoginComponent {
     this.authService.login({
       email: formData.login,
       password: formData.password,
-      tenantId: formData.empresaId || undefined
+      empresaId: formData.empresaId || undefined
     }).subscribe({
       next: (res) => {
-        if (res?.requiresTenantSelection) {
+        if (res?.requiresEmpresaSelection) {
           this.poNotification.warning('Selecione a empresa e clique em Entrar novamente.');
           return;
         }

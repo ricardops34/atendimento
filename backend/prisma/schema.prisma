@@ -12,12 +12,27 @@ generator client {
 // SECURITY / AUTH MODELS
 // ----------------------------------------------------------------------------
 
-model Tenant {
-  id             Int            @id @default(autoincrement())
-  name           String         @db.VarChar(255)
-  slug           String         @unique @db.VarChar(255)
-  
-  userTenants    UserTenant[]
+model Empresa {
+  id                 Int            @id @default(autoincrement())
+  name               String         @db.VarChar(255)
+  slug               String         @unique @db.VarChar(255)
+  razaoSocial        String?        @map("razao_social") @db.VarChar(255)
+  cnpj               String?        @db.VarChar(18)
+  inscricaoEstadual  String?        @map("inscricao_estadual") @db.VarChar(20)
+  inscricaoMunicipal String?        @map("inscricao_municipal") @db.VarChar(20)
+  telefone           String?        @db.VarChar(20)
+  celular            String?        @db.VarChar(20)
+  email              String?        @db.VarChar(255)
+  cep                String?        @db.VarChar(9)
+  logradouro         String?        @db.VarChar(255)
+  numero             String?        @db.VarChar(10)
+  complemento        String?        @db.VarChar(100)
+  bairro             String?        @db.VarChar(100)
+  municipio          String?        @db.VarChar(100)
+  uf                 String?        @db.VarChar(2)
+  pais               String?        @default("Brasil") @db.VarChar(50)
+
+  userEmpresas   UserEmpresa[]
   clientes       Cliente[]
   profissionais  Profissional[]
   contratos      Contrato[]
@@ -35,7 +50,7 @@ model User {
   avatar         String         @default("avatar_01.png") @db.VarChar(100)
   password       String         @db.VarChar(255)
   isActive       Boolean        @default(true) @map("is_active")
-  userTenants    UserTenant[]
+  userEmpresas   UserEmpresa[]
   profissionais  Profissional[]
 
   @@map("users")
@@ -52,15 +67,15 @@ model Profile {
   @@map("profiles")
 }
 
-model UserTenant {
+model UserEmpresa {
   id         Int      @id @default(autoincrement())
   userId     Int      @map("user_id")
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tenantId   Int      @map("empresa_id")
-  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  empresaId  Int      @map("empresa_id")
+  empresa    Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   isDefault  Boolean  @default(false) @map("is_default")
 
-  @@unique([userId, tenantId])
+  @@unique([userId, empresaId])
   @@map("user_empresas")
 }
 
@@ -128,27 +143,86 @@ model Menu {
 // DOMAIN MODELS
 // ----------------------------------------------------------------------------
 
-/// Representa o cliente (Cadastros de Apoio)
+/// Representa o cliente (Cadastros de Apoio) — PF (pessoa física) ou PJ (pessoa jurídica)
 model Cliente {
-  id        Int        @id @default(autoincrement())
-  tenantId  Int        @map("empresa_id")
-  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  nome      String     @db.VarChar(255)
-  razao     String?    @db.VarChar(255)
-  cor       String?    @db.VarChar(7)
-  endereco  String?    @db.VarChar(500)
-  cidade    String?    @db.VarChar(255)
-  estado    String?    @db.VarChar(2)
+  id                 Int        @id @default(autoincrement())
+  empresaId          Int        @map("empresa_id")
+  empresa            Empresa    @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+
+  // Identificação
+  tipoPessoa         String     @default("PJ") @map("tipo_pessoa") @db.VarChar(2)  // PF | PJ
+  nome               String     @db.VarChar(255)                                    // nome fantasia (PJ) / nome completo (PF)
+  razaoSocial        String?    @map("razao_social") @db.VarChar(255)              // PJ
+  cnpj               String?    @db.VarChar(18)                                     // PJ  XX.XXX.XXX/XXXX-XX
+  inscricaoEstadual  String?    @map("inscricao_estadual") @db.VarChar(20)         // PJ
+  inscricaoMunicipal String?    @map("inscricao_municipal") @db.VarChar(20)        // PJ
+  cpf                String?    @db.VarChar(14)                                     // PF  XXX.XXX.XXX-XX
+  rg                 String?    @db.VarChar(20)                                     // PF
+  dataNascimento     DateTime?  @map("data_nascimento") @db.Date                   // PF
+
+  // Contato
+  telefone           String?    @db.VarChar(20)
+  celular            String?    @db.VarChar(20)
+  email              String?    @db.VarChar(255)
+
+  // Endereço
+  cep                String?    @db.VarChar(9)
+  logradouro         String?    @db.VarChar(255)
+  numero             String?    @db.VarChar(10)
+  complemento        String?    @db.VarChar(100)
+  bairro             String?    @db.VarChar(100)
+  municipio          String?    @db.VarChar(100)
+  uf                 String?    @db.VarChar(2)
+  pais               String?    @default("Brasil") @db.VarChar(50)
+
+  // Agenda
+  cor                String?    @db.VarChar(7)
+
   contratos Contrato[]
 
   @@map("cliente")
 }
 
+// ----------------------------------------------------------------------------
+// TABELAS DE REFERÊNCIA (compartilhadas entre todos os tenants / empresas)
+// ----------------------------------------------------------------------------
+
+model Pais {
+  id      Int      @id @default(autoincrement())
+  nome    String   @db.VarChar(100)
+  sigla   String   @unique @db.VarChar(3)
+  estados Estado[]
+
+  @@map("paises")
+}
+
+model Estado {
+  id          Int         @id @default(autoincrement())
+  paisId      Int         @map("pais_id")
+  pais        Pais        @relation(fields: [paisId], references: [id], onDelete: Restrict)
+  nome        String      @db.VarChar(100)
+  sigla       String      @unique @db.VarChar(2)
+  codigoIbge  Int?        @map("codigo_ibge")
+  municipios  Municipio[]
+
+  @@map("estados")
+}
+
+model Municipio {
+  id          Int    @id @default(autoincrement())
+  estadoId    Int    @map("estado_id")
+  estado      Estado @relation(fields: [estadoId], references: [id], onDelete: Restrict)
+  nome        String @db.VarChar(100)
+  codigoIbge  Int?   @map("codigo_ibge")
+
+  @@map("municipios")
+}
+
 /// Representa o profissional executor (Cadastros de Apoio)
 model Profissional {
   id               Int                    @id @default(autoincrement())
-  tenantId         Int                    @map("empresa_id")
-  tenant           Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  empresaId        Int                    @map("empresa_id")
+  empresa          Empresa                @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   userId           Int?                   @map("user_id")
   user             User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
   nome             String                 @db.VarChar(255)
@@ -162,8 +236,8 @@ model Profissional {
 /// Representa o contrato de serviço (Cadastros de Apoio)
 model Contrato {
   id             Int                    @id @default(autoincrement())
-  tenantId       Int                    @map("empresa_id")
-  tenant         Tenant                 @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  empresaId      Int                    @map("empresa_id")
+  empresa        Empresa                @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   clienteId      Int                    @map("cliente_id")
   cliente        Cliente                @relation(fields: [clienteId], references: [id], onDelete: Restrict)
   descricao      String                 @db.VarChar(255)
@@ -212,8 +286,8 @@ model ContratoItem {
 /// Representa os apontamentos de atendimentos (Agendamentos)
 model Agendamento {
   id                   Int           @id @default(autoincrement())
-  tenantId             Int           @map("empresa_id")
-  tenant               Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  empresaId            Int           @map("empresa_id")
+  empresa              Empresa       @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   contratoId           Int?          @map("contrato_id")
   contrato             Contrato?     @relation(fields: [contratoId], references: [id], onDelete: SetNull)
   profissionalId       Int?          @map("profissional_id")

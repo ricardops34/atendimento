@@ -25,7 +25,7 @@ import { ContratoService } from '../../../core/services/contrato.service';
         <po-info class="po-md-4" p-label="Tipo" [p-value]="getTipoLabel(registro?.tipo)"></po-info>
       </div>
       <div class="po-row">
-        <po-info class="po-md-12" p-label="Empresa" [p-value]="registro?.empresa?.nome || '-'"></po-info>
+        <po-info class="po-md-12" p-label="Cliente" [p-value]="registro?.cliente?.nome || '-'"></po-info>
       </div>
       <div class="po-row">
         <po-info class="po-md-6" p-label="Data de Início" [p-value]="formatDate(registro?.dtInicio)"></po-info>

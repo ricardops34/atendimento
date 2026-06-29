@@ -1,0 +1,60 @@
+<po-page-default p-title="Cliente">
+  <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+    <po-button p-label="Editar" p-icon="po-icon-edit" (p-click)="onEdit()"></po-button>
+    <po-button p-label="Voltar" p-kind="secondary" (p-click)="onBack()"></po-button>
+  </div>
+
+  <ng-container *ngIf="registro">
+    <po-divider p-label="Identificação"></po-divider>
+
+    <div class="po-row">
+      <po-info class="po-md-3" p-label="Tipo"
+        [p-value]="registro.tipoPessoa === 'PF' ? 'Pessoa Física' : 'Pessoa Jurídica'">
+      </po-info>
+      <po-info class="po-md-6" p-label="Nome" [p-value]="registro.nome || '-'"></po-info>
+      <po-info class="po-md-3" p-label="Cor" [p-value]="registro.cor || '-'"></po-info>
+    </div>
+
+    <!-- PJ -->
+    <ng-container *ngIf="isPJ">
+      <div class="po-row">
+        <po-info class="po-md-8" p-label="Razão Social" [p-value]="registro.razaoSocial || '-'"></po-info>
+        <po-info class="po-md-4" p-label="CNPJ" [p-value]="registro.cnpj || '-'"></po-info>
+      </div>
+      <div class="po-row">
+        <po-info class="po-md-6" p-label="Inscrição Estadual" [p-value]="registro.inscricaoEstadual || '-'"></po-info>
+        <po-info class="po-md-6" p-label="Inscrição Municipal" [p-value]="registro.inscricaoMunicipal || '-'"></po-info>
+      </div>
+    </ng-container>
+
+    <!-- PF -->
+    <ng-container *ngIf="!isPJ">
+      <div class="po-row">
+        <po-info class="po-md-4" p-label="CPF" [p-value]="registro.cpf || '-'"></po-info>
+        <po-info class="po-md-4" p-label="RG" [p-value]="registro.rg || '-'"></po-info>
+        <po-info class="po-md-4" p-label="Nascimento" [p-value]="(registro.dataNascimento | date:'dd/MM/yyyy') || '-'"></po-info>
+      </div>
+    </ng-container>
+
+    <po-divider p-label="Contato"></po-divider>
+
+    <div class="po-row">
+      <po-info class="po-md-4" p-label="Telefone / WhatsApp" [p-value]="registro.telefone || '-'"></po-info>
+      <po-info class="po-md-4" p-label="Celular" [p-value]="registro.celular || '-'"></po-info>
+      <po-info class="po-md-4" p-label="E-mail" [p-value]="registro.email || '-'"></po-info>
+    </div>
+
+    <po-divider p-label="Endereço"></po-divider>
+
+    <div class="po-row">
+      <po-info class="po-md-2" p-label="CEP" [p-value]="registro.cep || '-'"></po-info>
+      <po-info class="po-md-7" p-label="Logradouro" [p-value]="enderecoCompleto"></po-info>
+      <po-info class="po-md-3" p-label="Bairro" [p-value]="registro.bairro || '-'"></po-info>
+    </div>
+    <div class="po-row">
+      <po-info class="po-md-6" p-label="Município" [p-value]="registro.municipio || '-'"></po-info>
+      <po-info class="po-md-3" p-label="UF" [p-value]="registro.uf || '-'"></po-info>
+      <po-info class="po-md-3" p-label="País" [p-value]="registro.pais || 'Brasil'"></po-info>
+    </div>
+  </ng-container>
+</po-page-default>

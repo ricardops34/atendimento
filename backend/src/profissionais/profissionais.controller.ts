@@ -9,36 +9,36 @@ export class ProfissionaisController {
 
   @Post()
   create(@Body() createProfissionalDto: CreateProfissionalDto, @Request() req: any) {
-    return this.profissionaisService.create(createProfissionalDto, req.tenantId as number);
+    return this.profissionaisService.create(createProfissionalDto, req.empresaId as number);
   }
 
   @Get()
   findAll(@Request() req: any) {
-    return this.profissionaisService.findAll(req.tenantId as number);
+    return this.profissionaisService.findAll(req.empresaId as number);
   }
 
   @Get('search')
   search(@Query() query: Record<string, string | undefined>, @Request() req: any) {
-    return this.profissionaisService.search(query, req.tenantId as number);
+    return this.profissionaisService.search(query, req.empresaId as number);
   }
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
-    return this.profissionaisService.findOne(id, req.tenantId as number);
+    return this.profissionaisService.findOne(id, req.empresaId as number);
   }
 
   @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() updateProfissionalDto: UpdateProfissionalDto, @Request() req: any) {
-    return this.profissionaisService.update(id, updateProfissionalDto, req.tenantId as number);
+    return this.profissionaisService.update(id, updateProfissionalDto, req.empresaId as number);
   }
 
   @Put(':id')
   updatePut(@Param('id', ParseIntPipe) id: number, @Body() updateProfissionalDto: UpdateProfissionalDto, @Request() req: any) {
-    return this.profissionaisService.update(id, updateProfissionalDto, req.tenantId as number);
+    return this.profissionaisService.update(id, updateProfissionalDto, req.empresaId as number);
   }
 
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
-    return this.profissionaisService.remove(id, req.tenantId as number);
+    return this.profissionaisService.remove(id, req.empresaId as number);
   }
 }

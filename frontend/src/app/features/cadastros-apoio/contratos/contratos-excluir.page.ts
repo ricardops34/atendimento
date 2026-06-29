@@ -20,7 +20,7 @@ import { ContratoService } from '../../../core/services/contrato.service';
         <po-info class="po-md-12" p-label="Descrição" [p-value]="registro?.descricao || '-'"></po-info>
       </div>
       <div class="po-row">
-        <po-info class="po-md-12" p-label="Empresa" [p-value]="registro?.empresa?.nome || '-'"></po-info>
+        <po-info class="po-md-12" p-label="Cliente" [p-value]="registro?.cliente?.nome || '-'"></po-info>
       </div>
 
       <div style="display: flex; gap: 8px; margin-top: 24px;">

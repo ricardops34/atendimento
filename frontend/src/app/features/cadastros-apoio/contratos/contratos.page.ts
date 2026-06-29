@@ -1,4 +1,4 @@
-﻿import { CommonModule } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import {
@@ -18,7 +18,7 @@ import {
   PoTableModule,
 } from '@po-ui/ng-components';
 import { ContratoSearchParams, ContratoService } from '../../../core/services/contrato.service';
-import { EmpresaService } from '../../../core/services/empresa.service';
+import { ClienteService } from '../../../core/services/cliente.service';
 import { FormsModule } from '@angular/forms';
 
 const TIPO_OPTIONS: PoComboOption[] = [
@@ -36,7 +36,7 @@ export class ContratosPage implements OnInit {
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
 
   private contratoService = inject(ContratoService);
-  private empresaService = inject(EmpresaService);
+  private empresaService = inject(ClienteService);
   private poNotification = inject(PoNotificationService);
   readonly router = inject(Router);
 
@@ -57,7 +57,7 @@ export class ContratosPage implements OnInit {
   filters: { descricao?: string; clienteId?: number; tipo?: string; dtInicio?: string; dtFim?: string; isFeriado?: string } = {};
 
   columns: PoTableColumn[] = [
-    { property: 'empresa.nome', label: 'Empresa', sortable: true },
+    { property: 'cliente.nome', label: 'Cliente', sortable: true },
     { property: 'descricao', label: 'Descrição', sortable: true },
     { property: 'tipo', label: 'Tipo', sortable: true, width: '80px' },
     { property: 'dtInicioFmt', label: 'Início', sortable: false, width: '110px' },

@@ -1,7 +1,7 @@
 ﻿<po-page-list p-title="Contratos" [p-disclaimer-group]="disclaimerGroup">
   <div class="po-row" style="align-items: end; margin-bottom: 16px; row-gap: 12px;">
     <div class="po-md-6 po-sm-12" style="display: flex; flex-wrap: wrap; gap: 8px;">
-      <po-button p-label="Novo Contrato" p-icon="po-icon-plus" p-kind="primary" (p-click)="navigateTo(['/contratos/novo'])"></po-button>
+      <po-button p-label="Adcionar" p-icon="an an-plus" p-kind="primary" (p-click)="navigateTo(['/contratos/novo'])"></po-button>
     </div>
 
     <div class="po-md-6 po-sm-12" style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap;">
@@ -40,7 +40,7 @@
       [ngModel]="filters.descricao" (ngModelChange)="filters.descricao = $event">
     </po-input>
 
-    <po-combo class="po-md-6" name="empresaFiltro" p-label="Empresa"
+    <po-combo class="po-md-6" name="clienteFiltro" p-label="Cliente"
       [p-options]="clientes"
       [ngModel]="filters.clienteId"
       (ngModelChange)="filters.clienteId = $event">

@@ -1,16 +1,16 @@
 -- CreateTable
-CREATE TABLE "tenants" (
+CREATE TABLE "empresas" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(255) NOT NULL,
     "slug" VARCHAR(255) NOT NULL,
 
-    CONSTRAINT "tenants_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "empresas_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
-    "tenant_id" INTEGER NOT NULL,
+    "empresa_id" INTEGER NOT NULL,
     "profile_id" INTEGER NOT NULL,
     "name" VARCHAR(255) NOT NULL,
     "email" VARCHAR(255) NOT NULL,
@@ -23,7 +23,7 @@ CREATE TABLE "users" (
 -- CreateTable
 CREATE TABLE "profiles" (
     "id" SERIAL NOT NULL,
-    "tenant_id" INTEGER NOT NULL,
+    "empresa_id" INTEGER NOT NULL,
     "name" VARCHAR(255) NOT NULL,
 
     CONSTRAINT "profiles_pkey" PRIMARY KEY ("id")
@@ -50,18 +50,18 @@ CREATE TABLE "profile_modules" (
 );
 
 -- CreateTable
-CREATE TABLE "empresa" (
+CREATE TABLE "cliente" (
     "id" SERIAL NOT NULL,
-    "tenant_id" INTEGER NOT NULL,
+    "empresa_id" INTEGER NOT NULL,
     "nome" VARCHAR(255) NOT NULL,
 
-    CONSTRAINT "empresa_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "cliente_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "profissional" (
     "id" SERIAL NOT NULL,
-    "tenant_id" INTEGER NOT NULL,
+    "empresa_id" INTEGER NOT NULL,
     "nome" VARCHAR(255) NOT NULL,
 
     CONSTRAINT "profissional_pkey" PRIMARY KEY ("id")
@@ -70,8 +70,8 @@ CREATE TABLE "profissional" (
 -- CreateTable
 CREATE TABLE "contrato" (
     "id" SERIAL NOT NULL,
-    "tenant_id" INTEGER NOT NULL,
     "empresa_id" INTEGER NOT NULL,
+    "cliente_id" INTEGER NOT NULL,
     "descricao" VARCHAR(255) NOT NULL,
     "cor" VARCHAR(7) NOT NULL DEFAULT '#333333',
     "is_feriado" BOOLEAN NOT NULL DEFAULT false,
@@ -96,7 +96,7 @@ CREATE TABLE "contrato_item" (
 -- CreateTable
 CREATE TABLE "agendamento" (
     "id" SERIAL NOT NULL,
-    "tenant_id" INTEGER NOT NULL,
+    "empresa_id" INTEGER NOT NULL,
     "contrato_id" INTEGER,
     "profissional_id" INTEGER,
     "descricao" VARCHAR(500) NOT NULL,
@@ -126,13 +126,13 @@ CREATE TABLE "realizado" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "tenants_slug_key" ON "tenants"("slug");
+CREATE UNIQUE INDEX "empresas_slug_key" ON "empresas"("slug");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_tenant_id_email_key" ON "users"("tenant_id", "email");
+CREATE UNIQUE INDEX "users_empresa_id_email_key" ON "users"("empresa_id", "email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "profiles_tenant_id_name_key" ON "profiles"("tenant_id", "name");
+CREATE UNIQUE INDEX "profiles_empresa_id_name_key" ON "profiles"("empresa_id", "name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "modules_key_key" ON "modules"("key");
@@ -141,13 +141,13 @@ CREATE UNIQUE INDEX "modules_key_key" ON "modules"("key");
 CREATE UNIQUE INDEX "profile_modules_profile_id_module_id_key" ON "profile_modules"("profile_id", "module_id");
 
 -- AddForeignKey
-ALTER TABLE "users" ADD CONSTRAINT "users_tenant_id_fkey" FOREIGN KEY ("tenant_id") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "users" ADD CONSTRAINT "users_empresa_id_fkey" FOREIGN KEY ("empresa_id") REFERENCES "empresas"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "profiles"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "profiles" ADD CONSTRAINT "profiles_tenant_id_fkey" FOREIGN KEY ("tenant_id") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "profiles" ADD CONSTRAINT "profiles_empresa_id_fkey" FOREIGN KEY ("empresa_id") REFERENCES "empresas"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "profile_modules" ADD CONSTRAINT "profile_modules_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "profiles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -156,16 +156,16 @@ ALTER TABLE "profile_modules" ADD CONSTRAINT "profile_modules_profile_id_fkey" F
 ALTER TABLE "profile_modules" ADD CONSTRAINT "profile_modules_module_id_fkey" FOREIGN KEY ("module_id") REFERENCES "modules"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "empresa" ADD CONSTRAINT "empresa_tenant_id_fkey" FOREIGN KEY ("tenant_id") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "cliente" ADD CONSTRAINT "cliente_empresa_id_fkey" FOREIGN KEY ("empresa_id") REFERENCES "empresas"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "profissional" ADD CONSTRAINT "profissional_tenant_id_fkey" FOREIGN KEY ("tenant_id") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "profissional" ADD CONSTRAINT "profissional_empresa_id_fkey" FOREIGN KEY ("empresa_id") REFERENCES "empresas"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "contrato" ADD CONSTRAINT "contrato_tenant_id_fkey" FOREIGN KEY ("tenant_id") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "contrato" ADD CONSTRAINT "contrato_empresa_id_fkey" FOREIGN KEY ("empresa_id") REFERENCES "empresas"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "contrato" ADD CONSTRAINT "contrato_empresa_id_fkey" FOREIGN KEY ("empresa_id") REFERENCES "empresa"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "contrato" ADD CONSTRAINT "contrato_cliente_id_fkey" FOREIGN KEY ("cliente_id") REFERENCES "cliente"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "contrato_item" ADD CONSTRAINT "contrato_item_contrato_id_fkey" FOREIGN KEY ("contrato_id") REFERENCES "contrato"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -174,7 +174,7 @@ ALTER TABLE "contrato_item" ADD CONSTRAINT "contrato_item_contrato_id_fkey" FORE
 ALTER TABLE "contrato_item" ADD CONSTRAINT "contrato_item_profissional_id_fkey" FOREIGN KEY ("profissional_id") REFERENCES "profissional"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "agendamento" ADD CONSTRAINT "agendamento_tenant_id_fkey" FOREIGN KEY ("tenant_id") REFERENCES "tenants"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "agendamento" ADD CONSTRAINT "agendamento_empresa_id_fkey" FOREIGN KEY ("empresa_id") REFERENCES "empresas"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "agendamento" ADD CONSTRAINT "agendamento_contrato_id_fkey" FOREIGN KEY ("contrato_id") REFERENCES "contrato"("id") ON DELETE SET NULL ON UPDATE CASCADE;

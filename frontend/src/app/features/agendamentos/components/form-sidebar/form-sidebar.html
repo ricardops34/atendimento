@@ -125,19 +125,19 @@
   </div>
 
   <po-page-slide-footer>
-    <po-button p-label="Salvar" p-kind="primary" p-icon="po-icon-save" (p-click)="save()"></po-button>
+    <po-button p-label="Salvar" p-kind="primary" p-icon="an an-floppy-disk" (p-click)="save()"></po-button>
     <po-button
       *ngIf="isEdit && formData.tipo === 'A'"
       p-label="Confirmar"
       p-kind="secondary"
-      p-icon="po-icon-ok"
+      p-icon="an an-check"
       (p-click)="confirmar()">
     </po-button>
     <po-button
       *ngIf="isEdit"
       p-label="Excluir"
       p-kind="danger"
-      p-icon="po-icon-delete"
+      p-icon="an an-trash"
       (p-click)="excluir()">
     </po-button>
   </po-page-slide-footer>

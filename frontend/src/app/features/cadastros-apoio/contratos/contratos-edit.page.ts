@@ -10,7 +10,7 @@ import {
   PoPageModule,
 } from '@po-ui/ng-components';
 import { ContratoService } from '../../../core/services/contrato.service';
-import { EmpresaService } from '../../../core/services/empresa.service';
+import { ClienteService } from '../../../core/services/cliente.service';
 import { ProfissionalService } from '../../../core/services/profissional.service';
 
 const DIAS_SEMANA: PoComboOption[] = [
@@ -37,11 +37,11 @@ const TIPO_OPTIONS: PoComboOption[] = [
       <div class="po-row">
         <po-combo
           class="po-md-8"
-          p-label="Empresa *"
+          p-label="Cliente *"
           [p-options]="empresas"
-          [ngModel]="formData.empresaId"
-          (ngModelChange)="formData.empresaId = $event"
-          name="empresaId">
+          [ngModel]="formData.clienteId"
+          (ngModelChange)="formData.clienteId = $event"
+          name="clienteId">
         </po-combo>
         <po-input
           class="po-md-4"
@@ -181,7 +181,7 @@ const TIPO_OPTIONS: PoComboOption[] = [
             p-placeholder="18:00">
           </po-input>
           <div class="po-md-2" style="display: flex; align-items: flex-end; padding-bottom: 4px;">
-            <po-button p-label="Adicionar" p-icon="po-icon-plus" (p-click)="addEscala()"></po-button>
+            <po-button p-label="Adicionar" p-icon="an an-plus" (p-click)="addEscala()"></po-button>
           </div>
         </div>
 
@@ -221,14 +221,14 @@ export class ContratosEditPage implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private contratoService = inject(ContratoService);
-  private empresaService = inject(EmpresaService);
+  private empresaService = inject(ClienteService);
   private profissionalService = inject(ProfissionalService);
   private poNotification = inject(PoNotificationService);
 
   isEdit = false;
   saving = false;
   id: number | null = null;
-  title = 'Novo Contrato';
+  title = 'Novo';
 
   empresas: PoComboOption[] = [];
   profissionais: PoComboOption[] = [];
@@ -237,7 +237,7 @@ export class ContratosEditPage implements OnInit {
   readonly diasSemana = DIAS_SEMANA;
 
   formData: any = {
-    empresaId: null,
+    clienteId: null,
     descricao: '',
     cor: '#333333',
     dtInicio: '',
@@ -288,7 +288,7 @@ export class ContratosEditPage implements OnInit {
       next: (contrato: any) => {
         this.formData = {
           id: contrato.id,
-          empresaId: contrato.empresaId,
+          clienteId: contrato.clienteId,
           descricao: contrato.descricao,
           cor: contrato.cor || '#333333',
           dtInicio: contrato.dtInicio ? contrato.dtInicio.substring(0, 10) : '',
@@ -352,8 +352,8 @@ export class ContratosEditPage implements OnInit {
   }
 
   save() {
-    if (!this.formData.empresaId || !this.formData.descricao?.trim()) {
-      this.poNotification.warning('Preencha empresa e descrição.');
+    if (!this.formData.clienteId || !this.formData.descricao?.trim()) {
+      this.poNotification.warning('Preencha o cliente e a descrição.');
       return;
     }
     if (!this.formData.dtInicio || !this.formData.dtFim) {
@@ -367,7 +367,7 @@ export class ContratosEditPage implements OnInit {
 
     this.saving = true;
     const payload: any = {
-      empresaId: Number(this.formData.empresaId),
+      clienteId: Number(this.formData.clienteId),
       descricao: this.formData.descricao.trim(),
       cor: this.formData.cor || '#333333',
       dtInicio: this.formData.dtInicio,

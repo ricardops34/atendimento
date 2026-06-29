@@ -18,11 +18,11 @@ import { AgendamentosService } from './agendamentos.service';
 import { CreateAgendamentoDto } from './dto/create-agendamento.dto';
 import { UpdateAgendamentoDto } from './dto/update-agendamento.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { TenantGuard } from '../auth/guards/tenant.guard';
+import { EmpresaGuard } from '../auth/guards/empresa.guard';
 import { ModuleGuard } from '../auth/guards/module.guard';
 import { RequireModule } from '../auth/decorators/require-module.decorator';
 
-@UseGuards(JwtAuthGuard, TenantGuard, ModuleGuard)
+@UseGuards(JwtAuthGuard, EmpresaGuard, ModuleGuard)
 @RequireModule('appointments-list')
 @Controller('agendamentos')
 export class AgendamentosController {
@@ -35,12 +35,12 @@ export class AgendamentosController {
 
   @Get()
   findAll(@Request() req: any) {
-    return this.agendamentosService.findAll(req.tenantId as number);
+    return this.agendamentosService.findAll(req.empresaId as number);
   }
 
   @Get('search')
   search(@Query() query: Record<string, string | undefined>, @Request() req: any) {
-    return this.agendamentosService.search(query, req.tenantId as number);
+    return this.agendamentosService.search(query, req.empresaId as number);
   }
 
   @Get('export')
@@ -72,7 +72,7 @@ export class AgendamentosController {
       profissionalId: query.profissionalId ? Number(query.profissionalId) : undefined,
       dataInicial: query.dataInicial,
       dataFinal: query.dataFinal,
-      tenantId: req.tenantId as number,
+      empresaId: req.empresaId as number,
     };
 
     try {
@@ -89,21 +89,21 @@ export class AgendamentosController {
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
-    return this.agendamentosService.findOne(id, req.tenantId as number);
+    return this.agendamentosService.findOne(id, req.empresaId as number);
   }
 
   @Patch(':id/confirmar')
   confirmar(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
-    return this.agendamentosService.confirmar(id, req.tenantId as number);
+    return this.agendamentosService.confirmar(id, req.empresaId as number);
   }
 
   @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() updateAgendamentoDto: UpdateAgendamentoDto, @Request() req: any) {
-    return this.agendamentosService.update(id, updateAgendamentoDto, req.tenantId as number);
+    return this.agendamentosService.update(id, updateAgendamentoDto, req.empresaId as number);
   }
 
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
-    return this.agendamentosService.remove(id, req.tenantId as number);
+    return this.agendamentosService.remove(id, req.empresaId as number);
   }
 }

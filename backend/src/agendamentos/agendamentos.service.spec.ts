@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+﻿import { Test, TestingModule } from '@nestjs/testing';
 import { HttpException } from '@nestjs/common';
 import { AgendamentosService } from './agendamentos.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -75,7 +75,7 @@ describe('AgendamentosService', () => {
   });
 
   it('confirmar transitions status A to R', async () => {
-    const agendamento = { id: 5, tipo: 'A', tenantId: 1 };
+    const agendamento = { id: 5, tipo: 'A', empresaId: 1 };
     prisma.agendamento.findUnique.mockResolvedValue(agendamento);
     prisma.agendamento.update.mockResolvedValue({ ...agendamento, tipo: 'R' });
 
@@ -90,7 +90,7 @@ describe('AgendamentosService', () => {
   });
 
   it('confirmar throws 422 when status is not A', async () => {
-    prisma.agendamento.findUnique.mockResolvedValue({ id: 5, tipo: 'R', tenantId: 1 });
+    prisma.agendamento.findUnique.mockResolvedValue({ id: 5, tipo: 'R', empresaId: 1 });
 
     await expect(service.confirmar(5, 1)).rejects.toMatchObject({ status: 422 });
     expect(prisma.agendamento.update).not.toHaveBeenCalled();

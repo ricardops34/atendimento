@@ -51,7 +51,7 @@ export class ProfissionaisEditPage implements OnInit {
   isEdit = false;
   saving = false;
   id: number | null = null;
-  title = 'Novo Profissional';
+  title = 'Novo';
   usuarios: PoComboOption[] = [];
 
   formData: any = {
@@ -65,7 +65,7 @@ export class ProfissionaisEditPage implements OnInit {
     if (idParam) {
       this.isEdit = true;
       this.id = Number(idParam);
-      this.title = 'Editar Profissional';
+      this.title = 'Editar';
       this.loadRecord();
     }
   }

@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 export interface ClienteSearchParams {
@@ -8,6 +9,8 @@ export interface ClienteSearchParams {
   search?: string;
   id?: number;
   nome?: string;
+  tipoPessoa?: string;
+  municipio?: string;
   sortProperty?: string;
   sortDirection?: 'ascending' | 'descending';
 }
@@ -26,7 +29,14 @@ export class ClienteService {
   private apiUrl = `${environment.apiUrl}/clientes`;
 
   findAll() {
-    return this.http.get<any[]>(this.apiUrl);
+    const params = new HttpParams().set('pageSize', '1000');
+    return this.http.get<any>(this.apiUrl, { params }).pipe(
+      map((res: any) => res?.items ?? res)
+    );
+  }
+
+  findOne(id: number) {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 
   search(params: ClienteSearchParams) {

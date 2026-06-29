@@ -68,21 +68,21 @@ async function resetSequence(table: string, column = 'id') {
 
 async function main() {
   // Busca o tenant padrão (criado pelo seed.ts)
-  const tenant = await prisma.tenant.findFirst({ where: { slug: 'default-tenant' } });
+  const tenant = await prisma.empresa.findFirst({ where: { slug: 'default-tenant' } });
   if (!tenant) {
     throw new Error('Tenant "default" não encontrado. Rode "npx prisma db seed" primeiro.');
   }
-  const tenantId = tenant.id;
+  const empresaId = tenant.id;
 
-  console.log(`Importando dados para tenant "${tenant.name}" (id=${tenantId})...`);
+  console.log(`Importando dados para tenant "${tenant.name}" (id=${empresaId})...`);
 
   // 1. Empresas
   console.log('\n→ Empresas...');
   for (const emp of empresas) {
     await prisma.cliente.upsert({
       where: { id: emp.id },
-      update: { nome: emp.nome, tenantId },
-      create: { id: emp.id, nome: emp.nome, tenantId },
+      update: { nome: emp.nome, empresaId },
+      create: { id: emp.id, nome: emp.nome, empresaId },
     });
     console.log(`  ✓ [${emp.id}] ${emp.nome}`);
   }
@@ -93,8 +93,8 @@ async function main() {
   for (const pro of profissionais) {
     await prisma.profissional.upsert({
       where: { id: pro.id },
-      update: { nome: pro.nome, tenantId },
-      create: { id: pro.id, nome: pro.nome, tenantId },
+      update: { nome: pro.nome, empresaId },
+      create: { id: pro.id, nome: pro.nome, empresaId },
     });
     console.log(`  ✓ [${pro.id}] ${pro.nome}`);
   }
@@ -109,7 +109,7 @@ async function main() {
         descricao: con.descricao,
         cor: con.cor,
         clienteId: con.clienteId,
-        tenantId,
+        empresaId,
         dtInicio: DEFAULT_CONTRACT_START,
         dtFim: DEFAULT_CONTRACT_END,
         tipo: DEFAULT_CONTRACT_TYPE
@@ -119,7 +119,7 @@ async function main() {
         descricao: con.descricao,
         cor: con.cor,
         clienteId: con.clienteId,
-        tenantId,
+        empresaId,
         dtInicio: DEFAULT_CONTRACT_START,
         dtFim: DEFAULT_CONTRACT_END,
         tipo: DEFAULT_CONTRACT_TYPE,

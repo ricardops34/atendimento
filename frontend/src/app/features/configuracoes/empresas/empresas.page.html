@@ -1,0 +1,55 @@
+<po-page-list p-title="Empresas" [p-disclaimer-group]="disclaimerGroup">
+
+  <div class="po-row" style="align-items: end; margin-bottom: 16px; row-gap: 12px;">
+    <div class="po-md-6 po-sm-12" style="display: flex; gap: 8px;">
+      <po-button
+        p-label="Adicionar"
+        p-kind="primary"
+        p-icon="an an-plus"
+        (p-click)="router.navigate(['/configuracoes/empresas/novo'])">
+      </po-button>
+    </div>
+
+    <div class="po-md-6 po-sm-12" style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <div style="min-width: 280px; width: 280px; max-width: 100%;">
+        <po-search
+          p-placeholder="Pesquisar"
+          [(ngModel)]="quickSearch"
+          (p-filter)="onQuickSearch($event)"
+          (p-change-model)="quickSearch = $event">
+        </po-search>
+      </div>
+      <po-button p-label="Filtros" p-kind="tertiary" p-icon="an an-funnel" (p-click)="openFilters()"></po-button>
+    </div>
+  </div>
+
+  <po-table
+    [p-items]="empresas"
+    [p-columns]="columns"
+    [p-actions]="actions"
+    [p-loading]="loading"
+    [p-loading-show-more]="loadingShowMore"
+    [p-show-more-disabled]="!hasNext"
+    [p-sort]="true"
+    [p-hide-detail]="true"
+    [p-hide-table-search]="true"
+    (p-show-more)="onShowMore()"
+    (p-sort-by)="onSortChange($event)">
+  </po-table>
+</po-page-list>
+
+<!-- Filtros avançados -->
+<po-modal p-title="Filtros" #advancedFilterModal>
+  <div class="po-row">
+    <po-input class="po-md-6" name="name" p-label="Nome Fantasia"
+      [ngModel]="filters.name" (ngModelChange)="filters.name = $event">
+    </po-input>
+    <po-input class="po-md-6" name="slug" p-label="Slug"
+      [ngModel]="filters.slug" (ngModelChange)="filters.slug = $event">
+    </po-input>
+  </div>
+  <po-modal-footer>
+    <po-button p-label="Limpar"  (p-click)="clearFilters()"></po-button>
+    <po-button p-label="Aplicar" p-kind="primary" (p-click)="applyFilters()"></po-button>
+  </po-modal-footer>
+</po-modal>

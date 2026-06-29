@@ -69,18 +69,18 @@ async function runETL() {
       prisma.contrato.deleteMany(),
       prisma.profissional.deleteMany(),
       prisma.cliente.deleteMany(),
-      prisma.tenant.deleteMany(), // Limpa os tenants também, caso queira resetar tudo, ou deixe para usar upsert.
+      prisma.empresa.deleteMany(), // Limpa os tenants também, caso queira resetar tudo, ou deixe para usar upsert.
     ]);
 
     // 1.5 Criar Tenant Padrão
     console.log('Criando Tenant padrão...');
-    await prisma.tenant.upsert({
+    await prisma.empresa.upsert({
       where: { id: DEFAULT_TENANT_ID },
       update: {},
       create: {
         id: DEFAULT_TENANT_ID,
         name: 'Tenant Padrão',
-        slug: 'default-tenant',
+        slug: 'default-empresa',
       },
     });
 
@@ -89,7 +89,7 @@ async function runETL() {
     const [empresasLegacy] = await legacyConn.execute<any[]>('SELECT * FROM empresa');
     const empresasToInsert = empresasLegacy.map((e) => ({
       id: e.id,
-      tenantId: DEFAULT_TENANT_ID,
+      empresaId: DEFAULT_TENANT_ID,
       nome: String(e.nome).trim(),
     }));
     await prisma.cliente.createMany({ data: empresasToInsert });
@@ -100,7 +100,7 @@ async function runETL() {
     const [profissionaisLegacy] = await legacyConn.execute<any[]>('SELECT * FROM profissional');
     const profissionaisToInsert = profissionaisLegacy.map((p) => ({
       id: p.id,
-      tenantId: DEFAULT_TENANT_ID,
+      empresaId: DEFAULT_TENANT_ID,
       nome: String(p.nome).trim(),
     }));
     await prisma.profissional.createMany({ data: profissionaisToInsert });
@@ -111,7 +111,7 @@ async function runETL() {
     const [contratosLegacy] = await legacyConn.execute<any[]>('SELECT * FROM contrato');
     const contratosToInsert = contratosLegacy.map((c) => ({
       id: c.id,
-      tenantId: DEFAULT_TENANT_ID,
+      empresaId: DEFAULT_TENANT_ID,
       clienteId: c.empresa_id,
       descricao: String(c.descricao).trim(),
       cor: sanitizeColor(c.cor),
@@ -152,7 +152,7 @@ async function runETL() {
 
       return {
         id: a.id,
-        tenantId: DEFAULT_TENANT_ID,
+        empresaId: DEFAULT_TENANT_ID,
         contratoId: a.contrato_id || null,
         profissionalId: a.profissional_id || null,
         descricao: String(a.descricao || '').trim().substring(0, 500),

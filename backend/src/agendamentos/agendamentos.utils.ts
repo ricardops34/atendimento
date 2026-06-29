@@ -1,8 +1,8 @@
 export function composeDateTime(dateStr: string | Date, timeStr: string): Date {
-  const dateObj = new Date(dateStr);
-  const [hours, minutes] = (timeStr || '00:00').split(':').map(Number);
-  dateObj.setUTCHours(hours || 0, minutes || 0, 0, 0);
-  return dateObj;
+  const dateOnly = (dateStr instanceof Date ? dateStr.toISOString() : String(dateStr)).split('T')[0];
+  const time = (timeStr || '00:00').substring(0, 5);
+  // Build datetime in Brazil Standard Time (UTC-3, DST abolished since 2019)
+  return new Date(`${dateOnly}T${time}:00-03:00`);
 }
 
 export function parseDurationToMinutes(timeStr: string): number {

@@ -3,7 +3,7 @@ import { of } from 'rxjs';
 import { vi } from 'vitest';
 import { ContratosPage } from './contratos.page';
 import { ContratoService } from '../../../core/services/contrato.service';
-import { EmpresaService } from '../../../core/services/empresa.service';
+import { ClienteService } from '../../../core/services/cliente.service';
 import { PoNotificationService } from '@po-ui/ng-components';
 import { ProfissionalService } from '../../../core/services/profissional.service';
 
@@ -25,7 +25,7 @@ describe('ContratosPage', () => {
       providers: [
         { provide: ContratoService, useValue: contratoService },
         {
-          provide: EmpresaService,
+          provide: ClienteService,
           useValue: { findAll: () => of([{ id: 1, nome: 'Empresa A' }]) },
         },
         {

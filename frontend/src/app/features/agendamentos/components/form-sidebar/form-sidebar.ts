@@ -112,13 +112,21 @@ export class FormSidebar implements OnInit {
     );
   }
 
+  private isValidTime(t: string): boolean {
+    return /^\d{2}:\d{2}$/.test(t || '');
+  }
+
   private computeHoraTotal(ini: string, fim: string, intIni: string, intFim: string): string {
-    if (!ini || !fim) return '';
+    if (!this.isValidTime(ini) || !this.isValidTime(fim)) return '';
     const toMin = (t: string) => {
-      const [h, m] = (t || '00:00').split(':').map(Number);
-      return (h || 0) * 60 + (m || 0);
+      const [h, m] = t.split(':').map(Number);
+      return h * 60 + m;
     };
-    const total = (toMin(fim) - toMin(ini)) - (toMin(intFim) - toMin(intIni));
+    const intIniValid = this.isValidTime(intIni) ? intIni : '00:00';
+    const intFimValid = this.isValidTime(intFim) ? intFim : '00:00';
+    const workTotal  = toMin(fim) - toMin(ini);
+    const breakTotal = toMin(intFimValid) - toMin(intIniValid);
+    const total = workTotal - Math.max(0, breakTotal);
     if (total <= 0) return '00:00';
     return `${Math.floor(total / 60).toString().padStart(2, '0')}:${(total % 60).toString().padStart(2, '0')}`;
   }

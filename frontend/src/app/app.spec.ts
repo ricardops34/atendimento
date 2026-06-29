@@ -5,11 +5,11 @@ import { vi } from 'vitest';
 import { of } from 'rxjs';
 import { App } from './app';
 import { AuthService } from './core/auth/auth.service';
-import { TenantStateService } from './core/auth/tenant-state.service';
+import { EmpresaStateService } from './core/auth/empresa-state.service';
 import { PoBreadcrumbModule, PoMenuItem, PoMenuModule, PoPageModule, PoToolbarModule } from '@po-ui/ng-components';
 
 describe('App', () => {
-  const createTenantState = (user: any = null) => ({
+  const createEmpresaState = (user: any = null) => ({
     user: () => user,
   });
 
@@ -41,8 +41,8 @@ describe('App', () => {
           },
         },
         {
-          provide: TenantStateService,
-          useValue: createTenantState(),
+          provide: EmpresaStateService,
+          useValue: createEmpresaState(),
         },
         {
           provide: Router,
@@ -99,10 +99,10 @@ describe('App', () => {
           },
         },
         {
-          provide: TenantStateService,
-          useValue: createTenantState({
+          provide: EmpresaStateService,
+          useValue: createEmpresaState({
             name: 'Administrador',
-            tenant: { name: 'Tenant Demo' },
+            empresa: { name: 'Empresa Demo' },
             modules: ['appointments-list'],
             menus: [
               {
@@ -144,14 +144,14 @@ describe('App', () => {
           },
         },
         {
-          provide: TenantStateService,
-          useValue: createTenantState({
+          provide: EmpresaStateService,
+          useValue: createEmpresaState({
             name: 'Administrador',
-            tenant: { name: 'Tenant Demo' },
+            empresa: { name: 'Empresa Demo' },
             modules: ['settings'],
-            availableTenants: [
-              { tenantId: 1, tenantName: 'Tenant Demo', isDefault: true },
-              { tenantId: 2, tenantName: 'Tenant 2', isDefault: false }
+            availableEmpresas: [
+              { empresaId: 1, empresaName: 'Empresa Demo', isDefault: true },
+              { empresaId: 2, empresaName: 'Empresa 2', isDefault: false }
             ],
             menus: [
               {
@@ -196,7 +196,7 @@ describe('App', () => {
     expect(menus.at(-1)?.label).toBe('Sair');
   });
 
-  it('shows switch tenant action when session has more than one tenant', async () => {
+  it('shows switch empresa action when session has more than one empresa', async () => {
     TestBed.resetTestingModule();
 
     await TestBed.configureTestingModule({
@@ -211,14 +211,14 @@ describe('App', () => {
           },
         },
         {
-          provide: TenantStateService,
-          useValue: createTenantState({
+          provide: EmpresaStateService,
+          useValue: createEmpresaState({
             name: 'Administrador',
-            tenant: { name: 'Tenant Demo' },
+            empresa: { name: 'Empresa Demo' },
             modules: ['settings'],
-            availableTenants: [
-              { tenantId: 1, tenantName: 'Tenant Demo', isDefault: true },
-              { tenantId: 2, tenantName: 'Tenant 2', isDefault: false }
+            availableEmpresas: [
+              { empresaId: 1, empresaName: 'Empresa Demo', isDefault: true },
+              { empresaId: 2, empresaName: 'Empresa 2', isDefault: false }
             ],
             menus: []
           }),
@@ -232,7 +232,7 @@ describe('App', () => {
 
     const fixture = TestBed.createComponent(App);
 
-    expect(fixture.componentInstance.profileActions.some((item: any) => item.label === 'Trocar tenant')).toBe(true);
+    expect(fixture.componentInstance.profileActions.some((item: any) => item.label === 'Trocar empresa')).toBe(true);
   });
 
   it('builds breadcrumb from current route and keeps the last item without link', async () => {
@@ -250,12 +250,12 @@ describe('App', () => {
           },
         },
         {
-          provide: TenantStateService,
-          useValue: createTenantState({
+          provide: EmpresaStateService,
+          useValue: createEmpresaState({
             name: 'Administrador',
-            tenant: { name: 'Tenant Demo' },
+            empresa: { name: 'Empresa Demo' },
             modules: ['appointments-list'],
-            availableTenants: [],
+            availableEmpresas: [],
             menus: []
           }),
         },

@@ -49,7 +49,7 @@ UPDATE system_module SET icon = 'po-icon-settings' WHERE name = 'Administração
 <po-button p-icon="an an-trash" p-kind="danger" p-label="Excluir"></po-button>
 
 <!-- ❌ Errado -->
-<po-button p-icon="po-icon-plus" p-label="Novo"></po-button>
+<po-button p-icon="an an-plus" p-label="Novo"></po-button>
 ```
 
 ### Variante Filled (ícones preenchidos)

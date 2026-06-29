@@ -1,12 +1,12 @@
 -- Add profile reference to users
 ALTER TABLE "users" ADD COLUMN "profile_id" INTEGER;
 
--- Backfill users.profile_id from default tenant link, falling back to first tenant link
+-- Backfill users.profile_id from default empresa link, falling back to first empresa link
 WITH default_links AS (
   SELECT DISTINCT ON ("user_id")
     "user_id",
     "profile_id"
-  FROM "user_tenants"
+  FROM "user_empresas"
   ORDER BY "user_id", "is_default" DESC, "id" ASC
 )
 UPDATE "users" u
@@ -66,13 +66,13 @@ WHERE "id" IN (
   WHERE p."id" <> c.canonical_id
 );
 
--- Remove tenant-specific profile ownership
-ALTER TABLE "user_tenants" DROP CONSTRAINT "user_tenants_profile_id_fkey";
-ALTER TABLE "user_tenants" DROP COLUMN "profile_id";
+-- Remove empresa-specific profile ownership
+ALTER TABLE "user_empresas" DROP CONSTRAINT "user_empresas_profile_id_fkey";
+ALTER TABLE "user_empresas" DROP COLUMN "profile_id";
 
-ALTER TABLE "profiles" DROP CONSTRAINT "profiles_tenant_id_fkey";
-DROP INDEX "profiles_tenant_id_name_key";
-ALTER TABLE "profiles" DROP COLUMN "tenant_id";
+ALTER TABLE "profiles" DROP CONSTRAINT "profiles_empresa_id_fkey";
+DROP INDEX "profiles_empresa_id_name_key";
+ALTER TABLE "profiles" DROP COLUMN "empresa_id";
 CREATE UNIQUE INDEX "profiles_name_key" ON "profiles"("name");
 
 -- Finalize users.profile_id constraints

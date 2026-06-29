@@ -6,7 +6,7 @@ export interface UserSearchParams {
   page?: number;
   pageSize?: number;
   search?: string;
-  tenantId?: number;
+  empresaId?: number;
   profileId?: number;
   name?: string;
   email?: string;

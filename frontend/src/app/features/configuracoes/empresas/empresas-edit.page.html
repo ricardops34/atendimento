@@ -1,0 +1,98 @@
+<po-page-edit [p-title]="title" (p-save)="save()" (p-cancel)="cancel()">
+  <po-loading-overlay *ngIf="loading" p-text="Carregando..."></po-loading-overlay>
+
+  <po-divider p-label="Dados Básicos"></po-divider>
+
+  <div class="po-row">
+    <po-input class="po-md-8" p-label="Nome Fantasia *" name="name"
+      [ngModel]="form.name" (ngModelChange)="form.name = $event">
+    </po-input>
+    <po-input class="po-md-4" p-label="Slug *" name="slug"
+      p-placeholder="empresa-slug"
+      [ngModel]="form.slug" (ngModelChange)="form.slug = $event">
+    </po-input>
+  </div>
+  <div class="po-row">
+    <po-input class="po-md-12" p-label="Razão Social" name="razaoSocial"
+      [ngModel]="form.razaoSocial" (ngModelChange)="form.razaoSocial = $event">
+    </po-input>
+  </div>
+  <div class="po-row">
+    <po-input class="po-md-4" p-label="CNPJ" name="cnpj"
+      p-placeholder="00.000.000/0000-00" [p-maxlength]="18"
+      [ngModel]="form.cnpj" (ngModelChange)="form.cnpj = $event">
+    </po-input>
+    <po-input class="po-md-4" p-label="Inscrição Estadual" name="inscricaoEstadual"
+      [p-maxlength]="20"
+      [ngModel]="form.inscricaoEstadual" (ngModelChange)="form.inscricaoEstadual = $event">
+    </po-input>
+    <po-input class="po-md-4" p-label="Inscrição Municipal" name="inscricaoMunicipal"
+      [p-maxlength]="20"
+      [ngModel]="form.inscricaoMunicipal" (ngModelChange)="form.inscricaoMunicipal = $event">
+    </po-input>
+  </div>
+
+  <po-divider p-label="Contato"></po-divider>
+
+  <div class="po-row">
+    <po-input class="po-md-4" p-label="Telefone / WhatsApp" name="telefone"
+      p-placeholder="(00) 9 0000-0000" [p-maxlength]="20"
+      [ngModel]="form.telefone" (ngModelChange)="form.telefone = $event">
+    </po-input>
+    <po-input class="po-md-4" p-label="Celular" name="celular"
+      p-placeholder="(00) 9 0000-0000" [p-maxlength]="20"
+      [ngModel]="form.celular" (ngModelChange)="form.celular = $event">
+    </po-input>
+    <po-email class="po-md-4" p-label="E-mail" name="email"
+      [ngModel]="form.email" (ngModelChange)="form.email = $event">
+    </po-email>
+  </div>
+
+  <po-divider p-label="Endereço"></po-divider>
+
+  <div class="po-row" style="align-items: flex-end;">
+    <po-input class="po-md-3" p-label="CEP" name="cep"
+      p-placeholder="00000-000" [p-maxlength]="9"
+      [ngModel]="form.cep" (ngModelChange)="form.cep = $event">
+    </po-input>
+    <div class="po-md-2" style="padding-bottom: 8px;">
+      <po-button p-label="Buscar CEP" p-icon="po-icon-search"
+        [p-loading]="buscandoCep" (p-click)="buscarCep()">
+      </po-button>
+    </div>
+  </div>
+  <div class="po-row">
+    <po-input class="po-md-8" p-label="Logradouro" name="logradouro"
+      [p-maxlength]="255"
+      [ngModel]="form.logradouro" (ngModelChange)="form.logradouro = $event">
+    </po-input>
+    <po-input class="po-md-2" p-label="Número" name="numero"
+      [p-maxlength]="10"
+      [ngModel]="form.numero" (ngModelChange)="form.numero = $event">
+    </po-input>
+    <po-input class="po-md-2" p-label="Complemento" name="complemento"
+      [p-maxlength]="100"
+      [ngModel]="form.complemento" (ngModelChange)="form.complemento = $event">
+    </po-input>
+  </div>
+  <div class="po-row">
+    <po-input class="po-md-4" p-label="Bairro" name="bairro"
+      [p-maxlength]="100"
+      [ngModel]="form.bairro" (ngModelChange)="form.bairro = $event">
+    </po-input>
+    <po-combo class="po-md-3" p-label="UF" name="uf"
+      [p-options]="estadoOptions"
+      [ngModel]="form.uf" (ngModelChange)="form.uf = $event; onUfChange($event)">
+    </po-combo>
+    <po-combo class="po-md-5" p-label="Município" name="municipio"
+      [p-options]="municipioOptions"
+      [ngModel]="form.municipio" (ngModelChange)="form.municipio = $event">
+    </po-combo>
+  </div>
+  <div class="po-row">
+    <po-input class="po-md-4" p-label="País" name="pais"
+      [p-maxlength]="50"
+      [ngModel]="form.pais" (ngModelChange)="form.pais = $event">
+    </po-input>
+  </div>
+</po-page-edit>

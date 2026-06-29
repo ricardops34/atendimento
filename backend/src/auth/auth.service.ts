@@ -12,9 +12,9 @@ export type SessionMenuItem = {
   subItems?: SessionMenuItem[];
 };
 
-export type TenantAccessOption = {
-  tenantId: number;
-  tenantName: string;
+export type EmpresaAccessOption = {
+  empresaId: number;
+  empresaName: string;
   isDefault: boolean;
 };
 
@@ -36,9 +36,9 @@ export class AuthService {
             },
           },
         },
-        userTenants: {
+        userEmpresas: {
           include: {
-            tenant: true,
+            empresa: true,
           },
         },
       },
@@ -60,33 +60,33 @@ export class AuthService {
       throw new UnauthorizedException('Credenciais inválidas');
     }
 
-    if (!user.userTenants?.length) {
-      throw new UnauthorizedException('Usuário sem vínculo com tenant.');
+    if (!user.userEmpresas?.length) {
+      throw new UnauthorizedException('Usuário sem vínculo com empresa.');
     }
 
     return user;
   }
 
-  async login(user: any, tenantId?: number) {
-    const availableTenants = this.buildTenantOptions(user);
-    const tenantLink = this.resolveRequestedTenant(user, tenantId);
+  async login(user: any, empresaId?: number) {
+    const availableEmpresas = this.buildEmpresaOptions(user);
+    const empresaLink = this.resolveRequestedEmpresa(user, empresaId);
 
-    if (!tenantLink && availableTenants.length > 1) {
+    if (!empresaLink && availableEmpresas.length > 1) {
       return {
-        requiresTenantSelection: true,
-        tenantOptions: availableTenants,
+        requiresEmpresaSelection: true,
+        empresaOptions: availableEmpresas,
       };
     }
 
-    const selectedTenant = tenantLink ?? user.userTenants[0];
+    const selectedEmpresa = empresaLink ?? user.userEmpresas[0];
     const payload = {
       sub: user.id,
       email: user.email,
-      tenantId: selectedTenant.tenantId,
+      empresaId: selectedEmpresa.empresaId,
       profileId: user.profileId,
     };
 
-    const sessionUser = await this.buildSessionUser(user, selectedTenant.tenantId);
+    const sessionUser = await this.buildSessionUser(user, selectedEmpresa.empresaId);
 
     return {
       accessToken: this.jwtService.sign(payload),
@@ -94,14 +94,14 @@ export class AuthService {
     };
   }
 
-  async buildSessionUser(user: any, tenantId?: number) {
-    const tenantLink =
-      this.resolveSelectedTenant(user, tenantId) ??
-      user.userTenants?.find((item: any) => item.isDefault) ??
-      user.userTenants?.[0];
+  async buildSessionUser(user: any, empresaId?: number) {
+    const empresaLink =
+      this.resolveSelectedEmpresa(user, empresaId) ??
+      user.userEmpresas?.find((item: any) => item.isDefault) ??
+      user.userEmpresas?.[0];
 
-    if (!tenantLink) {
-      throw new UnauthorizedException('Usuário sem vínculo com tenant.');
+    if (!empresaLink) {
+      throw new UnauthorizedException('Usuário sem vínculo com empresa.');
     }
 
     const modules = (user.profile?.profileModules || [])
@@ -115,13 +115,13 @@ export class AuthService {
       name: user.name,
       email: user.email,
       avatar: user.avatar || 'avatar_01.png',
-      tenantId: tenantLink.tenantId,
+      empresaId: empresaLink.empresaId,
       profileId: user.profileId,
-      tenant: tenantLink.tenant,
+      empresa: empresaLink.empresa,
       profile: user.profile?.name,
       modules,
       menus,
-      availableTenants: this.buildTenantOptions(user),
+      availableEmpresas: this.buildEmpresaOptions(user),
     };
   }
 
@@ -147,9 +147,9 @@ export class AuthService {
               },
             },
           },
-          userTenants: {
+          userEmpresas: {
             include: {
-              tenant: true,
+              empresa: true,
             },
           },
         },
@@ -173,54 +173,54 @@ export class AuthService {
             },
           },
         },
-        userTenants: {
+        userEmpresas: {
           include: {
-            tenant: true,
+            empresa: true,
           },
         },
       },
     });
   }
 
-  private buildTenantOptions(user: any): TenantAccessOption[] {
-    return (user.userTenants || []).map((item: any) => ({
-      tenantId: item.tenantId,
-      tenantName: item.tenant?.name,
+  private buildEmpresaOptions(user: any): EmpresaAccessOption[] {
+    return (user.userEmpresas || []).map((item: any) => ({
+      empresaId: item.empresaId,
+      empresaName: item.empresa?.name,
       isDefault: !!item.isDefault,
     }));
   }
 
-  private resolveSelectedTenant(user: any, tenantId?: number) {
-    const userTenants = user.userTenants || [];
+  private resolveSelectedEmpresa(user: any, empresaId?: number) {
+    const userEmpresas = user.userEmpresas || [];
 
-    if (tenantId) {
-      const selected = userTenants.find((item: any) => item.tenantId === Number(tenantId));
+    if (empresaId) {
+      const selected = userEmpresas.find((item: any) => item.empresaId === Number(empresaId));
       if (!selected) {
-        throw new UnauthorizedException('Tenant informado não está vinculado ao usuário.');
+        throw new UnauthorizedException('Empresa informada não está vinculada ao usuário.');
       }
       return selected;
     }
 
-    if (userTenants.length === 1) {
-      return userTenants[0];
+    if (userEmpresas.length === 1) {
+      return userEmpresas[0];
     }
 
-    return userTenants.find((item: any) => item.isDefault) ?? null;
+    return userEmpresas.find((item: any) => item.isDefault) ?? null;
   }
 
-  private resolveRequestedTenant(user: any, tenantId?: number) {
-    const userTenants = user.userTenants || [];
+  private resolveRequestedEmpresa(user: any, empresaId?: number) {
+    const userEmpresas = user.userEmpresas || [];
 
-    if (tenantId) {
-      const selected = userTenants.find((item: any) => item.tenantId === Number(tenantId));
+    if (empresaId) {
+      const selected = userEmpresas.find((item: any) => item.empresaId === Number(empresaId));
       if (!selected) {
-        throw new UnauthorizedException('Tenant informado não está vinculado ao usuário.');
+        throw new UnauthorizedException('Empresa informada não está vinculada ao usuário.');
       }
       return selected;
     }
 
-    if (userTenants.length === 1) {
-      return userTenants[0];
+    if (userEmpresas.length === 1) {
+      return userEmpresas[0];
     }
 
     return null;
