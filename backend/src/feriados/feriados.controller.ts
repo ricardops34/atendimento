@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, 
 import { FeriadosService } from './feriados.service';
 import { CreateFeriadoDto } from './dto/create-feriado.dto';
 import { UpdateFeriadoDto } from './dto/update-feriado.dto';
+import { GerarNacionaisDto } from './dto/gerar-nacionais.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('feriados')
@@ -13,6 +14,12 @@ export class FeriadosController {
   create(@Body() createFeriadoDto: CreateFeriadoDto, @Request() req: any) {
     const tenantId = req.user.tenantId;
     return this.feriadosService.create(createFeriadoDto, tenantId);
+  }
+
+  @Post('gerar-nacionais')
+  gerarNacionais(@Body() body: GerarNacionaisDto, @Request() req: any) {
+    const tenantId = req.user.tenantId;
+    return this.feriadosService.gerarNacionais(body.ano, tenantId);
   }
 
   @Get('search')

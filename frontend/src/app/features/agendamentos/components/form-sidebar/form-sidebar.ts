@@ -37,7 +37,8 @@ export class FormSidebar implements OnInit {
   readonly modalidadeOptions: PoComboOption[] = [
     { label: 'Presencial', value: 'P' },
     { label: 'Remoto', value: 'R' },
-    { label: 'Falta', value: 'F' }
+    { label: 'Falta', value: 'F' },
+    { label: 'Extra', value: 'E' }
   ];
 
   readonly tipoOptions: PoComboOption[] = [
@@ -115,10 +116,14 @@ export class FormSidebar implements OnInit {
   private computeHoraTotal(ini: string, fim: string, intIni: string, intFim: string): string {
     if (!ini || !fim) return '';
     const toMin = (t: string) => {
-      const [h, m] = (t || '00:00').split(':').map(Number);
+      let val = t || '00:00';
+      if (val.length === 4 && !val.includes(':')) {
+        val = `${val.substring(0, 2)}:${val.substring(2, 4)}`;
+      }
+      const [h, m] = val.split(':').map(Number);
       return (h || 0) * 60 + (m || 0);
     };
-    const total = (toMin(fim) - toMin(ini)) - (toMin(intFim) - toMin(intIni));
+    let total = (toMin(fim) - toMin(ini)) - (toMin(intFim) - toMin(intIni));
     if (total <= 0) return '00:00';
     return `${Math.floor(total / 60).toString().padStart(2, '0')}:${(total % 60).toString().padStart(2, '0')}`;
   }
@@ -129,7 +134,19 @@ export class FormSidebar implements OnInit {
       return;
     }
 
-    const payload = { ...this.formData };
+    const formatTime = (t: string) => {
+      if (!t) return t;
+      if (t.length === 4 && !t.includes(':')) return `${t.substring(0, 2)}:${t.substring(2, 4)}`;
+      return t;
+    };
+
+    const payload = { 
+      ...this.formData,
+      horaInicio: formatTime(this.formData.horaInicio),
+      horaFim: formatTime(this.formData.horaFim),
+      horaIntervaloInicial: formatTime(this.formData.horaIntervaloInicial),
+      horaIntervaloFinal: formatTime(this.formData.horaIntervaloFinal)
+    };
     delete payload.horaTotal;
 
     if (this.isEdit) {

@@ -83,4 +83,8 @@ export class AgendamentoService {
   fecharLote(agendamentoIds: number[]): Observable<any> {
     return this.http.post<any>(`${environment.apiUrl}/realizados/fechar-lote`, { agendamentoIds });
   }
+
+  gerarMensal(mes: number, ano: number, contratoId?: number, profissionalId?: number): Observable<{ gerados: number }> {
+    return this.http.post<{ gerados: number }>(`${this.apiUrl}/gerar-mensal`, { mes, ano, contratoId, profissionalId });
+  }
 }

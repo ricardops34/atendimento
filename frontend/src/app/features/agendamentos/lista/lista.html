@@ -3,6 +3,7 @@
   <div class="po-row" style="align-items: end; margin-bottom: 16px; row-gap: 12px;">
     <div class="po-md-6 po-sm-12" style="display: flex; flex-wrap: wrap; gap: 8px;">
       <po-button p-label="Novo Agendamento" p-icon="po-icon-plus" (p-click)="onNew()"></po-button>
+      <po-button p-label="Gerar Mês" p-icon="po-icon-calendar" (p-click)="openGerarMensalModal()"></po-button>
       <po-dropdown p-label="Exportar" [p-actions]="exportActions"></po-dropdown>
       <po-dropdown p-label="Relatórios" [p-actions]="extratoActions" p-icon="po-icon-finance"></po-dropdown>
     </div>
@@ -91,6 +92,35 @@
   <po-modal-footer>
     <po-button p-label="Cancelar" (p-click)="extratoModal.close()"></po-button>
     <po-button p-label="Gerar Extrato" p-kind="primary" (p-click)="generateExtrato()"></po-button>
+  </po-modal-footer>
+</po-modal>
+
+<po-modal p-title="Gerar Previsão Mensal" #gerarMensalModal>
+  <div class="po-row">
+    <po-combo class="po-md-6" name="gerarMes" p-label="Mês" [p-options]="mesesOptions"
+      [ngModel]="gerarMensalFilters.mes" (ngModelChange)="gerarMensalFilters.mes = $event">
+    </po-combo>
+
+    <po-number class="po-md-6" name="gerarAno" p-label="Ano" [ngModel]="gerarMensalFilters.ano"
+      (ngModelChange)="gerarMensalFilters.ano = $event">
+    </po-number>
+  </div>
+
+  <div class="po-row">
+    <po-combo class="po-md-12" name="gerarContratoId" p-label="Contrato (Opcional)" [p-options]="contratos"
+      [ngModel]="gerarMensalFilters.contratoId" (ngModelChange)="gerarMensalFilters.contratoId = $event">
+    </po-combo>
+  </div>
+
+  <div class="po-row">
+    <po-combo class="po-md-12" name="gerarProfissionalId" p-label="Profissional (Opcional)" [p-options]="profissionais"
+      [ngModel]="gerarMensalFilters.profissionalId" (ngModelChange)="gerarMensalFilters.profissionalId = $event">
+    </po-combo>
+  </div>
+
+  <po-modal-footer>
+    <po-button p-label="Cancelar" (p-click)="gerarMensalModal.close()"></po-button>
+    <po-button p-label="Gerar" p-kind="primary" (p-click)="generateMensal()"></po-button>
   </po-modal-footer>
 </po-modal>
 

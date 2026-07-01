@@ -34,6 +34,7 @@ import { FeriadoSearchParams, FeriadoService } from '../../../core/services/feri
 export class FeriadosPage implements OnInit {
   @ViewChild('modal', { static: true }) modal!: PoModalComponent;
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
+  @ViewChild('gerarNacionaisModal', { static: true }) gerarNacionaisModal!: PoModalComponent;
 
   private feriadoService = inject(FeriadoService);
   private poDialog = inject(PoDialogService);
@@ -44,6 +45,9 @@ export class FeriadosPage implements OnInit {
   loadingShowMore = false;
   saving = false;
   isEdit = false;
+  
+  anoGeracao: number = new Date().getFullYear();
+  generating = false;
   
   formData: any = { 
     data: '', 
@@ -67,7 +71,7 @@ export class FeriadosPage implements OnInit {
   total = 0;
   sortProperty = 'data';
   sortDirection: 'ascending' | 'descending' = 'ascending';
-  filters: { id?: number; descricao?: string } = {};
+  filters: { id?: number; descricao?: string; ano?: number; dataDe?: string; dataAte?: string } = {};
 
   columns: PoTableColumn[] = [
     { property: 'id', label: 'ID', sortable: true, width: '70px' },
@@ -231,8 +235,9 @@ export class FeriadosPage implements OnInit {
         this.loadData(true);
         this.modal.close();
       },
-      error: () => {
-        this.poNotification.error('Erro ao salvar feriado.');
+      error: (err) => {
+        const msg = err?.error?.message || 'Erro ao salvar feriado.';
+        this.poNotification.error(msg);
         this.saving = false;
       },
     });
@@ -256,6 +261,33 @@ export class FeriadosPage implements OnInit {
     });
   }
 
+  openGerarNacionais() {
+    this.anoGeracao = new Date().getFullYear();
+    this.gerarNacionaisModal.open();
+  }
+
+  gerarNacionais() {
+    if (!this.anoGeracao) {
+      this.poNotification.warning('Informe o ano para gerar.');
+      return;
+    }
+
+    this.generating = true;
+    this.feriadoService.gerarNacionais(this.anoGeracao).subscribe({
+      next: (res: any) => {
+        this.poNotification.success(`${res.gerados} feriados gerados com sucesso.`);
+        this.generating = false;
+        this.gerarNacionaisModal.close();
+        this.loadData(true);
+      },
+      error: (err) => {
+        const msg = err?.error?.message || 'Erro ao gerar feriados nacionais.';
+        this.poNotification.error(msg);
+        this.generating = false;
+      }
+    });
+  }
+
   private buildSearchParams(): FeriadoSearchParams {
     return {
       page: this.page,
@@ -263,9 +295,12 @@ export class FeriadosPage implements OnInit {
       search: this.quickSearch || undefined,
       id: this.filters.id,
       descricao: this.filters.descricao,
+      ano: this.filters.ano,
+      dataDe: this.filters.dataDe,
+      dataAte: this.filters.dataAte,
       sortProperty: this.sortProperty,
       sortDirection: this.sortDirection,
-    };
+    } as any;
   }
 
   private syncDisclaimers() {
@@ -279,6 +314,15 @@ export class FeriadosPage implements OnInit {
     }
     if (this.filters.descricao) {
       disclaimers.push({ property: 'descricao', label: 'Feriado', value: this.filters.descricao });
+    }
+    if (this.filters.ano) {
+      disclaimers.push({ property: 'ano', label: 'Ano', value: this.filters.ano.toString() });
+    }
+    if (this.filters.dataDe) {
+      disclaimers.push({ property: 'dataDe', label: 'A partir de', value: this.filters.dataDe });
+    }
+    if (this.filters.dataAte) {
+      disclaimers.push({ property: 'dataAte', label: 'Até', value: this.filters.dataAte });
     }
 
     this.disclaimerGroup = { ...this.disclaimerGroup, disclaimers };

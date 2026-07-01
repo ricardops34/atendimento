@@ -46,4 +46,8 @@ export class FeriadoService {
   remove(id: number) {
     return this.http.delete<any>(`${this.url}/${id}`);
   }
+
+  gerarNacionais(ano: number) {
+    return this.http.post<any>(`${this.url}/gerar-nacionais`, { ano });
+  }
 }

@@ -2,6 +2,7 @@
   <div class="po-row" style="align-items: end; margin-bottom: 16px; row-gap: 12px;">
     <div class="po-md-6 po-sm-12" style="display: flex; flex-wrap: wrap; gap: 8px;">
       <po-button p-label="Novo Feriado" p-icon="po-icon-plus" (p-click)="openCreate()"></po-button>
+      <po-button p-label="Gerar Nacionais" p-icon="po-icon-calendar" (p-click)="openGerarNacionais()"></po-button>
     </div>
 
     <div class="po-md-6 po-sm-12" style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap;">
@@ -59,9 +60,29 @@
       <po-number class="po-md-4" name="filterId" p-label="ID" [ngModel]="filters.id" (ngModelChange)="filters.id = $event"></po-number>
       <po-input class="po-md-8" name="filterDescricao" p-label="Descrição" [ngModel]="filters.descricao" (ngModelChange)="filters.descricao = $event"></po-input>
     </div>
+    <div class="po-row">
+      <po-number class="po-md-4" name="filterAno" p-label="Ano" [ngModel]="filters.ano" (ngModelChange)="filters.ano = $event" p-tooltip="Se preenchido, ignora Data De/Até"></po-number>
+      <po-datepicker class="po-md-4" name="filterDataDe" p-label="Data De" [ngModel]="filters.dataDe" (ngModelChange)="filters.dataDe = $event"></po-datepicker>
+      <po-datepicker class="po-md-4" name="filterDataAte" p-label="Data Até" [ngModel]="filters.dataAte" (ngModelChange)="filters.dataAte = $event"></po-datepicker>
+    </div>
   </form>
   <po-modal-footer>
     <po-button p-label="Limpar" (p-click)="clearFilters()"></po-button>
     <po-button p-label="Aplicar" p-kind="primary" (p-click)="applyAdvancedFilters()"></po-button>
+  </po-modal-footer>
+</po-modal>
+
+<po-modal #gerarNacionaisModal p-title="Gerar Feriados Nacionais">
+  <div class="po-row">
+    <po-number class="po-md-12" name="anoGeracao" p-label="Ano" [ngModel]="anoGeracao" (ngModelChange)="anoGeracao = $event" p-required="true"></po-number>
+  </div>
+  <div class="po-row" style="margin-top: 16px;">
+    <span class="po-font-text-small po-text-color-07">
+      Isso criará automaticamente os feriados fixos e as datas móveis (Carnaval, Páscoa, Sexta-Feira Santa, Corpus Christi) para o ano selecionado. Feriados que já existem não serão duplicados.
+    </span>
+  </div>
+  <po-modal-footer>
+    <po-button p-label="Cancelar" (p-click)="gerarNacionaisModal.close()"></po-button>
+    <po-button p-label="Gerar" p-kind="primary" [p-loading]="generating" (p-click)="gerarNacionais()"></po-button>
   </po-modal-footer>
 </po-modal>

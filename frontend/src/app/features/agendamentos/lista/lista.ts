@@ -45,6 +45,7 @@ export class Lista implements OnInit {
   @ViewChild(FormSidebar) formSidebar!: FormSidebar;
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
   @ViewChild('extratoModal', { static: true }) extratoModal!: PoModalComponent;
+  @ViewChild('gerarMensalModal', { static: true }) gerarMensalModal!: PoModalComponent;
 
   private agendamentoService = inject(AgendamentoService);
   private contratoService = inject(ContratoService);
@@ -85,7 +86,8 @@ export class Lista implements OnInit {
   readonly modalidadeOptions: PoComboOption[] = [
     { label: 'Presencial', value: 'P' },
     { label: 'Remoto', value: 'R' },
-    { label: 'Falta', value: 'F' }
+    { label: 'Falta', value: 'F' },
+    { label: 'Extra', value: 'E' }
   ];
 
   filters: {
@@ -103,6 +105,28 @@ export class Lista implements OnInit {
     contratoId?: number;
     profissionalId?: number;
   } = {};
+
+  gerarMensalFilters: {
+    mes?: number;
+    ano?: number;
+    contratoId?: number;
+    profissionalId?: number;
+  } = {};
+
+  readonly mesesOptions: PoComboOption[] = [
+    { label: 'Janeiro', value: 1 },
+    { label: 'Fevereiro', value: 2 },
+    { label: 'Março', value: 3 },
+    { label: 'Abril', value: 4 },
+    { label: 'Maio', value: 5 },
+    { label: 'Junho', value: 6 },
+    { label: 'Julho', value: 7 },
+    { label: 'Agosto', value: 8 },
+    { label: 'Setembro', value: 9 },
+    { label: 'Outubro', value: 10 },
+    { label: 'Novembro', value: 11 },
+    { label: 'Dezembro', value: 12 }
+  ];
 
   extratoFormat: 'xls' | 'pdf' = 'xls';
 
@@ -148,7 +172,7 @@ export class Lista implements OnInit {
     {
       label: 'Ordem de Serviço',
       icon: 'po-icon-document',
-      action: () => {},
+      action: () => { },
       disabled: () => true
     }
   ];
@@ -171,7 +195,7 @@ export class Lista implements OnInit {
         this.quickSearch = parsed.quickSearch || '';
         this.syncDisclaimers();
       }
-      
+
       const savedExtrato = localStorage.getItem(this.STORAGE_KEY_EXTRATO);
       if (savedExtrato) {
         this.extratoFilters = JSON.parse(savedExtrato);
@@ -303,7 +327,7 @@ export class Lista implements OnInit {
             const text = await err.error.text();
             const json = JSON.parse(text);
             message = json.message || message;
-          } catch {}
+          } catch { }
         }
         this.poNotification.error(message);
       }
@@ -312,7 +336,7 @@ export class Lista implements OnInit {
 
   openExtratoModal(format: 'xls' | 'pdf') {
     this.extratoFormat = format;
-    
+
     // Se não tiver nenhum dado de data inicial salvo, podemos puxar da busca avançada
     if (!this.extratoFilters.dataInicial && !this.extratoFilters.dataFinal) {
       this.extratoFilters = {
@@ -328,7 +352,7 @@ export class Lista implements OnInit {
   generateExtrato() {
     this.saveParams(this.STORAGE_KEY_EXTRATO, this.extratoFilters);
     this.extratoModal.close();
-    
+
     const params: AgendamentoSearchParams = {
       page: 1,
       pageSize: 2000,
@@ -340,7 +364,7 @@ export class Lista implements OnInit {
 
     this.agendamentoService.exportExtrato(params, this.extratoFormat).subscribe({
       next: (blob) => {
-        const extMap: Record<'xls'|'pdf', string> = { xls: 'xlsx', pdf: 'pdf' };
+        const extMap: Record<'xls' | 'pdf', string> = { xls: 'xlsx', pdf: 'pdf' };
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -355,7 +379,7 @@ export class Lista implements OnInit {
             const text = await err.error.text();
             const json = JSON.parse(text);
             message = json.message || message;
-          } catch {}
+          } catch { }
         }
         this.poNotification.error(message);
       }
@@ -374,6 +398,45 @@ export class Lista implements OnInit {
         this.loadData();
       },
       error: () => this.poNotification.error('Erro no fechamento de lote.')
+    });
+  }
+
+  openGerarMensalModal() {
+    const hoje = new Date();
+    this.gerarMensalFilters = {
+      mes: hoje.getMonth() + 1,
+      ano: hoje.getFullYear(),
+      contratoId: undefined,
+      profissionalId: undefined
+    };
+    this.gerarMensalModal.open();
+  }
+
+  generateMensal() {
+    if (!this.gerarMensalFilters.mes || !this.gerarMensalFilters.ano) {
+      this.poNotification.warning('Mês e ano são obrigatórios.');
+      return;
+    }
+
+    this.agendamentoService.gerarMensal(
+      this.gerarMensalFilters.mes,
+      this.gerarMensalFilters.ano,
+      this.gerarMensalFilters.contratoId,
+      this.gerarMensalFilters.profissionalId
+    ).subscribe({
+      next: (res) => {
+        this.gerarMensalModal.close();
+        if (res.gerados > 0) {
+          this.poNotification.success(`${res.gerados} novos agendamentos gerados com sucesso!`);
+          this.loadData(true);
+        } else {
+          this.poNotification.information('Nenhum agendamento novo gerado. Todos já existiam ou a escala está vazia.');
+        }
+      },
+      error: (err) => {
+        const msg = err?.error?.message || 'Erro ao gerar previsão mensal.';
+        this.poNotification.error(msg);
+      }
     });
   }
 

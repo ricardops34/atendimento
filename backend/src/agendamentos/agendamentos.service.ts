@@ -139,6 +139,117 @@ export class AgendamentosService {
     });
   }
 
+  async gerarMensal(mes: number, ano: number, contratoId?: number, profissionalId?: number, empresaId?: number): Promise<{ gerados: number }> {
+    const dataInicio = new Date(ano, mes - 1, 1);
+    const dataFim = new Date(ano, mes, 0, 23, 59, 59, 999);
+    
+    const whereContrato: any = { empresaId };
+    if (contratoId) whereContrato.id = contratoId;
+
+    const contratos = await this.prisma.contrato.findMany({
+      where: whereContrato,
+      include: { escalas: true }
+    });
+
+    const agendamentosExistentes = await this.prisma.agendamento.findMany({
+      where: {
+        empresaId,
+        dataAgenda: { gte: dataInicio, lte: dataFim },
+        ...(contratoId ? { contratoId } : {}),
+        ...(profissionalId ? { profissionalId } : {})
+      },
+      select: { dataAgenda: true, contratoId: true, profissionalId: true }
+    });
+
+    const feriados = await this.prisma.feriado.findMany({
+      where: { empresaId }
+    });
+
+    const checkFeriado = (d: Date) => {
+      const dMonth = d.getMonth();
+      const dDate = d.getDate();
+      const dYear = d.getFullYear();
+      
+      return feriados.some(f => {
+        const fDate = new Date(f.data);
+        // Fixo = compara mês e dia; Não fixo = compara ano, mês e dia
+        if (f.fixo) {
+          return fDate.getUTCMonth() === dMonth && fDate.getUTCDate() === dDate;
+        } else {
+          return fDate.getUTCFullYear() === dYear && fDate.getUTCMonth() === dMonth && fDate.getUTCDate() === dDate;
+        }
+      });
+    };
+
+    const formatToYMD = (d: Date) => {
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    };
+    
+    const formatUTCToYMD = (d: Date) => {
+      return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0') + '-' + String(d.getUTCDate()).padStart(2, '0');
+    };
+
+    const setExistentes = new Set(
+      agendamentosExistentes.map(a => `${formatUTCToYMD(new Date(a.dataAgenda))}_${a.contratoId}_${a.profissionalId}`)
+    );
+
+    const novosAgendamentos: any[] = [];
+
+    for (const contrato of contratos) {
+      if (!contrato.escalas || contrato.escalas.length === 0) continue;
+
+      for (let d = new Date(dataInicio); d <= dataFim; d.setDate(d.getDate() + 1)) {
+        const diaSemana = d.getDay();
+        const escalasDia = contrato.escalas.filter((e: any) => {
+          if (e.diaSemana !== diaSemana) return false;
+          if (profissionalId && e.profissionalId !== profissionalId) return false;
+          return true;
+        });
+        
+        for (const escala of escalasDia) {
+          const dateStr = formatToYMD(d);
+          const key = `${dateStr}_${contrato.id}_${escala.profissionalId}`;
+          
+          if (!setExistentes.has(key)) {
+            const dataAgenda = new Date(d);
+            const horarioInicial = composeDateTime(dataAgenda, escala.horaInicio);
+            const horarioFinal = composeDateTime(dataAgenda, escala.horaFim);
+            const duracaoMinutos = calculateDuration(escala.horaInicio, escala.horaFim, escala.intervaloIni, escala.intervaloFim);
+
+            const isHoliday = checkFeriado(d);
+
+            novosAgendamentos.push({
+              empresaId: empresaId || 1,
+              contratoId: contrato.id,
+              profissionalId: escala.profissionalId,
+              descricao: contrato.descricao,
+              dataAgenda,
+              horaInicio: escala.horaInicio,
+              horaFim: escala.horaFim,
+              horaIntervaloInicial: escala.intervaloIni,
+              horaIntervaloFinal: escala.intervaloFim,
+              duracaoMinutos,
+              horarioInicial,
+              horarioFinal,
+              local: 'P',
+              tipo: isHoliday ? 'F' : 'A',
+              cor: contrato.cor || '#333333',
+              observacao: 'Gerado automaticamente pela rotina mensal'
+            });
+            
+            setExistentes.add(key);
+          }
+        }
+      }
+    }
+
+    if (novosAgendamentos.length > 0) {
+      await this.prisma.agendamento.createMany({ data: novosAgendamentos });
+    }
+
+    return { gerados: novosAgendamentos.length };
+  }
+
   async findAll(empresaId: number): Promise<Agendamento[]> {
     const items = await this.prisma.agendamento.findMany({
       where: { empresaId },
@@ -278,7 +389,7 @@ export class AgendamentosService {
       duracaoMinutos: item.duracaoMinutos || calculateDuration(item.horaInicio, item.horaFim, item.horaIntervaloInicial, item.horaIntervaloFinal)
     }));
 
-    const localMap: Record<string, string> = { P: 'Presencial', R: 'Remoto', F: 'Falta' };
+    const localMap: Record<string, string> = { P: 'Presencial', R: 'Remoto', F: 'Falta', E: 'Extra' };
     const tipoMap: Record<string, string> = { A: 'Agendada', R: 'Realizada', C: 'Cancelada', F: 'Feriado' };
 
     const rows = processedItems.map((a) => ({
@@ -389,7 +500,13 @@ export class AgendamentosService {
     
     const items = await this.prisma.agendamento.findMany({
       where,
-      include: { contrato: true, profissional: true, realizados: true },
+      include: { 
+        contrato: {
+          include: { escalas: true }
+        }, 
+        profissional: true, 
+        realizados: true 
+      },
       orderBy: [
         { contrato: { descricao: 'asc' } },
         { profissional: { nome: 'asc' } },
@@ -399,17 +516,76 @@ export class AgendamentosService {
       take: 2000,
     });
 
+    const periodosPorContrato: Record<string, number> = {};
+
+    const getHorasPrevistasContrato = (contrato: any, agendamentoData: Date) => {
+      if (!contrato || !contrato.escalas || contrato.escalas.length === 0) return 0;
+      
+      let dataIni: Date;
+      let dataFim: Date;
+
+      if (filters.dataInicial && filters.dataFinal) {
+        dataIni = new Date(filters.dataInicial);
+        // Ajustar para não ter problema de fuso e pegar a data certa
+        dataIni = new Date(dataIni.getFullYear(), dataIni.getMonth(), dataIni.getDate(), 0, 0, 0);
+        
+        dataFim = new Date(filters.dataFinal);
+        dataFim = new Date(dataFim.getFullYear(), dataFim.getMonth(), dataFim.getDate(), 23, 59, 59, 999);
+      } else {
+        const agendData = agendamentoData || new Date();
+        dataIni = new Date(agendData.getFullYear(), agendData.getMonth(), 1);
+        dataFim = new Date(agendData.getFullYear(), agendData.getMonth() + 1, 0, 23, 59, 59, 999);
+      }
+
+      const key = `${contrato.id}_${dataIni.toISOString()}`;
+      if (periodosPorContrato[key] !== undefined) return periodosPorContrato[key];
+
+      let totalMinutos = 0;
+      for (let d = new Date(dataIni); d <= dataFim; d.setDate(d.getDate() + 1)) {
+        const diaSemana = d.getDay();
+        const escalasDia = contrato.escalas.filter((e: any) => e.diaSemana === diaSemana);
+        for (const escala of escalasDia) {
+          totalMinutos += calculateDuration(escala.horaInicio, escala.horaFim, escala.intervaloIni, escala.intervaloFim);
+        }
+      }
+      
+      const totalHoras = totalMinutos / 60;
+      periodosPorContrato[key] = totalHoras;
+      return totalHoras;
+    };
+
     const rows = items.map((a: any) => {
       const duracaoMin = a.duracaoMinutos || calculateDuration(a.horaInicio, a.horaFim, a.horaIntervaloInicial, a.horaIntervaloFinal);
-      const horasDecimais = duracaoMin / 60;
-      const valorHora = Number(a.contrato?.valorHora || 0);
-      const valorTotal = horasDecimais * valorHora;
+      let horasDecimais = duracaoMin / 60;
+      
+      let valorHora = 0;
+      if (a.contrato?.tipo === 'F' && a.contrato?.valorFixo) {
+        const horasPrevistas = getHorasPrevistasContrato(a.contrato, a.dataAgenda);
+        if (horasPrevistas > 0) {
+          valorHora = Number(a.contrato.valorFixo) / horasPrevistas;
+        }
+      } else {
+        valorHora = Number(a.contrato?.valorHora || 0);
+      }
+      
+      let valorTotal = horasDecimais * valorHora;
+
+      let statusFormatado = a.local || '';
+      if (a.local === 'P') statusFormatado = 'Presencial';
+      else if (a.local === 'R') statusFormatado = 'Remoto';
+      else if (a.local === 'F') statusFormatado = 'Falta';
+      else if (a.local === 'E') statusFormatado = 'Extra';
+
+      if (a.local === 'F') {
+        horasDecimais = -Math.abs(horasDecimais);
+        valorTotal = -Math.abs(valorTotal);
+      }
 
       return {
         data: a.dataAgenda ? new Date(a.dataAgenda).toLocaleDateString('pt-BR') : '',
         contrato: a.contrato?.descricao || 'Sem Cliente',
         profissional: a.profissional?.nome || 'Sem Profissional',
-        status: a.local === 'P' ? 'Presencial' : (a.local === 'R' ? 'Remoto' : (a.local === 'F' ? 'Falta' : a.local || '')),
+        status: statusFormatado,
         horasRealizadas: horasDecimais,
         valorHora: valorHora,
         valorTotal: valorTotal,
@@ -427,12 +603,24 @@ export class AgendamentosService {
       { header: 'Data', key: 'data', width: 14 },
       { header: 'Contrato', key: 'contrato', width: 25 },
       { header: 'Profissional', key: 'profissional', width: 25 },
+      { header: 'Tipo', key: 'status', width: 15 },
       { header: 'Horas Cobradas', key: 'horasRealizadas', width: 15 },
       { header: 'Valor Hora', key: 'valorHora', width: 15 },
       { header: 'Total (R$)', key: 'valorTotal', width: 15 },
     ];
     sheet.addRows(rows);
     
+    sheet.eachRow((row, rowNumber) => {
+      if (rowNumber > 1) {
+        const statusVal = row.getCell('status').value;
+        if (statusVal === 'Falta') {
+          row.font = { color: { argb: 'FFFF0000' } };
+        } else if (statusVal === 'Extra') {
+          row.font = { color: { argb: 'FF0000FF' } };
+        }
+      }
+    });
+
     const totalHoras = rows.reduce((acc, r) => acc + Number(r.horasRealizadas), 0);
     const totalFinanceiro = rows.reduce((acc, r) => acc + r.valorTotal, 0);
 
@@ -440,6 +628,7 @@ export class AgendamentosService {
       data: 'TOTAIS',
       contrato: '',
       profissional: '',
+      status: '',
       horasRealizadas: totalHoras.toFixed(2),
       valorHora: '',
       valorTotal: totalFinanceiro,
@@ -516,7 +705,11 @@ export class AgendamentosService {
             }
             zebra = !zebra;
 
-            doc.fillColor('#333333').font('Helvetica').fontSize(9);
+            let textColor = '#333333';
+            if (r.status === 'Falta') textColor = '#FF0000';
+            else if (r.status === 'Extra') textColor = '#0000FF';
+
+            doc.fillColor(textColor).font('Helvetica').fontSize(9);
             
             doc.text(r.data, startX + 15, y + 3, { width: colWidths[0], align: 'left' });
             doc.text(r.status, startX + 15 + colWidths[0], y + 3, { width: colWidths[1], align: 'left' });

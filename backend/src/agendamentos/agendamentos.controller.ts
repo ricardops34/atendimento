@@ -12,11 +12,13 @@ import {
   UseGuards,
   Res,
   HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { AgendamentosService } from './agendamentos.service';
 import { CreateAgendamentoDto } from './dto/create-agendamento.dto';
 import { UpdateAgendamentoDto } from './dto/update-agendamento.dto';
+import { GerarMensalDto } from './dto/gerar-mensal.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TenantGuard } from '../auth/guards/tenant.guard';
 import { ModuleGuard } from '../auth/guards/module.guard';
@@ -31,6 +33,15 @@ export class AgendamentosController {
   @Post()
   create(@Body() createAgendamentoDto: CreateAgendamentoDto) {
     return this.agendamentosService.create(createAgendamentoDto);
+  }
+
+  @Post('gerar-mensal')
+  async gerarMensal(@Body() body: GerarMensalDto, @Request() req: any) {
+    try {
+      return await this.agendamentosService.gerarMensal(body.mes, body.ano, body.contratoId, body.profissionalId, req.tenantId as number);
+    } catch (e: any) {
+      throw new HttpException(e.stack || e.message || 'Erro ao gerar', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Get()
