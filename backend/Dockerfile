@@ -32,5 +32,5 @@ ENV PORT=3000
 
 EXPOSE 3000
 
-# Comando para iniciar a aplicação
-CMD [ "npm", "run", "start:prod" ]
+# Comando para iniciar a aplicação (Forçando caminho devido ao cache do Docker)
+CMD [ "node", "dist/src/main.js" ]
