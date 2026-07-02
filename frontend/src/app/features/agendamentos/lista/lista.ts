@@ -13,6 +13,7 @@ import {
   PoModalModule,
   PoNotificationService,
   PoPageModule,
+  PoRadioGroupOption,
   PoSearchModule,
   PoTableAction,
   PoTableColumn,
@@ -104,7 +105,14 @@ export class Lista implements OnInit {
     dataFinal?: string;
     contratoId?: number;
     profissionalId?: number;
-  } = {};
+    tipoExtrato?: 'sintetico' | 'analitico' | 'calendario';
+  } = { tipoExtrato: 'sintetico' };
+
+  tipoExtratoOptions: Array<PoRadioGroupOption> = [
+    { label: 'Sintético (Resumo)', value: 'sintetico' },
+    { label: 'Analítico (Com Observações)', value: 'analitico' },
+    { label: 'Calendário', value: 'calendario' }
+  ];
 
   gerarMensalFilters: {
     mes?: number;
@@ -210,7 +218,7 @@ export class Lista implements OnInit {
   }
 
   loadDependencies() {
-    this.contratoService.findAll().subscribe((data) => {
+    this.contratoService.findAll(false).subscribe((data) => {
       this.contratos = data.map((c) => ({ label: c.descricao, value: c.id }));
     });
     this.profissionalService.findAll().subscribe((data) => {
@@ -284,10 +292,14 @@ export class Lista implements OnInit {
     if (property === 'search') {
       this.quickSearch = '';
     } else {
-      this.filters[property] = undefined;
+      delete this.filters[property];
     }
-    this.syncDisclaimers();
-    this.loadData(true);
+    this.saveParams(this.STORAGE_KEY_FILTERS, { filters: this.filters, quickSearch: this.quickSearch });
+    
+    setTimeout(() => {
+      this.syncDisclaimers();
+      this.loadData(true);
+    });
   }
 
   onNew() {
@@ -343,7 +355,8 @@ export class Lista implements OnInit {
         dataInicial: this.filters.dataInicial,
         dataFinal: this.filters.dataFinal,
         contratoId: this.filters.contratoId,
-        profissionalId: this.filters.profissionalId
+        profissionalId: this.filters.profissionalId,
+        tipoExtrato: this.extratoFilters.tipoExtrato || 'sintetico'
       };
     }
     this.extratoModal.open();
@@ -359,7 +372,8 @@ export class Lista implements OnInit {
       dataInicial: this.extratoFilters.dataInicial,
       dataFinal: this.extratoFilters.dataFinal,
       contratoId: this.extratoFilters.contratoId,
-      profissionalId: this.extratoFilters.profissionalId
+      profissionalId: this.extratoFilters.profissionalId,
+      tipoExtrato: this.extratoFilters.tipoExtrato
     };
 
     this.agendamentoService.exportExtrato(params, this.extratoFormat).subscribe({
@@ -491,8 +505,11 @@ export class Lista implements OnInit {
   }
 
   private mapAgendamento(a: any) {
+    // Fix timezone shift by stripping the Z and forcing it to midday local time
+    const localDate = a.dataAgenda ? a.dataAgenda.split('T')[0] + 'T12:00:00' : null;
     return {
       ...a,
+      dataAgenda: localDate,
       localFormatado: this.formatLocal(a.local),
       duracaoFormatada: this.formatMinutesToHours(a.duracaoMinutos),
       tipoFormatado: this.formatTipo(a.tipo)
@@ -500,7 +517,7 @@ export class Lista implements OnInit {
   }
 
   private formatLocal(local: string) {
-    const map: Record<string, string> = { P: 'Presencial', R: 'Remoto', F: 'Falta' };
+    const map: Record<string, string> = { P: 'Presencial', R: 'Remoto', F: 'Falta', E: 'Extra' };
     return map[local] || local;
   }
 

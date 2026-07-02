@@ -125,6 +125,7 @@ export class AgendamentosController {
       profissionalId: query.profissionalId ? Number(query.profissionalId) : undefined,
       dataInicial: query.dataInicial,
       dataFinal: query.dataFinal,
+      tipoExtrato: query.tipoExtrato as 'sintetico' | 'analitico' | 'calendario' | undefined,
       tenantId: req.tenantId as number,
     };
 

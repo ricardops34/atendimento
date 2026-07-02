@@ -1,4 +1,4 @@
-<po-page-list p-title="Contratos" [p-disclaimer-group]="disclaimerGroup">
+﻿<po-page-list p-title="Contratos" [p-disclaimer-group]="disclaimerGroup">
   <div class="po-row" style="align-items: end; margin-bottom: 16px; row-gap: 12px;">
     <div class="po-md-6 po-sm-12" style="display: flex; flex-wrap: wrap; gap: 8px;">
       <po-button p-label="Novo Contrato" p-icon="po-icon-plus" (p-click)="openCreate()"></po-button>
@@ -40,10 +40,10 @@
       [ngModel]="filters.descricao" (ngModelChange)="filters.descricao = $event">
     </po-input>
 
-    <po-combo class="po-md-6" name="empresaFiltro" p-label="Cliente"
-      [p-options]="empresas"
-      [ngModel]="filters.empresaId"
-      (ngModelChange)="filters.empresaId = $event">
+    <po-combo class="po-md-6" name="clienteFiltro" p-label="Cliente"
+      [p-options]="clientes"
+      [ngModel]="filters.clienteId"
+      (ngModelChange)="filters.clienteId = $event">
     </po-combo>
   </div>
 
@@ -75,9 +75,9 @@
   <!-- Dados principais -->
   <div class="po-row">
     <po-combo class="po-md-8" p-label="Cliente" [p-required]="true"
-      [p-options]="empresas"
-      [ngModel]="formData.empresaId"
-      (ngModelChange)="formData.empresaId = $event">
+      [p-options]="clientes"
+      [ngModel]="formData.clienteId"
+      (ngModelChange)="formData.clienteId = $event">
     </po-combo>
 
     <po-input class="po-md-4" p-label="Cor (hex)"
@@ -118,17 +118,23 @@
   </div>
 
   <div class="po-row">
-    <po-decimal class="po-md-6" p-label="Valor Hora"
+    <po-decimal class="po-md-4" p-label="Valor Hora"
       [ngModel]="formData.valorHora"
       (ngModelChange)="formData.valorHora = $event"
       [p-decimals-length]="2">
     </po-decimal>
 
-    <po-decimal class="po-md-6" p-label="Valor Fixo"
+    <po-decimal class="po-md-4" p-label="Valor Fixo"
       [ngModel]="formData.valorFixo"
       (ngModelChange)="formData.valorFixo = $event"
       [p-decimals-length]="2">
     </po-decimal>
+
+    <po-switch class="po-md-4" p-label="Bloqueado"
+      [ngModel]="formData.bloqueado"
+      (ngModelChange)="formData.bloqueado = $event"
+      p-help="Se bloqueado, não será listado nos agendamentos.">
+    </po-switch>
   </div>
 
   <!-- Profissionais habilitados -->
@@ -191,6 +197,44 @@
         [p-items]="formData.escalas"
         [p-columns]="escalaColumns"
         [p-actions]="escalaActions"
+        [p-hide-columns-manager]="true"
+        [p-sort]="false">
+      </po-table>
+    </div>
+  </div>
+
+  <!-- Adiantamentos -->
+  <div style="margin-top: 16px; border-top: 1px solid #ddd; padding-top: 12px;">
+    <p style="font-weight: 600; margin-bottom: 8px;">Adiantamentos (Opcional)</p>
+    <div class="po-row">
+      <po-input class="po-md-3" p-label="Descrição"
+        [ngModel]="novoAdiantamento.descricao"
+        (ngModelChange)="novoAdiantamento.descricao = $event"
+        p-placeholder="Adiantamento">
+      </po-input>
+      <po-decimal class="po-md-2" p-label="Valor Total"
+        [ngModel]="novoAdiantamento.valorTotal"
+        (ngModelChange)="novoAdiantamento.valorTotal = $event"
+        [p-decimals-length]="2">
+      </po-decimal>
+      <po-number class="po-md-2" p-label="Parcelas"
+        [ngModel]="novoAdiantamento.parcelas"
+        (ngModelChange)="novoAdiantamento.parcelas = $event">
+      </po-number>
+      <po-datepicker class="po-md-3" p-label="Data Início"
+        [ngModel]="novoAdiantamento.dataInicio"
+        (ngModelChange)="novoAdiantamento.dataInicio = $event">
+      </po-datepicker>
+      <div class="po-md-2" style="display: flex; align-items: flex-end; padding-bottom: 4px;">
+        <po-button p-label="Adicionar" p-icon="po-icon-plus" (p-click)="addAdiantamento()"></po-button>
+      </div>
+    </div>
+    
+    <div *ngIf="formData.adiantamentos?.length" style="margin-top: 8px;">
+      <po-table
+        [p-items]="formData.adiantamentos"
+        [p-columns]="adiantamentoColumns"
+        [p-actions]="adiantamentoActions"
         [p-hide-columns-manager]="true"
         [p-sort]="false">
       </po-table>

@@ -68,7 +68,7 @@ async function resetSequence(table: string, column = 'id') {
 
 async function main() {
   // Busca a empresa padrão (criado pelo seed.ts)
-  const empresaDefault = await prisma.empresa.findFirst({ where: { slug: 'default' } });
+  const empresaDefault = await prisma.empresa.findFirst({ where: { slug: 'empresa-padrao' } });
   if (!empresaDefault) {
     throw new Error('Empresa fallback não encontrada. Rode "npx prisma db seed" primeiro.');
   }

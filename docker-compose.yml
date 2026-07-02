@@ -1,0 +1,71 @@
+version: "3.8"
+
+services:
+  backend:
+    # Substitua por seu usuário no Docker Hub
+    image: bjsoftware/atendimento-backend:latest
+    networks:
+      - network_public
+
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=${DATABASE_URL}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - LEGACY_DB_HOST=${LEGACY_DB_HOST}
+      - LEGACY_DB_PORT=${LEGACY_DB_PORT}
+      - LEGACY_DB_USER=${LEGACY_DB_USER}
+      - LEGACY_DB_PASSWORD=${LEGACY_DB_PASSWORD}
+      - LEGACY_DB_NAME=${LEGACY_DB_NAME}
+      - TZ=${TZ:-UTC}
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=network_public
+
+        # Roteamento HTTPS para o Backend (Ajuste o Host)
+        - traefik.http.routers.atendimento-backend.rule=Host(`api.atendimento.bjsoft.com.br`)
+        - traefik.http.routers.atendimento-backend.entrypoints=websecure
+        - traefik.http.routers.atendimento-backend.tls=true
+        - traefik.http.routers.atendimento-backend.tls.certresolver=letsencryptresolver
+
+        # Serviço interno do backend
+        - traefik.http.services.atendimento-backend.loadbalancer.server.port=3000
+
+  frontend:
+    # Substitua por seu usuário no Docker Hub
+    image: bjsoftware/atendimento-frontend:latest
+    networks:
+      - network_public
+    environment:
+      - NODE_ENV=production
+      - TZ=${TZ:-UTC}
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      labels:
+        - traefik.enable=true
+        - traefik.docker.network=network_public
+
+        # Roteamento HTTPS para o Frontend (Ajuste o Host)
+        - traefik.http.routers.atendimento-frontend.rule=Host(`atendimento.bjsoft.com.br`)
+        - traefik.http.routers.atendimento-frontend.entrypoints=websecure
+        - traefik.http.routers.atendimento-frontend.tls=true
+        - traefik.http.routers.atendimento-frontend.tls.certresolver=letsencryptresolver
+
+        # Serviço interno do frontend (Nginx)
+        - traefik.http.services.atendimento-frontend.loadbalancer.server.port=80
+
+networks:
+  network_public:
+    external: true
+  

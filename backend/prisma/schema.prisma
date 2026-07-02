@@ -184,11 +184,27 @@ model Contrato {
   valorHora     Decimal?               @map("valor_hora") @db.Decimal(10, 2)
   valorFixo     Decimal?               @map("valor_fixo") @db.Decimal(10, 2)
   isFeriado     Boolean                @default(false) @map("is_feriado") // Flag para identificar dinamicamente o contrato de feriados
+  bloqueado     Boolean                @default(false)
   agendamentos  Agendamento[]
   escalas       ContratoItem[]
   profissionais ContratoProfissional[]
+  adiantamentos ContratoAdiantamento[]
 
   @@map("contrato")
+}
+
+/// Representa os adiantamentos financeiros do contrato (Adi 8/10)
+model ContratoAdiantamento {
+  id           Int      @id @default(autoincrement())
+  contratoId   Int      @map("contrato_id")
+  contrato     Contrato @relation(fields: [contratoId], references: [id], onDelete: Cascade)
+  descricao    String   @db.VarChar(255)
+  valorTotal   Decimal  @map("valor_total") @db.Decimal(10, 2)
+  parcelas     Int      @default(1)
+  valorParcela Decimal  @map("valor_parcela") @db.Decimal(10, 2)
+  dataInicio   DateTime @map("data_inicio") @db.Date
+
+  @@map("contrato_adiantamento")
 }
 
 /// Pivô many-to-many entre Contrato e Profissional (escala contratual de profissionais habilitados)

@@ -78,15 +78,19 @@
   </div>
 
   <div class="po-row">
-    <po-combo class="po-md-12" name="extratoContratoId" p-label="Contrato" [p-options]="contratos"
+    <po-combo class="po-md-6" name="extratoContratoId" p-label="Contrato" [p-options]="contratos"
       [ngModel]="extratoFilters.contratoId" (ngModelChange)="extratoFilters.contratoId = $event">
+    </po-combo>
+
+    <po-combo class="po-md-6" name="extratoProfissionalId" p-label="Profissional" [p-options]="profissionais"
+      [ngModel]="extratoFilters.profissionalId" (ngModelChange)="extratoFilters.profissionalId = $event">
     </po-combo>
   </div>
 
   <div class="po-row">
-    <po-combo class="po-md-12" name="extratoProfissionalId" p-label="Profissional" [p-options]="profissionais"
-      [ngModel]="extratoFilters.profissionalId" (ngModelChange)="extratoFilters.profissionalId = $event">
-    </po-combo>
+    <po-radio-group class="po-md-12" name="extratoTipo" p-label="Tipo de Extrato" [p-options]="tipoExtratoOptions"
+      [ngModel]="extratoFilters.tipoExtrato" (ngModelChange)="extratoFilters.tipoExtrato = $event">
+    </po-radio-group>
   </div>
 
   <po-modal-footer>

@@ -13,7 +13,9 @@ export interface AgendamentoSearchParams {
   profissionalId?: number;
   dataInicial?: string;
   dataFinal?: string;
+  tipoExtrato?: 'sintetico' | 'analitico' | 'calendario';
 }
+
 
 export interface AgendamentoSearchResult {
   items: any[];

@@ -7,7 +7,7 @@ export interface ContratoSearchParams {
   pageSize?: number;
   search?: string;
   descricao?: string;
-  empresaId?: number;
+  clienteId?: number;
   tipo?: string;
   dtInicio?: string;
   dtFim?: string;
@@ -29,8 +29,12 @@ export class ContratoService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/contratos`;
 
-  findAll() {
-    return this.http.get<any[]>(this.apiUrl);
+  findAll(bloqueado?: boolean) {
+    let params = new HttpParams();
+    if (bloqueado !== undefined) {
+      params = params.set('bloqueado', String(bloqueado));
+    }
+    return this.http.get<any[]>(this.apiUrl, { params });
   }
 
   findOne(id: number) {

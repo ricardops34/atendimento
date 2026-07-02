@@ -56,7 +56,7 @@ export class FormSidebar implements OnInit {
   }
 
   loadDependencies() {
-    this.contratoService.findAll().subscribe((data) => {
+    this.contratoService.findAll(false).subscribe((data) => {
       this.contratosRaw = data;
       this.contratos = data.map((c: any) => ({ label: `${c.descricao}`, value: c.id }));
     });

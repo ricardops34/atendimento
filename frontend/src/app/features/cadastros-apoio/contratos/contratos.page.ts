@@ -15,7 +15,7 @@ import { PoDialogService, PoButtonModule,
   PoTableColumnSort,
   PoTableModule, } from '@po-ui/ng-components';
 import { ContratoSearchParams, ContratoService } from '../../../core/services/contrato.service';
-import { EmpresaService } from '../../../core/services/empresa.service';
+import { ClienteService } from '../../../core/services/cliente.service';
 import { ProfissionalService } from '../../../core/services/profissional.service';
 import { FormsModule } from '@angular/forms';
 
@@ -46,12 +46,12 @@ export class ContratosPage implements OnInit {
 
   private contratoService = inject(ContratoService);
   private poDialog = inject(PoDialogService);
-  private empresaService = inject(EmpresaService);
+  private ClienteService = inject(ClienteService);
   private profissionalService = inject(ProfissionalService);
   private poNotification = inject(PoNotificationService);
 
   contratos: any[] = [];
-  empresas: PoComboOption[] = [];
+  clientes: PoComboOption[] = [];
   profissionais: PoComboOption[] = [];
   loading = false;
   loadingShowMore = false;
@@ -72,10 +72,10 @@ export class ContratosPage implements OnInit {
     { label: 'Não', value: 'false' },
   ];
 
-  filters: { descricao?: string; empresaId?: number; tipo?: string; dtInicio?: string; dtFim?: string; isFeriado?: string } = {};
+  filters: { descricao?: string; clienteId?: number; tipo?: string; dtInicio?: string; dtFim?: string; isFeriado?: string } = {};
 
   formData: any = {
-    empresaId: null,
+    clienteId: null,
     descricao: '',
     cor: '#333333',
     dtInicio: '',
@@ -84,18 +84,33 @@ export class ContratosPage implements OnInit {
     valorHora: null,
     valorFixo: null,
     isFeriado: false,
+    bloqueado: false,
     profissionalIds: [],
     escalas: [],
+    adiantamentos: [],
   };
 
   novaEscala: any = { diaSemana: null, profissionalId: null, horaInicio: '08:30', horaFim: '18:00', intervaloIni: '11:30', intervaloFim: '13:00' };
+  
+  novoAdiantamento: any = { descricao: 'Adiantamento', valorTotal: null, parcelas: 1, valorParcela: null, dataInicio: '' };
 
   columns: PoTableColumn[] = [
-    { property: 'empresa.nome', label: 'Cliente', sortable: true },
+    { property: 'cliente.nome', label: 'Cliente', sortable: true },
     { property: 'descricao', label: 'Descrição', sortable: true },
     { property: 'tipo', label: 'Tipo', sortable: true, width: '80px' },
     { property: 'dtInicioFmt', label: 'Início', sortable: false, width: '110px' },
     { property: 'dtFimFmt', label: 'Fim', sortable: false, width: '110px' },
+    { 
+      property: 'statusFmt', 
+      label: 'Status', 
+      type: 'label', 
+      sortable: false, 
+      width: '100px',
+      labels: [
+        { value: 'Ativo', color: 'color-11', label: 'Ativo' },
+        { value: 'Bloqueado', color: 'color-07', label: 'Bloqueado' }
+      ]
+    },
   ];
 
   disclaimerGroup: PoDisclaimerGroup = {
@@ -107,7 +122,9 @@ export class ContratosPage implements OnInit {
 
   actions: PoTableAction[] = [
     { label: 'Editar', icon: 'po-icon-edit', action: (row: any) => this.openEdit(row) },
-    { label: 'Excluir', icon: 'po-icon-delete', action: (row: any) => this.remove(row) },
+    { label: 'Bloquear', icon: 'po-icon-lock', visible: (row: any) => !row.bloqueado, action: (row: any) => this.toggleBloqueio(row) },
+    { label: 'Desbloquear', icon: 'po-icon-unlock', visible: (row: any) => row.bloqueado, action: (row: any) => this.toggleBloqueio(row) },
+    { label: 'Excluir', icon: 'po-icon-delete', type: 'danger', separator: true, action: (row: any) => this.remove(row) },
   ];
 
   ngOnInit() {
@@ -116,9 +133,9 @@ export class ContratosPage implements OnInit {
   }
 
   loadDependencies() {
-    this.empresaService.findAll().subscribe({
+    this.ClienteService.findAll().subscribe({
       next: (data) => {
-        this.empresas = (data || []).map((e: any) => ({ label: e.nome, value: e.id }));
+        this.clientes = (data || []).map((e: any) => ({ label: e.nome, value: e.id }));
       },
     });
     this.profissionalService.findAll().subscribe({
@@ -146,6 +163,7 @@ export class ContratosPage implements OnInit {
           ...item,
           dtInicioFmt: item.dtInicio ? new Date(item.dtInicio).toLocaleDateString('pt-BR') : '',
           dtFimFmt: item.dtFim ? new Date(item.dtFim).toLocaleDateString('pt-BR') : '',
+          statusFmt: item.bloqueado ? 'Bloqueado' : 'Ativo',
         }));
         this.contratos = this.page === 1 ? items : [...this.contratos, ...items];
         this.total = result.total;
@@ -209,7 +227,7 @@ export class ContratosPage implements OnInit {
   openCreate() {
     this.isEdit = false;
     this.formData = {
-      empresaId: this.empresas[0]?.value ?? null,
+      clienteId: this.clientes[0]?.value ?? null,
       descricao: '',
       cor: '#333333',
       dtInicio: '',
@@ -218,8 +236,10 @@ export class ContratosPage implements OnInit {
       valorHora: null,
       valorFixo: null,
       isFeriado: false,
+      bloqueado: false,
       profissionalIds: [],
       escalas: [],
+      adiantamentos: [],
     };
     this.resetNovaEscala();
     this.modal.open();
@@ -235,7 +255,19 @@ export class ContratosPage implements OnInit {
   ];
 
   escalaActions: PoTableAction[] = [
-    { label: 'Excluir', icon: 'po-icon-delete', type: 'danger', action: (row: any) => this.removeEscala(row) }
+    { label: 'Excluir', icon: 'po-icon-delete', type: 'danger', action: (row: any) => this.removeEscala(row) },
+  ];
+
+  adiantamentoColumns: PoTableColumn[] = [
+    { property: 'descricao', label: 'Descrição' },
+    { property: 'valorTotal', label: 'Valor Total', type: 'currency', format: 'BRL' },
+    { property: 'parcelas', label: 'Parcelas' },
+    { property: 'valorParcela', label: 'Valor Parcela', type: 'currency', format: 'BRL' },
+    { property: 'dataInicio', label: 'Início', type: 'date', format: 'dd/MM/yyyy' },
+  ];
+
+  adiantamentoActions: PoTableAction[] = [
+    { label: 'Excluir', icon: 'po-icon-delete', type: 'danger', action: (row: any) => this.removeAdiantamento(row) },
   ];
 
   openEdit(row: any) {
@@ -246,7 +278,7 @@ export class ContratosPage implements OnInit {
         this.saving = false;
         this.formData = {
           id: contrato.id,
-          empresaId: contrato.empresaId,
+          clienteId: contrato.clienteId,
           descricao: contrato.descricao,
           cor: contrato.cor || '#333333',
           dtInicio: contrato.dtInicio ? contrato.dtInicio.substring(0, 10) : '',
@@ -255,6 +287,7 @@ export class ContratosPage implements OnInit {
           valorHora: contrato.valorHora ?? null,
           valorFixo: contrato.valorFixo ?? null,
           isFeriado: !!contrato.isFeriado,
+          bloqueado: !!contrato.bloqueado,
           profissionalIds: (contrato.profissionais || []).map((p: any) => p.profissionalId),
           escalas: (contrato.escalas || []).map((e: any) => ({
             diaSemana: e.diaSemana,
@@ -266,6 +299,13 @@ export class ContratosPage implements OnInit {
             _diaSemanaLabel: this.getDiaSemanaLabel(e.diaSemana),
             _profissionalLabel: this.getProfissionalLabel(e.profissionalId)
           })),
+          adiantamentos: (contrato.adiantamentos || []).map((a: any) => ({
+            descricao: a.descricao,
+            valorTotal: a.valorTotal,
+            parcelas: a.parcelas,
+            valorParcela: a.valorParcela,
+            dataInicio: a.dataInicio ? (typeof a.dataInicio === 'string' ? a.dataInicio.substring(0, 10) : new Date(a.dataInicio).toISOString().substring(0, 10)) : ''
+          }))
         };
         this.resetNovaEscala();
         this.modal.open();
@@ -317,7 +357,7 @@ export class ContratosPage implements OnInit {
   }
 
   save() {
-    if (!this.formData.empresaId || !this.formData.descricao?.trim()) {
+    if (!this.formData.clienteId || !this.formData.descricao?.trim()) {
       this.poNotification.warning('Preencha cliente e descrição.');
       return;
     }
@@ -332,15 +372,22 @@ export class ContratosPage implements OnInit {
 
     this.saving = true;
     const payload: any = {
-      empresaId: Number(this.formData.empresaId),
+      clienteId: Number(this.formData.clienteId),
       descricao: this.formData.descricao.trim(),
       cor: this.formData.cor || '#333333',
       dtInicio: this.formData.dtInicio,
       dtFim: this.formData.dtFim,
       tipo: this.formData.tipo,
       isFeriado: !!this.formData.isFeriado,
+      bloqueado: !!this.formData.bloqueado,
       profissionalIds: (this.formData.profissionalIds || []).map((id: any) => Number(id)),
       escalas: this.formData.escalas || [],
+      adiantamentos: (this.formData.adiantamentos || []).map((a: any) => ({
+        ...a,
+        valorTotal: Number(a.valorTotal),
+        parcelas: Number(a.parcelas),
+        valorParcela: Number(a.valorParcela),
+      })),
     };
     if (this.formData.valorHora !== null && this.formData.valorHora !== '') {
       payload.valorHora = Number(this.formData.valorHora);
@@ -389,8 +436,51 @@ export class ContratosPage implements OnInit {
     });
   }
 
+  toggleBloqueio(row: any) {
+    const novoStatus = !row.bloqueado;
+    const msgStatus = novoStatus ? 'bloqueado' : 'desbloqueado';
+    this.contratoService.update(row.id, { bloqueado: novoStatus }).subscribe({
+      next: () => {
+        this.poNotification.success(`Contrato ${msgStatus} com sucesso.`);
+        this.loadData(true);
+      },
+      error: () => {
+        this.poNotification.error(`Erro ao tentar ${novoStatus ? 'bloquear' : 'desbloquear'} o contrato.`);
+      }
+    });
+  }
+
   private resetNovaEscala() {
     this.novaEscala = { diaSemana: null, profissionalId: null, horaInicio: '08:30', horaFim: '18:00', intervaloIni: '11:30', intervaloFim: '13:00' };
+  }
+
+  addAdiantamento() {
+    if (!this.novoAdiantamento.descricao || !this.novoAdiantamento.valorTotal || !this.novoAdiantamento.parcelas || !this.novoAdiantamento.dataInicio) {
+      this.poNotification.warning('Preencha os campos obrigatórios do adiantamento.');
+      return;
+    }
+    
+    // Calcula o valor da parcela
+    const valorParcela = Number(this.novoAdiantamento.valorTotal) / Number(this.novoAdiantamento.parcelas);
+    
+    this.formData.adiantamentos = [
+      ...(this.formData.adiantamentos || []),
+      { 
+        ...this.novoAdiantamento,
+        valorTotal: Number(this.novoAdiantamento.valorTotal),
+        parcelas: Number(this.novoAdiantamento.parcelas),
+        valorParcela: valorParcela,
+      }
+    ];
+    this.resetNovoAdiantamento();
+  }
+
+  removeAdiantamento(row: any) {
+    this.formData.adiantamentos = this.formData.adiantamentos.filter((a: any) => a !== row);
+  }
+
+  private resetNovoAdiantamento() {
+    this.novoAdiantamento = { descricao: 'Adiantamento', valorTotal: null, parcelas: 1, valorParcela: null, dataInicio: '' };
   }
 
   private buildSearchParams(): ContratoSearchParams {
@@ -399,7 +489,7 @@ export class ContratosPage implements OnInit {
       pageSize: this.pageSize,
       search: this.quickSearch || undefined,
       descricao: this.filters.descricao,
-      empresaId: this.filters.empresaId,
+      clienteId: this.filters.clienteId,
       tipo: this.filters.tipo,
       dtInicio: this.filters.dtInicio,
       dtFim: this.filters.dtFim,
@@ -418,11 +508,11 @@ export class ContratosPage implements OnInit {
     if (this.filters.descricao) {
       disclaimers.push({ property: 'descricao', label: 'Contrato', value: this.filters.descricao });
     }
-    if (this.filters.empresaId) {
+    if (this.filters.clienteId) {
       disclaimers.push({
-        property: 'empresaId',
+        property: 'clienteId',
         label: 'Cliente',
-        value: this.empresas.find((e) => e.value === this.filters.empresaId)?.label || this.filters.empresaId,
+        value: this.clientes.find((e) => e.value === this.filters.clienteId)?.label || this.filters.clienteId,
       });
     }
     if (this.filters.tipo) {

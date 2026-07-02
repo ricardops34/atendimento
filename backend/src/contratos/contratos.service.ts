@@ -14,6 +14,7 @@ interface ContratoSearchQuery {
   dtInicio?: string;
   dtFim?: string;
   isFeriado?: string;
+  bloqueado?: string;
   sortProperty?: string;
   sortDirection?: string;
 }
@@ -23,7 +24,7 @@ export class ContratosService {
   constructor(private prisma: PrismaService) {}
 
   async create(dto: CreateContratoDto, empresaId: number) {
-    const { profissionalIds, escalas, ...contratoData } = dto;
+    const { profissionalIds, escalas, adiantamentos, ...contratoData } = dto as any;
     return this.prisma.$transaction(async (tx) => {
       const contrato = await tx.contrato.create({
         data: {
@@ -37,21 +38,34 @@ export class ContratosService {
       });
       if (profissionalIds?.length) {
         await tx.contratoProfissional.createMany({
-          data: profissionalIds.map((id) => ({ contratoId: contrato.id, profissionalId: id })),
+          data: profissionalIds.map((id: number) => ({ contratoId: contrato.id, profissionalId: id })),
           skipDuplicates: true,
         });
       }
       if (escalas?.length) {
         await tx.contratoItem.createMany({
-          data: escalas.map((e) => ({ ...e, contratoId: contrato.id })),
+          data: escalas.map((e: any) => ({ ...e, contratoId: contrato.id })),
+        });
+      }
+      if (adiantamentos?.length) {
+        await tx.contratoAdiantamento.createMany({
+          data: adiantamentos.map((a: any) => ({ 
+            ...a, 
+            dataInicio: new Date(a.dataInicio),
+            contratoId: contrato.id 
+          })),
         });
       }
       return contrato;
     });
   }
 
-  findAll(empresaId: number) {
-    return this.prisma.contrato.findMany({ where: { empresaId }, include: { cliente: true } });
+  findAll(empresaId: number, bloqueado?: boolean) {
+    const where: any = { empresaId };
+    if (bloqueado !== undefined) {
+      where.bloqueado = bloqueado;
+    }
+    return this.prisma.contrato.findMany({ where, include: { cliente: true } });
   }
 
   async search(query: ContratoSearchQuery, empresaId: number) {
@@ -80,6 +94,7 @@ export class ContratosService {
         cliente: true,
         profissionais: { include: { profissional: true } },
         escalas: { include: { profissional: true } },
+        adiantamentos: true,
       },
     });
     if (!contrato) throw new NotFoundException('Contrato não encontrado.');
@@ -88,7 +103,7 @@ export class ContratosService {
 
   async update(id: number, dto: UpdateContratoDto, empresaId?: number) {
     await this.findOne(id, empresaId);
-    const { profissionalIds, escalas, ...contratoData } = dto as any;
+    const { profissionalIds, escalas, adiantamentos, ...contratoData } = dto as any;
     return this.prisma.$transaction(async (tx) => {
       if (contratoData.dtInicio) contratoData.dtInicio = new Date(contratoData.dtInicio);
       if (contratoData.dtFim) contratoData.dtFim = new Date(contratoData.dtFim);
@@ -108,6 +123,18 @@ export class ContratosService {
         if (escalas.length) {
           await tx.contratoItem.createMany({
             data: escalas.map((e: any) => ({ ...e, contratoId: id })),
+          });
+        }
+      }
+      if (adiantamentos !== undefined) {
+        await tx.contratoAdiantamento.deleteMany({ where: { contratoId: id } });
+        if (adiantamentos.length) {
+          await tx.contratoAdiantamento.createMany({
+            data: adiantamentos.map((a: any) => ({ 
+              ...a, 
+              dataInicio: new Date(a.dataInicio),
+              contratoId: id 
+            })),
           });
         }
       }
@@ -153,6 +180,10 @@ export class ContratosService {
 
     if (query.isFeriado === 'true' || query.isFeriado === 'false') {
       andFilters.push({ isFeriado: query.isFeriado === 'true' });
+    }
+
+    if (query.bloqueado === 'true' || query.bloqueado === 'false') {
+      andFilters.push({ bloqueado: query.bloqueado === 'true' });
     }
 
     return andFilters.length > 0 ? { AND: andFilters } : {};

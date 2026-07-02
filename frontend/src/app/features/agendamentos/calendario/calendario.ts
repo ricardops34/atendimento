@@ -47,14 +47,17 @@ export class Calendario implements OnInit {
       this.rawAgendamentos = data;
       this.calendarOptions = {
         ...this.calendarOptions,
-        events: data.map((a: any) => ({
-          id: a.id.toString(),
-          title: `${a.contrato?.descricao || 'Sem Contrato'} - ${a.profissional?.nome || 'N/D'}`,
-          start: a.horarioInicial,
-          end: a.horarioFinal,
-          backgroundColor: a.cor || '#333333',
-          borderColor: a.cor || '#333333'
-        }))
+        events: data.map((a: any) => {
+          const dateStr = a.dataAgenda ? a.dataAgenda.split('T')[0] : '';
+          return {
+            id: a.id.toString(),
+            title: `${a.contrato?.descricao || 'Sem Contrato'} - ${a.profissional?.nome || 'N/D'}`,
+            start: dateStr && a.horaInicio ? `${dateStr}T${a.horaInicio}:00` : a.horarioInicial,
+            end: dateStr && a.horaFim ? `${dateStr}T${a.horaFim}:00` : a.horarioFinal,
+            backgroundColor: a.cor || '#333333',
+            borderColor: a.cor || '#333333'
+          };
+        })
       };
     });
   }

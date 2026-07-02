@@ -26,3 +26,16 @@ export function calculateDuration(start: string, end: string, intStart: string, 
   
   return Math.max(0, total - Math.max(0, interval));
 }
+
+export function stripHtml(html: string): string {
+  if (!html) return '';
+  return html
+    .replace(/<li>/g, '• ')
+    .replace(/<\/li>/g, '\n')
+    .replace(/<br\s*[\/]?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n\n')
+    .replace(/<[^>]*>?/gm, '') // Remove all remaining tags
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\n\s*\n/g, '\n') // Normalize multiple newlines
+    .trim();
+}
