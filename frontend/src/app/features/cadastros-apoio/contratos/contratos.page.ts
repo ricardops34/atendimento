@@ -1,8 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
-import { Router } from '@angular/router';
-import {
-  PoButtonModule,
+import { PoDialogService, PoButtonModule,
   PoComboOption,
   PoDisclaimer,
   PoDisclaimerGroup,
@@ -15,11 +13,21 @@ import {
   PoTableAction,
   PoTableColumn,
   PoTableColumnSort,
-  PoTableModule,
-} from '@po-ui/ng-components';
+  PoTableModule, } from '@po-ui/ng-components';
 import { ContratoSearchParams, ContratoService } from '../../../core/services/contrato.service';
 import { ClienteService } from '../../../core/services/cliente.service';
+import { ProfissionalService } from '../../../core/services/profissional.service';
 import { FormsModule } from '@angular/forms';
+
+const DIAS_SEMANA: PoComboOption[] = [
+  { label: 'Domingo', value: 0 },
+  { label: 'Segunda-Feira', value: 1 },
+  { label: 'Terça-Feira', value: 2 },
+  { label: 'Quarta-Feira', value: 3 },
+  { label: 'Quinta-Feira', value: 4 },
+  { label: 'Sexta-Feira', value: 5 },
+  { label: 'Sábado', value: 6 },
+];
 
 const TIPO_OPTIONS: PoComboOption[] = [
   { label: 'Fixo', value: 'F' },
@@ -33,17 +41,22 @@ const TIPO_OPTIONS: PoComboOption[] = [
   templateUrl: './contratos.page.html',
 })
 export class ContratosPage implements OnInit {
+  @ViewChild('modal', { static: true }) modal!: PoModalComponent;
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
 
   private contratoService = inject(ContratoService);
-  private empresaService = inject(ClienteService);
+  private poDialog = inject(PoDialogService);
+  private ClienteService = inject(ClienteService);
+  private profissionalService = inject(ProfissionalService);
   private poNotification = inject(PoNotificationService);
-  readonly router = inject(Router);
 
   contratos: any[] = [];
   clientes: PoComboOption[] = [];
+  profissionais: PoComboOption[] = [];
   loading = false;
   loadingShowMore = false;
+  saving = false;
+  isEdit = false;
   quickSearch = '';
   page = 1;
   readonly pageSize = 20;
@@ -53,8 +66,33 @@ export class ContratosPage implements OnInit {
   sortDirection: 'ascending' | 'descending' = 'ascending';
 
   readonly tipoOptions = TIPO_OPTIONS;
+  readonly diasSemana = DIAS_SEMANA;
+  readonly feriadoOptions: PoComboOption[] = [
+    { label: 'Sim', value: 'true' },
+    { label: 'Não', value: 'false' },
+  ];
 
   filters: { descricao?: string; clienteId?: number; tipo?: string; dtInicio?: string; dtFim?: string; isFeriado?: string } = {};
+
+  formData: any = {
+    clienteId: null,
+    descricao: '',
+    cor: '#333333',
+    dtInicio: '',
+    dtFim: '',
+    tipo: 'F',
+    valorHora: null,
+    valorFixo: null,
+    isFeriado: false,
+    bloqueado: false,
+    profissionalIds: [],
+    escalas: [],
+    adiantamentos: [],
+  };
+
+  novaEscala: any = { diaSemana: null, profissionalId: null, horaInicio: '08:30', horaFim: '18:00', intervaloIni: '11:30', intervaloFim: '13:00' };
+  
+  novoAdiantamento: any = { descricao: 'Adiantamento', valorTotal: null, parcelas: 1, valorParcela: null, dataInicio: '' };
 
   columns: PoTableColumn[] = [
     { property: 'cliente.nome', label: 'Cliente', sortable: true },
@@ -62,6 +100,17 @@ export class ContratosPage implements OnInit {
     { property: 'tipo', label: 'Tipo', sortable: true, width: '80px' },
     { property: 'dtInicioFmt', label: 'Início', sortable: false, width: '110px' },
     { property: 'dtFimFmt', label: 'Fim', sortable: false, width: '110px' },
+    { 
+      property: 'statusFmt', 
+      label: 'Status', 
+      type: 'label', 
+      sortable: false, 
+      width: '100px',
+      labels: [
+        { value: 'Ativo', color: 'color-11', label: 'Ativo' },
+        { value: 'Bloqueado', color: 'color-07', label: 'Bloqueado' }
+      ]
+    },
   ];
 
   disclaimerGroup: PoDisclaimerGroup = {
@@ -72,9 +121,10 @@ export class ContratosPage implements OnInit {
   };
 
   actions: PoTableAction[] = [
-    { label: 'Visualizar', icon: 'po-icon-eye', action: (row: any) => this.navigateTo(['/contratos', row.id]) },
-    { label: 'Editar', icon: 'po-icon-edit', action: (row: any) => this.navigateTo(['/contratos', row.id, 'editar']) },
-    { label: 'Excluir', icon: 'po-icon-delete', action: (row: any) => this.navigateTo(['/contratos', row.id, 'excluir']) },
+    { label: 'Editar', icon: 'po-icon-edit', action: (row: any) => this.openEdit(row) },
+    { label: 'Bloquear', icon: 'po-icon-lock', visible: (row: any) => !row.bloqueado, action: (row: any) => this.toggleBloqueio(row) },
+    { label: 'Desbloquear', icon: 'po-icon-unlock', visible: (row: any) => row.bloqueado, action: (row: any) => this.toggleBloqueio(row) },
+    { label: 'Excluir', icon: 'po-icon-delete', type: 'danger', separator: true, action: (row: any) => this.remove(row) },
   ];
 
   ngOnInit() {
@@ -83,9 +133,14 @@ export class ContratosPage implements OnInit {
   }
 
   loadDependencies() {
-    this.empresaService.findAll().subscribe({
+    this.ClienteService.findAll().subscribe({
       next: (data) => {
         this.clientes = (data || []).map((e: any) => ({ label: e.nome, value: e.id }));
+      },
+    });
+    this.profissionalService.findAll().subscribe({
+      next: (data) => {
+        this.profissionais = (data || []).map((p: any) => ({ label: p.nome, value: p.id }));
       },
     });
   }
@@ -108,6 +163,7 @@ export class ContratosPage implements OnInit {
           ...item,
           dtInicioFmt: item.dtInicio ? new Date(item.dtInicio).toLocaleDateString('pt-BR') : '',
           dtFimFmt: item.dtFim ? new Date(item.dtFim).toLocaleDateString('pt-BR') : '',
+          statusFmt: item.bloqueado ? 'Bloqueado' : 'Ativo',
         }));
         this.contratos = this.page === 1 ? items : [...this.contratos, ...items];
         this.total = result.total;
@@ -168,8 +224,263 @@ export class ContratosPage implements OnInit {
     this.loadData(true);
   }
 
-  navigateTo(commands: any[]) {
-    this.router.navigate(commands);
+  openCreate() {
+    this.isEdit = false;
+    this.formData = {
+      clienteId: this.clientes[0]?.value ?? null,
+      descricao: '',
+      cor: '#333333',
+      dtInicio: '',
+      dtFim: '',
+      tipo: 'F',
+      valorHora: null,
+      valorFixo: null,
+      isFeriado: false,
+      bloqueado: false,
+      profissionalIds: [],
+      escalas: [],
+      adiantamentos: [],
+    };
+    this.resetNovaEscala();
+    this.modal.open();
+  }
+
+  escalaColumns: PoTableColumn[] = [
+    { property: '_diaSemanaLabel', label: 'Dia' },
+    { property: '_profissionalLabel', label: 'Profissional' },
+    { property: 'horaInicio', label: 'Início', width: '80px' },
+    { property: 'intervaloIni', label: 'Int. Ini', width: '80px' },
+    { property: 'intervaloFim', label: 'Int. Fim', width: '80px' },
+    { property: 'horaFim', label: 'Fim', width: '80px' }
+  ];
+
+  escalaActions: PoTableAction[] = [
+    { label: 'Excluir', icon: 'po-icon-delete', type: 'danger', action: (row: any) => this.removeEscala(row) },
+  ];
+
+  adiantamentoColumns: PoTableColumn[] = [
+    { property: 'descricao', label: 'Descrição' },
+    { property: 'valorTotal', label: 'Valor Total', type: 'currency', format: 'BRL' },
+    { property: 'parcelas', label: 'Parcelas' },
+    { property: 'valorParcela', label: 'Valor Parcela', type: 'currency', format: 'BRL' },
+    { property: 'dataInicio', label: 'Início', type: 'date', format: 'dd/MM/yyyy' },
+  ];
+
+  adiantamentoActions: PoTableAction[] = [
+    { label: 'Excluir', icon: 'po-icon-delete', type: 'danger', action: (row: any) => this.removeAdiantamento(row) },
+  ];
+
+  openEdit(row: any) {
+    this.isEdit = true;
+    this.saving = true;
+    this.contratoService.findOne(row.id).subscribe({
+      next: (contrato: any) => {
+        this.saving = false;
+        this.formData = {
+          id: contrato.id,
+          clienteId: contrato.clienteId,
+          descricao: contrato.descricao,
+          cor: contrato.cor || '#333333',
+          dtInicio: contrato.dtInicio ? contrato.dtInicio.substring(0, 10) : '',
+          dtFim: contrato.dtFim ? contrato.dtFim.substring(0, 10) : '',
+          tipo: contrato.tipo || 'F',
+          valorHora: contrato.valorHora ?? null,
+          valorFixo: contrato.valorFixo ?? null,
+          isFeriado: !!contrato.isFeriado,
+          bloqueado: !!contrato.bloqueado,
+          profissionalIds: (contrato.profissionais || []).map((p: any) => p.profissionalId),
+          escalas: (contrato.escalas || []).map((e: any) => ({
+            diaSemana: e.diaSemana,
+            profissionalId: e.profissionalId,
+            horaInicio: e.horaInicio,
+            horaFim: e.horaFim,
+            intervaloIni: e.intervaloIni,
+            intervaloFim: e.intervaloFim,
+            _diaSemanaLabel: this.getDiaSemanaLabel(e.diaSemana),
+            _profissionalLabel: this.getProfissionalLabel(e.profissionalId)
+          })),
+          adiantamentos: (contrato.adiantamentos || []).map((a: any) => ({
+            descricao: a.descricao,
+            valorTotal: a.valorTotal,
+            parcelas: a.parcelas,
+            valorParcela: a.valorParcela,
+            dataInicio: a.dataInicio ? (typeof a.dataInicio === 'string' ? a.dataInicio.substring(0, 10) : new Date(a.dataInicio).toISOString().substring(0, 10)) : ''
+          }))
+        };
+        this.resetNovaEscala();
+        this.modal.open();
+      },
+      error: () => {
+        this.saving = false;
+        this.poNotification.error('Erro ao carregar contrato.');
+      },
+    });
+  }
+
+  onDiaSemanaChange() {
+    this.novaEscala.horaInicio = '08:30';
+    this.novaEscala.intervaloIni = '11:30';
+    this.novaEscala.intervaloFim = '13:00';
+    this.novaEscala.horaFim = '18:00';
+  }
+
+  addEscala() {
+    if (this.novaEscala.diaSemana === null || this.novaEscala.diaSemana === undefined || !this.novaEscala.profissionalId) {
+      this.poNotification.warning('Selecione o dia da semana e o profissional.');
+      return;
+    }
+    const diaNum = Number(this.novaEscala.diaSemana);
+    const profNum = Number(this.novaEscala.profissionalId);
+    this.formData.escalas = [
+      ...this.formData.escalas,
+      { 
+        ...this.novaEscala, 
+        diaSemana: diaNum, 
+        profissionalId: profNum,
+        _diaSemanaLabel: this.getDiaSemanaLabel(diaNum),
+        _profissionalLabel: this.getProfissionalLabel(profNum)
+      },
+    ];
+    this.resetNovaEscala();
+  }
+
+  removeEscala(row: any) {
+    this.formData.escalas = this.formData.escalas.filter((e: any) => e !== row);
+  }
+
+  getDiaSemanaLabel(value: number): string {
+    return DIAS_SEMANA.find((d) => d.value === value)?.label || String(value);
+  }
+
+  getProfissionalLabel(id: number): string {
+    return this.profissionais.find((p) => p.value === id)?.label || String(id);
+  }
+
+  save() {
+    if (!this.formData.clienteId || !this.formData.descricao?.trim()) {
+      this.poNotification.warning('Preencha cliente e descrição.');
+      return;
+    }
+    if (!this.formData.dtInicio || !this.formData.dtFim) {
+      this.poNotification.warning('Preencha as datas de início e fim.');
+      return;
+    }
+    if (!this.formData.tipo) {
+      this.poNotification.warning('Selecione o tipo de contrato.');
+      return;
+    }
+
+    this.saving = true;
+    const payload: any = {
+      clienteId: Number(this.formData.clienteId),
+      descricao: this.formData.descricao.trim(),
+      cor: this.formData.cor || '#333333',
+      dtInicio: this.formData.dtInicio,
+      dtFim: this.formData.dtFim,
+      tipo: this.formData.tipo,
+      isFeriado: !!this.formData.isFeriado,
+      bloqueado: !!this.formData.bloqueado,
+      profissionalIds: (this.formData.profissionalIds || []).map((id: any) => Number(id)),
+      escalas: this.formData.escalas || [],
+      adiantamentos: (this.formData.adiantamentos || []).map((a: any) => ({
+        ...a,
+        valorTotal: Number(a.valorTotal),
+        parcelas: Number(a.parcelas),
+        valorParcela: Number(a.valorParcela),
+      })),
+    };
+    if (this.formData.valorHora !== null && this.formData.valorHora !== '') {
+      payload.valorHora = Number(this.formData.valorHora);
+    }
+    if (this.formData.valorFixo !== null && this.formData.valorFixo !== '') {
+      payload.valorFixo = Number(this.formData.valorFixo);
+    }
+
+    const request$ = this.isEdit
+      ? this.contratoService.update(this.formData.id, payload)
+      : this.contratoService.create(payload);
+
+    request$.subscribe({
+      next: () => {
+        this.poNotification.success(this.isEdit ? 'Contrato atualizado com sucesso.' : 'Contrato criado com sucesso.');
+        this.saving = false;
+        this.loadData(true);
+        this.modal.close();
+      },
+      error: (err: any) => {
+        let msg = 'Erro ao salvar contrato.';
+        if (err.error && err.error.message) {
+          msg = Array.isArray(err.error.message) ? err.error.message.join(', ') : err.error.message;
+        }
+        this.poNotification.error(msg);
+        this.saving = false;
+      },
+    });
+  }
+
+  remove(row: any) {
+    this.poDialog.confirm({
+      title: 'Confirmar exclusão',
+      message: 'Tem certeza que deseja excluir este registro?',
+      confirm: () => {
+        this.contratoService.remove(row.id).subscribe({
+      next: () => {
+        this.poNotification.success('Contrato excluído com sucesso.');
+        this.loadData(true);
+      },
+      error: () => {
+        this.poNotification.error('Erro ao excluir contrato.');
+      },
+    });
+      }
+    });
+  }
+
+  toggleBloqueio(row: any) {
+    const novoStatus = !row.bloqueado;
+    const msgStatus = novoStatus ? 'bloqueado' : 'desbloqueado';
+    this.contratoService.update(row.id, { bloqueado: novoStatus }).subscribe({
+      next: () => {
+        this.poNotification.success(`Contrato ${msgStatus} com sucesso.`);
+        this.loadData(true);
+      },
+      error: () => {
+        this.poNotification.error(`Erro ao tentar ${novoStatus ? 'bloquear' : 'desbloquear'} o contrato.`);
+      }
+    });
+  }
+
+  private resetNovaEscala() {
+    this.novaEscala = { diaSemana: null, profissionalId: null, horaInicio: '08:30', horaFim: '18:00', intervaloIni: '11:30', intervaloFim: '13:00' };
+  }
+
+  addAdiantamento() {
+    if (!this.novoAdiantamento.descricao || !this.novoAdiantamento.valorTotal || !this.novoAdiantamento.parcelas || !this.novoAdiantamento.dataInicio) {
+      this.poNotification.warning('Preencha os campos obrigatórios do adiantamento.');
+      return;
+    }
+    
+    // Calcula o valor da parcela
+    const valorParcela = Number(this.novoAdiantamento.valorTotal) / Number(this.novoAdiantamento.parcelas);
+    
+    this.formData.adiantamentos = [
+      ...(this.formData.adiantamentos || []),
+      { 
+        ...this.novoAdiantamento,
+        valorTotal: Number(this.novoAdiantamento.valorTotal),
+        parcelas: Number(this.novoAdiantamento.parcelas),
+        valorParcela: valorParcela,
+      }
+    ];
+    this.resetNovoAdiantamento();
+  }
+
+  removeAdiantamento(row: any) {
+    this.formData.adiantamentos = this.formData.adiantamentos.filter((a: any) => a !== row);
+  }
+
+  private resetNovoAdiantamento() {
+    this.novoAdiantamento = { descricao: 'Adiantamento', valorTotal: null, parcelas: 1, valorParcela: null, dataInicio: '' };
   }
 
   private buildSearchParams(): ContratoSearchParams {
@@ -200,7 +511,7 @@ export class ContratosPage implements OnInit {
     if (this.filters.clienteId) {
       disclaimers.push({
         property: 'clienteId',
-        label: 'Empresa',
+        label: 'Cliente',
         value: this.clientes.find((e) => e.value === this.filters.clienteId)?.label || this.filters.clienteId,
       });
     }

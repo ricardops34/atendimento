@@ -7,12 +7,13 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Seeding MVP modules and default access...');
 
-  // 1. Módulos
   const moduleKeys = [
     'dashboard',
+    'cadastros',
     'companies',
     'professionals',
     'contracts',
+    'holidays',
     'appointments-calendar',
     'appointments-list',
     'settings',
@@ -28,18 +29,23 @@ async function main() {
   const allModules = await prisma.module.findMany();
 
   const defaultRoutines = [
-    { moduleKey: 'companies', name: 'Clientes', key: 'companies-list', path: '/clientes', icon: 'an an-buildings', shortLabel: 'CLI', sortOrder: 10 },
-    { moduleKey: 'professionals', name: 'Profissionais', key: 'professionals-list', path: '/profissionais', icon: 'an an-user', shortLabel: 'PRO', sortOrder: 20 },
-    { moduleKey: 'contracts', name: 'Contratos', key: 'contracts-list', path: '/contratos', icon: 'an an-file-text', shortLabel: 'CON', sortOrder: 30 },
+    { moduleKey: 'cadastros', name: 'Cadastros', key: 'cadastros-home', path: '/cadastros', icon: 'an an-folders', shortLabel: 'CAD', sortOrder: 10 },
+    { moduleKey: 'companies', name: 'Clientes', key: 'companies-list', path: '/clientes', icon: 'an an-buildings', shortLabel: 'CLI', sortOrder: 11 },
+    { moduleKey: 'professionals', name: 'Profissionais', key: 'professionals-list', path: '/profissionais', icon: 'an an-user', shortLabel: 'PRO', sortOrder: 12 },
+    { moduleKey: 'contracts', name: 'Contratos', key: 'contracts-list', path: '/contratos', icon: 'an an-file-text', shortLabel: 'CON', sortOrder: 13 },
+    { moduleKey: 'holidays', name: 'Feriados', key: 'holidays-list', path: '/feriados', icon: 'an an-calendar-x', shortLabel: 'FER', sortOrder: 14 },
     { moduleKey: 'appointments-list', name: 'Lista de Atendimentos', key: 'appointments-list', path: '/agendamentos/lista', icon: 'an an-list-dashes', shortLabel: 'LST', sortOrder: 40 },
     { moduleKey: 'appointments-calendar', name: 'Calendario', key: 'appointments-calendar', path: '/agendamentos/calendario', icon: 'an an-calendar-blank', shortLabel: 'CAL', sortOrder: 50 },
     { moduleKey: 'settings', name: 'Configuracoes', key: 'settings-home', path: '/configuracoes', icon: 'an an-gear', shortLabel: 'CFG', sortOrder: 60 },
-    { moduleKey: 'settings', name: 'Empresas', key: 'settings-tenants', path: '/configuracoes/empresas', icon: 'an an-buildings', shortLabel: 'EMP', sortOrder: 61 },
+    { moduleKey: 'settings', name: 'Empresas', key: 'settings-empresas', path: '/configuracoes/empresas', icon: 'an an-buildings', shortLabel: 'EMP', sortOrder: 61 },
     { moduleKey: 'settings', name: 'Modulos', key: 'settings-modules', path: '/configuracoes/modulos', icon: 'an an-squares-four', shortLabel: 'MOD', sortOrder: 62 },
     { moduleKey: 'settings', name: 'Rotinas', key: 'settings-routines', path: '/configuracoes/rotinas', icon: 'an an-list-checks', shortLabel: 'ROT', sortOrder: 63 },
     { moduleKey: 'settings', name: 'Perfis', key: 'settings-profiles', path: '/configuracoes/perfis', icon: 'an an-identification-card', shortLabel: 'PRF', sortOrder: 64 },
     { moduleKey: 'settings', name: 'Menus', key: 'settings-menus', path: '/configuracoes/menus', icon: 'an an-tree-structure', shortLabel: 'MNU', sortOrder: 65 },
     { moduleKey: 'settings', name: 'Usuarios', key: 'settings-users', path: '/configuracoes/usuarios', icon: 'an an-users-three', shortLabel: 'USR', sortOrder: 66 },
+    { moduleKey: 'settings', name: 'Estados', key: 'settings-estados', path: '/configuracoes/estados', icon: 'an an-map-trifold', shortLabel: 'UF', sortOrder: 67 },
+    { moduleKey: 'settings', name: 'Municípios', key: 'settings-municipios', path: '/configuracoes/municipios', icon: 'an an-map-pin', shortLabel: 'MUN', sortOrder: 68 },
+    { moduleKey: 'settings', name: 'CEPs', key: 'settings-ceps', path: '/configuracoes/ceps', icon: 'an an-mailbox', shortLabel: 'CEP', sortOrder: 69 },
   ];
 
   for (const routine of defaultRoutines) {
@@ -98,97 +104,73 @@ async function main() {
     return prisma.menu.create({ data });
   };
 
+  const cadastrosHomeRoutine = allRoutines.find((item) => item.key === 'cadastros-home');
   const companiesRoutine = allRoutines.find((item) => item.key === 'companies-list');
   const professionalsRoutine = allRoutines.find((item) => item.key === 'professionals-list');
   const contractsRoutine = allRoutines.find((item) => item.key === 'contracts-list');
+  const holidaysRoutine = allRoutines.find((item) => item.key === 'holidays-list');
   const appointmentsListRoutine = allRoutines.find((item) => item.key === 'appointments-list');
   const appointmentsCalendarRoutine = allRoutines.find((item) => item.key === 'appointments-calendar');
   const settingsHomeRoutine = allRoutines.find((item) => item.key === 'settings-home');
-  const settingsTenantsRoutine = allRoutines.find((item) => item.key === 'settings-tenants');
+  const settingsEmpresasRoutine = allRoutines.find((item) => item.key === 'settings-empresas');
   const settingsModulesRoutine = allRoutines.find((item) => item.key === 'settings-modules');
   const settingsRoutinesRoutine = allRoutines.find((item) => item.key === 'settings-routines');
   const settingsProfilesRoutine = allRoutines.find((item) => item.key === 'settings-profiles');
   const settingsMenusRoutine = allRoutines.find((item) => item.key === 'settings-menus');
   const settingsUsersRoutine = allRoutines.find((item) => item.key === 'settings-users');
+  const settingsEstadosRoutine = allRoutines.find((item) => item.key === 'settings-estados');
+  const settingsMunicipiosRoutine = allRoutines.find((item) => item.key === 'settings-municipios');
+  const settingsCepsRoutine = allRoutines.find((item) => item.key === 'settings-ceps');
 
-  await ensureMenu('/inicio', {
+  await ensureMenu('/', {
     label: 'Inicio',
     shortLabel: 'INI',
     icon: 'an an-house',
-    link: '/inicio',
+    link: '/',
     sortOrder: 1,
     isActive: true,
   });
 
-  // Menu pai "Cadastros" (sem link, sem rotina) — key = label para o findFirst pelo label
-  const cadastrosMenu = await ensureMenu('Cadastros', {
-    label: 'Cadastros',
-    shortLabel: 'CAD',
-    icon: 'an an-folder',
-    link: null,
-    sortOrder: 5,
-    isActive: true,
-  });
-  const cadastrosMenuId = cadastrosMenu.id;
+  let cadastrosMenuId: number | null = null;
 
-  if (companiesRoutine) {
-    await ensureMenu(companiesRoutine.path, {
-      moduleId: companiesRoutine.moduleId,
-      routineId: companiesRoutine.id,
+  if (cadastrosHomeRoutine) {
+    const cadastrosMenu = await ensureMenu(cadastrosHomeRoutine.path, {
+      moduleId: cadastrosHomeRoutine.moduleId,
+      routineId: cadastrosHomeRoutine.id,
+      label: cadastrosHomeRoutine.name,
+      shortLabel: cadastrosHomeRoutine.shortLabel,
+      icon: cadastrosHomeRoutine.icon,
+      link: null, // parent
+      sortOrder: cadastrosHomeRoutine.sortOrder,
+      isActive: true,
+    });
+    cadastrosMenuId = cadastrosMenu.id;
+  }
+
+  for (const routine of [
+    companiesRoutine,
+    professionalsRoutine,
+    contractsRoutine,
+    holidaysRoutine,
+  ]) {
+    if (!routine) continue;
+    await ensureMenu(routine.path, {
+      moduleId: routine.moduleId,
+      routineId: routine.id,
       parentId: cadastrosMenuId,
-      label: companiesRoutine.name,
-      shortLabel: companiesRoutine.shortLabel,
-      icon: companiesRoutine.icon,
-      link: companiesRoutine.path,
-      sortOrder: companiesRoutine.sortOrder,
+      label: routine.name,
+      shortLabel: routine.shortLabel,
+      icon: routine.icon,
+      link: routine.path,
+      sortOrder: routine.sortOrder,
       isActive: true,
     });
   }
-
-  if (professionalsRoutine) {
-    await ensureMenu(professionalsRoutine.path, {
-      moduleId: professionalsRoutine.moduleId,
-      routineId: professionalsRoutine.id,
-      parentId: cadastrosMenuId,
-      label: professionalsRoutine.name,
-      shortLabel: professionalsRoutine.shortLabel,
-      icon: professionalsRoutine.icon,
-      link: professionalsRoutine.path,
-      sortOrder: professionalsRoutine.sortOrder,
-      isActive: true,
-    });
-  }
-
-  if (contractsRoutine) {
-    await ensureMenu(contractsRoutine.path, {
-      moduleId: contractsRoutine.moduleId,
-      routineId: contractsRoutine.id,
-      parentId: cadastrosMenuId,
-      label: contractsRoutine.name,
-      shortLabel: contractsRoutine.shortLabel,
-      icon: contractsRoutine.icon,
-      link: contractsRoutine.path,
-      sortOrder: contractsRoutine.sortOrder,
-      isActive: true,
-    });
-  }
-
-  // Menu pai "Atendimentos" (sem link, sem rotina) — key = label para o findFirst pelo label
-  const atendimentosMenu = await ensureMenu('Atendimentos', {
-    label: 'Atendimentos',
-    shortLabel: 'ATE',
-    icon: 'an an-calendar-check',
-    link: null,
-    sortOrder: 40,
-    isActive: true,
-  });
-  const atendimentosMenuId = atendimentosMenu.id;
 
   if (appointmentsListRoutine) {
     await ensureMenu(appointmentsListRoutine.path, {
       moduleId: appointmentsListRoutine.moduleId,
       routineId: appointmentsListRoutine.id,
-      parentId: atendimentosMenuId,
       label: appointmentsListRoutine.name,
       shortLabel: appointmentsListRoutine.shortLabel,
       icon: appointmentsListRoutine.icon,
@@ -202,7 +184,6 @@ async function main() {
     await ensureMenu(appointmentsCalendarRoutine.path, {
       moduleId: appointmentsCalendarRoutine.moduleId,
       routineId: appointmentsCalendarRoutine.id,
-      parentId: atendimentosMenuId,
       label: appointmentsCalendarRoutine.name,
       shortLabel: appointmentsCalendarRoutine.shortLabel,
       icon: appointmentsCalendarRoutine.icon,
@@ -229,12 +210,15 @@ async function main() {
   }
 
   for (const routine of [
-    settingsTenantsRoutine,
+    settingsEmpresasRoutine,
     settingsModulesRoutine,
     settingsRoutinesRoutine,
     settingsProfilesRoutine,
     settingsMenusRoutine,
     settingsUsersRoutine,
+    settingsEstadosRoutine,
+    settingsMunicipiosRoutine,
+    settingsCepsRoutine,
   ]) {
     if (!routine) {
       continue;
@@ -254,12 +238,12 @@ async function main() {
   }
 
   // 2. Empresa Default
-  const tenant = await prisma.empresa.upsert({
-    where: { slug: 'default-tenant' },
-    update: {},
+  const empresa = await prisma.empresa.upsert({
+    where: { slug: 'empresa-padrao' },
+    update: { name: 'Empresa Padrão' },
     create: {
       name: 'Empresa Padrão',
-      slug: 'default-tenant',
+      slug: 'empresa-padrao',
     },
   });
 
@@ -318,7 +302,7 @@ async function main() {
       where: {
         userId_empresaId: {
           userId: adminUser.id,
-          empresaId: tenant.id,
+          empresaId: empresa.id,
         },
       },
       update: {
@@ -326,10 +310,105 @@ async function main() {
       },
       create: {
         userId: adminUser.id,
-        empresaId: tenant.id,
+        empresaId: empresa.id,
         isDefault: true,
       },
     });
+  }
+
+  // 5. Feriados (2026 e 2027)
+  const feriadosNacionais = [
+    // 2026 Fixos
+    { data: new Date('2026-01-01T00:00:00Z'), descricao: 'Confraternização Universal', tipo: 'N' },
+    { data: new Date('2026-04-21T00:00:00Z'), descricao: 'Tiradentes', tipo: 'N' },
+    { data: new Date('2026-05-01T00:00:00Z'), descricao: 'Dia do Trabalho', tipo: 'N' },
+    { data: new Date('2026-09-07T00:00:00Z'), descricao: 'Independência do Brasil', tipo: 'N' },
+    { data: new Date('2026-10-12T00:00:00Z'), descricao: 'Nossa Sr.a Aparecida', tipo: 'N' },
+    { data: new Date('2026-11-02T00:00:00Z'), descricao: 'Finados', tipo: 'N' },
+    { data: new Date('2026-11-15T00:00:00Z'), descricao: 'Proclamação da República', tipo: 'N' },
+    { data: new Date('2026-12-25T00:00:00Z'), descricao: 'Natal', tipo: 'N' },
+    // 2026 Móveis
+    { data: new Date('2026-02-17T00:00:00Z'), descricao: 'Carnaval', tipo: 'N', fixo: false },
+    { data: new Date('2026-04-03T00:00:00Z'), descricao: 'Paixão de Cristo', tipo: 'N', fixo: false },
+    { data: new Date('2026-06-04T00:00:00Z'), descricao: 'Corpus Christi', tipo: 'N', fixo: false },
+    
+    // 2027 Fixos
+    { data: new Date('2027-01-01T00:00:00Z'), descricao: 'Confraternização Universal', tipo: 'N' },
+    { data: new Date('2027-04-21T00:00:00Z'), descricao: 'Tiradentes', tipo: 'N' },
+    { data: new Date('2027-05-01T00:00:00Z'), descricao: 'Dia do Trabalho', tipo: 'N' },
+    { data: new Date('2027-09-07T00:00:00Z'), descricao: 'Independência do Brasil', tipo: 'N' },
+    { data: new Date('2027-10-12T00:00:00Z'), descricao: 'Nossa Sr.a Aparecida', tipo: 'N' },
+    { data: new Date('2027-11-02T00:00:00Z'), descricao: 'Finados', tipo: 'N' },
+    { data: new Date('2027-11-15T00:00:00Z'), descricao: 'Proclamação da República', tipo: 'N' },
+    { data: new Date('2027-12-25T00:00:00Z'), descricao: 'Natal', tipo: 'N' },
+    // 2027 Móveis
+    { data: new Date('2027-02-09T00:00:00Z'), descricao: 'Carnaval', tipo: 'N', fixo: false },
+    { data: new Date('2027-03-26T00:00:00Z'), descricao: 'Paixão de Cristo', tipo: 'N', fixo: false },
+    { data: new Date('2027-05-27T00:00:00Z'), descricao: 'Corpus Christi', tipo: 'N', fixo: false },
+  ];
+
+  for (const feriado of feriadosNacionais) {
+    await prisma.feriado.upsert({
+      where: {
+        empresaId_data: {
+          empresaId: empresa.id,
+          data: feriado.data,
+        },
+      },
+      update: {},
+      create: {
+        empresaId: empresa.id,
+        data: feriado.data,
+        descricao: feriado.descricao,
+        tipo: feriado.tipo,
+        fixo: feriado.fixo ?? true,
+      },
+    });
+  }
+
+  // 6. IBGE Data (Estados e Municipios)
+  console.log('Fetching IBGE data for Estados...');
+  try {
+    const estadosRes = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/estados');
+    if (estadosRes.ok) {
+      const estados = await estadosRes.json();
+      console.log(`Loaded ${estados.length} estados from IBGE API. Saving...`);
+      for (const estado of estados) {
+        await prisma.estado.upsert({
+          where: { id: estado.id },
+          update: { nome: estado.nome, sigla: estado.sigla },
+          create: { id: estado.id, nome: estado.nome, sigla: estado.sigla },
+        });
+      }
+
+      console.log('Fetching IBGE data for Municipios...');
+      const municipiosRes = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/municipios');
+      if (municipiosRes.ok) {
+        const municipios = await municipiosRes.json();
+        console.log(`Loaded ${municipios.length} municipios from IBGE API. Saving (this may take a few seconds)...`);
+        
+        // Optimizing inserts using createMany where possible, or transacting
+        // Since we want upsert (idempotent), we can map to a batch
+        for (const mun of municipios) {
+          const estadoId = mun.microrregiao?.mesorregiao?.UF?.id || mun['regiao-imediata']?.['regiao-intermediaria']?.UF?.id;
+          if (!estadoId) {
+            console.warn(`Could not determine estadoId for municipio ${mun.nome}`);
+            continue;
+          }
+          await prisma.municipio.upsert({
+            where: { id: mun.id },
+            update: { nome: mun.nome, estadoId: estadoId },
+            create: { id: mun.id, nome: mun.nome, estadoId: estadoId },
+          });
+        }
+      } else {
+        console.warn('Failed to fetch Municipios from IBGE');
+      }
+    } else {
+      console.warn('Failed to fetch Estados from IBGE');
+    }
+  } catch (error) {
+    console.error('Error fetching IBGE data:', error);
   }
 
   console.log('Seed completed successfully!');

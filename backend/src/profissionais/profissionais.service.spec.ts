@@ -45,29 +45,29 @@ describe('ProfissionaisService', () => {
     prisma.profissional.findMany.mockResolvedValue([{ id: 1, nome: 'Ana', user: null }]);
 
     const result = await service.search({
-      page: '1',
-      pageSize: '20',
-      search: 'ana',
+      page: '2',
+      pageSize: '10',
+      search: 'joao',
       sortProperty: 'nome',
-      sortDirection: 'ascending',
-    });
+      sortDirection: 'descending',
+    }, 1);
 
     expect(prisma.profissional.count).toHaveBeenCalledWith({
-      where: { nome: { contains: 'ana', mode: 'insensitive' } },
+      where: { empresaId: 1, nome: { contains: 'joao', mode: 'insensitive' } },
     });
     expect(prisma.profissional.findMany).toHaveBeenCalledWith({
-      where: { nome: { contains: 'ana', mode: 'insensitive' } },
-      include: { user: userSelect },
-      orderBy: { nome: 'asc' },
-      skip: 0,
-      take: 20,
+      where: { empresaId: 1, nome: { contains: 'joao', mode: 'insensitive' } },
+      orderBy: { nome: 'desc' },
+      skip: 10,
+      take: 10,
+      include: { user: { select: { id: true, name: true } } },
     });
     expect(result).toEqual({
       items: [{ id: 1, nome: 'Ana', user: null }],
-      page: 1,
-      pageSize: 20,
-      total: 25,
-      hasNext: true,
+      page: 2,
+      pageSize: 10,
+      total: 5,
+      hasNext: false,
     });
   });
 });

@@ -145,7 +145,7 @@ describe('AgendamentosService', () => {
       profissionalId: '1',
       dataInicial: '2026-06-01',
       dataFinal: '2026-06-30',
-    } as any);
+    } as any, 1);
 
     expect(prisma.agendamento.count).toHaveBeenCalledWith({
       where: {
@@ -167,6 +167,7 @@ describe('AgendamentosService', () => {
               lte: expectedEndDate,
             },
           },
+          { empresaId: 1 },
         ],
       },
     });
@@ -190,6 +191,7 @@ describe('AgendamentosService', () => {
               lte: expectedEndDate,
             },
           },
+          { empresaId: 1 },
         ],
       },
       include: { contrato: true, profissional: true },

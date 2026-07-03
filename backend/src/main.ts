@@ -1,4 +1,5 @@
 import 'dotenv/config';
+process.env.TZ = 'UTC'; // Força o fuso horário UTC globalmente no backend
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';

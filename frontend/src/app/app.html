@@ -18,18 +18,18 @@
     <router-outlet></router-outlet>
   </div>
 
-  <po-modal p-title="Trocar empresa" #switchEmpresaModal>
+  <po-modal p-title="Trocar Empresa" #switchTenantModal>
     <div class="po-row">
       <po-combo
         class="po-md-12"
         p-label="Empresa"
-        [p-options]="empresaOptions"
-        [ngModel]="selectedEmpresaId"
-        (ngModelChange)="selectedEmpresaId = $event">
+        [p-options]="tenantOptions"
+        [ngModel]="selectedTenantId"
+        (ngModelChange)="selectedTenantId = $event">
       </po-combo>
     </div>
     <po-modal-footer>
-      <po-button p-label="Confirmar" p-kind="primary" (p-click)="confirmSwitchEmpresa()"></po-button>
+      <po-button p-label="Confirmar" p-kind="primary" (p-click)="confirmSwitchTenant()"></po-button>
     </po-modal-footer>
   </po-modal>
 
@@ -47,7 +47,7 @@
       <po-email class="po-md-6" p-label="Email" [ngModel]="profileForm.email" p-readonly="true"></po-email>
     </div>
     <div class="po-row">
-      <po-input class="po-md-6" p-label="Empresa" [ngModel]="profileForm.empresaName" p-readonly="true"></po-input>
+      <po-input class="po-md-6" p-label="Empresa" [ngModel]="profileForm.tenantName" p-readonly="true"></po-input>
       <po-input class="po-md-6" p-label="Perfil" [ngModel]="profileForm.profileName" p-readonly="true"></po-input>
     </div>
 

@@ -13,7 +13,9 @@ export interface AgendamentoSearchParams {
   profissionalId?: number;
   dataInicial?: string;
   dataFinal?: string;
+  tipoExtrato?: 'sintetico' | 'analitico' | 'calendario';
 }
+
 
 export interface AgendamentoSearchResult {
   items: any[];
@@ -66,11 +68,25 @@ export class AgendamentoService {
     return this.http.get(`${this.apiUrl}/export`, { params: httpParams, responseType: 'blob' });
   }
 
+  exportExtrato(params: AgendamentoSearchParams, format: 'xls' | 'pdf'): Observable<Blob> {
+    let httpParams = new HttpParams().set('format', format);
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        httpParams = httpParams.set(key, String(value));
+      }
+    });
+    return this.http.get(`${this.apiUrl}/export-extrato`, { params: httpParams, responseType: 'blob' });
+  }
+
   remove(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
 
   fecharLote(agendamentoIds: number[]): Observable<any> {
     return this.http.post<any>(`${environment.apiUrl}/realizados/fechar-lote`, { agendamentoIds });
+  }
+
+  gerarMensal(mes: number, ano: number, contratoId?: number, profissionalId?: number): Observable<{ gerados: number }> {
+    return this.http.post<{ gerados: number }>(`${this.apiUrl}/gerar-mensal`, { mes, ano, contratoId, profissionalId });
   }
 }

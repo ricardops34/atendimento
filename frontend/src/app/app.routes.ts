@@ -2,99 +2,31 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'inicio', pathMatch: 'full' },
+  { path: '', redirectTo: 'agendamentos/lista', pathMatch: 'full' },
   {
     path: 'login',
     loadComponent: () => import('./features/auth/login/login.component').then((m) => m.LoginComponent),
   },
-  {
-    path: 'inicio',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/home/home.page').then((m) => m.HomePage),
-  },
-
-  // ── Clientes ──────────────────────────────────────────────────────────────
   {
     path: 'clientes',
     canActivate: [authGuard],
     loadComponent: () => import('./features/cadastros-apoio/clientes/clientes.page').then((m) => m.ClientesPage),
   },
   {
-    path: 'clientes/novo',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/cadastros-apoio/clientes/clientes-edit.page').then((m) => m.ClientesEditPage),
-  },
-  {
-    path: 'clientes/:id',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/cadastros-apoio/clientes/clientes-detail.page').then((m) => m.ClientesDetailPage),
-  },
-  {
-    path: 'clientes/:id/editar',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/cadastros-apoio/clientes/clientes-edit.page').then((m) => m.ClientesEditPage),
-  },
-  {
-    path: 'clientes/:id/excluir',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/cadastros-apoio/clientes/clientes-excluir.page').then((m) => m.ClientesExcluirPage),
-  },
-
-  // ── Profissionais ─────────────────────────────────────────────────────────
-  {
     path: 'profissionais',
     canActivate: [authGuard],
     loadComponent: () => import('./features/cadastros-apoio/profissionais/profissionais.page').then((m) => m.ProfissionaisPage),
   },
-  {
-    path: 'profissionais/novo',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/cadastros-apoio/profissionais/profissionais-edit.page').then((m) => m.ProfissionaisEditPage),
-  },
-  {
-    path: 'profissionais/:id',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/cadastros-apoio/profissionais/profissionais-detail.page').then((m) => m.ProfissionaisDetailPage),
-  },
-  {
-    path: 'profissionais/:id/editar',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/cadastros-apoio/profissionais/profissionais-edit.page').then((m) => m.ProfissionaisEditPage),
-  },
-  {
-    path: 'profissionais/:id/excluir',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/cadastros-apoio/profissionais/profissionais-excluir.page').then((m) => m.ProfissionaisExcluirPage),
-  },
-
-  // ── Contratos ─────────────────────────────────────────────────────────────
   {
     path: 'contratos',
     canActivate: [authGuard],
     loadComponent: () => import('./features/cadastros-apoio/contratos/contratos.page').then((m) => m.ContratosPage),
   },
   {
-    path: 'contratos/novo',
+    path: 'feriados',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/cadastros-apoio/contratos/contratos-edit.page').then((m) => m.ContratosEditPage),
+    loadComponent: () => import('./features/cadastros-apoio/feriados/feriados.page').then((m) => m.FeriadosPage),
   },
-  {
-    path: 'contratos/:id',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/cadastros-apoio/contratos/contratos-detail.page').then((m) => m.ContratosDetailPage),
-  },
-  {
-    path: 'contratos/:id/editar',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/cadastros-apoio/contratos/contratos-edit.page').then((m) => m.ContratosEditPage),
-  },
-  {
-    path: 'contratos/:id/excluir',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/cadastros-apoio/contratos/contratos-excluir.page').then((m) => m.ContratosExcluirPage),
-  },
-
-  // ── Configurações ─────────────────────────────────────────────────────────
   {
     path: 'configuracoes',
     canActivate: [authGuard],
@@ -103,22 +35,7 @@ export const routes: Routes = [
   {
     path: 'configuracoes/empresas',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/configuracoes/empresas/empresas.page').then((m) => m.EmpresasAdminPage),
-  },
-  {
-    path: 'configuracoes/empresas/novo',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/configuracoes/empresas/empresas-edit.page').then((m) => m.EmpresasAdminEditPage),
-  },
-  {
-    path: 'configuracoes/empresas/:id',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/configuracoes/empresas/empresas-edit.page').then((m) => m.EmpresasAdminEditPage),
-  },
-  {
-    path: 'configuracoes/empresas/:id/editar',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/configuracoes/empresas/empresas-edit.page').then((m) => m.EmpresasAdminEditPage),
+    loadComponent: () => import('./features/configuracoes/empresas/empresas.page').then((m) => m.ConfigEmpresasPage),
   },
   {
     path: 'configuracoes/modulos',
@@ -145,16 +62,29 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./features/configuracoes/usuarios/usuarios.page').then((m) => m.UsuariosPage),
   },
-
-  // ── Agendamentos ──────────────────────────────────────────────────────────
   {
-    path: 'agendamentos/lista',
+    path: 'configuracoes/estados',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/estados/estados.page').then((m) => m.EstadosPage),
+  },
+  {
+    path: 'configuracoes/municipios',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/municipios/municipios.page').then((m) => m.MunicipiosPage),
+  },
+  {
+    path: 'configuracoes/ceps',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/ceps/ceps.page').then((m) => m.CepsPage),
+  },
+  { 
+    path: 'agendamentos/lista', 
     canActivate: [authGuard],
     loadComponent: () => import('./features/agendamentos/lista/lista').then((m) => m.Lista),
   },
-  {
-    path: 'agendamentos/calendario',
+  { 
+    path: 'agendamentos/calendario', 
     canActivate: [authGuard],
     loadComponent: () => import('./features/agendamentos/calendario/calendario').then((m) => m.Calendario),
-  },
+  }
 ];

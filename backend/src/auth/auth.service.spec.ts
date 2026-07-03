@@ -41,7 +41,7 @@ describe('AuthService', () => {
       userEmpresas: [
         {
           empresaId: 1,
-          empresa: { id: 1, name: 'Empresa Padrao' },
+          empresa: { id: 1, name: 'Default Empresa' },
         },
       ],
     });
@@ -62,7 +62,7 @@ describe('AuthService', () => {
       userEmpresas: [
         {
           empresaId: 1,
-          empresa: { id: 1, name: 'Empresa Padrao' },
+          empresa: { id: 1, name: 'Default Empresa' },
         },
       ],
     });
@@ -82,7 +82,7 @@ describe('AuthService', () => {
       userEmpresas: [
         {
           empresaId: 1,
-          empresa: { id: 1, name: 'Empresa Padrao' },
+          empresa: { id: 1, name: 'Default Empresa' },
           isDefault: true,
         },
         {
@@ -96,7 +96,7 @@ describe('AuthService', () => {
     expect(result).toEqual({
       requiresEmpresaSelection: true,
       empresaOptions: [
-        { empresaId: 1, empresaName: 'Empresa Padrao', isDefault: true },
+        { empresaId: 1, empresaName: 'Default Empresa', isDefault: true },
         { empresaId: 2, empresaName: 'Filial 2', isDefault: false },
       ],
     });
@@ -121,14 +121,14 @@ describe('AuthService', () => {
       userEmpresas: [
         {
           empresaId: 1,
-          empresa: { id: 1, name: 'Empresa Padrao' },
+          empresa: { id: 1, name: 'Default Empresa' },
           isDefault: true,
         },
       ],
     } as any, 1);
 
     expect(prisma.menu.findMany).toHaveBeenCalled();
-    expect(result.user.menus).toEqual([
+    expect(result?.user?.menus).toEqual([
       {
         label: 'Configuracoes',
         shortLabel: 'CFG',
@@ -143,10 +143,10 @@ describe('AuthService', () => {
         ],
       },
     ]);
-    expect(result.user.availableEmpresas).toEqual([
-      { empresaId: 1, empresaName: 'Empresa Padrao', isDefault: true },
+    expect(result?.user?.availableEmpresas).toEqual([
+      { empresaId: 1, empresaName: 'Default Empresa', isDefault: true },
     ]);
-    expect(result.user.profile).toBe('Administrador');
-    expect(result.user.profileId).toBe(1);
+    expect(result?.user?.profile).toBe('Administrador');
+    expect(result?.user?.profileId).toBe(1);
   });
 });

@@ -40,6 +40,29 @@ export class EscalaItemDto {
   intervaloFim: string;
 }
 
+export class AdiantamentoItemDto {
+  @IsNotEmpty()
+  @IsString()
+  descricao: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  valorTotal: number;
+
+  @IsNotEmpty()
+  @IsInt()
+  @Min(1)
+  parcelas: number;
+
+  @IsNotEmpty()
+  @IsNumber()
+  valorParcela: number;
+
+  @IsNotEmpty()
+  @IsString()
+  dataInicio: string;
+}
+
 export class CreateContratoDto {
   @IsNotEmpty({ message: 'O cliente é obrigatório.' })
   @IsInt()
@@ -78,6 +101,10 @@ export class CreateContratoDto {
   isFeriado?: boolean;
 
   @IsOptional()
+  @IsBoolean()
+  bloqueado?: boolean;
+
+  @IsOptional()
   @IsArray()
   @IsInt({ each: true })
   profissionalIds?: number[];
@@ -87,4 +114,10 @@ export class CreateContratoDto {
   @ValidateNested({ each: true })
   @Type(() => EscalaItemDto)
   escalas?: EscalaItemDto[];
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => AdiantamentoItemDto)
+  adiantamentos?: AdiantamentoItemDto[];
 }

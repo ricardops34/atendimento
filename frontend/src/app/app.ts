@@ -22,7 +22,7 @@ import {
 } from '@po-ui/ng-components';
 import { ViewChild } from '@angular/core';
 import { AuthService } from './core/auth/auth.service';
-import { EmpresaStateService } from './core/auth/empresa-state.service';
+import { TenantStateService } from './core/auth/tenant-state.service';
 
 @Component({
   selector: 'app-root',
@@ -42,10 +42,10 @@ import { EmpresaStateService } from './core/auth/empresa-state.service';
   styleUrl: './app.css'
 })
 export class App {
-  @ViewChild('switchEmpresaModal', { static: false }) switchEmpresaModal?: PoModalComponent;
+  @ViewChild('switchTenantModal', { static: false }) switchTenantModal?: PoModalComponent;
   @ViewChild('profileModal', { static: false }) profileModal?: PoModalComponent;
   private authService = inject(AuthService);
-  private empresaState = inject(EmpresaStateService);
+  private tenantState = inject(TenantStateService);
   private router = inject(Router);
   private poNotification = inject(PoNotificationService);
   private readonly breadcrumbLabels: Record<string, string> = {
@@ -59,6 +59,9 @@ export class App {
     perfis: 'Perfis',
     menus: 'Menus',
     usuarios: 'Usuarios',
+    estados: 'Estados',
+    municipios: 'Municípios',
+    ceps: 'CEPs',
     agendamentos: 'Agendamentos',
     lista: 'Lista de Atendimentos',
     calendario: 'Calendario'
@@ -70,39 +73,20 @@ export class App {
   public headerActionsTools: PoHeaderActionTool[] = [];
   public headerUser: any = undefined;
   public breadcrumb = signal<PoBreadcrumb>({ items: [] });
-  public empresaOptions: PoComboOption[] = [];
-  public selectedEmpresaId: number | null = null;
+  public tenantOptions: PoComboOption[] = [];
+  public selectedTenantId: number | null = null;
   public avatarOptions: PoComboOption[] = Array.from({ length: 12 }, (_, index) => {
     const avatar = `avatar_${String(index + 1).padStart(2, '0')}.png`;
     return { label: avatar, value: avatar };
   });
-  public profileForm: any = { name: '', email: '', empresaName: '', profileName: '', avatar: 'avatar_01.png', password: '', confirmPassword: '' };
+  public profileForm: any = { name: '', email: '', tenantName: '', profileName: '', avatar: 'avatar_01.png', password: '', confirmPassword: '' };
   public menus = signal<PoMenuItem[]>([]);
 
   private readonly menuCatalog: Record<string, PoMenuItem> = {
     home: { label: 'Inicio', shortLabel: 'INI', icon: 'an an-house', link: '/' },
-    cadastros: {
-      label: 'Cadastros',
-      shortLabel: 'CAD',
-      icon: 'an an-folder',
-      subItems: [
-        { label: 'Clientes', shortLabel: 'CLI', icon: 'an an-buildings', link: '/clientes' },
-        { label: 'Profissionais', shortLabel: 'PRO', icon: 'an an-user', link: '/profissionais' },
-        { label: 'Contratos', shortLabel: 'CON', icon: 'an an-file-text', link: '/contratos' },
-      ]
-    },
     companies: { label: 'Clientes', shortLabel: 'CLI', icon: 'an an-buildings', link: '/clientes' },
     professionals: { label: 'Profissionais', shortLabel: 'PRO', icon: 'an an-user', link: '/profissionais' },
     contracts: { label: 'Contratos', shortLabel: 'CON', icon: 'an an-file-text', link: '/contratos' },
-    atendimentos: {
-      label: 'Atendimentos',
-      shortLabel: 'ATE',
-      icon: 'an an-calendar-check',
-      subItems: [
-        { label: 'Lista de Atendimentos', shortLabel: 'LST', icon: 'an an-list-dashes', link: '/agendamentos/lista' },
-        { label: 'Calendario', shortLabel: 'CAL', icon: 'an an-calendar-blank', link: '/agendamentos/calendario' },
-      ]
-    },
     'appointments-list': {
       label: 'Lista de Atendimentos',
       shortLabel: 'LST',
@@ -125,7 +109,10 @@ export class App {
         { label: 'Rotinas', shortLabel: 'ROT', icon: 'an an-list-checks', link: '/configuracoes/rotinas' },
         { label: 'Perfis', shortLabel: 'PRF', icon: 'an an-identification-card', link: '/configuracoes/perfis' },
         { label: 'Menus', shortLabel: 'MNU', icon: 'an an-tree-structure', link: '/configuracoes/menus' },
-        { label: 'Usuarios', shortLabel: 'USR', icon: 'an an-users-three', link: '/configuracoes/usuarios' }
+        { label: 'Usuarios', shortLabel: 'USR', icon: 'an an-users-three', link: '/configuracoes/usuarios' },
+        { label: 'Estados', shortLabel: 'EST', icon: 'an an-map-pin', link: '/configuracoes/estados' },
+        { label: 'Municipios', shortLabel: 'MUN', icon: 'an an-map-trifold', link: '/configuracoes/municipios' },
+        { label: 'CEPs', shortLabel: 'CEP', icon: 'an an-mailbox', link: '/configuracoes/ceps' }
       ]
     },
     logout: {
@@ -137,11 +124,11 @@ export class App {
   };
 
   constructor() {
-    this.syncSessionState(this.empresaState.user());
+    this.syncSessionState(this.tenantState.user());
     this.updateBreadcrumb(this.router.url);
 
     effect(() => {
-      this.syncSessionState(this.empresaState.user());
+      this.syncSessionState(this.tenantState.user());
     });
 
     this.router.events
@@ -188,18 +175,18 @@ export class App {
     this.isAuthenticated.set(!!user);
 
     if (user) {
-      const availableEmpresas = user.availableEmpresas || [];
-      this.selectedEmpresaId = user.empresa?.id ?? availableEmpresas.find((item: any) => item.isDefault)?.empresaId ?? null;
-      this.empresaOptions = availableEmpresas.map((item: any) => ({
-        label: item.empresaName,
-        value: item.empresaId
+      const availableTenants = user.availableTenants || [];
+      this.selectedTenantId = user.tenant?.id ?? availableTenants.find((item: any) => item.isDefault)?.tenantId ?? null;
+      this.tenantOptions = availableTenants.map((item: any) => ({
+        label: item.tenantName,
+        value: item.tenantId
       }));
-      this.profileActions = this.buildProfileActions(availableEmpresas);
+      this.profileActions = this.buildProfileActions(availableTenants);
       this.headerActionsTools = [];
       this.profileForm = {
         name: user.name || '',
         email: user.email || '',
-        empresaName: user.empresa?.name || '',
+        tenantName: user.tenant?.name || '',
         profileName: user.profile || '',
         avatar: user.avatar || 'avatar_01.png',
         password: '',
@@ -222,13 +209,13 @@ export class App {
     this.profileActions = [];
     this.headerActionsTools = [];
     this.headerUser = undefined;
-    this.empresaOptions = [];
-    this.selectedEmpresaId = null;
+    this.tenantOptions = [];
+    this.selectedTenantId = null;
     this.menus.set([]);
     this.breadcrumb.set({ items: [] });
   }
 
-  private buildProfileActions(availableEmpresas: any[]): PoToolbarAction[] {
+  private buildProfileActions(availableTenants: any[]): PoToolbarAction[] {
     const actions: PoToolbarAction[] = [];
 
     actions.push({
@@ -237,11 +224,11 @@ export class App {
       action: () => this.openProfileModal()
     });
 
-    if (availableEmpresas.length > 1) {
+    if (availableTenants.length > 1) {
       actions.push({
         label: 'Trocar empresa',
         icon: 'an an-buildings',
-        action: () => this.openSwitchEmpresaModal()
+        action: () => this.openSwitchTenantModal()
       });
     }
 
@@ -258,17 +245,17 @@ export class App {
     this.profileModal?.open();
   }
 
-  openSwitchEmpresaModal() {
-    this.switchEmpresaModal?.open();
+  openSwitchTenantModal() {
+    this.switchTenantModal?.open();
   }
 
-  confirmSwitchEmpresa() {
-    if (!this.selectedEmpresaId) {
+  confirmSwitchTenant() {
+    if (!this.selectedTenantId) {
       return;
     }
 
-    this.authService.switchEmpresa(this.selectedEmpresaId).subscribe({
-      next: () => this.switchEmpresaModal?.close(),
+    this.authService.switchEmpresa(this.selectedTenantId).subscribe({
+      next: () => this.switchTenantModal?.close(),
     });
   }
 

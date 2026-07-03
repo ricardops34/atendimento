@@ -1,20 +1,17 @@
-<po-page-list
-  p-title="Atendimentos"
-  [p-disclaimer-group]="disclaimerGroup">
+<po-page-list p-title="Atendimentos" [p-disclaimer-group]="disclaimerGroup">
 
   <div class="po-row" style="align-items: end; margin-bottom: 16px; row-gap: 12px;">
     <div class="po-md-6 po-sm-12" style="display: flex; flex-wrap: wrap; gap: 8px;">
-      <po-button p-label="Adcionar" p-kind="primary" p-icon="an an-plus" (p-click)="onNew()"></po-button>
-      <po-button p-label="Fechar Lote" p-icon="po-icon-ok" p-kind="secondary" (p-click)="onFecharLote()"></po-button>
+      <po-button p-label="Novo Agendamento" p-icon="po-icon-plus" (p-click)="onNew()"></po-button>
+      <po-button p-label="Gerar Mês" p-icon="po-icon-calendar" (p-click)="openGerarMensalModal()"></po-button>
       <po-dropdown p-label="Exportar" [p-actions]="exportActions"></po-dropdown>
+      <po-dropdown p-label="Relatórios" [p-actions]="extratoActions" p-icon="po-icon-finance"></po-dropdown>
     </div>
 
-    <div class="po-md-6 po-sm-12" style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap;">
+    <div class="po-md-6 po-sm-12"
+      style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap;">
       <div style="min-width: 280px; width: 280px; max-width: 100%;">
-        <po-search
-          p-placeholder="Pesquisar"
-          [(ngModel)]="quickSearch"
-          (p-filter)="onQuickSearch($event)"
+        <po-search p-placeholder="Pesquisar" [(ngModel)]="quickSearch" (p-filter)="onQuickSearch($event)"
           (p-change-model)="quickSearch = $event">
         </po-search>
       </div>
@@ -23,86 +20,111 @@
     </div>
   </div>
 
-  <po-table
-    [p-items]="agendamentos"
-    [p-columns]="columns"
-    [p-actions]="actions"
-    [p-loading]="loading"
-    [p-loading-show-more]="loadingShowMore"
-    [p-show-more-disabled]="!hasNext"
-    [p-sort]="true"
-    [p-striped]="true"
-    [p-hide-detail]="true"
-    [p-hide-table-search]="true"
-    (p-show-more)="onShowMore()">
+  <po-table [p-items]="agendamentos" [p-columns]="columns" [p-actions]="actions" [p-loading]="loading"
+    [p-loading-show-more]="loadingShowMore" [p-show-more-disabled]="!hasNext" [p-sort]="true" [p-striped]="true"
+    [p-hide-detail]="true" [p-hide-table-search]="true" (p-show-more)="onShowMore()">
   </po-table>
 
 </po-page-list>
 
 <po-modal p-title="Busca avançada" #advancedFilterModal>
   <div class="po-row">
-    <po-datepicker
-      class="po-md-6"
-      name="dataInicial"
-      p-label="Data inicial"
-      [ngModel]="filters.dataInicial"
+    <po-datepicker class="po-md-6" name="dataInicial" p-label="Data inicial" [ngModel]="filters.dataInicial"
       (ngModelChange)="filters.dataInicial = $event">
     </po-datepicker>
 
-    <po-datepicker
-      class="po-md-6"
-      name="dataFinal"
-      p-label="Data final"
-      [ngModel]="filters.dataFinal"
+    <po-datepicker class="po-md-6" name="dataFinal" p-label="Data final" [ngModel]="filters.dataFinal"
       (ngModelChange)="filters.dataFinal = $event">
     </po-datepicker>
   </div>
 
   <div class="po-row">
-    <po-combo
-      class="po-md-6"
-      name="tipo"
-      p-label="Status"
-      [p-options]="statusOptions"
-      [ngModel]="filters.tipo"
+    <po-combo class="po-md-6" name="tipo" p-label="Status" [p-options]="statusOptions" [ngModel]="filters.tipo"
       (ngModelChange)="filters.tipo = $event">
     </po-combo>
 
-    <po-combo
-      class="po-md-6"
-      name="local"
-      p-label="Modalidade"
-      [p-options]="modalidadeOptions"
-      [ngModel]="filters.local"
-      (ngModelChange)="filters.local = $event">
+    <po-combo class="po-md-6" name="local" p-label="Modalidade" [p-options]="modalidadeOptions"
+      [ngModel]="filters.local" (ngModelChange)="filters.local = $event">
     </po-combo>
   </div>
 
   <div class="po-row">
-    <po-combo
-      class="po-md-12"
-      name="contratoId"
-      p-label="Contrato"
-      [p-options]="contratos"
-      [ngModel]="filters.contratoId"
-      (ngModelChange)="filters.contratoId = $event">
+    <po-combo class="po-md-12" name="contratoId" p-label="Contrato" [p-options]="contratos"
+      [ngModel]="filters.contratoId" (ngModelChange)="filters.contratoId = $event">
     </po-combo>
   </div>
 
   <div class="po-row">
-    <po-combo
-      class="po-md-12"
-      name="profissionalId"
-      p-label="Profissional"
-      [p-options]="profissionais"
-      [ngModel]="filters.profissionalId"
-      (ngModelChange)="filters.profissionalId = $event">
+    <po-combo class="po-md-12" name="profissionalId" p-label="Profissional" [p-options]="profissionais"
+      [ngModel]="filters.profissionalId" (ngModelChange)="filters.profissionalId = $event">
     </po-combo>
   </div>
 
   <po-modal-footer>
     <po-button p-label="Limpar" (p-click)="clearFilters()"></po-button>
     <po-button p-label="Aplicar filtros" p-kind="primary" (p-click)="applyAdvancedFilters()"></po-button>
+  </po-modal-footer>
+</po-modal>
+
+<po-modal p-title="Gerar Extrato" #extratoModal>
+  <div class="po-row">
+    <po-datepicker class="po-md-6" name="extratoDataInicial" p-label="Data inicial"
+      [ngModel]="extratoFilters.dataInicial" (ngModelChange)="extratoFilters.dataInicial = $event">
+    </po-datepicker>
+
+    <po-datepicker class="po-md-6" name="extratoDataFinal" p-label="Data final" [ngModel]="extratoFilters.dataFinal"
+      (ngModelChange)="extratoFilters.dataFinal = $event">
+    </po-datepicker>
+  </div>
+
+  <div class="po-row">
+    <po-combo class="po-md-6" name="extratoContratoId" p-label="Contrato" [p-options]="contratos"
+      [ngModel]="extratoFilters.contratoId" (ngModelChange)="extratoFilters.contratoId = $event">
+    </po-combo>
+
+    <po-combo class="po-md-6" name="extratoProfissionalId" p-label="Profissional" [p-options]="profissionais"
+      [ngModel]="extratoFilters.profissionalId" (ngModelChange)="extratoFilters.profissionalId = $event">
+    </po-combo>
+  </div>
+
+  <div class="po-row">
+    <po-radio-group class="po-md-12" name="extratoTipo" p-label="Tipo de Extrato" [p-options]="tipoExtratoOptions"
+      [ngModel]="extratoFilters.tipoExtrato" (ngModelChange)="extratoFilters.tipoExtrato = $event">
+    </po-radio-group>
+  </div>
+
+  <po-modal-footer>
+    <po-button p-label="Cancelar" (p-click)="extratoModal.close()"></po-button>
+    <po-button p-label="Gerar Extrato" p-kind="primary" (p-click)="generateExtrato()"></po-button>
+  </po-modal-footer>
+</po-modal>
+
+<po-modal p-title="Gerar Previsão Mensal" #gerarMensalModal>
+  <div class="po-row">
+    <po-combo class="po-md-6" name="gerarMes" p-label="Mês" [p-options]="mesesOptions"
+      [ngModel]="gerarMensalFilters.mes" (ngModelChange)="gerarMensalFilters.mes = $event">
+    </po-combo>
+
+    <po-number class="po-md-6" name="gerarAno" p-label="Ano" [ngModel]="gerarMensalFilters.ano"
+      (ngModelChange)="gerarMensalFilters.ano = $event">
+    </po-number>
+  </div>
+
+  <div class="po-row">
+    <po-combo class="po-md-12" name="gerarContratoId" p-label="Contrato (Opcional)" [p-options]="contratos"
+      [ngModel]="gerarMensalFilters.contratoId" (ngModelChange)="gerarMensalFilters.contratoId = $event">
+    </po-combo>
+  </div>
+
+  <div class="po-row">
+    <po-combo class="po-md-12" name="gerarProfissionalId" p-label="Profissional (Opcional)" [p-options]="profissionais"
+      [ngModel]="gerarMensalFilters.profissionalId" (ngModelChange)="gerarMensalFilters.profissionalId = $event">
+    </po-combo>
+  </div>
+
+  <po-modal-footer>
+    <po-button p-label="Cancelar" (p-click)="gerarMensalModal.close()"></po-button>
+    <po-button p-label="Gerar" p-kind="primary" (p-click)="generateMensal()"></po-button>
   </po-modal-footer>
 </po-modal>
 

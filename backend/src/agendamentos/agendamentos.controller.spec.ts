@@ -1,10 +1,10 @@
-﻿import { Test, TestingModule } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { AgendamentosController } from './agendamentos.controller';
 import { AgendamentosService } from './agendamentos.service';
 import { ModuleGuard } from '../auth/guards/module.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { EmpresaGuard } from '../auth/guards/empresa.guard';
+import { TenantGuard } from '../auth/guards/tenant.guard';
 
 const mockResponse = () => {
   const res: any = {};
@@ -36,11 +36,11 @@ describe('AgendamentosController', () => {
         { provide: AgendamentosService, useValue: service },
         { provide: ModuleGuard, useValue: { canActivate: () => true } },
         { provide: JwtAuthGuard, useValue: { canActivate: () => true } },
-        { provide: EmpresaGuard, useValue: { canActivate: () => true } },
+        { provide: TenantGuard, useValue: { canActivate: () => true } },
       ],
     })
       .overrideGuard(JwtAuthGuard).useValue({ canActivate: () => true })
-      .overrideGuard(EmpresaGuard).useValue({ canActivate: () => true })
+      .overrideGuard(TenantGuard).useValue({ canActivate: () => true })
       .overrideGuard(ModuleGuard).useValue({ canActivate: () => true })
       .compile();
 
@@ -49,19 +49,19 @@ describe('AgendamentosController', () => {
   });
 
   it('delegates findAll to service', () => {
-    controller.findAll();
-    expect(service.findAll).toHaveBeenCalled();
+    controller.findAll({ user: { empresaId: 1 } } as any);
+    expect(service.findAll).toHaveBeenCalledWith(1);
   });
 
-  it('delegates search to service with query params', () => {
-    controller.search({ page: '1', pageSize: '20', search: 'abc' } as any);
-    expect(service.search).toHaveBeenCalledWith({ page: '1', pageSize: '20', search: 'abc' });
+  it('delegates search query to service', () => {
+    controller.search({ page: '1', pageSize: '20', search: 'visita' } as any, { user: { empresaId: 1 } } as any);
+    expect(service.search).toHaveBeenCalledWith({ page: '1', pageSize: '20', search: 'visita' }, 1);
   });
 
   it('confirmar calls service.confirmar with id and empresaId', async () => {
     const agendamento = { id: 1, tipo: 'R' };
     service.confirmar.mockResolvedValue(agendamento);
-    const req = { empresaId: 42 };
+    const req = { user: { empresaId: 42 } };
 
     const result = await controller.confirmar(1, req as any);
 
@@ -74,7 +74,7 @@ describe('AgendamentosController', () => {
       new HttpException('Registro não pode ser alterado.', HttpStatus.UNPROCESSABLE_ENTITY)
     );
 
-    await expect(controller.confirmar(1, { empresaId: 1 } as any)).rejects.toMatchObject({
+    await expect(controller.confirmar(1, { user: { empresaId: 1 } } as any)).rejects.toMatchObject({
       status: 422,
     });
   });
@@ -83,7 +83,7 @@ describe('AgendamentosController', () => {
     const csvBuffer = Buffer.from('Data,Contrato\n');
     service.generateExport.mockResolvedValue(csvBuffer);
     const res = mockResponse();
-    const req = { empresaId: 1 };
+    const req = { user: { empresaId: 1 } };
 
     await controller.export('csv', {}, req as any, res);
 
@@ -98,7 +98,7 @@ describe('AgendamentosController', () => {
   it('export returns 400 for invalid format', async () => {
     const res = mockResponse();
 
-    await controller.export('docx', {}, { empresaId: 1 } as any, res);
+    await controller.export('docx', {}, { user: { empresaId: 1 } } as any, res);
 
     expect(res.status).toHaveBeenCalledWith(400);
     expect(service.generateExport).not.toHaveBeenCalled();

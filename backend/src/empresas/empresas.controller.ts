@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { EmpresasService } from './empresas.service';
 
 @Controller('empresas')
@@ -11,8 +11,8 @@ export class EmpresasController {
   }
 
   @Get()
-  findAll(@Query() query: Record<string, string | undefined>) {
-    return this.service.search(query);
+  findAll() {
+    return this.service.findAll();
   }
 
   @Get('search')
@@ -27,11 +27,6 @@ export class EmpresasController {
 
   @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
-    return this.service.update(id, data);
-  }
-
-  @Put(':id')
-  updatePut(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
     return this.service.update(id, data);
   }
 

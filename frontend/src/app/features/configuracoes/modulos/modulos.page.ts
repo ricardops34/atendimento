@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  PoButtonModule,
+import { PoDialogService, PoButtonModule,
   PoDisclaimer,
   PoDisclaimerGroup,
   PoFieldModule,
@@ -14,8 +13,7 @@ import {
   PoTableAction,
   PoTableColumn,
   PoTableColumnSort,
-  PoTableModule,
-} from '@po-ui/ng-components';
+  PoTableModule, } from '@po-ui/ng-components';
 import { SystemModuleSearchParams, SystemModuleService } from '../../../core/services/system-module.service';
 
 @Component({
@@ -28,6 +26,7 @@ export class ModulosPage implements OnInit {
   @ViewChild('modal', { static: true }) modal!: PoModalComponent;
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
   private service = inject(SystemModuleService);
+  private poDialog = inject(PoDialogService);
   private poNotification = inject(PoNotificationService);
 
   items: any[] = [];
@@ -100,7 +99,15 @@ export class ModulosPage implements OnInit {
     });
   }
 
-  remove(row: any) { this.service.remove(row.id).subscribe({ next: () => { this.poNotification.success('Modulo excluido com sucesso.'); this.loadData(true); }, error: () => this.poNotification.error('Erro ao excluir modulo.') }); }
+  remove(row: any) {
+    this.poDialog.confirm({
+      title: 'Confirmar exclusão',
+      message: 'Tem certeza que deseja excluir este registro?',
+      confirm: () => {
+        this.service.remove(row.id).subscribe({ next: () => { this.poNotification.success('Modulo excluido com sucesso.'); this.loadData(true); }, error: () => this.poNotification.error('Erro ao excluir modulo.') });
+      }
+    });
+  }
   private buildSearchParams(): SystemModuleSearchParams { return { page: this.page, pageSize: this.pageSize, search: this.quickSearch || undefined, name: this.filters.name, key: this.filters.key, sortProperty: this.sortProperty, sortDirection: this.sortDirection }; }
   private syncDisclaimers() { const disclaimers: PoDisclaimer[] = []; if (this.quickSearch) disclaimers.push({ property: 'search', label: 'Busca', value: this.quickSearch }); if (this.filters.name) disclaimers.push({ property: 'name', label: 'Modulo', value: this.filters.name }); if (this.filters.key) disclaimers.push({ property: 'key', label: 'Key', value: this.filters.key }); this.disclaimerGroup = { ...this.disclaimerGroup, disclaimers }; }
 }

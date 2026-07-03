@@ -5,7 +5,8 @@ import PDFDocument from 'pdfkit';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateAgendamentoDto } from './dto/create-agendamento.dto';
 import { UpdateAgendamentoDto } from './dto/update-agendamento.dto';
-import { composeDateTime, calculateDuration } from './agendamentos.utils';
+import { composeDateTime, calculateDuration, stripHtml } from './agendamentos.utils';
+import { buildPdfCalendario } from './buildPdfCalendario';
 
 type ExportFormat = 'csv' | 'xls' | 'pdf' | 'xml';
 
@@ -18,6 +19,7 @@ interface AgendamentoExportFilters {
   dataInicial?: string;
   dataFinal?: string;
   empresaId?: number;
+  tipoExtrato?: 'sintetico' | 'analitico' | 'calendario';
 }
 
 interface SearchQuery {
@@ -139,11 +141,126 @@ export class AgendamentosService {
     });
   }
 
-  findAll(empresaId: number): Promise<Agendamento[]> {
-    return this.prisma.agendamento.findMany({
+  async gerarMensal(mes: number, ano: number, contratoId?: number, profissionalId?: number, empresaId?: number): Promise<{ gerados: number }> {
+    const dataInicio = new Date(ano, mes - 1, 1);
+    const dataFim = new Date(ano, mes, 0, 23, 59, 59, 999);
+    
+    const whereContrato: any = { empresaId };
+    if (contratoId) whereContrato.id = contratoId;
+
+    const contratos = await this.prisma.contrato.findMany({
+      where: whereContrato,
+      include: { escalas: true }
+    });
+
+    const agendamentosExistentes = await this.prisma.agendamento.findMany({
+      where: {
+        empresaId,
+        dataAgenda: { gte: dataInicio, lte: dataFim },
+        ...(contratoId ? { contratoId } : {}),
+        ...(profissionalId ? { profissionalId } : {})
+      },
+      select: { dataAgenda: true, contratoId: true, profissionalId: true }
+    });
+
+    const feriados = await this.prisma.feriado.findMany({
+      where: { empresaId }
+    });
+
+    const checkFeriado = (d: Date) => {
+      const dMonth = d.getMonth();
+      const dDate = d.getDate();
+      const dYear = d.getFullYear();
+      
+      return feriados.some(f => {
+        const fDate = new Date(f.data);
+        // Fixo = compara mês e dia; Não fixo = compara ano, mês e dia
+        if (f.fixo) {
+          return fDate.getUTCMonth() === dMonth && fDate.getUTCDate() === dDate;
+        } else {
+          return fDate.getUTCFullYear() === dYear && fDate.getUTCMonth() === dMonth && fDate.getUTCDate() === dDate;
+        }
+      });
+    };
+
+    const formatToYMD = (d: Date) => {
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    };
+    
+    const formatUTCToYMD = (d: Date) => {
+      return d.getUTCFullYear() + '-' + String(d.getUTCMonth() + 1).padStart(2, '0') + '-' + String(d.getUTCDate()).padStart(2, '0');
+    };
+
+    const setExistentes = new Set(
+      agendamentosExistentes.map(a => `${formatUTCToYMD(new Date(a.dataAgenda))}_${a.contratoId}_${a.profissionalId}`)
+    );
+
+    const novosAgendamentos: any[] = [];
+
+    for (const contrato of contratos) {
+      if (!contrato.escalas || contrato.escalas.length === 0) continue;
+
+      for (let d = new Date(dataInicio); d <= dataFim; d.setDate(d.getDate() + 1)) {
+        const diaSemana = d.getDay();
+        const escalasDia = contrato.escalas.filter((e: any) => {
+          if (e.diaSemana !== diaSemana) return false;
+          if (profissionalId && e.profissionalId !== profissionalId) return false;
+          return true;
+        });
+        
+        for (const escala of escalasDia) {
+          const dateStr = formatToYMD(d);
+          const key = `${dateStr}_${contrato.id}_${escala.profissionalId}`;
+          
+          if (!setExistentes.has(key)) {
+            const dataAgenda = new Date(d);
+            const horarioInicial = composeDateTime(dataAgenda, escala.horaInicio);
+            const horarioFinal = composeDateTime(dataAgenda, escala.horaFim);
+            const duracaoMinutos = calculateDuration(escala.horaInicio, escala.horaFim, escala.intervaloIni, escala.intervaloFim);
+
+            const isHoliday = checkFeriado(d);
+
+            novosAgendamentos.push({
+              empresaId: empresaId || 1,
+              contratoId: contrato.id,
+              profissionalId: escala.profissionalId,
+              descricao: contrato.descricao,
+              dataAgenda,
+              horaInicio: escala.horaInicio,
+              horaFim: escala.horaFim,
+              horaIntervaloInicial: escala.intervaloIni,
+              horaIntervaloFinal: escala.intervaloFim,
+              duracaoMinutos,
+              horarioInicial,
+              horarioFinal,
+              local: 'P',
+              tipo: isHoliday ? 'F' : 'A',
+              cor: contrato.cor || '#333333',
+              observacao: 'Gerado automaticamente pela rotina mensal'
+            });
+            
+            setExistentes.add(key);
+          }
+        }
+      }
+    }
+
+    if (novosAgendamentos.length > 0) {
+      await this.prisma.agendamento.createMany({ data: novosAgendamentos });
+    }
+
+    return { gerados: novosAgendamentos.length };
+  }
+
+  async findAll(empresaId: number): Promise<Agendamento[]> {
+    const items = await this.prisma.agendamento.findMany({
       where: { empresaId },
       include: { contrato: true, profissional: true },
     });
+    return items.map(item => ({
+      ...item,
+      duracaoMinutos: item.duracaoMinutos || calculateDuration(item.horaInicio, item.horaFim, item.horaIntervaloInicial, item.horaIntervaloFinal)
+    }));
   }
 
   async search(query: SearchQuery, empresaId: number): Promise<{
@@ -177,7 +294,12 @@ export class AgendamentosService {
       take: pageSize,
     });
 
-    return { items, page, pageSize, total, hasNext: page * pageSize < total };
+    const itemsMapped = items.map(item => ({
+      ...item,
+      duracaoMinutos: item.duracaoMinutos || calculateDuration(item.horaInicio, item.horaFim, item.horaIntervaloInicial, item.horaIntervaloFinal)
+    }));
+
+    return { items: itemsMapped, page, pageSize, total, hasNext: page * pageSize < total };
   }
 
   async findOne(id: number, empresaId?: number): Promise<Agendamento> {
@@ -189,6 +311,9 @@ export class AgendamentosService {
       include: { contrato: true, profissional: true },
     });
     if (!agendamento) throw new NotFoundException('Agendamento não encontrado.');
+    
+    agendamento.duracaoMinutos = agendamento.duracaoMinutos || calculateDuration(agendamento.horaInicio, agendamento.horaFim, agendamento.horaIntervaloInicial, agendamento.horaIntervaloFinal);
+
     return agendamento;
   }
 
@@ -225,7 +350,7 @@ export class AgendamentosService {
   async confirmar(id: number, empresaId: number): Promise<Agendamento> {
     return this.prisma.$transaction(async (tx) => {
       const agendamento = await tx.agendamento.findUnique({
-        where: { id, empresaId },
+        where: { id, empresaId } as any, // Temporary fix for Prisma types if composite unique is not defined properly
         include: { contrato: true, profissional: true },
       });
       if (!agendamento) throw new NotFoundException('Agendamento não encontrado.');
@@ -261,11 +386,16 @@ export class AgendamentosService {
       );
     }
 
-    const localMap: Record<string, string> = { P: 'Presencial', R: 'Remoto', F: 'Falta' };
+    const processedItems = items.map(item => ({
+      ...item,
+      duracaoMinutos: item.duracaoMinutos || calculateDuration(item.horaInicio, item.horaFim, item.horaIntervaloInicial, item.horaIntervaloFinal)
+    }));
+
+    const localMap: Record<string, string> = { P: 'Presencial', R: 'Remoto', F: 'Falta', E: 'Extra' };
     const tipoMap: Record<string, string> = { A: 'Agendada', R: 'Realizada', C: 'Cancelada', F: 'Feriado' };
 
-    const rows = items.map((a) => ({
-      data: a.dataAgenda ? new Date(a.dataAgenda).toLocaleDateString('pt-BR') : '',
+    const rows = processedItems.map((a) => ({
+      data: a.dataAgenda ? new Date(a.dataAgenda).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : '',
       contrato: (a as any).contrato?.descricao || '',
       profissional: (a as any).profissional?.nome || '',
       modalidade: localMap[a.local] || a.local,
@@ -365,5 +495,409 @@ export class AgendamentosService {
       )
       .join('\n');
     return Buffer.from(`<?xml version="1.0" encoding="UTF-8"?>\n<atendimentos>\n${items}\n</atendimentos>`, 'utf-8');
+  }
+
+  async generateExportExtrato(filters: AgendamentoExportFilters, format: 'xls' | 'pdf'): Promise<Buffer> {
+    const where = this.buildWhereFromFilters(filters);
+    
+    const items = await this.prisma.agendamento.findMany({
+      where,
+      include: { 
+        contrato: {
+          include: { escalas: true, adiantamentos: true }
+        }, 
+        profissional: true, 
+        realizados: true 
+      },
+      orderBy: [
+        { contrato: { descricao: 'asc' } },
+        { profissional: { nome: 'asc' } },
+        { dataAgenda: 'asc' },
+        { horaInicio: 'asc' }
+      ],
+      take: 2000,
+    });
+
+    const periodosPorContrato: Record<string, number> = {};
+
+    const getHorasPrevistasContrato = (contrato: any, agendamentoData: Date) => {
+      if (!contrato || !contrato.escalas || contrato.escalas.length === 0) return 0;
+      
+      let dataIni: Date;
+      let dataFim: Date;
+
+      if (filters.dataInicial && filters.dataFinal) {
+        dataIni = new Date(filters.dataInicial);
+        // Ajustar para não ter problema de fuso e pegar a data certa
+        dataIni = new Date(dataIni.getFullYear(), dataIni.getMonth(), dataIni.getDate(), 0, 0, 0);
+        
+        dataFim = new Date(filters.dataFinal);
+        dataFim = new Date(dataFim.getFullYear(), dataFim.getMonth(), dataFim.getDate(), 23, 59, 59, 999);
+      } else {
+        const agendData = agendamentoData || new Date();
+        dataIni = new Date(agendData.getFullYear(), agendData.getMonth(), 1);
+        dataFim = new Date(agendData.getFullYear(), agendData.getMonth() + 1, 0, 23, 59, 59, 999);
+      }
+
+      const key = `${contrato.id}_${dataIni.toISOString()}`;
+      if (periodosPorContrato[key] !== undefined) return periodosPorContrato[key];
+
+      let totalMinutos = 0;
+      for (let d = new Date(dataIni); d <= dataFim; d.setDate(d.getDate() + 1)) {
+        const diaSemana = d.getDay();
+        const escalasDia = contrato.escalas.filter((e: any) => e.diaSemana === diaSemana);
+        for (const escala of escalasDia) {
+          totalMinutos += calculateDuration(escala.horaInicio, escala.horaFim, escala.intervaloIni, escala.intervaloFim);
+        }
+      }
+      
+      const totalHoras = totalMinutos / 60;
+      periodosPorContrato[key] = totalHoras;
+      return totalHoras;
+    };
+
+    const baseMinutesPerContract: Record<string, number> = {};
+    items.forEach((a: any) => {
+      const duracaoMin = a.duracaoMinutos || calculateDuration(a.horaInicio, a.horaFim, a.horaIntervaloInicial, a.horaIntervaloFinal);
+      if (a.local !== 'E') {
+        const key = a.contrato?.id || 'SemContrato';
+        baseMinutesPerContract[key] = (baseMinutesPerContract[key] || 0) + duracaoMin;
+      }
+    });
+
+    const rows = items.map((a: any) => {
+      const duracaoMin = a.duracaoMinutos || calculateDuration(a.horaInicio, a.horaFim, a.horaIntervaloInicial, a.horaIntervaloFinal);
+      let horasDecimais = duracaoMin / 60;
+      
+      let valorHora = 0;
+      if (a.contrato?.tipo === 'F' && a.contrato?.valorFixo) {
+        const key = a.contrato?.id || 'SemContrato';
+        const horasMes = (baseMinutesPerContract[key] || 0) / 60;
+        if (horasMes > 0) {
+          valorHora = Number(a.contrato.valorFixo) / horasMes;
+        }
+      } else {
+        valorHora = Number(a.contrato?.valorHora || 0);
+      }
+      
+      let valorTotal = horasDecimais * valorHora;
+
+      let statusFormatado = a.local || '';
+      if (a.local === 'P') statusFormatado = 'Presencial';
+      else if (a.local === 'R') statusFormatado = 'Remoto';
+      else if (a.local === 'F') statusFormatado = 'Falta';
+      else if (a.local === 'E') statusFormatado = 'Extra';
+
+      if (a.local === 'F') {
+        horasDecimais = -Math.abs(horasDecimais);
+        valorTotal = -Math.abs(valorTotal);
+      }
+
+      return {
+        data: a.dataAgenda ? new Date(a.dataAgenda).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : '',
+        contrato: a.contrato?.descricao || 'Sem Cliente',
+        contratoObj: a.contrato,
+        profissional: a.profissional?.nome || 'Sem Profissional',
+        status: statusFormatado,
+        horasRealizadas: horasDecimais,
+        valorHora: valorHora,
+        valorTotal: valorTotal,
+        observacao: stripHtml(a.observacao || ''),
+        dataOrigem: a.dataAgenda
+      };
+    });
+
+    const isAnalitico = filters.tipoExtrato === 'analitico';
+    const isCalendario = filters.tipoExtrato === 'calendario';
+
+    if (format === 'xls') return this.buildXlsxExtrato(rows, isAnalitico);
+    if (isCalendario) return buildPdfCalendario(items, filters, getHorasPrevistasContrato);
+    
+    return this.buildPdfExtrato(rows, isAnalitico);
+  }
+
+  private async buildXlsxExtrato(rows: any[], isAnalitico: boolean): Promise<Buffer> {
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Extrato');
+    
+    const columns: Partial<ExcelJS.Column>[] = [
+      { header: 'Data', key: 'data', width: 14 },
+      { header: 'Contrato', key: 'contrato', width: 25 },
+      { header: 'Profissional', key: 'profissional', width: 25 },
+      { header: 'Tipo', key: 'status', width: 15 },
+      { header: 'Horas Cobradas', key: 'horasRealizadas', width: 15 },
+      { header: 'Valor Hora', key: 'valorHora', width: 15 },
+      { header: 'Total (R$)', key: 'valorTotal', width: 15 },
+    ];
+
+    if (isAnalitico) {
+      columns.push({ header: 'Observações', key: 'observacao', width: 50 });
+    }
+
+    sheet.columns = columns;
+    sheet.addRows(rows);
+    
+    sheet.eachRow((row, rowNumber) => {
+      if (rowNumber > 1) {
+        const statusVal = row.getCell('status').value;
+        if (statusVal === 'Falta') {
+          row.font = { color: { argb: 'FFFF0000' } };
+        } else if (statusVal === 'Extra') {
+          row.font = { color: { argb: 'FF0000FF' } };
+        }
+      }
+    });
+
+    const totalHoras = rows.reduce((acc, r) => acc + Number(r.horasRealizadas), 0);
+    const totalFinanceiro = rows.reduce((acc, r) => acc + r.valorTotal, 0);
+
+    const totalRow = sheet.addRow({
+      data: 'TOTAIS',
+      contrato: '',
+      profissional: '',
+      status: '',
+      horasRealizadas: totalHoras.toFixed(2),
+      valorHora: '',
+      valorTotal: totalFinanceiro,
+    });
+    totalRow.font = { bold: true };
+    sheet.getRow(1).font = { bold: true };
+
+    const arrayBuffer = await workbook.xlsx.writeBuffer();
+    return Buffer.from(arrayBuffer);
+  }
+
+  private buildPdfExtrato(rows: any[], isAnalitico: boolean): Promise<Buffer> {
+    return new Promise((resolve) => {
+      const doc = new PDFDocument({ margin: 30, size: 'A4', layout: 'portrait' });
+      const chunks: Buffer[] = [];
+      doc.on('data', (c: Buffer) => chunks.push(c));
+      doc.on('end', () => resolve(Buffer.concat(chunks)));
+
+      const formatCurrency = (val: number) => `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      const formatNumber = (val: number) => val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+      doc.fontSize(16).font('Helvetica-Bold').text(isAnalitico ? 'Extrato de Horas - Analítico' : 'Extrato de Horas', { align: 'center' });
+      doc.moveDown(1.5);
+
+      let totalGeralHoras = 0;
+      let totalGeralFinanceiro = 0;
+
+      // Group by Contrato -> Profissional
+      const grouped: Record<string, Record<string, any[]>> = {};
+      rows.forEach(r => {
+        if (!grouped[r.contrato]) grouped[r.contrato] = {};
+        if (!grouped[r.contrato][r.profissional]) grouped[r.contrato][r.profissional] = [];
+        grouped[r.contrato][r.profissional].push(r);
+      });
+
+      const colWidths = isAnalitico ? [290, 80, 80, 80] : [120, 120, 120];
+      const startX = 30;
+      const rowWidth = isAnalitico ? 530 : 360;
+
+      for (const contrato of Object.keys(grouped)) {
+        // Find valorHora from the first available row
+        let valorHora = 0;
+        const firstProf = Object.keys(grouped[contrato])[0];
+        if (firstProf && grouped[contrato][firstProf].length > 0) {
+          valorHora = grouped[contrato][firstProf][0].valorHora;
+        }
+
+        doc.fontSize(12).font('Helvetica-Bold').fillColor('#333333');
+        doc.text(`Cliente: ${contrato}`, startX, doc.y, { continued: true });
+        doc.fillColor('#555555').font('Helvetica').text(`    Valor Hora: ${formatCurrency(valorHora)}`);
+        doc.moveDown(0.5);
+
+        for (const profissional of Object.keys(grouped[contrato])) {
+          doc.fontSize(11).font('Helvetica-Bold').fillColor('#555555').text(`Profissional: ${profissional}`, startX + 10);
+          doc.moveDown(0.5);
+
+          // Header da tabela
+          let y = doc.y;
+          doc.rect(startX + 10, y, rowWidth, 15).fill('#e0e0e0');
+          doc.fillColor('#000000').font('Helvetica-Bold').fontSize(9);
+          
+          if (isAnalitico) {
+            doc.text('Observações', startX + 15, y + 3, { width: colWidths[0], align: 'left' });
+            doc.text('Data', startX + 15 + colWidths[0], y + 3, { width: colWidths[1], align: 'left' });
+            doc.text('Tipo', startX + 15 + colWidths[0] + colWidths[1], y + 3, { width: colWidths[2], align: 'left' });
+            doc.text('Horas', startX + 15 + colWidths[0] + colWidths[1] + colWidths[2], y + 3, { width: colWidths[3], align: 'right' });
+          } else {
+            doc.text('Data', startX + 15, y + 3, { width: colWidths[0], align: 'left' });
+            doc.text('Tipo', startX + 15 + colWidths[0], y + 3, { width: colWidths[1], align: 'left' });
+            doc.text('Horas', startX + 15 + colWidths[0] + colWidths[1], y + 3, { width: colWidths[2], align: 'right' });
+          }
+          
+          doc.y = y + 15;
+          let zebra = false;
+
+          let minNormal = 0;
+          let minExtra = 0;
+          let minFalta = 0;
+
+          grouped[contrato][profissional].forEach(r => {
+            doc.font('Helvetica').fontSize(9);
+            
+            // Calculate dynamic row height based on observacao if analitico
+            let rowHeight = 15;
+            if (isAnalitico && r.observacao) {
+              const textHeight = doc.heightOfString(r.observacao, { width: colWidths[0] });
+              rowHeight = Math.max(15, textHeight + 6);
+            }
+            
+            y = doc.y;
+            if (y + rowHeight > 750) {
+              doc.addPage();
+              y = doc.y;
+            }
+
+            if (zebra) {
+              doc.rect(startX + 10, y, rowWidth, rowHeight).fill('#f9f9f9');
+            }
+            zebra = !zebra;
+
+            let textColor = '#333333';
+            if (r.status === 'Falta') {
+              textColor = '#FF0000';
+              minFalta += (r.horasRealizadas * 60);
+            } else if (r.status === 'Extra') {
+              textColor = '#0000FF';
+              minExtra += (r.horasRealizadas * 60);
+            } else {
+              minNormal += (r.horasRealizadas * 60);
+            }
+
+            doc.fillColor(textColor);
+            
+            if (isAnalitico) {
+              doc.text(r.observacao || '', startX + 15, y + 3, { width: colWidths[0], align: 'left' });
+              doc.text(r.data, startX + 15 + colWidths[0], y + 3, { width: colWidths[1], align: 'left' });
+              doc.text(r.status, startX + 15 + colWidths[0] + colWidths[1], y + 3, { width: colWidths[2], align: 'left' });
+              doc.text(formatNumber(r.horasRealizadas), startX + 15 + colWidths[0] + colWidths[1] + colWidths[2], y + 3, { width: colWidths[3], align: 'right' });
+            } else {
+              doc.text(r.data, startX + 15, y + 3, { width: colWidths[0], align: 'left' });
+              doc.text(r.status, startX + 15 + colWidths[0], y + 3, { width: colWidths[1], align: 'left' });
+              doc.text(formatNumber(r.horasRealizadas), startX + 15 + colWidths[0] + colWidths[1], y + 3, { width: colWidths[2], align: 'right' });
+            }
+            
+            doc.y = y + rowHeight;
+          });
+
+          // Draw the totals blocks
+          if (doc.y > 680) doc.addPage();
+          doc.moveDown(1);
+          
+          // Redesign the totals matching user layout
+          let hrNormal = minNormal / 60;
+          let hrExtra = minExtra / 60;
+          let hrFalta = minFalta / 60; // negative
+          let hrBase = hrNormal + Math.abs(hrFalta);
+
+          let valBase = hrBase * valorHora;
+          let valExtra = hrExtra * valorHora;
+          let valFalta = Math.abs(hrFalta) * valorHora;
+          
+          const formatHoursClock = (hoursDec: number) => {
+            const isNeg = hoursDec < 0;
+            const absHours = Math.abs(hoursDec);
+            const h = Math.floor(absHours);
+            const m = Math.round((absHours - h) * 60);
+            return `${isNeg ? '-' : ''}${h}:${m.toString().padStart(2, '0')}:00`;
+          };
+
+          // Find active Adiantamento
+          let adiantamentoLabel = '';
+          let adiantamentoVal = 0;
+          
+          const primeiraLinha = grouped[contrato][profissional][0];
+          
+          if (primeiraLinha?.contratoObj?.adiantamentos?.length) {
+            const dataExtrato = primeiraLinha.dataOrigem ? new Date(primeiraLinha.dataOrigem) : new Date();
+            const extratoYear = dataExtrato.getFullYear();
+            const extratoMonth = dataExtrato.getMonth();
+
+            for (const adiantamento of primeiraLinha.contratoObj.adiantamentos) {
+              const dtInicio = new Date(adiantamento.dataInicio);
+              const iniYear = dtInicio.getFullYear();
+              const iniMonth = dtInicio.getMonth();
+              
+              const monthsDiff = (extratoYear - iniYear) * 12 + (extratoMonth - iniMonth);
+              const currentParcela = monthsDiff + 1; // 1-based index
+              
+              if (currentParcela >= 1 && currentParcela <= adiantamento.parcelas) {
+                adiantamentoLabel = `Adi ${currentParcela}/${adiantamento.parcelas}`;
+                adiantamentoVal = Number(adiantamento.valorParcela);
+                break; // Only pick the first active one for now
+              }
+            }
+          }
+
+          let totalExecutado = hrNormal + hrExtra + hrFalta;
+          let totalFinal = valBase + valExtra - valFalta - adiantamentoVal;
+
+          let boxX = 350;
+          let boxY = doc.y;
+
+          // Cabeçalho Resumo
+          doc.lineWidth(1).strokeColor('#000000');
+          doc.moveTo(boxX, boxY).lineTo(boxX + 180, boxY).stroke();
+          doc.fillColor('#000000').font('Helvetica-Bold');
+          doc.text('Resumo', boxX + 5, boxY + 4, { width: 170, align: 'center' });
+          boxY += 17;
+          doc.moveTo(boxX, boxY).lineTo(boxX + 180, boxY).stroke();
+
+          let zebraRow = 0;
+          const drawRow = (lbl: string, val: string, lblColor: string, valColor: string) => {
+            if (zebraRow % 2 === 0) {
+              doc.rect(boxX, boxY, 180, 15).fill('#F0F0F0');
+            }
+            zebraRow++;
+            
+            doc.fillColor(lblColor).font('Helvetica-Bold');
+            doc.text(lbl, boxX + 5, boxY + 4, { width: 85, align: 'left' });
+            
+            doc.fillColor(valColor).font('Helvetica');
+            doc.text(val, boxX + 90, boxY + 4, { width: 85, align: 'right' });
+            
+            boxY += 15;
+          };
+
+          // Table Data
+          drawRow('Horas Mês', formatHoursClock(hrBase), '#000000', '#000000');
+          drawRow('Vlr Hora', formatNumber(valorHora), '#000000', '#000000');
+
+          if (hrExtra > 0) {
+            drawRow('Horas Ext', formatHoursClock(hrExtra), '#4285F4', '#4285F4'); // Blue
+          }
+          if (hrFalta !== 0) {
+            drawRow('Hrs Falta', formatHoursClock(Math.abs(hrFalta)), '#EA4335', '#EA4335'); // Red
+          }
+
+          drawRow('Valor Base', formatNumber(valBase), '#000000', '#000000');
+          
+          if (valExtra > 0) {
+            drawRow('Extras', formatNumber(valExtra), '#4285F4', '#4285F4');
+          }
+          if (valFalta > 0) {
+            drawRow('Falta', formatNumber(valFalta), '#EA4335', '#EA4335');
+          }
+          if (adiantamentoVal > 0) {
+            drawRow(adiantamentoLabel || 'Adiantamento', formatNumber(adiantamentoVal), '#EA4335', '#EA4335');
+          }
+          drawRow('Valor Total', formatNumber(totalFinal), '#000000', '#000000');
+          
+          // Linha final inferior
+          doc.moveTo(boxX, boxY).lineTo(boxX + 180, boxY).stroke();
+
+          doc.y = boxY + 30;
+          
+          totalGeralHoras += totalExecutado;
+          totalGeralFinanceiro += totalFinal;
+        }
+        doc.moveDown(1);
+      }
+
+      doc.end();
+    });
   }
 }

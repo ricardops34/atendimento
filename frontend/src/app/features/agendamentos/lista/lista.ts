@@ -13,6 +13,7 @@ import {
   PoModalModule,
   PoNotificationService,
   PoPageModule,
+  PoRadioGroupOption,
   PoSearchModule,
   PoTableAction,
   PoTableColumn,
@@ -44,6 +45,8 @@ import { ProfissionalService } from '../../../core/services/profissional.service
 export class Lista implements OnInit {
   @ViewChild(FormSidebar) formSidebar!: FormSidebar;
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
+  @ViewChild('extratoModal', { static: true }) extratoModal!: PoModalComponent;
+  @ViewChild('gerarMensalModal', { static: true }) gerarMensalModal!: PoModalComponent;
 
   private agendamentoService = inject(AgendamentoService);
   private contratoService = inject(ContratoService);
@@ -69,6 +72,11 @@ export class Lista implements OnInit {
     { label: 'XML', action: () => this.onExport('xml') }
   ];
 
+  extratoActions: PoDropdownAction[] = [
+    { label: 'Extrato (XLS)', action: () => this.openExtratoModal('xls') },
+    { label: 'Extrato (PDF)', action: () => this.openExtratoModal('pdf') }
+  ];
+
   readonly statusOptions: PoComboOption[] = [
     { label: 'Agendada', value: 'A' },
     { label: 'Realizada', value: 'R' },
@@ -79,7 +87,8 @@ export class Lista implements OnInit {
   readonly modalidadeOptions: PoComboOption[] = [
     { label: 'Presencial', value: 'P' },
     { label: 'Remoto', value: 'R' },
-    { label: 'Falta', value: 'F' }
+    { label: 'Falta', value: 'F' },
+    { label: 'Extra', value: 'E' }
   ];
 
   filters: {
@@ -90,6 +99,44 @@ export class Lista implements OnInit {
     dataInicial?: string;
     dataFinal?: string;
   } = {};
+
+  extratoFilters: {
+    dataInicial?: string;
+    dataFinal?: string;
+    contratoId?: number;
+    profissionalId?: number;
+    tipoExtrato?: 'sintetico' | 'analitico' | 'calendario';
+  } = { tipoExtrato: 'sintetico' };
+
+  tipoExtratoOptions: Array<PoRadioGroupOption> = [
+    { label: 'Sintético (Resumo)', value: 'sintetico' },
+    { label: 'Analítico (Com Observações)', value: 'analitico' },
+    { label: 'Calendário', value: 'calendario' }
+  ];
+
+  gerarMensalFilters: {
+    mes?: number;
+    ano?: number;
+    contratoId?: number;
+    profissionalId?: number;
+  } = {};
+
+  readonly mesesOptions: PoComboOption[] = [
+    { label: 'Janeiro', value: 1 },
+    { label: 'Fevereiro', value: 2 },
+    { label: 'Março', value: 3 },
+    { label: 'Abril', value: 4 },
+    { label: 'Maio', value: 5 },
+    { label: 'Junho', value: 6 },
+    { label: 'Julho', value: 7 },
+    { label: 'Agosto', value: 8 },
+    { label: 'Setembro', value: 9 },
+    { label: 'Outubro', value: 10 },
+    { label: 'Novembro', value: 11 },
+    { label: 'Dezembro', value: 12 }
+  ];
+
+  extratoFormat: 'xls' | 'pdf' = 'xls';
 
   disclaimerGroup: PoDisclaimerGroup = {
     title: 'Filtros aplicados',
@@ -133,18 +180,45 @@ export class Lista implements OnInit {
     {
       label: 'Ordem de Serviço',
       icon: 'po-icon-document',
-      action: () => {},
+      action: () => { },
       disabled: () => true
     }
   ];
 
+  private readonly STORAGE_KEY_FILTERS = 'agendamentos_lista_filters';
+  private readonly STORAGE_KEY_EXTRATO = 'agendamentos_extrato_filters';
+
   ngOnInit() {
     this.loadDependencies();
+    this.restoreParams();
     this.loadData(true);
   }
 
+  private restoreParams() {
+    try {
+      const savedFilters = localStorage.getItem(this.STORAGE_KEY_FILTERS);
+      if (savedFilters) {
+        const parsed = JSON.parse(savedFilters);
+        this.filters = parsed.filters || {};
+        this.quickSearch = parsed.quickSearch || '';
+        this.syncDisclaimers();
+      }
+
+      const savedExtrato = localStorage.getItem(this.STORAGE_KEY_EXTRATO);
+      if (savedExtrato) {
+        this.extratoFilters = JSON.parse(savedExtrato);
+      }
+    } catch (e) {
+      console.error('Erro ao restaurar filtros salvos:', e);
+    }
+  }
+
+  private saveParams(key: string, data: any) {
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+
   loadDependencies() {
-    this.contratoService.findAll().subscribe((data) => {
+    this.contratoService.findAll(false).subscribe((data) => {
       this.contratos = data.map((c) => ({ label: c.descricao, value: c.id }));
     });
     this.profissionalService.findAll().subscribe((data) => {
@@ -188,8 +262,10 @@ export class Lista implements OnInit {
     this.loadData();
   }
 
-  onQuickSearch(value: string) {
-    this.quickSearch = value?.trim() || '';
+  onQuickSearch(filter: string) {
+    this.quickSearch = filter;
+    this.saveParams(this.STORAGE_KEY_FILTERS, { filters: this.filters, quickSearch: this.quickSearch });
+    this.syncDisclaimers();
     this.loadData(true);
   }
 
@@ -198,6 +274,7 @@ export class Lista implements OnInit {
   }
 
   applyAdvancedFilters() {
+    this.saveParams(this.STORAGE_KEY_FILTERS, { filters: this.filters, quickSearch: this.quickSearch });
     this.advancedFilterModal.close();
     this.loadData(true);
   }
@@ -205,6 +282,7 @@ export class Lista implements OnInit {
   clearFilters() {
     this.quickSearch = '';
     this.filters = {};
+    localStorage.removeItem(this.STORAGE_KEY_FILTERS);
     this.syncDisclaimers();
     this.loadData(true);
   }
@@ -214,10 +292,14 @@ export class Lista implements OnInit {
     if (property === 'search') {
       this.quickSearch = '';
     } else {
-      this.filters[property] = undefined;
+      delete this.filters[property];
     }
-    this.syncDisclaimers();
-    this.loadData(true);
+    this.saveParams(this.STORAGE_KEY_FILTERS, { filters: this.filters, quickSearch: this.quickSearch });
+    
+    setTimeout(() => {
+      this.syncDisclaimers();
+      this.loadData(true);
+    });
   }
 
   onNew() {
@@ -257,7 +339,61 @@ export class Lista implements OnInit {
             const text = await err.error.text();
             const json = JSON.parse(text);
             message = json.message || message;
-          } catch {}
+          } catch { }
+        }
+        this.poNotification.error(message);
+      }
+    });
+  }
+
+  openExtratoModal(format: 'xls' | 'pdf') {
+    this.extratoFormat = format;
+
+    // Se não tiver nenhum dado de data inicial salvo, podemos puxar da busca avançada
+    if (!this.extratoFilters.dataInicial && !this.extratoFilters.dataFinal) {
+      this.extratoFilters = {
+        dataInicial: this.filters.dataInicial,
+        dataFinal: this.filters.dataFinal,
+        contratoId: this.filters.contratoId,
+        profissionalId: this.filters.profissionalId,
+        tipoExtrato: this.extratoFilters.tipoExtrato || 'sintetico'
+      };
+    }
+    this.extratoModal.open();
+  }
+
+  generateExtrato() {
+    this.saveParams(this.STORAGE_KEY_EXTRATO, this.extratoFilters);
+    this.extratoModal.close();
+
+    const params: AgendamentoSearchParams = {
+      page: 1,
+      pageSize: 2000,
+      dataInicial: this.extratoFilters.dataInicial,
+      dataFinal: this.extratoFilters.dataFinal,
+      contratoId: this.extratoFilters.contratoId,
+      profissionalId: this.extratoFilters.profissionalId,
+      tipoExtrato: this.extratoFilters.tipoExtrato
+    };
+
+    this.agendamentoService.exportExtrato(params, this.extratoFormat).subscribe({
+      next: (blob) => {
+        const extMap: Record<'xls' | 'pdf', string> = { xls: 'xlsx', pdf: 'pdf' };
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `extrato_faturamento.${extMap[this.extratoFormat]}`;
+        a.click();
+        URL.revokeObjectURL(url);
+      },
+      error: async (err) => {
+        let message = 'Erro ao exportar extrato.';
+        if (err.error instanceof Blob) {
+          try {
+            const text = await err.error.text();
+            const json = JSON.parse(text);
+            message = json.message || message;
+          } catch { }
         }
         this.poNotification.error(message);
       }
@@ -276,6 +412,45 @@ export class Lista implements OnInit {
         this.loadData();
       },
       error: () => this.poNotification.error('Erro no fechamento de lote.')
+    });
+  }
+
+  openGerarMensalModal() {
+    const hoje = new Date();
+    this.gerarMensalFilters = {
+      mes: hoje.getMonth() + 1,
+      ano: hoje.getFullYear(),
+      contratoId: undefined,
+      profissionalId: undefined
+    };
+    this.gerarMensalModal.open();
+  }
+
+  generateMensal() {
+    if (!this.gerarMensalFilters.mes || !this.gerarMensalFilters.ano) {
+      this.poNotification.warning('Mês e ano são obrigatórios.');
+      return;
+    }
+
+    this.agendamentoService.gerarMensal(
+      this.gerarMensalFilters.mes,
+      this.gerarMensalFilters.ano,
+      this.gerarMensalFilters.contratoId,
+      this.gerarMensalFilters.profissionalId
+    ).subscribe({
+      next: (res) => {
+        this.gerarMensalModal.close();
+        if (res.gerados > 0) {
+          this.poNotification.success(`${res.gerados} novos agendamentos gerados com sucesso!`);
+          this.loadData(true);
+        } else {
+          this.poNotification.information('Nenhum agendamento novo gerado. Todos já existiam ou a escala está vazia.');
+        }
+      },
+      error: (err) => {
+        const msg = err?.error?.message || 'Erro ao gerar previsão mensal.';
+        this.poNotification.error(msg);
+      }
     });
   }
 
@@ -330,8 +505,11 @@ export class Lista implements OnInit {
   }
 
   private mapAgendamento(a: any) {
+    // Fix timezone shift by stripping the Z and forcing it to midday local time
+    const localDate = a.dataAgenda ? a.dataAgenda.split('T')[0] + 'T12:00:00' : null;
     return {
       ...a,
+      dataAgenda: localDate,
       localFormatado: this.formatLocal(a.local),
       duracaoFormatada: this.formatMinutesToHours(a.duracaoMinutos),
       tipoFormatado: this.formatTipo(a.tipo)
@@ -339,7 +517,7 @@ export class Lista implements OnInit {
   }
 
   private formatLocal(local: string) {
-    const map: Record<string, string> = { P: 'Presencial', R: 'Remoto', F: 'Falta' };
+    const map: Record<string, string> = { P: 'Presencial', R: 'Remoto', F: 'Falta', E: 'Extra' };
     return map[local] || local;
   }
 

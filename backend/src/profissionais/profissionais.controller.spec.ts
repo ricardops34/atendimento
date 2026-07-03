@@ -28,7 +28,7 @@ describe('ProfissionaisController', () => {
   });
 
   it('delegates search query to service', () => {
-    controller.search({ page: '2', pageSize: '20', search: 'ana' } as any);
-    expect(service.search).toHaveBeenCalledWith({ page: '2', pageSize: '20', search: 'ana' });
+    controller.search({ page: '1', pageSize: '20', search: 'joao' } as any, { user: { empresaId: 1 } } as any);
+    expect(service.search).toHaveBeenCalledWith({ page: '1', pageSize: '20', search: 'joao' }, 1);
   });
 });

@@ -14,16 +14,19 @@ import { RoutinesModule } from './routines/routines.module';
 import { MenusModule } from './menus/menus.module';
 import { ProfilesModule } from './profiles/profiles.module';
 import { UsersModule } from './users/users.module';
-import { LocalidadesModule } from './localidades/localidades.module';
+import { FeriadosModule } from './feriados/feriados.module';
+import { EstadosModule } from './estados/estados.module';
+import { MunicipiosModule } from './municipios/municipios.module';
+import { CepsModule } from './ceps/ceps.module';
 
 @Module({
   imports: [
-    PrismaModule,
+    PrismaModule, 
     AuthModule,
-    ClientesModule,
-    ProfissionaisModule,
-    ContratosModule,
-    AgendamentosModule,
+    ClientesModule, 
+    ProfissionaisModule, 
+    ContratosModule, 
+    AgendamentosModule, 
     RealizadosModule,
     EmpresasModule,
     SystemModulesModule,
@@ -31,7 +34,10 @@ import { LocalidadesModule } from './localidades/localidades.module';
     MenusModule,
     ProfilesModule,
     UsersModule,
-    LocalidadesModule,
+    FeriadosModule,
+    EstadosModule,
+    MunicipiosModule,
+    CepsModule
   ],
   controllers: [AppController],
   providers: [AppService],

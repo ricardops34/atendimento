@@ -28,7 +28,7 @@ describe('ContratosController', () => {
   });
 
   it('delegates search query to service', () => {
-    controller.search({ page: '1', pageSize: '20', search: 'plano', empresaId: '2' } as any);
-    expect(service.search).toHaveBeenCalledWith({ page: '1', pageSize: '20', search: 'plano', empresaId: '2' });
+    controller.search({ page: '1', pageSize: '20', search: 'plano', clienteId: '2' } as any, { user: { empresaId: 1 } } as any);
+    expect(service.search).toHaveBeenCalledWith({ page: '1', pageSize: '20', search: 'plano', clienteId: '2' }, 1);
   });
 });

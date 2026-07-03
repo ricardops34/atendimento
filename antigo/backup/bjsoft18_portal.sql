@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql:3306
--- Tempo de geração: 29/06/2026 às 21:34
+-- Tempo de geração: 01/07/2026 às 19:02
 -- Versão do servidor: 8.0.41
 -- Versão do PHP: 8.2.27
 
@@ -1907,12 +1907,14 @@ INSERT INTO `agendamento` (`contrato_id`, `id`, `profissional_id`, `descricao`, 
 (5, 1885, NULL, 'RCG', '2026-06-26 08:00:00', NULL, NULL, '2026-06-26 18:00:00', '#00BCD4', '<ul><li>Configuração acessos Caroline<ul><li>Computador/Email/Sistemas</li></ul></li><li>Ajuste integração Maxima(MXPED-92771)</li><li>Reunião Rose\\Eliane\\ Se Edezio - Reforma Tributaria</li></ul>', 'A', '2026-06-26', '08:00:00', '18:00:00', '12:00:00', '13:00:00', '09:00:00', 'P'),
 (4, 1886, NULL, 'MSGAS', '2026-06-29 07:30:00', NULL, NULL, '2026-06-29 11:30:00', '#2196F3', '<ul><li>e-Sfinge Folha pagamento</li></ul>', 'A', '2026-06-29', '07:30:00', '11:30:00', '00:00:00', '00:00:00', '04:00:00', 'P'),
 (5, 1887, NULL, 'RCG', '2026-06-29 16:00:00', NULL, NULL, '2026-06-29 18:00:00', '#00BCD4', '<ul><li>Propostas EXCEL Gabriel</li><li>Criação de Ambiente para Reforma Tributaria</li></ul>', 'A', '2026-06-29', '16:00:00', '18:00:00', '00:00:00', '00:00:00', '02:00:00', 'P'),
-(5, 1888, NULL, 'RCG', '2026-06-30 08:00:00', NULL, NULL, '2026-06-30 18:00:00', '#00BCD4', NULL, 'A', '2026-06-30', '08:00:00', '18:00:00', '12:00:00', '13:00:00', '09:00:00', 'P'),
+(5, 1888, NULL, 'RCG', '2026-06-30 08:00:00', NULL, NULL, '2026-06-30 11:30:00', '#00BCD4', '<ul><li>Relatório de Baixas CNAB personalizado&nbsp;</li><li>Reunião Alex sistema de proposta&nbsp;</li></ul>', 'A', '2026-06-30', '08:00:00', '11:30:00', NULL, NULL, '03:30:00', 'P'),
 (5, 1889, NULL, 'RCG', '2026-06-29 13:00:00', NULL, NULL, '2026-06-29 16:00:00', '#E91E63', '<ul><li>Falta</li></ul>', 'A', '2026-06-29', '13:00:00', '16:00:00', '00:00:00', '00:00:00', '03:00:00', 'F'),
 (4, 1890, NULL, 'MSGAS', '2026-06-12 10:00:00', NULL, NULL, '2026-06-12 11:00:00', '#2196F3', '<ul><li>Totvs Boleto Hibrido</li></ul>', 'A', '2026-06-12', '10:00:00', '11:00:00', '00:00:00', '00:00:00', '01:00:00', 'P'),
 (5, 1891, NULL, 'RCG', '2026-06-29 09:00:00', NULL, NULL, '2026-06-29 10:00:00', '#00BCD4', '<ul><li>Erro Faturamento CBA</li></ul>', 'A', '2026-06-29', '09:00:00', '10:00:00', '00:00:00', '00:00:00', '01:00:00', 'R'),
 (6, 1892, NULL, 'GUATOS', '2026-06-23 16:00:00', NULL, NULL, '2026-06-23 18:00:00', '#FFC107', '<ul><li>Apliicadas Atualizações solicitadas pelo SR&nbsp;Joelson Santos - Contador</li></ul>', 'A', '2026-06-23', '16:00:00', '18:00:00', '00:00:00', '00:00:00', '02:00:00', 'P'),
-(6, 1893, NULL, 'GUATOS', '2026-06-26 13:30:00', NULL, NULL, '2026-06-26 17:00:00', '#FFC107', '<ul><li>Ajuste em cadastro de Calendario</li><li>Ajuste em cadastro Calendario X Moedas</li><li>Geração de arquivo ECD</li><li>Analise de relatorio \"Lançamentos com Diferença\"</li><li>Apresentando para o Contador lancamentos do diferenção e a necessidade de ajuste em cadastro de Visão Gerencial de Balanço Patrimonial</li></ul>', 'A', '2026-06-26', '13:30:00', '17:00:00', '00:00:00', '00:00:00', '03:30:00', 'P');
+(6, 1893, NULL, 'GUATOS', '2026-06-26 13:30:00', NULL, NULL, '2026-06-26 17:00:00', '#FFC107', '<ul><li>Ajuste em cadastro de Calendario</li><li>Ajuste em cadastro Calendario X Moedas</li><li>Geração de arquivo ECD</li><li>Analise de relatorio \"Lançamentos com Diferença\"</li><li>Apresentando para o Contador lancamentos do diferenção e a necessidade de ajuste em cadastro de Visão Gerencial de Balanço Patrimonial</li></ul>', 'A', '2026-06-26', '13:30:00', '17:00:00', '00:00:00', '00:00:00', '03:30:00', 'P'),
+(5, 1894, 1, 'RCG', '2026-06-30 13:00:00', NULL, NULL, '2026-06-30 16:30:00', '#E91E63', '<ul><li>Falta</li></ul>', 'A', '2026-06-30', '13:00:00', '16:30:00', '00:00:00', '00:00:00', '03:30:00', 'F'),
+(5, 1895, NULL, 'RCG', '2026-06-30 16:30:00', NULL, NULL, '2026-06-30 18:00:00', '#00BCD4', '<ul><li>Erro importação de pedidos Josue</li><li>TES CBA - Fundo de combate à Probreza</li></ul>', 'A', '2026-06-30', '16:30:00', '18:00:00', '00:00:00', '00:00:00', '01:30:00', 'P');
 
 -- --------------------------------------------------------
 
@@ -2854,7 +2856,7 @@ ALTER TABLE `system_user_unit`
 -- AUTO_INCREMENT de tabela `agendamento`
 --
 ALTER TABLE `agendamento`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1894;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1896;
 
 --
 -- AUTO_INCREMENT de tabela `ausencias`

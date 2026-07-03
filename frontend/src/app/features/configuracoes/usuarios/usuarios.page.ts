@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  PoButtonModule,
+import { PoDialogService, PoButtonModule,
   PoComboOption,
   PoDisclaimer,
   PoDisclaimerGroup,
@@ -15,10 +14,9 @@ import {
   PoTableAction,
   PoTableColumn,
   PoTableColumnSort,
-  PoTableModule
-} from '@po-ui/ng-components';
+  PoTableModule } from '@po-ui/ng-components';
 import { ProfileService } from '../../../core/services/profile.service';
-import { EmpresaAdminService } from '../../../core/services/empresa-admin.service';
+import { TenantService } from '../../../core/services/tenant.service';
 import { UserSearchParams, UserService } from '../../../core/services/user.service';
 
 @Component({
@@ -32,12 +30,13 @@ export class UsuariosPage implements OnInit {
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
 
   private service = inject(UserService);
-  private empresaAdminService = inject(EmpresaAdminService);
+  private poDialog = inject(PoDialogService);
+  private tenantService = inject(TenantService);
   private profileService = inject(ProfileService);
   private poNotification = inject(PoNotificationService);
 
   items: any[] = [];
-  empresasOptions: PoComboOption[] = [];
+  tenantOptions: PoComboOption[] = [];
   profileOptions: PoComboOption[] = [];
   loading = false;
   loadingShowMore = false;
@@ -49,7 +48,7 @@ export class UsuariosPage implements OnInit {
   hasNext = false;
   sortProperty = 'name';
   sortDirection: 'ascending' | 'descending' = 'ascending';
-  filters: { empresaId?: number; profileId?: number; name?: string; email?: string; isActive?: string } = {};
+  filters: { tenantId?: number; profileId?: number; name?: string; email?: string; isActive?: string } = {};
   activeOptions: PoComboOption[] = [{ label: 'Ativo', value: 'true' }, { label: 'Inativo', value: 'false' }];
   formData: any = this.createEmptyForm();
 
@@ -58,7 +57,7 @@ export class UsuariosPage implements OnInit {
     { property: 'name', label: 'Usuario', sortable: true },
     { property: 'email', label: 'Email', sortable: true },
     { property: 'profileLabel', label: 'Perfil', sortable: false },
-    { property: 'empresasLabel', label: 'Empresas', sortable: false },
+    { property: 'tenantsLabel', label: 'Tenants', sortable: false },
     { property: 'isActiveLabel', label: 'Status', sortable: true },
   ];
 
@@ -80,8 +79,8 @@ export class UsuariosPage implements OnInit {
   }
 
   loadDependencies() {
-    this.empresaAdminService.findAll().subscribe((data) => {
-      this.empresasOptions = (data || []).map((item) => ({ label: item.name, value: item.id }));
+    this.tenantService.findAll().subscribe((data) => {
+      this.tenantOptions = (data || []).map((item) => ({ label: item.name, value: item.id }));
     });
     this.profileService.findAll().subscribe((data) => {
       this.profileOptions = (data || []).map((item) => ({ label: item.name, value: item.id }));
@@ -101,8 +100,8 @@ export class UsuariosPage implements OnInit {
           ...item,
           isActiveLabel: item.isActive ? 'Ativo' : 'Inativo',
           profileLabel: item.profile?.name || '',
-          empresasLabel: (item.userEmpresas || [])
-            .map((link: any) => `${link.empresa?.name || 'Empresa'}${link.isDefault ? ' (Padrao)' : ''}`)
+          tenantsLabel: (item.userTenants || [])
+            .map((link: any) => `${link.tenant?.name || 'Tenant'}${link.isDefault ? ' (Padrao)' : ''}`)
             .join(', ')
         }));
         this.items = this.page === 1 ? mapped : [...this.items, ...mapped];
@@ -175,46 +174,46 @@ export class UsuariosPage implements OnInit {
       password: '',
       isActive: row.isActive,
       profileId: row.profileId,
-      selectedEmpresaId: this.empresasOptions[0]?.value ?? null,
-      empresaLinks: (row.userEmpresas || []).map((link: any) => ({
-        empresaId: link.empresaId,
+      selectedTenantId: this.tenantOptions[0]?.value ?? null,
+      tenantLinks: (row.userTenants || []).map((link: any) => ({
+        tenantId: link.tenantId,
         isDefault: !!link.isDefault
       }))
     };
     this.modal.open();
   }
 
-  addEmpresaLink() {
-    if (!this.formData.selectedEmpresaId) {
-      this.poNotification.warning('Selecione a empresa para adicionar o vinculo.');
+  addTenantLink() {
+    if (!this.formData.selectedTenantId) {
+      this.poNotification.warning('Selecione o tenant para adicionar o vinculo.');
       return;
     }
 
-    const empresaId = Number(this.formData.selectedEmpresaId);
-    const exists = (this.formData.empresaLinks || []).some((item: any) => Number(item.empresaId) === empresaId);
+    const tenantId = Number(this.formData.selectedTenantId);
+    const exists = (this.formData.tenantLinks || []).some((item: any) => Number(item.tenantId) === tenantId);
     if (exists) {
-      this.poNotification.warning('Essa empresa ja esta vinculada ao usuario.');
+      this.poNotification.warning('Esse tenant ja esta vinculado ao usuario.');
       return;
     }
 
-    this.formData.empresaLinks = [
-      ...(this.formData.empresaLinks || []),
+    this.formData.tenantLinks = [
+      ...(this.formData.tenantLinks || []),
       {
-        empresaId,
-        isDefault: !(this.formData.empresaLinks || []).length
+        tenantId,
+        isDefault: !(this.formData.tenantLinks || []).length
       }
     ];
   }
 
-  removeEmpresaLink(index: number) {
-    this.formData.empresaLinks = (this.formData.empresaLinks || []).filter((_: any, currentIndex: number) => currentIndex !== index);
-    if (!this.formData.empresaLinks.some((item: any) => item.isDefault) && this.formData.empresaLinks[0]) {
-      this.formData.empresaLinks[0].isDefault = true;
+  removeTenantLink(index: number) {
+    this.formData.tenantLinks = (this.formData.tenantLinks || []).filter((_: any, currentIndex: number) => currentIndex !== index);
+    if (!this.formData.tenantLinks.some((item: any) => item.isDefault) && this.formData.tenantLinks[0]) {
+      this.formData.tenantLinks[0].isDefault = true;
     }
   }
 
-  setDefaultEmpresa(index: number) {
-    this.formData.empresaLinks = (this.formData.empresaLinks || []).map((item: any, currentIndex: number) => ({
+  setDefaultTenant(index: number) {
+    this.formData.tenantLinks = (this.formData.tenantLinks || []).map((item: any, currentIndex: number) => ({
       ...item,
       isDefault: currentIndex === index
     }));
@@ -233,8 +232,8 @@ export class UsuariosPage implements OnInit {
       this.poNotification.warning('Informe a senha do usuario.');
       return;
     }
-    if (!(this.formData.empresaLinks || []).length) {
-      this.poNotification.warning('Adicione ao menos um vinculo de empresa.');
+    if (!(this.formData.tenantLinks || []).length) {
+      this.poNotification.warning('Adicione ao menos um vinculo de tenant.');
       return;
     }
 
@@ -244,8 +243,8 @@ export class UsuariosPage implements OnInit {
       email: this.formData.email.trim(),
       profileId: Number(this.formData.profileId),
       isActive: !!this.formData.isActive,
-      empresaLinks: (this.formData.empresaLinks || []).map((item: any) => ({
-        empresaId: Number(item.empresaId),
+      tenantLinks: (this.formData.tenantLinks || []).map((item: any) => ({
+        tenantId: Number(item.tenantId),
         isDefault: !!item.isDefault
       }))
     };
@@ -267,17 +266,23 @@ export class UsuariosPage implements OnInit {
   }
 
   remove(row: any) {
-    this.service.remove(row.id).subscribe({
+    this.poDialog.confirm({
+      title: 'Confirmar exclusão',
+      message: 'Tem certeza que deseja excluir este registro?',
+      confirm: () => {
+        this.service.remove(row.id).subscribe({
       next: () => {
         this.poNotification.success('Usuario excluido com sucesso.');
         this.loadData(true);
       },
       error: () => this.poNotification.error('Erro ao excluir usuario.')
     });
+      }
+    });
   }
 
-  resolveEmpresaName(empresaId: number) {
-    return this.empresasOptions.find((item) => Number(item.value) === Number(empresaId))?.label || String(empresaId);
+  resolveTenantName(tenantId: number) {
+    return this.tenantOptions.find((item) => Number(item.value) === Number(tenantId))?.label || String(tenantId);
   }
 
   resolveProfileName(profileId: number) {
@@ -291,8 +296,8 @@ export class UsuariosPage implements OnInit {
       password: '',
       isActive: true,
       profileId: null,
-      selectedEmpresaId: this.empresasOptions[0]?.value ?? null,
-      empresaLinks: [] as any[]
+      selectedTenantId: this.tenantOptions[0]?.value ?? null,
+      tenantLinks: [] as any[]
     };
   }
 
@@ -301,7 +306,7 @@ export class UsuariosPage implements OnInit {
       page: this.page,
       pageSize: this.pageSize,
       search: this.quickSearch || undefined,
-      empresaId: this.filters.empresaId,
+      tenantId: this.filters.tenantId,
       profileId: this.filters.profileId,
       name: this.filters.name,
       email: this.filters.email,
@@ -314,7 +319,7 @@ export class UsuariosPage implements OnInit {
   private syncDisclaimers() {
     const disclaimers: PoDisclaimer[] = [];
     if (this.quickSearch) disclaimers.push({ property: 'search', label: 'Busca', value: this.quickSearch });
-    if (this.filters.empresaId) disclaimers.push({ property: 'empresaId', label: 'Empresa', value: this.resolveEmpresaName(this.filters.empresaId) });
+    if (this.filters.tenantId) disclaimers.push({ property: 'tenantId', label: 'Tenant', value: this.resolveTenantName(this.filters.tenantId) });
     if (this.filters.profileId) disclaimers.push({ property: 'profileId', label: 'Perfil', value: this.resolveProfileName(this.filters.profileId) });
     if (this.filters.name) disclaimers.push({ property: 'name', label: 'Usuario', value: this.filters.name });
     if (this.filters.email) disclaimers.push({ property: 'email', label: 'Email', value: this.filters.email });

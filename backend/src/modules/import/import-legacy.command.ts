@@ -22,10 +22,10 @@ async function bootstrap() {
     console.log('Connected to legacy MySQL database.');
 
     // 1. Create Default Empresa
-    let defaultEmpresa = await prisma.empresa.findUnique({ where: { slug: 'default' } });
+    let defaultEmpresa = await prisma.empresa.findFirst({ where: { slug: 'default' } });
     if (!defaultEmpresa) {
       defaultEmpresa = await prisma.empresa.create({
-        data: { name: 'Empresa Padrao', slug: 'default' }
+        data: { name: 'Empresa Fallback', slug: 'default' }
       });
       console.log('Created default empresa.');
     }
@@ -95,8 +95,8 @@ async function bootstrap() {
       },
     });
 
-    // 4. Import Empresas
-    console.log('Importing Empresas...');
+    // 4. Import Clientes
+    console.log('Importing Clientes...');
     const [empresas]: any = await legacyDb.execute('SELECT * FROM empresa');
     for (const row of empresas) {
       await prisma.cliente.upsert({

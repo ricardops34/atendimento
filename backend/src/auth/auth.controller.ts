@@ -13,6 +13,7 @@ export class AuthController {
 
   @Post('empresa-options')
   async empresaOptions(@Body('email') email: string) {
+    console.log('empresaOptions chamado com email:', email);
     if (!email) return [];
     const user = await this.prisma.user.findFirst({
       where: { email, isActive: true },

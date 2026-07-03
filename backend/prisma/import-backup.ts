@@ -39,14 +39,14 @@ const profissionais = [
 // Contratos do backup (campo tipo ignorado — não existe no novo schema)
 // isFeriado=false para todos: o contrato de feriado do sistema é gerado pelo seed
 const contratos = [
-  { id: 3,  clienteId: 1, descricao: 'FUNLEC',     cor: '#4CAF50' },
-  { id: 4,  clienteId: 3, descricao: 'MSGAS',      cor: '#2196F3' },
-  { id: 5,  clienteId: 2, descricao: 'RCG',         cor: '#00BCD4' },
-  { id: 6,  clienteId: 4, descricao: 'GUATOS',      cor: '#FFC107' },
-  { id: 7,  clienteId: 5, descricao: 'GAO MSGAS',   cor: '#2196F3' },
-  { id: 8,  clienteId: 6, descricao: 'Health',      cor: '#9E9E9E' },
-  { id: 9,  clienteId: 7, descricao: 'JFS',         cor: '#FF5722' },
-  { id: 10, clienteId: 8, descricao: 'H2L AVULSO',  cor: '#00BCD4' },
+  { id: 3,  empresaId: 1, descricao: 'FUNLEC',     cor: '#4CAF50' },
+  { id: 4,  empresaId: 3, descricao: 'MSGAS',      cor: '#2196F3' },
+  { id: 5,  empresaId: 2, descricao: 'RCG',         cor: '#00BCD4' },
+  { id: 6,  empresaId: 4, descricao: 'GUATOS',      cor: '#FFC107' },
+  { id: 7,  empresaId: 5, descricao: 'GAO MSGAS',   cor: '#2196F3' },
+  { id: 8,  empresaId: 6, descricao: 'Health',      cor: '#9E9E9E' },
+  { id: 9,  empresaId: 7, descricao: 'JFS',         cor: '#FF5722' },
+  { id: 10, empresaId: 8, descricao: 'H2L AVULSO',  cor: '#00BCD4' },
 ];
 
 // ContratoItems do backup — itens com profissional_id NULL são ignorados
@@ -67,14 +67,14 @@ async function resetSequence(table: string, column = 'id') {
 }
 
 async function main() {
-  // Busca o tenant padrão (criado pelo seed.ts)
-  const tenant = await prisma.empresa.findFirst({ where: { slug: 'default-tenant' } });
-  if (!tenant) {
-    throw new Error('Tenant "default" não encontrado. Rode "npx prisma db seed" primeiro.');
+  // Busca a empresa padrão (criado pelo seed.ts)
+  const empresaDefault = await prisma.empresa.findFirst({ where: { slug: 'empresa-padrao' } });
+  if (!empresaDefault) {
+    throw new Error('Empresa fallback não encontrada. Rode "npx prisma db seed" primeiro.');
   }
-  const empresaId = tenant.id;
+  const empresaId = empresaDefault.id;
 
-  console.log(`Importando dados para tenant "${tenant.name}" (id=${empresaId})...`);
+  console.log(`Importando dados para empresa "${empresaDefault.name}" (id=${empresaId})...`);
 
   // 1. Empresas
   console.log('\n→ Empresas...');
@@ -108,7 +108,7 @@ async function main() {
       update: {
         descricao: con.descricao,
         cor: con.cor,
-        clienteId: con.clienteId,
+        clienteId: con.empresaId,
         empresaId,
         dtInicio: DEFAULT_CONTRACT_START,
         dtFim: DEFAULT_CONTRACT_END,
@@ -118,7 +118,7 @@ async function main() {
         id: con.id,
         descricao: con.descricao,
         cor: con.cor,
-        clienteId: con.clienteId,
+        clienteId: con.empresaId,
         empresaId,
         dtInicio: DEFAULT_CONTRACT_START,
         dtFim: DEFAULT_CONTRACT_END,

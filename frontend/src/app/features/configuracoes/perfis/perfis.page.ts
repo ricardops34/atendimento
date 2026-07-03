@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { PoButtonModule, PoComboOption, PoDisclaimer, PoDisclaimerGroup, PoFieldModule, PoModalComponent, PoModalModule, PoNotificationService, PoPageModule, PoSearchModule, PoTableAction, PoTableColumn, PoTableColumnSort, PoTableModule } from '@po-ui/ng-components';
+import { PoDialogService, PoButtonModule, PoComboOption, PoDisclaimer, PoDisclaimerGroup, PoFieldModule, PoModalComponent, PoModalModule, PoNotificationService, PoPageModule, PoSearchModule, PoTableAction, PoTableColumn, PoTableColumnSort, PoTableModule } from '@po-ui/ng-components';
 import { ProfileSearchParams, ProfileService } from '../../../core/services/profile.service';
 import { SystemModuleService } from '../../../core/services/system-module.service';
 
@@ -15,6 +15,7 @@ export class PerfisPage implements OnInit {
   @ViewChild('modal', { static: true }) modal!: PoModalComponent;
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
   private service = inject(ProfileService);
+  private poDialog = inject(PoDialogService);
   private moduleService = inject(SystemModuleService);
   private poNotification = inject(PoNotificationService);
 
@@ -80,7 +81,15 @@ export class PerfisPage implements OnInit {
     const request$ = this.isEdit ? this.service.update(this.formData.id, payload) : this.service.create(payload);
     request$.subscribe({ next: () => { this.poNotification.success(this.isEdit ? 'Perfil atualizado com sucesso.' : 'Perfil criado com sucesso.'); this.saving = false; this.loadData(true); this.modal.close(); }, error: () => { this.poNotification.error('Erro ao salvar perfil.'); this.saving = false; } });
   }
-  remove(row: any) { this.service.remove(row.id).subscribe({ next: () => { this.poNotification.success('Perfil excluido com sucesso.'); this.loadData(true); }, error: () => this.poNotification.error('Erro ao excluir perfil.') }); }
+  remove(row: any) {
+    this.poDialog.confirm({
+      title: 'Confirmar exclusão',
+      message: 'Tem certeza que deseja excluir este registro?',
+      confirm: () => {
+        this.service.remove(row.id).subscribe({ next: () => { this.poNotification.success('Perfil excluido com sucesso.'); this.loadData(true); }, error: () => this.poNotification.error('Erro ao excluir perfil.') });
+      }
+    });
+  }
   private buildSearchParams(): ProfileSearchParams { return { page: this.page, pageSize: this.pageSize, search: this.quickSearch || undefined, name: this.filters.name, sortProperty: this.sortProperty, sortDirection: this.sortDirection }; }
   private syncDisclaimers() { const disclaimers: PoDisclaimer[] = []; if (this.quickSearch) disclaimers.push({ property: 'search', label: 'Busca', value: this.quickSearch }); if (this.filters.name) disclaimers.push({ property: 'name', label: 'Perfil', value: this.filters.name }); this.disclaimerGroup = { ...this.disclaimerGroup, disclaimers }; }
 }

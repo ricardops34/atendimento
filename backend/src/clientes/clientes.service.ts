@@ -9,11 +9,6 @@ interface ClienteSearchQuery {
   search?: string;
   id?: string;
   nome?: string;
-  cnpj?: string;
-  cpf?: string;
-  tipoPessoa?: string;
-  municipio?: string;
-  uf?: string;
   sortProperty?: string;
   sortDirection?: string;
 }
@@ -23,23 +18,25 @@ export class ClientesService {
   constructor(private prisma: PrismaService) {}
 
   create(dto: CreateClienteDto, empresaId: number) {
-    return this.prisma.cliente.create({
-      data: { ...dto, empresaId },
-    });
+    const data: any = { ...dto, empresaId };
+    if (data.dataNascimento) {
+      data.dataNascimento = new Date(data.dataNascimento);
+    }
+    return this.prisma.cliente.create({ data });
   }
 
   findAll(empresaId: number) {
     return this.prisma.cliente.findMany({ where: { empresaId }, orderBy: { nome: 'asc' } });
   }
 
-  async search(query: any, empresaId: number) {
+  async search(query: ClienteSearchQuery, empresaId: number) {
     const page = Math.max(Number(query.page) || 1, 1);
     const pageSize = Math.max(Number(query.pageSize) || 20, 1);
     const where = this.buildWhere(query, empresaId);
     const total = await this.prisma.cliente.count({ where });
     const items = await this.prisma.cliente.findMany({
       where,
-      orderBy: this.buildOrderBy(query),
+      orderBy: this.buildOrderBy(query.sortProperty, query.sortDirection),
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
@@ -58,7 +55,11 @@ export class ClientesService {
 
   async update(id: number, dto: UpdateClienteDto, empresaId?: number) {
     await this.findOne(id, empresaId);
-    return this.prisma.cliente.update({ where: { id }, data: dto });
+    const data: any = { ...dto };
+    if (data.dataNascimento) {
+      data.dataNascimento = new Date(data.dataNascimento);
+    }
+    return this.prisma.cliente.update({ where: { id }, data });
   }
 
   async remove(id: number, empresaId?: number) {
@@ -69,39 +70,20 @@ export class ClientesService {
   private buildWhere(query: ClienteSearchQuery, empresaId?: number) {
     const where: any = {};
     if (empresaId) where.empresaId = empresaId;
-    if (query.id) { where.id = Number(query.id); return where; }
-    if (query.tipoPessoa) where.tipoPessoa = query.tipoPessoa;
-    if (query.uf?.trim()) where.uf = { equals: query.uf.trim(), mode: 'insensitive' };
 
-    const andFilters: object[] = [];
-    const search = query.search?.trim();
-    if (search) {
-      andFilters.push({
-        OR: [
-          { nome:      { contains: search, mode: 'insensitive' } },
-          { cnpj:      { contains: search, mode: 'insensitive' } },
-          { cpf:       { contains: search, mode: 'insensitive' } },
-          { email:     { contains: search, mode: 'insensitive' } },
-          { municipio: { contains: search, mode: 'insensitive' } },
-        ],
-      });
+    if (query.id) {
+      where.id = Number(query.id);
+      return where;
     }
-    if (query.nome?.trim())      andFilters.push({ nome:      { contains: query.nome.trim(),      mode: 'insensitive' } });
-    if (query.cnpj?.trim())      andFilters.push({ cnpj:      { contains: query.cnpj.trim(),      mode: 'insensitive' } });
-    if (query.cpf?.trim())       andFilters.push({ cpf:       { contains: query.cpf.trim(),       mode: 'insensitive' } });
-    if (query.municipio?.trim()) andFilters.push({ municipio: { contains: query.municipio.trim(), mode: 'insensitive' } });
-
-    if (andFilters.length > 0) where.AND = andFilters;
+    const nome = query.nome?.trim() || query.search?.trim();
+    if (!nome) return where;
+    where.nome = { contains: nome, mode: 'insensitive' as const };
     return where;
   }
 
-  private buildOrderBy(query: any) {
-    // Accept both our format (sortProperty/sortDirection) and PO UI dynamic format (sort.property/sort.type)
-    const sortProp = query.sortProperty || query.sort?.property || 'nome';
-    const sortDir  = query.sortDirection || query.sort?.type || 'ascending';
-    const direction = sortDir === 'descending' ? 'desc' : 'asc';
-    const allowed = ['id', 'nome', 'cnpj', 'cpf', 'municipio', 'uf', 'email'];
-    const property = allowed.includes(sortProp) ? sortProp : 'nome';
+  private buildOrderBy(sortProperty?: string, sortDirection?: string) {
+    const direction = sortDirection === 'descending' ? 'desc' : 'asc';
+    const property = sortProperty === 'id' ? 'id' : 'nome';
     return { [property]: direction };
   }
 }

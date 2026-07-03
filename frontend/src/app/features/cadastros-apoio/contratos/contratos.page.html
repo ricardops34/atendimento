@@ -1,7 +1,7 @@
 ﻿<po-page-list p-title="Contratos" [p-disclaimer-group]="disclaimerGroup">
   <div class="po-row" style="align-items: end; margin-bottom: 16px; row-gap: 12px;">
     <div class="po-md-6 po-sm-12" style="display: flex; flex-wrap: wrap; gap: 8px;">
-      <po-button p-label="Adcionar" p-icon="an an-plus" p-kind="primary" (p-click)="navigateTo(['/contratos/novo'])"></po-button>
+      <po-button p-label="Novo Contrato" p-icon="po-icon-plus" (p-click)="openCreate()"></po-button>
     </div>
 
     <div class="po-md-6 po-sm-12" style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; flex-wrap: wrap;">
@@ -54,13 +54,13 @@
       (ngModelChange)="filters.tipo = $event">
     </po-combo>
 
-    <po-input class="po-md-4" name="dtInicioFiltro" p-label="Data de Início" p-type="date"
+    <po-datepicker class="po-md-4" name="dtInicioFiltro" p-label="Data de Início"
       [ngModel]="filters.dtInicio" (ngModelChange)="filters.dtInicio = $event">
-    </po-input>
+    </po-datepicker>
 
-    <po-input class="po-md-4" name="dtFimFiltro" p-label="Data de Fim" p-type="date"
+    <po-datepicker class="po-md-4" name="dtFimFiltro" p-label="Data de Fim"
       [ngModel]="filters.dtFim" (ngModelChange)="filters.dtFim = $event">
-    </po-input>
+    </po-datepicker>
   </div>
 
   <po-modal-footer>
@@ -69,3 +69,179 @@
   </po-modal-footer>
 </po-modal>
 
+<!-- Formulário de Contrato -->
+<po-modal p-title="Contrato" #modal [p-size]="'xl'">
+
+  <!-- Dados principais -->
+  <div class="po-row">
+    <po-combo class="po-md-8" p-label="Cliente" [p-required]="true"
+      [p-options]="clientes"
+      [ngModel]="formData.clienteId"
+      (ngModelChange)="formData.clienteId = $event">
+    </po-combo>
+
+    <po-input class="po-md-4" p-label="Cor (hex)"
+      [ngModel]="formData.cor"
+      (ngModelChange)="formData.cor = $event"
+      p-placeholder="#333333">
+    </po-input>
+  </div>
+
+  <div class="po-row">
+    <po-input class="po-md-12" p-label="Descrição" p-required="true" [p-show-required]="true" [p-required-field-error-message]="true"
+      [ngModel]="formData.descricao"
+      (ngModelChange)="formData.descricao = $event">
+    </po-input>
+  </div>
+
+  <div class="po-row">
+    <po-datepicker class="po-md-3" p-label="Data de Início" p-required="true" [p-show-required]="true" [p-required-field-error-message]="true"
+      [ngModel]="formData.dtInicio"
+      (ngModelChange)="formData.dtInicio = $event">
+    </po-datepicker>
+
+    <po-datepicker class="po-md-3" p-label="Data de Fim" p-required="true" [p-show-required]="true" [p-required-field-error-message]="true"
+      [ngModel]="formData.dtFim"
+      (ngModelChange)="formData.dtFim = $event">
+    </po-datepicker>
+
+    <po-combo class="po-md-3" p-label="Tipo" [p-required]="true"
+      [p-options]="tipoOptions"
+      [ngModel]="formData.tipo"
+      (ngModelChange)="formData.tipo = $event">
+    </po-combo>
+
+    <po-switch class="po-md-3" p-label="Feriado"
+      [ngModel]="formData.isFeriado"
+      (ngModelChange)="formData.isFeriado = $event">
+    </po-switch>
+  </div>
+
+  <div class="po-row">
+    <po-decimal class="po-md-4" p-label="Valor Hora"
+      [ngModel]="formData.valorHora"
+      (ngModelChange)="formData.valorHora = $event"
+      [p-decimals-length]="2">
+    </po-decimal>
+
+    <po-decimal class="po-md-4" p-label="Valor Fixo"
+      [ngModel]="formData.valorFixo"
+      (ngModelChange)="formData.valorFixo = $event"
+      [p-decimals-length]="2">
+    </po-decimal>
+
+    <po-switch class="po-md-4" p-label="Bloqueado"
+      [ngModel]="formData.bloqueado"
+      (ngModelChange)="formData.bloqueado = $event"
+      p-help="Se bloqueado, não será listado nos agendamentos.">
+    </po-switch>
+  </div>
+
+  <!-- Profissionais habilitados -->
+  <div class="po-row" style="margin-top: 8px;">
+    <po-multiselect class="po-md-12" p-label="Profissionais Habilitados"
+      [p-options]="profissionais"
+      [ngModel]="formData.profissionalIds"
+      (ngModelChange)="formData.profissionalIds = $event">
+    </po-multiselect>
+  </div>
+
+  <!-- Escala semanal -->
+  <div style="margin-top: 16px; border-top: 1px solid #ddd; padding-top: 12px;">
+    <p style="font-weight: 600; margin-bottom: 8px;">Escala Semanal</p>
+
+    <div class="po-row">
+      <po-combo class="po-md-3" p-label="Dia da Semana"
+        [p-options]="diasSemana"
+        [ngModel]="novaEscala.diaSemana"
+        (ngModelChange)="novaEscala.diaSemana = $event; onDiaSemanaChange()">
+      </po-combo>
+
+      <po-combo class="po-md-3" p-label="Profissional"
+        [p-options]="profissionais"
+        [ngModel]="novaEscala.profissionalId"
+        (ngModelChange)="novaEscala.profissionalId = $event">
+      </po-combo>
+
+      <po-input class="po-md-1" p-label="Hora Início"
+        [ngModel]="novaEscala.horaInicio"
+        (ngModelChange)="novaEscala.horaInicio = $event"
+        p-placeholder="08:30">
+      </po-input>
+
+      <po-input class="po-md-1" p-label="Interv. Ini"
+        [ngModel]="novaEscala.intervaloIni"
+        (ngModelChange)="novaEscala.intervaloIni = $event"
+        p-placeholder="11:30">
+      </po-input>
+
+      <po-input class="po-md-1" p-label="Interv. Fim"
+        [ngModel]="novaEscala.intervaloFim"
+        (ngModelChange)="novaEscala.intervaloFim = $event"
+        p-placeholder="13:00">
+      </po-input>
+
+      <po-input class="po-md-1" p-label="Hora Fim"
+        [ngModel]="novaEscala.horaFim"
+        (ngModelChange)="novaEscala.horaFim = $event"
+        p-placeholder="18:00">
+      </po-input>
+
+      <div class="po-md-2" style="display: flex; align-items: flex-end; padding-bottom: 4px;">
+        <po-button p-label="Adicionar" p-icon="po-icon-plus" (p-click)="addEscala()"></po-button>
+      </div>
+    </div>
+
+    <div *ngIf="formData.escalas?.length" style="margin-top: 8px;">
+      <po-table
+        [p-items]="formData.escalas"
+        [p-columns]="escalaColumns"
+        [p-actions]="escalaActions"
+        [p-hide-columns-manager]="true"
+        [p-sort]="false">
+      </po-table>
+    </div>
+  </div>
+
+  <!-- Adiantamentos -->
+  <div style="margin-top: 16px; border-top: 1px solid #ddd; padding-top: 12px;">
+    <p style="font-weight: 600; margin-bottom: 8px;">Adiantamentos (Opcional)</p>
+    <div class="po-row">
+      <po-input class="po-md-3" p-label="Descrição"
+        [ngModel]="novoAdiantamento.descricao"
+        (ngModelChange)="novoAdiantamento.descricao = $event"
+        p-placeholder="Adiantamento">
+      </po-input>
+      <po-decimal class="po-md-2" p-label="Valor Total"
+        [ngModel]="novoAdiantamento.valorTotal"
+        (ngModelChange)="novoAdiantamento.valorTotal = $event"
+        [p-decimals-length]="2">
+      </po-decimal>
+      <po-number class="po-md-2" p-label="Parcelas"
+        [ngModel]="novoAdiantamento.parcelas"
+        (ngModelChange)="novoAdiantamento.parcelas = $event">
+      </po-number>
+      <po-datepicker class="po-md-3" p-label="Data Início"
+        [ngModel]="novoAdiantamento.dataInicio"
+        (ngModelChange)="novoAdiantamento.dataInicio = $event">
+      </po-datepicker>
+      <div class="po-md-2" style="display: flex; align-items: flex-end; padding-bottom: 4px;">
+        <po-button p-label="Adicionar" p-icon="po-icon-plus" (p-click)="addAdiantamento()"></po-button>
+      </div>
+    </div>
+    
+    <div *ngIf="formData.adiantamentos?.length" style="margin-top: 8px;">
+      <po-table
+        [p-items]="formData.adiantamentos"
+        [p-columns]="adiantamentoColumns"
+        [p-actions]="adiantamentoActions"
+        [p-hide-columns-manager]="true"
+        [p-sort]="false">
+      </po-table>
+    </div>
+  </div>
+
+  <po-modal-footer>
+    <po-button p-label="Salvar" p-kind="primary" [p-loading]="saving" (p-click)="save()"></po-button>
+  </po-modal-footer>
+</po-modal>
