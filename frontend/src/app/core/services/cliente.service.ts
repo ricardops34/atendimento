@@ -29,6 +29,10 @@ export class ClienteService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
+  findOne(id: number) {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
   search(params: ClienteSearchParams) {
     let httpParams = new HttpParams();
 

@@ -5,13 +5,8 @@ import { PrismaService } from '../prisma/prisma.service';
 export class LocalidadesService {
   constructor(private prisma: PrismaService) {}
 
-  findPaises() {
-    return this.prisma.pais.findMany({ orderBy: { nome: 'asc' } });
-  }
-
-  findEstados(paisId?: number) {
+  findEstados() {
     return this.prisma.estado.findMany({
-      where: paisId ? { paisId } : undefined,
       orderBy: { nome: 'asc' },
     });
   }

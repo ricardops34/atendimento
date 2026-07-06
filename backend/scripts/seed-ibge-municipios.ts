@@ -38,7 +38,7 @@ async function main() {
       for (const m of municipios) {
         await prisma.municipio.upsert({
           where: { id: m.id },
-          create: { id: m.id, estadoId, nome: m.nome, codigoIbge: m.id },
+          create: { id: m.id, estadoId, nome: m.nome },
           update: { nome: m.nome },
         });
         inserted++;

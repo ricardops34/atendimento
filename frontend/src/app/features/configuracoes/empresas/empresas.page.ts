@@ -15,7 +15,7 @@ import { PoDialogService, PoButtonModule,
   PoTableColumn,
   PoTableColumnSort,
   PoTableModule, } from '@po-ui/ng-components';
-import { TenantSearchParams, TenantService } from '../../../core/services/tenant.service';
+import { EmpresaAdminSearchParams, EmpresaAdminService } from '../../../core/services/empresa-admin.service';
 
 @Component({
   selector: 'app-config-empresas-page',
@@ -27,7 +27,7 @@ export class ConfigEmpresasPage implements OnInit {
   @ViewChild('modal', { static: true }) modal!: PoModalComponent;
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
 
-  private service = inject(TenantService);
+  private service = inject(EmpresaAdminService);
   private poDialog = inject(PoDialogService);
   private poNotification = inject(PoNotificationService);
 
@@ -180,7 +180,7 @@ export class ConfigEmpresasPage implements OnInit {
     });
   }
 
-  private buildSearchParams(): TenantSearchParams {
+  private buildSearchParams(): EmpresaAdminSearchParams {
     return {
       page: this.page,
       pageSize: this.pageSize,

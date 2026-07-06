@@ -5,14 +5,9 @@ import { LocalidadesService } from './localidades.service';
 export class LocalidadesController {
   constructor(private readonly svc: LocalidadesService) {}
 
-  @Get('paises')
-  paises() {
-    return this.svc.findPaises();
-  }
-
   @Get('estados')
-  estados(@Query('paisId') paisId?: string) {
-    return this.svc.findEstados(paisId ? Number(paisId) : undefined);
+  estados() {
+    return this.svc.findEstados();
   }
 
   @Get('municipios')

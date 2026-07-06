@@ -16,7 +16,7 @@ import { PoDialogService, PoButtonModule,
   PoTableColumnSort,
   PoTableModule } from '@po-ui/ng-components';
 import { ProfileService } from '../../../core/services/profile.service';
-import { TenantService } from '../../../core/services/tenant.service';
+import { EmpresaAdminService } from '../../../core/services/empresa-admin.service';
 import { UserSearchParams, UserService } from '../../../core/services/user.service';
 
 @Component({
@@ -31,12 +31,12 @@ export class UsuariosPage implements OnInit {
 
   private service = inject(UserService);
   private poDialog = inject(PoDialogService);
-  private tenantService = inject(TenantService);
+  private empresaService = inject(EmpresaAdminService);
   private profileService = inject(ProfileService);
   private poNotification = inject(PoNotificationService);
 
   items: any[] = [];
-  tenantOptions: PoComboOption[] = [];
+  empresasOptions: PoComboOption[] = [];
   profileOptions: PoComboOption[] = [];
   loading = false;
   loadingShowMore = false;
@@ -48,7 +48,7 @@ export class UsuariosPage implements OnInit {
   hasNext = false;
   sortProperty = 'name';
   sortDirection: 'ascending' | 'descending' = 'ascending';
-  filters: { tenantId?: number; profileId?: number; name?: string; email?: string; isActive?: string } = {};
+  filters: { empresaId?: number; profileId?: number; name?: string; email?: string; isActive?: string } = {};
   activeOptions: PoComboOption[] = [{ label: 'Ativo', value: 'true' }, { label: 'Inativo', value: 'false' }];
   formData: any = this.createEmptyForm();
 
@@ -57,7 +57,7 @@ export class UsuariosPage implements OnInit {
     { property: 'name', label: 'Usuario', sortable: true },
     { property: 'email', label: 'Email', sortable: true },
     { property: 'profileLabel', label: 'Perfil', sortable: false },
-    { property: 'tenantsLabel', label: 'Tenants', sortable: false },
+    { property: 'empresasLabel', label: 'Empresas', sortable: false },
     { property: 'isActiveLabel', label: 'Status', sortable: true },
   ];
 
@@ -79,8 +79,8 @@ export class UsuariosPage implements OnInit {
   }
 
   loadDependencies() {
-    this.tenantService.findAll().subscribe((data) => {
-      this.tenantOptions = (data || []).map((item) => ({ label: item.name, value: item.id }));
+    this.empresaService.findAll().subscribe((data) => {
+      this.empresasOptions = (data || []).map((item) => ({ label: item.name, value: item.id }));
     });
     this.profileService.findAll().subscribe((data) => {
       this.profileOptions = (data || []).map((item) => ({ label: item.name, value: item.id }));
@@ -100,8 +100,8 @@ export class UsuariosPage implements OnInit {
           ...item,
           isActiveLabel: item.isActive ? 'Ativo' : 'Inativo',
           profileLabel: item.profile?.name || '',
-          tenantsLabel: (item.userTenants || [])
-            .map((link: any) => `${link.tenant?.name || 'Tenant'}${link.isDefault ? ' (Padrao)' : ''}`)
+          empresasLabel: (item.userEmpresas || [])
+            .map((link: any) => `${link.empresa?.name || 'Empresa'}${link.isDefault ? ' (Padrao)' : ''}`)
             .join(', ')
         }));
         this.items = this.page === 1 ? mapped : [...this.items, ...mapped];
@@ -174,46 +174,46 @@ export class UsuariosPage implements OnInit {
       password: '',
       isActive: row.isActive,
       profileId: row.profileId,
-      selectedTenantId: this.tenantOptions[0]?.value ?? null,
-      tenantLinks: (row.userTenants || []).map((link: any) => ({
-        tenantId: link.tenantId,
+      selectedEmpresaId: this.empresasOptions[0]?.value ?? null,
+      empresaLinks: (row.userEmpresas || []).map((link: any) => ({
+        empresaId: link.empresaId,
         isDefault: !!link.isDefault
       }))
     };
     this.modal.open();
   }
 
-  addTenantLink() {
-    if (!this.formData.selectedTenantId) {
-      this.poNotification.warning('Selecione o tenant para adicionar o vinculo.');
+  addEmpresaLink() {
+    if (!this.formData.selectedEmpresaId) {
+      this.poNotification.warning('Selecione a empresa para adicionar o vinculo.');
       return;
     }
 
-    const tenantId = Number(this.formData.selectedTenantId);
-    const exists = (this.formData.tenantLinks || []).some((item: any) => Number(item.tenantId) === tenantId);
+    const empresaId = Number(this.formData.selectedEmpresaId);
+    const exists = (this.formData.empresaLinks || []).some((item: any) => Number(item.empresaId) === empresaId);
     if (exists) {
-      this.poNotification.warning('Esse tenant ja esta vinculado ao usuario.');
+      this.poNotification.warning('Essa empresa ja esta vinculada ao usuario.');
       return;
     }
 
-    this.formData.tenantLinks = [
-      ...(this.formData.tenantLinks || []),
+    this.formData.empresaLinks = [
+      ...(this.formData.empresaLinks || []),
       {
-        tenantId,
-        isDefault: !(this.formData.tenantLinks || []).length
+        empresaId,
+        isDefault: !(this.formData.empresaLinks || []).length
       }
     ];
   }
 
-  removeTenantLink(index: number) {
-    this.formData.tenantLinks = (this.formData.tenantLinks || []).filter((_: any, currentIndex: number) => currentIndex !== index);
-    if (!this.formData.tenantLinks.some((item: any) => item.isDefault) && this.formData.tenantLinks[0]) {
-      this.formData.tenantLinks[0].isDefault = true;
+  removeEmpresaLink(index: number) {
+    this.formData.empresaLinks = (this.formData.empresaLinks || []).filter((_: any, currentIndex: number) => currentIndex !== index);
+    if (!this.formData.empresaLinks.some((item: any) => item.isDefault) && this.formData.empresaLinks[0]) {
+      this.formData.empresaLinks[0].isDefault = true;
     }
   }
 
-  setDefaultTenant(index: number) {
-    this.formData.tenantLinks = (this.formData.tenantLinks || []).map((item: any, currentIndex: number) => ({
+  setDefaultEmpresa(index: number) {
+    this.formData.empresaLinks = (this.formData.empresaLinks || []).map((item: any, currentIndex: number) => ({
       ...item,
       isDefault: currentIndex === index
     }));
@@ -232,8 +232,8 @@ export class UsuariosPage implements OnInit {
       this.poNotification.warning('Informe a senha do usuario.');
       return;
     }
-    if (!(this.formData.tenantLinks || []).length) {
-      this.poNotification.warning('Adicione ao menos um vinculo de tenant.');
+    if (!(this.formData.empresaLinks || []).length) {
+      this.poNotification.warning('Adicione ao menos um vinculo de empresa.');
       return;
     }
 
@@ -243,8 +243,8 @@ export class UsuariosPage implements OnInit {
       email: this.formData.email.trim(),
       profileId: Number(this.formData.profileId),
       isActive: !!this.formData.isActive,
-      tenantLinks: (this.formData.tenantLinks || []).map((item: any) => ({
-        tenantId: Number(item.tenantId),
+      empresaLinks: (this.formData.empresaLinks || []).map((item: any) => ({
+        empresaId: Number(item.empresaId),
         isDefault: !!item.isDefault
       }))
     };
@@ -281,8 +281,8 @@ export class UsuariosPage implements OnInit {
     });
   }
 
-  resolveTenantName(tenantId: number) {
-    return this.tenantOptions.find((item) => Number(item.value) === Number(tenantId))?.label || String(tenantId);
+  resolveEmpresaName(empresaId: number) {
+    return this.empresasOptions.find((item) => Number(item.value) === Number(empresaId))?.label || String(empresaId);
   }
 
   resolveProfileName(profileId: number) {
@@ -296,8 +296,8 @@ export class UsuariosPage implements OnInit {
       password: '',
       isActive: true,
       profileId: null,
-      selectedTenantId: this.tenantOptions[0]?.value ?? null,
-      tenantLinks: [] as any[]
+      selectedEmpresaId: this.empresasOptions[0]?.value ?? null,
+      empresaLinks: [] as any[]
     };
   }
 
@@ -306,7 +306,7 @@ export class UsuariosPage implements OnInit {
       page: this.page,
       pageSize: this.pageSize,
       search: this.quickSearch || undefined,
-      tenantId: this.filters.tenantId,
+      empresaId: this.filters.empresaId,
       profileId: this.filters.profileId,
       name: this.filters.name,
       email: this.filters.email,
@@ -319,7 +319,7 @@ export class UsuariosPage implements OnInit {
   private syncDisclaimers() {
     const disclaimers: PoDisclaimer[] = [];
     if (this.quickSearch) disclaimers.push({ property: 'search', label: 'Busca', value: this.quickSearch });
-    if (this.filters.tenantId) disclaimers.push({ property: 'tenantId', label: 'Tenant', value: this.resolveTenantName(this.filters.tenantId) });
+    if (this.filters.empresaId) disclaimers.push({ property: 'empresaId', label: 'Empresa', value: this.resolveEmpresaName(this.filters.empresaId) });
     if (this.filters.profileId) disclaimers.push({ property: 'profileId', label: 'Perfil', value: this.resolveProfileName(this.filters.profileId) });
     if (this.filters.name) disclaimers.push({ property: 'name', label: 'Usuario', value: this.filters.name });
     if (this.filters.email) disclaimers.push({ property: 'email', label: 'Email', value: this.filters.email });
