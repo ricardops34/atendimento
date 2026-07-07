@@ -40,7 +40,7 @@ Para facilitar a manipulação e visualização dos filtros aplicados, é possí
 | `filter` | `'p-filter'` | `PoPageFilter` | não | - | Objeto que implementa as propriedades da interface `PoPageFilter`. |
 | `literals` | `'p-literals'` | `PoPageListLiterals` | sim | - | Objeto com as literais usadas no `po-page-list`. |
 | `quickSearchValue` | `'p-quick-search-value'` | `string` | sim | - | Valor padrão na busca rápida ao inicializar o componente |
-| `subtitle` | `'p-subtitle'` | `string` | sim | - | Subtitulo do Header da página |
+| `subtitle` | `'p-subtitle'` | `string` | sim | - | Subtitulo do Header da página. |
 | `title` | `'p-title'` | `string` | não | - | Título da página. |
 
 ## Métodos

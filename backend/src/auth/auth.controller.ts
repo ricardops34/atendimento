@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { PrismaService } from '../prisma/prisma.service';
+import { Public } from './decorators/public.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -11,6 +12,7 @@ export class AuthController {
     private readonly prisma: PrismaService,
   ) {}
 
+  @Public()
   @Post('empresa-options')
   async empresaOptions(@Body('email') email: string) {
     console.log('empresaOptions chamado com email:', email);
@@ -26,6 +28,7 @@ export class AuthController {
     }));
   }
 
+  @Public()
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
     const user = await this.authService.validateUser(loginDto);

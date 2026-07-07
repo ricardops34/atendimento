@@ -21,3 +21,10 @@ O Reversa escreve **apenas** em `.reversa/` e `_reversa_sdd/`.
 ## Proteção de Banco de Dados
 
 NUNCA execute comandos que recriem, resetem ou migrem o banco de dados (ex: `prisma migrate reset`, `prisma db push`, apagar tabelas, etc) sem ANTES avisar o usuário e pedir autorização explícita para prosseguir.
+
+## Versão do Framework Frontend (PO UI)
+
+O projeto utiliza a **versão 21+** do PO UI (`@po-ui/ng-components`). Nesta versão, atente-se às reestruturações de pacotes:
+- Módulos base de página, como `PoPageModule` (que atende `<po-page-edit>`, `<po-page-default>`, etc.), ficam em `@po-ui/ng-components`. NÃO importe de `@po-ui/ng-templates`.
+- Componentes de tabela dinâmica, como `PoPageDynamicTableModule`, ficam em `@po-ui/ng-templates`.
+Sempre valide a documentação da v21 para os imports corretos, evitando quebrar o processo de build da aplicação.

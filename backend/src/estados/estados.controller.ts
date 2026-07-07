@@ -12,6 +12,19 @@ export class EstadosController {
     return this.estadosService.findAll(query);
   }
 
+  @Get('metadata')
+  metadata() {
+    return {
+      version: 1,
+      title: 'Estados',
+      fields: [
+        { property: 'id', label: 'Cód. IBGE', key: true, visible: true, filter: true },
+        { property: 'nome', label: 'Estado', visible: true, filter: true },
+        { property: 'sigla', label: 'Sigla', visible: true, filter: true }
+      ]
+    };
+  }
+
   @Get()
   findAll(@Query() query: any) {
     return this.estadosService.findAll(query);

@@ -29,7 +29,7 @@ detalhamento de um registro, tendo a possibilidade de usar as ações de "Voltar
 | `breadcrumb` | `'p-breadcrumb'` | `PoBreadcrumb` | não | - | Objeto com propriedades do breadcrumb. |
 | `componentsSize` | `'p-components-size'` | `string` | sim | `medium` | Define o tamanho dos componentes de formulário no template: |
 | `literals` | `'p-literals'` | `PoPageDetailLiterals` | sim | - | Objeto com as literais usadas no `po-page-detail`. |
-| `subtitle` | `'p-subtitle'` | `string` | sim | - | Subtitulo do Header da página |
+| `subtitle` | `'p-subtitle'` | `string` | sim | - | Subtitulo do Header da página. |
 | `title` | `'p-title'` | `string` | não | - | Título da página. |
 
 ## Outputs

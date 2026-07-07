@@ -80,6 +80,7 @@ completa visualização dos dados.
 | `loadingShowMore` | `'p-loading-show-more'` | `boolean` | sim | `false` | Permite que seja adicionado o estado de carregamento no botão "Carregar mais resultados". |
 | `maxColumns` | `'p-max-columns'` | `number` | sim | - | Define uma quantidade máxima de colunas que serão exibidas na tabela. |
 | `paramDeleteApi` | `'p-param-delete-api'` | `string` | sim | `id` | Adiciona o parâmetro a ser enviado para a requisição de DELETE. |
+| `searchAiField` | `p-search-ai-field` | `PoTableSearchAiField` | sim | - | Configura a busca por linguagem natural integrada à tabela, substituindo o campo de busca padrão |
 | `selectable` | `'p-selectable'` | `boolean` | sim | `false` | Permite a seleção de linhas na tabela e, caso a propriedade `p-single-select` esteja definida será possível |
 | `selectableEntireLine` | `'p-selectable-entire-line'` | `boolean` | não | `true` | Permite selecionar um item da tabela clicando na linha. |
 | `serviceApi` | `'p-service-api'` | `string` | sim | - | URL da API responsável por retornar os registros. |
@@ -104,6 +105,9 @@ completa visualização dos dados.
 | `columnRestoreManager` | `'p-restore-column-manager'` | `EventEmitter` | Evento disparado ao clicar no botão de restaurar padrão no gerenciador de colunas. |
 | `eventDelete` | `'p-delete-items'` | `EventEmitter` | Evento executado após o método de exclusão ser finalizado. |
 | `expanded` | `'p-expanded'` | `EventEmitter` | Evento executado ao expandir uma linha do `po-table`. |
+| `searchAiError` | `'p-search-ai-error'` | `EventEmitter` | Evento emitido quando ocorre um erro na requisição ao endpoint de IA configurado em |
+| `searchAiLowConfidence` | `'p-search-ai-low-confidence'` | `EventEmitter` | Evento emitido quando o `po-search-ai` retorna um resultado cuja confiança é inferior ao |
+| `searchAiResult` | `'p-search-ai-result'` | `EventEmitter` | Evento emitido quando o `po-search-ai` retorna um resultado com confiança igual ou superior |
 | `selected` | `'p-selected'` | `EventEmitter` | Evento executado ao selecionar uma linha do `po-table`. |
 | `showMore` | `'p-show-more'` | `EventEmitter` | Recebe uma ação de clique para o botão "Carregar mais resultados", caso nenhuma ação for definida o mesmo |
 | `sortBy` | `'p-sort-by'` | `EventEmitter` | Evento executado ao ordenar colunas da tabela. |
@@ -174,6 +178,17 @@ Caso a tabela utilize `p-height` e esteja sem serviço, é necessário a reatrib
 >
 </po-table>
 ```
+
+### `updateSearchAIQuery(value: string, triggerSearch: boolean)`
+
+Atualiza programaticamente o valor do campo de busca por IA (`po-search-ai`) integrado à tabela
+via `p-search-ai-field`.
+
+Útil quando a aplicação precisa preencher a busca a partir de uma ação externa (por exemplo, o
+clique em um botão que sugere uma consulta pronta), opcionalmente disparando a busca em seguida.
+
+> Só tem efeito quando a propriedade `p-search-ai-field` está configurada. Caso contrário, o método
+> não executa nenhuma ação.
 
 ### `removeItem(item: TypeUnion)`
 

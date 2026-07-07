@@ -13,9 +13,24 @@ generator client {
 // ----------------------------------------------------------------------------
 
 model Empresa {
-  id   Int    @id @default(autoincrement())
-  name String @db.VarChar(255)
-  slug String @unique @db.VarChar(255)
+  id                 Int      @id @default(autoincrement())
+  name               String   @db.VarChar(255)
+  slug               String   @unique @db.VarChar(255)
+  razaoSocial        String?  @map("razao_social") @db.VarChar(255)
+  cnpj               String?  @db.VarChar(20)
+  inscricaoEstadual  String?  @map("inscricao_estadual") @db.VarChar(50)
+  inscricaoMunicipal String?  @map("inscricao_municipal") @db.VarChar(50)
+  telefone           String?  @db.VarChar(20)
+  celular            String?  @db.VarChar(20)
+  email              String?  @db.VarChar(255)
+  cep                String?  @db.VarChar(9)
+  logradouro         String?  @db.VarChar(255)
+  numero             String?  @db.VarChar(50)
+  complemento        String?  @db.VarChar(255)
+  bairro             String?  @db.VarChar(100)
+  uf                 String?  @db.VarChar(2)
+  municipio          String?  @db.VarChar(255)
+  pais               String?  @db.VarChar(50)
 
   userEmpresas  UserEmpresa[]
   clientes      Cliente[]

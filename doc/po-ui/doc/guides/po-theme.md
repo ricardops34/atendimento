@@ -1,11 +1,11 @@
 # Tema Protheus / TOTVS para PO UI
 
-Gerado automaticamente em `2026-05-18T21:46:26.768Z`.
+Gerado automaticamente em `2026-07-07T16:20:53.281Z`.
 
 - Pacote npm: `@totvs/po-theme`
-- Versao `latest`: `21.16.0`
+- Versao `latest`: `21.23.0`
 - Repositorio publico: https://github.com/totvs/po-theme-totvs
-- Ultima atualizacao publica observada: `2026-05-18T13:34:44Z`
+- Ultima atualizacao publica observada: `2026-07-06T20:14:39Z`
 
 ## Status
 
@@ -50,34 +50,34 @@ Adicione os estilos nesta ordem:
   "distTags": {
     "v5-lts": "5.22.7",
     "v17-lts": "17.26.28",
-    "beta": "20.11.0-beta.2",
     "v20-ng": "20.13.1",
-    "v19-lts": "19.39.11",
-    "latest": "21.16.0",
-    "next": "21.16.0"
+    "beta": "21.17.0-beta.1",
+    "latest": "21.23.0",
+    "v19-lts": "19.39.17",
+    "next": "21.23.0"
   },
   "latestVersion": {
-    "version": "21.16.0",
+    "version": "21.23.0",
     "repository": {
       "url": "git+https://github.com/totvs/po-theme-totvs.git",
       "type": "git"
     },
     "license": "MIT",
     "devDependencies": {
-      "@po-ui/style": "21.16.0"
+      "@po-ui/style": "21.23.0"
     },
     "dist": {
-      "shasum": "5c9df9f6c7865449dc5c38352410b23248b34d6c",
-      "tarball": "https://registry.npmjs.org/@totvs/po-theme/-/po-theme-21.16.0.tgz",
+      "shasum": "e1413f2a9b82f47c581e19b9cccb28bb80cd5f10",
+      "tarball": "https://registry.npmjs.org/@totvs/po-theme/-/po-theme-21.23.0.tgz",
       "fileCount": 26,
-      "integrity": "sha512-45WlVKyJA5VldV6MvFsP3BiBHQH+wGzDmHzOv8NSM72UpYJYR0R4UPpv+fHVm1WkPb9IVn7ajAqIPNtiKtNtMQ==",
+      "integrity": "sha512-usMgiagoQHiKdnIxv9kbYk5y4tzFbBKiTCTK0ZN6DWyO2Ez65PygLnDK+kWoyJ/3uIiCOMXwHTaSGN4g8eqEqg==",
       "signatures": [
         {
-          "sig": "MEUCIBkL48NRHWv3mM83r7ndC23MJx7gLmjl5wbPQrvR++QuAiEAhao108PdtYofP1himoK9CKIJwQ4RF7X99hUjY6Z8MIM=",
+          "sig": "MEYCIQCWwHNmt2jJ3XbJ1qTvws5iz06jOsQfoTUUKNjCe/CqUQIhAOcn4TDNnqGqywgA6bM9vQHFC20NA9r0YW53mC9GHJmI",
           "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
         }
       ],
-      "unpackedSize": 2357454
+      "unpackedSize": 2366741
     }
   }
 }

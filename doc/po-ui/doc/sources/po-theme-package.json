@@ -1,15 +1,15 @@
 {
   "_id": "@totvs/po-theme",
-  "_rev": "696-9e0eb469641f324daa5a3d878e6e8399",
+  "_rev": "724-5d13c9bdf6a5915852335dbcf56c6c0b",
   "name": "@totvs/po-theme",
   "dist-tags": {
     "v5-lts": "5.22.7",
     "v17-lts": "17.26.28",
-    "beta": "20.11.0-beta.2",
     "v20-ng": "20.13.1",
-    "v19-lts": "19.39.11",
-    "latest": "21.16.0",
-    "next": "21.16.0"
+    "beta": "21.17.0-beta.1",
+    "latest": "21.23.0",
+    "v19-lts": "19.39.17",
+    "next": "21.23.0"
   },
   "versions": {
     "1.28.0": {
@@ -51503,11 +51503,1733 @@
         "tmp": "tmp/po-theme_21.16.0_1779111331987_0.37895944491859623",
         "host": "s3://npm-registry-packages-npm-production"
       }
+    },
+    "19.39.12": {
+      "name": "@totvs/po-theme",
+      "version": "19.39.12",
+      "author": {
+        "name": "Totvs"
+      },
+      "license": "MIT",
+      "_id": "@totvs/po-theme@19.39.12",
+      "maintainers": [
+        {
+          "name": "dev.totvs",
+          "email": "dev.totvs@totvs.com"
+        },
+        {
+          "name": "mingle.dev",
+          "email": "mingle@totvs.com.br"
+        },
+        {
+          "name": "felipecrescencio",
+          "email": "felipe.crescencio@gmail.com"
+        },
+        {
+          "name": "felipeconti",
+          "email": "felipeconti18@gmail.com"
+        },
+        {
+          "name": "alexmmartins",
+          "email": "alexmouramartins@gmail.com"
+        },
+        {
+          "name": "danotto",
+          "email": "danielbolognani@gmail.com"
+        },
+        {
+          "name": "mansano",
+          "email": "ricardomansano@live.com"
+        },
+        {
+          "name": "tvmatias",
+          "email": "tvmatias@gmail.com"
+        },
+        {
+          "name": "robson.dba",
+          "email": "robson.dba@gmail.com"
+        },
+        {
+          "name": "daniel.yampolschi",
+          "email": "daniel.yampolschi@totvs.com.br"
+        },
+        {
+          "name": "acandido",
+          "email": "brodao@gmail.com"
+        },
+        {
+          "name": "lwtnb.wrk",
+          "email": "leo.watanabe@totvs.com.br"
+        },
+        {
+          "name": "pouidev",
+          "email": "poui@totvs.com.br"
+        },
+        {
+          "name": "alinelariguet",
+          "email": "alinecbgmoreira@gmail.com"
+        },
+        {
+          "name": "roger.steuernagel",
+          "email": "roger@steuernagel.com.br"
+        },
+        {
+          "name": "totvstec-bot",
+          "email": "automacao.tecnologia@totvs.com.br"
+        },
+        {
+          "name": "tarantatotvs",
+          "email": "marcos.taranta@totvs.com.br"
+        }
+      ],
+      "homepage": "https://github.com/totvs/po-theme-totvs#readme",
+      "bugs": {
+        "url": "https://github.com/totvs/po-theme-totvs/issues"
+      },
+      "dist": {
+        "shasum": "b28ca3004546a63cf8d655419e2a990cc68f4adc",
+        "tarball": "https://registry.npmjs.org/@totvs/po-theme/-/po-theme-19.39.12.tgz",
+        "fileCount": 30,
+        "integrity": "sha512-E3cMBqOQOaRkuT5w6O85rZco+mFGeYgQFZ2M6or4c1BEBAZR3eSb8v1usLQfIagUr5ZH0CV7/Rl58rTHA7LJVA==",
+        "signatures": [
+          {
+            "sig": "MEUCIQDihCiTCOIfFja1ASRv02dXPw8lwWUjZKLcbKHU8/1cNwIgHxi+xb/xGhFc9eMN2gpMCcwqqXHdb1TPUfKXAnya/+s=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 2656816
+      },
+      "gitHead": "7287e85da8315f5f99a9bd550e0402cc3ebd211c",
+      "scripts": {
+        "pack": "cd dist/ && npm pack",
+        "build": "po-theme build --fonts --name=default",
+        "publish:local": "npm publish ./dist --registry http://localhost:4873 --ignore-scripts"
+      },
+      "_npmUser": {
+        "name": "pouidev",
+        "email": "poui@totvs.com.br"
+      },
+      "deprecated": "Deprecated. Support will be provided until v23.x.x. This package will no longer be maintained after that version. Open an issue in the GitHub repository https://github.com/totvs/po-theme-totvs.",
+      "repository": {
+        "url": "git+https://github.com/totvs/po-theme-totvs.git",
+        "type": "git"
+      },
+      "_npmVersion": "11.12.1",
+      "description": "PO Theme - Totvs Default Theme",
+      "directories": {},
+      "_nodeVersion": "24.15.0",
+      "_hasShrinkwrap": false,
+      "devDependencies": {
+        "@po-ui/style": "19.39.12"
+      },
+      "_npmOperationalInternal": {
+        "tmp": "tmp/po-theme_19.39.12_1779736304865_0.3520485719378017",
+        "host": "s3://npm-registry-packages-npm-production"
+      }
+    },
+    "21.17.0": {
+      "name": "@totvs/po-theme",
+      "version": "21.17.0",
+      "author": {
+        "name": "Totvs"
+      },
+      "license": "MIT",
+      "_id": "@totvs/po-theme@21.17.0",
+      "maintainers": [
+        {
+          "name": "dev.totvs",
+          "email": "dev.totvs@totvs.com"
+        },
+        {
+          "name": "mingle.dev",
+          "email": "mingle@totvs.com.br"
+        },
+        {
+          "name": "felipecrescencio",
+          "email": "felipe.crescencio@gmail.com"
+        },
+        {
+          "name": "felipeconti",
+          "email": "felipeconti18@gmail.com"
+        },
+        {
+          "name": "alexmmartins",
+          "email": "alexmouramartins@gmail.com"
+        },
+        {
+          "name": "danotto",
+          "email": "danielbolognani@gmail.com"
+        },
+        {
+          "name": "mansano",
+          "email": "ricardomansano@live.com"
+        },
+        {
+          "name": "tvmatias",
+          "email": "tvmatias@gmail.com"
+        },
+        {
+          "name": "robson.dba",
+          "email": "robson.dba@gmail.com"
+        },
+        {
+          "name": "daniel.yampolschi",
+          "email": "daniel.yampolschi@totvs.com.br"
+        },
+        {
+          "name": "acandido",
+          "email": "brodao@gmail.com"
+        },
+        {
+          "name": "lwtnb.wrk",
+          "email": "leo.watanabe@totvs.com.br"
+        },
+        {
+          "name": "pouidev",
+          "email": "poui@totvs.com.br"
+        },
+        {
+          "name": "alinelariguet",
+          "email": "alinecbgmoreira@gmail.com"
+        },
+        {
+          "name": "roger.steuernagel",
+          "email": "roger@steuernagel.com.br"
+        },
+        {
+          "name": "totvstec-bot",
+          "email": "automacao.tecnologia@totvs.com.br"
+        },
+        {
+          "name": "tarantatotvs",
+          "email": "marcos.taranta@totvs.com.br"
+        }
+      ],
+      "homepage": "https://github.com/totvs/po-theme-totvs#readme",
+      "bugs": {
+        "url": "https://github.com/totvs/po-theme-totvs/issues"
+      },
+      "dist": {
+        "shasum": "cd6f3a3b934d228fe7a8c3294801fdc7ca59ae42",
+        "tarball": "https://registry.npmjs.org/@totvs/po-theme/-/po-theme-21.17.0.tgz",
+        "fileCount": 26,
+        "integrity": "sha512-jswXiTJim9h4+mw2Baj8cjMqb1qdgwcwojneDOl23M8lZ6CtGrgVXg4bEGiLZIZRCUacOBIkD2yYhQ3TaVTpyw==",
+        "signatures": [
+          {
+            "sig": "MEYCIQC4XVkGUN+rkA4aA536vJOsR3k1jHVC73EoLhKOBTd9TAIhAO+zAAJ+hVDhcjgQldHGGz0t7QPVUYiNon1koDwKrcfJ",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 2357454
+      },
+      "gitHead": "1b8ac83bb9133a70d063841f2ce5585d9bb98a13",
+      "scripts": {
+        "pack": "cd dist/ && npm pack",
+        "build": "po-theme build --fonts --name=default",
+        "publish:local": "npm publish ./dist --registry http://localhost:4873 --ignore-scripts"
+      },
+      "_npmUser": {
+        "name": "pouidev",
+        "email": "poui@totvs.com.br"
+      },
+      "deprecated": "Deprecated. Support will be provided until v23.x.x. This package will no longer be maintained after that version. Open an issue in the GitHub repository https://github.com/totvs/po-theme-totvs.",
+      "repository": {
+        "url": "git+https://github.com/totvs/po-theme-totvs.git",
+        "type": "git"
+      },
+      "_npmVersion": "11.12.1",
+      "description": "PO Theme - Totvs Default Theme",
+      "directories": {},
+      "_nodeVersion": "24.15.0",
+      "_hasShrinkwrap": false,
+      "devDependencies": {
+        "@po-ui/style": "21.17.0"
+      },
+      "_npmOperationalInternal": {
+        "tmp": "tmp/po-theme_21.17.0_1779740002760_0.12438574879451192",
+        "host": "s3://npm-registry-packages-npm-production"
+      }
+    },
+    "21.17.0-beta.1": {
+      "name": "@totvs/po-theme",
+      "version": "21.17.0-beta.1",
+      "author": {
+        "name": "Totvs"
+      },
+      "license": "MIT",
+      "_id": "@totvs/po-theme@21.17.0-beta.1",
+      "maintainers": [
+        {
+          "name": "dev.totvs",
+          "email": "dev.totvs@totvs.com"
+        },
+        {
+          "name": "mingle.dev",
+          "email": "mingle@totvs.com.br"
+        },
+        {
+          "name": "felipecrescencio",
+          "email": "felipe.crescencio@gmail.com"
+        },
+        {
+          "name": "felipeconti",
+          "email": "felipeconti18@gmail.com"
+        },
+        {
+          "name": "alexmmartins",
+          "email": "alexmouramartins@gmail.com"
+        },
+        {
+          "name": "danotto",
+          "email": "danielbolognani@gmail.com"
+        },
+        {
+          "name": "mansano",
+          "email": "ricardomansano@live.com"
+        },
+        {
+          "name": "tvmatias",
+          "email": "tvmatias@gmail.com"
+        },
+        {
+          "name": "robson.dba",
+          "email": "robson.dba@gmail.com"
+        },
+        {
+          "name": "daniel.yampolschi",
+          "email": "daniel.yampolschi@totvs.com.br"
+        },
+        {
+          "name": "acandido",
+          "email": "brodao@gmail.com"
+        },
+        {
+          "name": "lwtnb.wrk",
+          "email": "leo.watanabe@totvs.com.br"
+        },
+        {
+          "name": "pouidev",
+          "email": "poui@totvs.com.br"
+        },
+        {
+          "name": "alinelariguet",
+          "email": "alinecbgmoreira@gmail.com"
+        },
+        {
+          "name": "roger.steuernagel",
+          "email": "roger@steuernagel.com.br"
+        },
+        {
+          "name": "totvstec-bot",
+          "email": "automacao.tecnologia@totvs.com.br"
+        },
+        {
+          "name": "tarantatotvs",
+          "email": "marcos.taranta@totvs.com.br"
+        }
+      ],
+      "homepage": "https://github.com/totvs/po-theme-totvs#readme",
+      "bugs": {
+        "url": "https://github.com/totvs/po-theme-totvs/issues"
+      },
+      "dist": {
+        "shasum": "eedff09bbd0d4a90bcc097bed655f8e89592551f",
+        "tarball": "https://registry.npmjs.org/@totvs/po-theme/-/po-theme-21.17.0-beta.1.tgz",
+        "fileCount": 26,
+        "integrity": "sha512-9m5sNUwzanQA5p/Qrw/vh6pWuSCQ1tQWVW60N05ldPKthGPKJoyh64gS8kcWz4GJvf3TkEXdWh7zK2rZwL1anQ==",
+        "signatures": [
+          {
+            "sig": "MEUCIHumufLZymVcy7xirTObDSCKTp/sWH52yimAZX/XlTm8AiEAxp6lVzc0C6oV3YHVx7ipqtPIirvf3RNA8uEDLEE5WiU=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 2364539
+      },
+      "gitHead": "ae213a4002b4a50e4551e556fb6eb73123699591",
+      "scripts": {
+        "pack": "cd dist/ && npm pack",
+        "build": "po-theme build --fonts --name=default",
+        "publish:local": "npm publish ./dist --registry http://localhost:4873 --ignore-scripts"
+      },
+      "_npmUser": {
+        "name": "pouidev",
+        "email": "poui@totvs.com.br"
+      },
+      "deprecated": "Deprecated. Support will be provided until v23.x.x. This package will no longer be maintained after that version. Open an issue in the GitHub repository https://github.com/totvs/po-theme-totvs.",
+      "repository": {
+        "url": "git+https://github.com/totvs/po-theme-totvs.git",
+        "type": "git"
+      },
+      "_npmVersion": "10.8.2",
+      "description": "PO Theme - Totvs Default Theme",
+      "directories": {},
+      "_nodeVersion": "18.20.8",
+      "_hasShrinkwrap": false,
+      "devDependencies": {
+        "@po-ui/style": "21.17.0-beta.1"
+      },
+      "_npmOperationalInternal": {
+        "tmp": "tmp/po-theme_21.17.0-beta.1_1780070032195_0.38776630194367057",
+        "host": "s3://npm-registry-packages-npm-production"
+      }
+    },
+    "19.39.13": {
+      "name": "@totvs/po-theme",
+      "version": "19.39.13",
+      "author": {
+        "name": "Totvs"
+      },
+      "license": "MIT",
+      "_id": "@totvs/po-theme@19.39.13",
+      "maintainers": [
+        {
+          "name": "dev.totvs",
+          "email": "dev.totvs@totvs.com"
+        },
+        {
+          "name": "mingle.dev",
+          "email": "mingle@totvs.com.br"
+        },
+        {
+          "name": "felipecrescencio",
+          "email": "felipe.crescencio@gmail.com"
+        },
+        {
+          "name": "felipeconti",
+          "email": "felipeconti18@gmail.com"
+        },
+        {
+          "name": "alexmmartins",
+          "email": "alexmouramartins@gmail.com"
+        },
+        {
+          "name": "danotto",
+          "email": "danielbolognani@gmail.com"
+        },
+        {
+          "name": "mansano",
+          "email": "ricardomansano@live.com"
+        },
+        {
+          "name": "tvmatias",
+          "email": "tvmatias@gmail.com"
+        },
+        {
+          "name": "robson.dba",
+          "email": "robson.dba@gmail.com"
+        },
+        {
+          "name": "daniel.yampolschi",
+          "email": "daniel.yampolschi@totvs.com.br"
+        },
+        {
+          "name": "acandido",
+          "email": "brodao@gmail.com"
+        },
+        {
+          "name": "lwtnb.wrk",
+          "email": "leo.watanabe@totvs.com.br"
+        },
+        {
+          "name": "pouidev",
+          "email": "poui@totvs.com.br"
+        },
+        {
+          "name": "alinelariguet",
+          "email": "alinecbgmoreira@gmail.com"
+        },
+        {
+          "name": "roger.steuernagel",
+          "email": "roger@steuernagel.com.br"
+        },
+        {
+          "name": "totvstec-bot",
+          "email": "automacao.tecnologia@totvs.com.br"
+        },
+        {
+          "name": "tarantatotvs",
+          "email": "marcos.taranta@totvs.com.br"
+        }
+      ],
+      "homepage": "https://github.com/totvs/po-theme-totvs#readme",
+      "bugs": {
+        "url": "https://github.com/totvs/po-theme-totvs/issues"
+      },
+      "dist": {
+        "shasum": "1ad286c890d781e26aab4af5f3d1c9d14ab2651a",
+        "tarball": "https://registry.npmjs.org/@totvs/po-theme/-/po-theme-19.39.13.tgz",
+        "fileCount": 30,
+        "integrity": "sha512-/OynvZF4mfAQJoVD24m15SNNlWRZLxyyi2m03HSptQR8tuPfAGmHFHlB87xdubtOmonNwFTnrkThOSb+/qGR+Q==",
+        "signatures": [
+          {
+            "sig": "MEQCIE9kDkTCjN3+XRLe+M7Djb2R/HST3KtU6o1ivKrCzyAtAiAvLv7PVCHC1N/5PCWa0PBQIX9Ruath0PQg0BZ6LWzvtw==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 2656816
+      },
+      "gitHead": "daa78c59ca243370c060047b891cdc6f0c04e242",
+      "scripts": {
+        "pack": "cd dist/ && npm pack",
+        "build": "po-theme build --fonts --name=default",
+        "publish:local": "npm publish ./dist --registry http://localhost:4873 --ignore-scripts"
+      },
+      "_npmUser": {
+        "name": "pouidev",
+        "email": "poui@totvs.com.br"
+      },
+      "deprecated": "Deprecated. Support will be provided until v23.x.x. This package will no longer be maintained after that version. Open an issue in the GitHub repository https://github.com/totvs/po-theme-totvs.",
+      "repository": {
+        "url": "git+https://github.com/totvs/po-theme-totvs.git",
+        "type": "git"
+      },
+      "_npmVersion": "11.13.0",
+      "description": "PO Theme - Totvs Default Theme",
+      "directories": {},
+      "_nodeVersion": "24.16.0",
+      "_hasShrinkwrap": false,
+      "devDependencies": {
+        "@po-ui/style": "19.39.13"
+      },
+      "_npmOperationalInternal": {
+        "tmp": "tmp/po-theme_19.39.13_1780336195604_0.07138518782860381",
+        "host": "s3://npm-registry-packages-npm-production"
+      }
+    },
+    "21.18.0": {
+      "name": "@totvs/po-theme",
+      "version": "21.18.0",
+      "author": {
+        "name": "Totvs"
+      },
+      "license": "MIT",
+      "_id": "@totvs/po-theme@21.18.0",
+      "maintainers": [
+        {
+          "name": "dev.totvs",
+          "email": "dev.totvs@totvs.com"
+        },
+        {
+          "name": "mingle.dev",
+          "email": "mingle@totvs.com.br"
+        },
+        {
+          "name": "felipecrescencio",
+          "email": "felipe.crescencio@gmail.com"
+        },
+        {
+          "name": "felipeconti",
+          "email": "felipeconti18@gmail.com"
+        },
+        {
+          "name": "alexmmartins",
+          "email": "alexmouramartins@gmail.com"
+        },
+        {
+          "name": "danotto",
+          "email": "danielbolognani@gmail.com"
+        },
+        {
+          "name": "mansano",
+          "email": "ricardomansano@live.com"
+        },
+        {
+          "name": "tvmatias",
+          "email": "tvmatias@gmail.com"
+        },
+        {
+          "name": "robson.dba",
+          "email": "robson.dba@gmail.com"
+        },
+        {
+          "name": "daniel.yampolschi",
+          "email": "daniel.yampolschi@totvs.com.br"
+        },
+        {
+          "name": "acandido",
+          "email": "brodao@gmail.com"
+        },
+        {
+          "name": "lwtnb.wrk",
+          "email": "leo.watanabe@totvs.com.br"
+        },
+        {
+          "name": "pouidev",
+          "email": "poui@totvs.com.br"
+        },
+        {
+          "name": "alinelariguet",
+          "email": "alinecbgmoreira@gmail.com"
+        },
+        {
+          "name": "roger.steuernagel",
+          "email": "roger@steuernagel.com.br"
+        },
+        {
+          "name": "totvstec-bot",
+          "email": "automacao.tecnologia@totvs.com.br"
+        },
+        {
+          "name": "tarantatotvs",
+          "email": "marcos.taranta@totvs.com.br"
+        }
+      ],
+      "homepage": "https://github.com/totvs/po-theme-totvs#readme",
+      "bugs": {
+        "url": "https://github.com/totvs/po-theme-totvs/issues"
+      },
+      "dist": {
+        "shasum": "1a4bf0e259d95fd9333b268756364ea3f7853cf2",
+        "tarball": "https://registry.npmjs.org/@totvs/po-theme/-/po-theme-21.18.0.tgz",
+        "fileCount": 26,
+        "integrity": "sha512-BP00FmmIYIk7nW2UbeabhimmElWjyuN998KpIwTVEwi6RP9vbQylDPIU4yJi1Y9kxYrqLMsdPSbMi6V27I/nDg==",
+        "signatures": [
+          {
+            "sig": "MEQCIEL9hWsTO2TsvZwDTuaStZWFRwOtb1ysExJacpfg+ycLAiB0qnnegkctZbIQ0LS0XWvxGJEayZamFj0xFiBWTbra6A==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 2364525
+      },
+      "gitHead": "2dd19f40cef4c6257de368f4dff6f2bda8d8d19f",
+      "scripts": {
+        "pack": "cd dist/ && npm pack",
+        "build": "po-theme build --fonts --name=default",
+        "publish:local": "npm publish ./dist --registry http://localhost:4873 --ignore-scripts"
+      },
+      "_npmUser": {
+        "name": "pouidev",
+        "email": "poui@totvs.com.br"
+      },
+      "deprecated": "Deprecated. Support will be provided until v23.x.x. This package will no longer be maintained after that version. Open an issue in the GitHub repository https://github.com/totvs/po-theme-totvs.",
+      "repository": {
+        "url": "git+https://github.com/totvs/po-theme-totvs.git",
+        "type": "git"
+      },
+      "_npmVersion": "11.13.0",
+      "description": "PO Theme - Totvs Default Theme",
+      "directories": {},
+      "_nodeVersion": "24.16.0",
+      "_hasShrinkwrap": false,
+      "devDependencies": {
+        "@po-ui/style": "21.18.0"
+      },
+      "_npmOperationalInternal": {
+        "tmp": "tmp/po-theme_21.18.0_1780342574704_0.18245289634841",
+        "host": "s3://npm-registry-packages-npm-production"
+      }
+    },
+    "19.39.14": {
+      "name": "@totvs/po-theme",
+      "version": "19.39.14",
+      "author": {
+        "name": "Totvs"
+      },
+      "license": "MIT",
+      "_id": "@totvs/po-theme@19.39.14",
+      "maintainers": [
+        {
+          "name": "dev.totvs",
+          "email": "dev.totvs@totvs.com"
+        },
+        {
+          "name": "mingle.dev",
+          "email": "mingle@totvs.com.br"
+        },
+        {
+          "name": "felipecrescencio",
+          "email": "felipe.crescencio@gmail.com"
+        },
+        {
+          "name": "felipeconti",
+          "email": "felipeconti18@gmail.com"
+        },
+        {
+          "name": "alexmmartins",
+          "email": "alexmouramartins@gmail.com"
+        },
+        {
+          "name": "danotto",
+          "email": "danielbolognani@gmail.com"
+        },
+        {
+          "name": "mansano",
+          "email": "ricardomansano@live.com"
+        },
+        {
+          "name": "tvmatias",
+          "email": "tvmatias@gmail.com"
+        },
+        {
+          "name": "robson.dba",
+          "email": "robson.dba@gmail.com"
+        },
+        {
+          "name": "daniel.yampolschi",
+          "email": "daniel.yampolschi@totvs.com.br"
+        },
+        {
+          "name": "acandido",
+          "email": "brodao@gmail.com"
+        },
+        {
+          "name": "lwtnb.wrk",
+          "email": "leo.watanabe@totvs.com.br"
+        },
+        {
+          "name": "pouidev",
+          "email": "poui@totvs.com.br"
+        },
+        {
+          "name": "alinelariguet",
+          "email": "alinecbgmoreira@gmail.com"
+        },
+        {
+          "name": "roger.steuernagel",
+          "email": "roger@steuernagel.com.br"
+        },
+        {
+          "name": "totvstec-bot",
+          "email": "automacao.tecnologia@totvs.com.br"
+        },
+        {
+          "name": "tarantatotvs",
+          "email": "marcos.taranta@totvs.com.br"
+        }
+      ],
+      "homepage": "https://github.com/totvs/po-theme-totvs#readme",
+      "bugs": {
+        "url": "https://github.com/totvs/po-theme-totvs/issues"
+      },
+      "dist": {
+        "shasum": "46a7890ba9b7838dcd831fe5856ac9ab2642f3fe",
+        "tarball": "https://registry.npmjs.org/@totvs/po-theme/-/po-theme-19.39.14.tgz",
+        "fileCount": 30,
+        "integrity": "sha512-fwmAeeXIISJRxG7/uySwqOCthHfsnxLH7ksFdIwup59rRkoRHoCtDWnAwU0UE5VF7IHVMUFDyYmYn2mt+2dHUA==",
+        "signatures": [
+          {
+            "sig": "MEUCIQDVfwXMndMXEiGzdY/TYDmNconxWAy+9vGlSs4scWeqcQIgGdp3d5B51RZgAIPoK8ZbPWn51IEFet5v0HivH0pnrc0=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 2656816
+      },
+      "gitHead": "51764ec85e99876af4366cf6cd9be03d827fa8d6",
+      "scripts": {
+        "pack": "cd dist/ && npm pack",
+        "build": "po-theme build --fonts --name=default",
+        "publish:local": "npm publish ./dist --registry http://localhost:4873 --ignore-scripts"
+      },
+      "_npmUser": {
+        "name": "pouidev",
+        "email": "poui@totvs.com.br"
+      },
+      "deprecated": "Deprecated. Support will be provided until v23.x.x. This package will no longer be maintained after that version. Open an issue in the GitHub repository https://github.com/totvs/po-theme-totvs.",
+      "repository": {
+        "url": "git+https://github.com/totvs/po-theme-totvs.git",
+        "type": "git"
+      },
+      "_npmVersion": "11.13.0",
+      "description": "PO Theme - Totvs Default Theme",
+      "directories": {},
+      "_nodeVersion": "24.16.0",
+      "_hasShrinkwrap": false,
+      "devDependencies": {
+        "@po-ui/style": "19.39.14"
+      },
+      "_npmOperationalInternal": {
+        "tmp": "tmp/po-theme_19.39.14_1780681462290_0.948229304389439",
+        "host": "s3://npm-registry-packages-npm-production"
+      }
+    },
+    "21.19.0": {
+      "name": "@totvs/po-theme",
+      "version": "21.19.0",
+      "author": {
+        "name": "Totvs"
+      },
+      "license": "MIT",
+      "_id": "@totvs/po-theme@21.19.0",
+      "maintainers": [
+        {
+          "name": "dev.totvs",
+          "email": "dev.totvs@totvs.com"
+        },
+        {
+          "name": "mingle.dev",
+          "email": "mingle@totvs.com.br"
+        },
+        {
+          "name": "felipecrescencio",
+          "email": "felipe.crescencio@gmail.com"
+        },
+        {
+          "name": "felipeconti",
+          "email": "felipeconti18@gmail.com"
+        },
+        {
+          "name": "alexmmartins",
+          "email": "alexmouramartins@gmail.com"
+        },
+        {
+          "name": "danotto",
+          "email": "danielbolognani@gmail.com"
+        },
+        {
+          "name": "mansano",
+          "email": "ricardomansano@live.com"
+        },
+        {
+          "name": "tvmatias",
+          "email": "tvmatias@gmail.com"
+        },
+        {
+          "name": "robson.dba",
+          "email": "robson.dba@gmail.com"
+        },
+        {
+          "name": "daniel.yampolschi",
+          "email": "daniel.yampolschi@totvs.com.br"
+        },
+        {
+          "name": "acandido",
+          "email": "brodao@gmail.com"
+        },
+        {
+          "name": "lwtnb.wrk",
+          "email": "leo.watanabe@totvs.com.br"
+        },
+        {
+          "name": "pouidev",
+          "email": "poui@totvs.com.br"
+        },
+        {
+          "name": "alinelariguet",
+          "email": "alinecbgmoreira@gmail.com"
+        },
+        {
+          "name": "roger.steuernagel",
+          "email": "roger@steuernagel.com.br"
+        },
+        {
+          "name": "totvstec-bot",
+          "email": "automacao.tecnologia@totvs.com.br"
+        },
+        {
+          "name": "tarantatotvs",
+          "email": "marcos.taranta@totvs.com.br"
+        }
+      ],
+      "homepage": "https://github.com/totvs/po-theme-totvs#readme",
+      "bugs": {
+        "url": "https://github.com/totvs/po-theme-totvs/issues"
+      },
+      "dist": {
+        "shasum": "a4c31afad57dcd53bcbf2143a21bac7286b29639",
+        "tarball": "https://registry.npmjs.org/@totvs/po-theme/-/po-theme-21.19.0.tgz",
+        "fileCount": 26,
+        "integrity": "sha512-r988g0NCKHokbuLgwvkkiox9K4wtDHGX5YW1+Q/2Xj8b7JS6Z5JrVMncC3DTop/Yw3Ujv34PR7DyDPQftgt0PQ==",
+        "signatures": [
+          {
+            "sig": "MEQCIBmOtkm/1nqZhp0iYbTo9ubJqUeQ+H931cLJrQa5Y5PhAiBIaVXisQ+d+zxMl9kZJJD4HiMcFjOXpYwkYOgCJwrjBQ==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 2364525
+      },
+      "gitHead": "b881f256cf6083bd87b43647aecc32355237aa7f",
+      "scripts": {
+        "pack": "cd dist/ && npm pack",
+        "build": "po-theme build --fonts --name=default",
+        "publish:local": "npm publish ./dist --registry http://localhost:4873 --ignore-scripts"
+      },
+      "_npmUser": {
+        "name": "pouidev",
+        "email": "poui@totvs.com.br"
+      },
+      "deprecated": "Deprecated. Support will be provided until v23.x.x. This package will no longer be maintained after that version. Open an issue in the GitHub repository https://github.com/totvs/po-theme-totvs.",
+      "repository": {
+        "url": "git+https://github.com/totvs/po-theme-totvs.git",
+        "type": "git"
+      },
+      "_npmVersion": "11.13.0",
+      "description": "PO Theme - Totvs Default Theme",
+      "directories": {},
+      "_nodeVersion": "24.16.0",
+      "_hasShrinkwrap": false,
+      "devDependencies": {
+        "@po-ui/style": "21.19.0"
+      },
+      "_npmOperationalInternal": {
+        "tmp": "tmp/po-theme_21.19.0_1780686613887_0.038284929857567374",
+        "host": "s3://npm-registry-packages-npm-production"
+      }
+    },
+    "19.39.15": {
+      "name": "@totvs/po-theme",
+      "version": "19.39.15",
+      "author": {
+        "name": "Totvs"
+      },
+      "license": "MIT",
+      "_id": "@totvs/po-theme@19.39.15",
+      "maintainers": [
+        {
+          "name": "dev.totvs",
+          "email": "dev.totvs@totvs.com"
+        },
+        {
+          "name": "mingle.dev",
+          "email": "mingle@totvs.com.br"
+        },
+        {
+          "name": "felipecrescencio",
+          "email": "felipe.crescencio@gmail.com"
+        },
+        {
+          "name": "felipeconti",
+          "email": "felipeconti18@gmail.com"
+        },
+        {
+          "name": "alexmmartins",
+          "email": "alexmouramartins@gmail.com"
+        },
+        {
+          "name": "danotto",
+          "email": "danielbolognani@gmail.com"
+        },
+        {
+          "name": "mansano",
+          "email": "ricardomansano@live.com"
+        },
+        {
+          "name": "tvmatias",
+          "email": "tvmatias@gmail.com"
+        },
+        {
+          "name": "robson.dba",
+          "email": "robson.dba@gmail.com"
+        },
+        {
+          "name": "daniel.yampolschi",
+          "email": "daniel.yampolschi@totvs.com.br"
+        },
+        {
+          "name": "acandido",
+          "email": "brodao@gmail.com"
+        },
+        {
+          "name": "lwtnb.wrk",
+          "email": "leo.watanabe@totvs.com.br"
+        },
+        {
+          "name": "pouidev",
+          "email": "poui@totvs.com.br"
+        },
+        {
+          "name": "alinelariguet",
+          "email": "alinecbgmoreira@gmail.com"
+        },
+        {
+          "name": "roger.steuernagel",
+          "email": "roger@steuernagel.com.br"
+        },
+        {
+          "name": "totvstec-bot",
+          "email": "automacao.tecnologia@totvs.com.br"
+        },
+        {
+          "name": "tarantatotvs",
+          "email": "marcos.taranta@totvs.com.br"
+        }
+      ],
+      "homepage": "https://github.com/totvs/po-theme-totvs#readme",
+      "bugs": {
+        "url": "https://github.com/totvs/po-theme-totvs/issues"
+      },
+      "dist": {
+        "shasum": "ead6d8a8073a1747ff9d147df064acfd931c6f24",
+        "tarball": "https://registry.npmjs.org/@totvs/po-theme/-/po-theme-19.39.15.tgz",
+        "fileCount": 30,
+        "integrity": "sha512-0Eb1nQf4j2yPKQq5QAqN5TViGPKPWY0pZcop9584jmkBCKFgyDdYyIH06IhmZ8dltPemiaTHZxtGOJVgOLykug==",
+        "signatures": [
+          {
+            "sig": "MEUCIATx/vxPIxiJtcqRgNqxyjp5J5TesC3vWaR1juyd3y/VAiEA2uE8NIfj4exzeU6bijCg+VZCOFQN0lX0Xb0PSfHI2wY=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 2656816
+      },
+      "gitHead": "2e1b9117c0f57d2b08419b8e0455b9fff81d797b",
+      "scripts": {
+        "pack": "cd dist/ && npm pack",
+        "build": "po-theme build --fonts --name=default",
+        "publish:local": "npm publish ./dist --registry http://localhost:4873 --ignore-scripts"
+      },
+      "_npmUser": {
+        "name": "pouidev",
+        "email": "poui@totvs.com.br"
+      },
+      "deprecated": "Deprecated. Support will be provided until v23.x.x. This package will no longer be maintained after that version. Open an issue in the GitHub repository https://github.com/totvs/po-theme-totvs.",
+      "repository": {
+        "url": "git+https://github.com/totvs/po-theme-totvs.git",
+        "type": "git"
+      },
+      "_npmVersion": "11.13.0",
+      "description": "PO Theme - Totvs Default Theme",
+      "directories": {},
+      "_nodeVersion": "24.16.0",
+      "_hasShrinkwrap": false,
+      "devDependencies": {
+        "@po-ui/style": "19.39.15"
+      },
+      "_npmOperationalInternal": {
+        "tmp": "tmp/po-theme_19.39.15_1781547928720_0.2842420703971693",
+        "host": "s3://npm-registry-packages-npm-production"
+      }
+    },
+    "21.20.0": {
+      "name": "@totvs/po-theme",
+      "version": "21.20.0",
+      "author": {
+        "name": "Totvs"
+      },
+      "license": "MIT",
+      "_id": "@totvs/po-theme@21.20.0",
+      "maintainers": [
+        {
+          "name": "dev.totvs",
+          "email": "dev.totvs@totvs.com"
+        },
+        {
+          "name": "mingle.dev",
+          "email": "mingle@totvs.com.br"
+        },
+        {
+          "name": "felipecrescencio",
+          "email": "felipe.crescencio@gmail.com"
+        },
+        {
+          "name": "felipeconti",
+          "email": "felipeconti18@gmail.com"
+        },
+        {
+          "name": "alexmmartins",
+          "email": "alexmouramartins@gmail.com"
+        },
+        {
+          "name": "danotto",
+          "email": "danielbolognani@gmail.com"
+        },
+        {
+          "name": "mansano",
+          "email": "ricardomansano@live.com"
+        },
+        {
+          "name": "tvmatias",
+          "email": "tvmatias@gmail.com"
+        },
+        {
+          "name": "robson.dba",
+          "email": "robson.dba@gmail.com"
+        },
+        {
+          "name": "daniel.yampolschi",
+          "email": "daniel.yampolschi@totvs.com.br"
+        },
+        {
+          "name": "acandido",
+          "email": "brodao@gmail.com"
+        },
+        {
+          "name": "lwtnb.wrk",
+          "email": "leo.watanabe@totvs.com.br"
+        },
+        {
+          "name": "pouidev",
+          "email": "poui@totvs.com.br"
+        },
+        {
+          "name": "alinelariguet",
+          "email": "alinecbgmoreira@gmail.com"
+        },
+        {
+          "name": "roger.steuernagel",
+          "email": "roger@steuernagel.com.br"
+        },
+        {
+          "name": "totvstec-bot",
+          "email": "automacao.tecnologia@totvs.com.br"
+        },
+        {
+          "name": "tarantatotvs",
+          "email": "marcos.taranta@totvs.com.br"
+        }
+      ],
+      "homepage": "https://github.com/totvs/po-theme-totvs#readme",
+      "bugs": {
+        "url": "https://github.com/totvs/po-theme-totvs/issues"
+      },
+      "dist": {
+        "shasum": "11d96d8a19de94a861aba4ac793bb07cfafe17df",
+        "tarball": "https://registry.npmjs.org/@totvs/po-theme/-/po-theme-21.20.0.tgz",
+        "fileCount": 26,
+        "integrity": "sha512-ra76Y/EmKGBiCSqgNdExwpw6qsT6KXowru7h0hxMEvy31QN2aF2l6/f5Ug428F72vu/jqaGrleDBo4ZVPTXtVQ==",
+        "signatures": [
+          {
+            "sig": "MEQCIBBmTa41CD8dk9N5LaqHiSRqV9yILnuBLBXcpn0pkwsJAiAh5dQKhi7TsXM36QQkfwfwrDApQRba3TCiFsUaLtZtDg==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 2364525
+      },
+      "gitHead": "25b602d029e33486b724187b7b8602749c01a301",
+      "scripts": {
+        "pack": "cd dist/ && npm pack",
+        "build": "po-theme build --fonts --name=default",
+        "publish:local": "npm publish ./dist --registry http://localhost:4873 --ignore-scripts"
+      },
+      "_npmUser": {
+        "name": "pouidev",
+        "email": "poui@totvs.com.br"
+      },
+      "deprecated": "Deprecated. Support will be provided until v23.x.x. This package will no longer be maintained after that version. Open an issue in the GitHub repository https://github.com/totvs/po-theme-totvs.",
+      "repository": {
+        "url": "git+https://github.com/totvs/po-theme-totvs.git",
+        "type": "git"
+      },
+      "_npmVersion": "11.13.0",
+      "description": "PO Theme - Totvs Default Theme",
+      "directories": {},
+      "_nodeVersion": "24.16.0",
+      "_hasShrinkwrap": false,
+      "devDependencies": {
+        "@po-ui/style": "21.20.0"
+      },
+      "_npmOperationalInternal": {
+        "tmp": "tmp/po-theme_21.20.0_1781556101085_0.7297803494694997",
+        "host": "s3://npm-registry-packages-npm-production"
+      }
+    },
+    "21.21.0": {
+      "name": "@totvs/po-theme",
+      "version": "21.21.0",
+      "author": {
+        "name": "Totvs"
+      },
+      "license": "MIT",
+      "_id": "@totvs/po-theme@21.21.0",
+      "maintainers": [
+        {
+          "name": "dev.totvs",
+          "email": "dev.totvs@totvs.com"
+        },
+        {
+          "name": "mingle.dev",
+          "email": "mingle@totvs.com.br"
+        },
+        {
+          "name": "felipecrescencio",
+          "email": "felipe.crescencio@gmail.com"
+        },
+        {
+          "name": "felipeconti",
+          "email": "felipeconti18@gmail.com"
+        },
+        {
+          "name": "alexmmartins",
+          "email": "alexmouramartins@gmail.com"
+        },
+        {
+          "name": "danotto",
+          "email": "danielbolognani@gmail.com"
+        },
+        {
+          "name": "mansano",
+          "email": "ricardomansano@live.com"
+        },
+        {
+          "name": "tvmatias",
+          "email": "tvmatias@gmail.com"
+        },
+        {
+          "name": "robson.dba",
+          "email": "robson.dba@gmail.com"
+        },
+        {
+          "name": "daniel.yampolschi",
+          "email": "daniel.yampolschi@totvs.com.br"
+        },
+        {
+          "name": "acandido",
+          "email": "brodao@gmail.com"
+        },
+        {
+          "name": "lwtnb.wrk",
+          "email": "leo.watanabe@totvs.com.br"
+        },
+        {
+          "name": "pouidev",
+          "email": "poui@totvs.com.br"
+        },
+        {
+          "name": "alinelariguet",
+          "email": "alinecbgmoreira@gmail.com"
+        },
+        {
+          "name": "roger.steuernagel",
+          "email": "roger@steuernagel.com.br"
+        },
+        {
+          "name": "totvstec-bot",
+          "email": "automacao.tecnologia@totvs.com.br"
+        },
+        {
+          "name": "tarantatotvs",
+          "email": "marcos.taranta@totvs.com.br"
+        }
+      ],
+      "homepage": "https://github.com/totvs/po-theme-totvs#readme",
+      "bugs": {
+        "url": "https://github.com/totvs/po-theme-totvs/issues"
+      },
+      "dist": {
+        "shasum": "f5aa24338978120e80ac2e07d13f74a46e13cb47",
+        "tarball": "https://registry.npmjs.org/@totvs/po-theme/-/po-theme-21.21.0.tgz",
+        "fileCount": 26,
+        "integrity": "sha512-Uiv55BGZOd21t1r6UocsOjtn+vUa5ht0VkqLJn9k2kNPae+WM0TCieVxM1XkpgumU2xOu8jGkttsf02ZN2bK8g==",
+        "signatures": [
+          {
+            "sig": "MEUCIH2mmkwDtjNpc6QU83E9i3BdRqaf768MjwGuWwqMu3x5AiEAsXh0C1fqnqXAL4k5mpIVupNEtD+nR+GWhVZIFY4Eu8c=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 2364525
+      },
+      "gitHead": "934104964c40e52dd9111102698b80591f8a3637",
+      "scripts": {
+        "pack": "cd dist/ && npm pack",
+        "build": "po-theme build --fonts --name=default",
+        "publish:local": "npm publish ./dist --registry http://localhost:4873 --ignore-scripts"
+      },
+      "_npmUser": {
+        "name": "pouidev",
+        "email": "poui@totvs.com.br"
+      },
+      "deprecated": "Deprecated. Support will be provided until v23.x.x. This package will no longer be maintained after that version. Open an issue in the GitHub repository https://github.com/totvs/po-theme-totvs.",
+      "repository": {
+        "url": "git+https://github.com/totvs/po-theme-totvs.git",
+        "type": "git"
+      },
+      "_npmVersion": "11.13.0",
+      "description": "PO Theme - Totvs Default Theme",
+      "directories": {},
+      "_nodeVersion": "24.16.0",
+      "_hasShrinkwrap": false,
+      "devDependencies": {
+        "@po-ui/style": "21.21.0"
+      },
+      "_npmOperationalInternal": {
+        "tmp": "tmp/po-theme_21.21.0_1781794138868_0.2708297371322905",
+        "host": "s3://npm-registry-packages-npm-production"
+      }
+    },
+    "19.39.16": {
+      "name": "@totvs/po-theme",
+      "version": "19.39.16",
+      "author": {
+        "name": "Totvs"
+      },
+      "license": "MIT",
+      "_id": "@totvs/po-theme@19.39.16",
+      "maintainers": [
+        {
+          "name": "dev.totvs",
+          "email": "dev.totvs@totvs.com"
+        },
+        {
+          "name": "mingle.dev",
+          "email": "mingle@totvs.com.br"
+        },
+        {
+          "name": "felipecrescencio",
+          "email": "felipe.crescencio@gmail.com"
+        },
+        {
+          "name": "felipeconti",
+          "email": "felipeconti18@gmail.com"
+        },
+        {
+          "name": "alexmmartins",
+          "email": "alexmouramartins@gmail.com"
+        },
+        {
+          "name": "danotto",
+          "email": "danielbolognani@gmail.com"
+        },
+        {
+          "name": "mansano",
+          "email": "ricardomansano@live.com"
+        },
+        {
+          "name": "tvmatias",
+          "email": "tvmatias@gmail.com"
+        },
+        {
+          "name": "robson.dba",
+          "email": "robson.dba@gmail.com"
+        },
+        {
+          "name": "daniel.yampolschi",
+          "email": "daniel.yampolschi@totvs.com.br"
+        },
+        {
+          "name": "acandido",
+          "email": "brodao@gmail.com"
+        },
+        {
+          "name": "lwtnb.wrk",
+          "email": "leo.watanabe@totvs.com.br"
+        },
+        {
+          "name": "pouidev",
+          "email": "poui@totvs.com.br"
+        },
+        {
+          "name": "alinelariguet",
+          "email": "alinecbgmoreira@gmail.com"
+        },
+        {
+          "name": "roger.steuernagel",
+          "email": "roger@steuernagel.com.br"
+        },
+        {
+          "name": "totvstec-bot",
+          "email": "automacao.tecnologia@totvs.com.br"
+        },
+        {
+          "name": "tarantatotvs",
+          "email": "marcos.taranta@totvs.com.br"
+        }
+      ],
+      "homepage": "https://github.com/totvs/po-theme-totvs#readme",
+      "bugs": {
+        "url": "https://github.com/totvs/po-theme-totvs/issues"
+      },
+      "dist": {
+        "shasum": "55eecb85012074f8c548004098002ec900ea631b",
+        "tarball": "https://registry.npmjs.org/@totvs/po-theme/-/po-theme-19.39.16.tgz",
+        "fileCount": 30,
+        "integrity": "sha512-Wpcy7YHAwiN/U9Nup23lW/mLzZ14ZXFQIhNwQRfVo2L6oKAtqZvxuqoD4mB+ov7z4Jp1eCWbOBRQ0RfH1qCijg==",
+        "signatures": [
+          {
+            "sig": "MEQCIF/sFDANc0ng8X/tyWCSTUsJMVo4Kbhk3rerqecrMxySAiBdeTLcxsVlxsb1X4ivPnZZmoz3LhIcXRhiWJawolPLOg==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 2656816
+      },
+      "gitHead": "79e4d34736f6a217c5ae535cea6dabc7556de21f",
+      "scripts": {
+        "pack": "cd dist/ && npm pack",
+        "build": "po-theme build --fonts --name=default",
+        "publish:local": "npm publish ./dist --registry http://localhost:4873 --ignore-scripts"
+      },
+      "_npmUser": {
+        "name": "pouidev",
+        "email": "poui@totvs.com.br"
+      },
+      "deprecated": "Deprecated. Support will be provided until v23.x.x. This package will no longer be maintained after that version. Open an issue in the GitHub repository https://github.com/totvs/po-theme-totvs.",
+      "repository": {
+        "url": "git+https://github.com/totvs/po-theme-totvs.git",
+        "type": "git"
+      },
+      "_npmVersion": "11.13.0",
+      "description": "PO Theme - Totvs Default Theme",
+      "directories": {},
+      "_nodeVersion": "24.17.0",
+      "_hasShrinkwrap": false,
+      "devDependencies": {
+        "@po-ui/style": "19.39.16"
+      },
+      "_npmOperationalInternal": {
+        "tmp": "tmp/po-theme_19.39.16_1782413368266_0.925266646949725",
+        "host": "s3://npm-registry-packages-npm-production"
+      }
+    },
+    "21.22.0": {
+      "name": "@totvs/po-theme",
+      "version": "21.22.0",
+      "author": {
+        "name": "Totvs"
+      },
+      "license": "MIT",
+      "_id": "@totvs/po-theme@21.22.0",
+      "maintainers": [
+        {
+          "name": "dev.totvs",
+          "email": "dev.totvs@totvs.com"
+        },
+        {
+          "name": "mingle.dev",
+          "email": "mingle@totvs.com.br"
+        },
+        {
+          "name": "felipecrescencio",
+          "email": "felipe.crescencio@gmail.com"
+        },
+        {
+          "name": "felipeconti",
+          "email": "felipeconti18@gmail.com"
+        },
+        {
+          "name": "alexmmartins",
+          "email": "alexmouramartins@gmail.com"
+        },
+        {
+          "name": "danotto",
+          "email": "danielbolognani@gmail.com"
+        },
+        {
+          "name": "mansano",
+          "email": "ricardomansano@live.com"
+        },
+        {
+          "name": "tvmatias",
+          "email": "tvmatias@gmail.com"
+        },
+        {
+          "name": "robson.dba",
+          "email": "robson.dba@gmail.com"
+        },
+        {
+          "name": "daniel.yampolschi",
+          "email": "daniel.yampolschi@totvs.com.br"
+        },
+        {
+          "name": "acandido",
+          "email": "brodao@gmail.com"
+        },
+        {
+          "name": "lwtnb.wrk",
+          "email": "leo.watanabe@totvs.com.br"
+        },
+        {
+          "name": "pouidev",
+          "email": "poui@totvs.com.br"
+        },
+        {
+          "name": "alinelariguet",
+          "email": "alinecbgmoreira@gmail.com"
+        },
+        {
+          "name": "roger.steuernagel",
+          "email": "roger@steuernagel.com.br"
+        },
+        {
+          "name": "totvstec-bot",
+          "email": "automacao.tecnologia@totvs.com.br"
+        },
+        {
+          "name": "tarantatotvs",
+          "email": "marcos.taranta@totvs.com.br"
+        }
+      ],
+      "homepage": "https://github.com/totvs/po-theme-totvs#readme",
+      "bugs": {
+        "url": "https://github.com/totvs/po-theme-totvs/issues"
+      },
+      "dist": {
+        "shasum": "53f50b2a8316993ea955603edf851b45bb67f136",
+        "tarball": "https://registry.npmjs.org/@totvs/po-theme/-/po-theme-21.22.0.tgz",
+        "fileCount": 26,
+        "integrity": "sha512-9/zZ7jBUxa/cg49jwKN++jZw+RuXugdH8zJCpjd+x3usdZZ49Lc8/X14yPxXEo1pZRHCmn7JjiXI6+lMkz6vbQ==",
+        "signatures": [
+          {
+            "sig": "MEUCIQCohvHtjjMFfwbV4xJATwGlQHLNmOb9spcMefU50RTw3gIgG3AHzYiugeNHYeJMKLaz5Oid5WqzTpTWO18rMuA0RKs=",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 2366741
+      },
+      "gitHead": "08b5aa1dc26ee3c9742f55fd59de5b7f649eb8e6",
+      "scripts": {
+        "pack": "cd dist/ && npm pack",
+        "build": "po-theme build --fonts --name=default",
+        "publish:local": "npm publish ./dist --registry http://localhost:4873 --ignore-scripts"
+      },
+      "_npmUser": {
+        "name": "pouidev",
+        "email": "poui@totvs.com.br"
+      },
+      "deprecated": "Deprecated. Support will be provided until v23.x.x. This package will no longer be maintained after that version. Open an issue in the GitHub repository https://github.com/totvs/po-theme-totvs.",
+      "repository": {
+        "url": "git+https://github.com/totvs/po-theme-totvs.git",
+        "type": "git"
+      },
+      "_npmVersion": "11.13.0",
+      "description": "PO Theme - Totvs Default Theme",
+      "directories": {},
+      "_nodeVersion": "24.17.0",
+      "_hasShrinkwrap": false,
+      "devDependencies": {
+        "@po-ui/style": "21.22.0"
+      },
+      "_npmOperationalInternal": {
+        "tmp": "tmp/po-theme_21.22.0_1782416894367_0.6855364364070113",
+        "host": "s3://npm-registry-packages-npm-production"
+      }
+    },
+    "19.39.17": {
+      "name": "@totvs/po-theme",
+      "version": "19.39.17",
+      "author": {
+        "name": "Totvs"
+      },
+      "license": "MIT",
+      "_id": "@totvs/po-theme@19.39.17",
+      "maintainers": [
+        {
+          "name": "dev.totvs",
+          "email": "dev.totvs@totvs.com"
+        },
+        {
+          "name": "mingle.dev",
+          "email": "mingle@totvs.com.br"
+        },
+        {
+          "name": "felipecrescencio",
+          "email": "felipe.crescencio@gmail.com"
+        },
+        {
+          "name": "felipeconti",
+          "email": "felipeconti18@gmail.com"
+        },
+        {
+          "name": "alexmmartins",
+          "email": "alexmouramartins@gmail.com"
+        },
+        {
+          "name": "danotto",
+          "email": "danielbolognani@gmail.com"
+        },
+        {
+          "name": "mansano",
+          "email": "ricardomansano@live.com"
+        },
+        {
+          "name": "tvmatias",
+          "email": "tvmatias@gmail.com"
+        },
+        {
+          "name": "robson.dba",
+          "email": "robson.dba@gmail.com"
+        },
+        {
+          "name": "daniel.yampolschi",
+          "email": "daniel.yampolschi@totvs.com.br"
+        },
+        {
+          "name": "acandido",
+          "email": "brodao@gmail.com"
+        },
+        {
+          "name": "lwtnb.wrk",
+          "email": "leo.watanabe@totvs.com.br"
+        },
+        {
+          "name": "pouidev",
+          "email": "poui@totvs.com.br"
+        },
+        {
+          "name": "alinelariguet",
+          "email": "alinecbgmoreira@gmail.com"
+        },
+        {
+          "name": "roger.steuernagel",
+          "email": "roger@steuernagel.com.br"
+        },
+        {
+          "name": "totvstec-bot",
+          "email": "automacao.tecnologia@totvs.com.br"
+        },
+        {
+          "name": "tarantatotvs",
+          "email": "marcos.taranta@totvs.com.br"
+        }
+      ],
+      "homepage": "https://github.com/totvs/po-theme-totvs#readme",
+      "bugs": {
+        "url": "https://github.com/totvs/po-theme-totvs/issues"
+      },
+      "dist": {
+        "shasum": "e44c6d4c65743be2d229799a6d62ed5d4e9bff96",
+        "tarball": "https://registry.npmjs.org/@totvs/po-theme/-/po-theme-19.39.17.tgz",
+        "fileCount": 30,
+        "integrity": "sha512-Mi67kRcYKa6KuL3rfXNB20NgzeBy3jnlZQ4mWu3jUjwqgb3TEerN5SThjiJShJWWAHRCtdRp6AlexmjRslXZhA==",
+        "signatures": [
+          {
+            "sig": "MEQCIGWfaWyDANpqkRW3ZvzzRPcht2DChFi/5Sdz4Arh9XkkAiAeQQ4uXgKHx4KBmCexx53TbLNjHJCWBc+q1GuYjb/p1A==",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 2656816
+      },
+      "gitHead": "43d35d701fde44a9b38cfa346864f1abf2997ab6",
+      "scripts": {
+        "pack": "cd dist/ && npm pack",
+        "build": "po-theme build --fonts --name=default",
+        "publish:local": "npm publish ./dist --registry http://localhost:4873 --ignore-scripts"
+      },
+      "_npmUser": {
+        "name": "pouidev",
+        "email": "poui@totvs.com.br"
+      },
+      "deprecated": "Deprecated. Support will be provided until v23.x.x. This package will no longer be maintained after that version. Open an issue in the GitHub repository https://github.com/totvs/po-theme-totvs.",
+      "repository": {
+        "url": "git+https://github.com/totvs/po-theme-totvs.git",
+        "type": "git"
+      },
+      "_npmVersion": "11.16.0",
+      "description": "PO Theme - Totvs Default Theme",
+      "directories": {},
+      "_nodeVersion": "24.18.0",
+      "_hasShrinkwrap": false,
+      "devDependencies": {
+        "@po-ui/style": "19.39.17"
+      },
+      "_npmOperationalInternal": {
+        "tmp": "tmp/po-theme_19.39.17_1783362258372_0.43383696329110055",
+        "host": "s3://npm-registry-packages-npm-production"
+      }
+    },
+    "21.23.0": {
+      "name": "@totvs/po-theme",
+      "version": "21.23.0",
+      "author": {
+        "name": "Totvs"
+      },
+      "license": "MIT",
+      "_id": "@totvs/po-theme@21.23.0",
+      "maintainers": [
+        {
+          "name": "dev.totvs",
+          "email": "dev.totvs@totvs.com"
+        },
+        {
+          "name": "mingle.dev",
+          "email": "mingle@totvs.com.br"
+        },
+        {
+          "name": "felipecrescencio",
+          "email": "felipe.crescencio@gmail.com"
+        },
+        {
+          "name": "felipeconti",
+          "email": "felipeconti18@gmail.com"
+        },
+        {
+          "name": "alexmmartins",
+          "email": "alexmouramartins@gmail.com"
+        },
+        {
+          "name": "danotto",
+          "email": "danielbolognani@gmail.com"
+        },
+        {
+          "name": "mansano",
+          "email": "ricardomansano@live.com"
+        },
+        {
+          "name": "tvmatias",
+          "email": "tvmatias@gmail.com"
+        },
+        {
+          "name": "robson.dba",
+          "email": "robson.dba@gmail.com"
+        },
+        {
+          "name": "daniel.yampolschi",
+          "email": "daniel.yampolschi@totvs.com.br"
+        },
+        {
+          "name": "acandido",
+          "email": "brodao@gmail.com"
+        },
+        {
+          "name": "lwtnb.wrk",
+          "email": "leo.watanabe@totvs.com.br"
+        },
+        {
+          "name": "pouidev",
+          "email": "poui@totvs.com.br"
+        },
+        {
+          "name": "alinelariguet",
+          "email": "alinecbgmoreira@gmail.com"
+        },
+        {
+          "name": "roger.steuernagel",
+          "email": "roger@steuernagel.com.br"
+        },
+        {
+          "name": "totvstec-bot",
+          "email": "automacao.tecnologia@totvs.com.br"
+        },
+        {
+          "name": "tarantatotvs",
+          "email": "marcos.taranta@totvs.com.br"
+        }
+      ],
+      "homepage": "https://github.com/totvs/po-theme-totvs#readme",
+      "bugs": {
+        "url": "https://github.com/totvs/po-theme-totvs/issues"
+      },
+      "dist": {
+        "shasum": "e1413f2a9b82f47c581e19b9cccb28bb80cd5f10",
+        "tarball": "https://registry.npmjs.org/@totvs/po-theme/-/po-theme-21.23.0.tgz",
+        "fileCount": 26,
+        "integrity": "sha512-usMgiagoQHiKdnIxv9kbYk5y4tzFbBKiTCTK0ZN6DWyO2Ez65PygLnDK+kWoyJ/3uIiCOMXwHTaSGN4g8eqEqg==",
+        "signatures": [
+          {
+            "sig": "MEYCIQCWwHNmt2jJ3XbJ1qTvws5iz06jOsQfoTUUKNjCe/CqUQIhAOcn4TDNnqGqywgA6bM9vQHFC20NA9r0YW53mC9GHJmI",
+            "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+          }
+        ],
+        "unpackedSize": 2366741
+      },
+      "gitHead": "b3489862f10db7c573840accf41aa0db46639b68",
+      "scripts": {
+        "pack": "cd dist/ && npm pack",
+        "build": "po-theme build --fonts --name=default",
+        "publish:local": "npm publish ./dist --registry http://localhost:4873 --ignore-scripts"
+      },
+      "_npmUser": {
+        "name": "pouidev",
+        "email": "poui@totvs.com.br"
+      },
+      "deprecated": "Deprecated. Support will be provided until v23.x.x. This package will no longer be maintained after that version. Open an issue in the GitHub repository https://github.com/totvs/po-theme-totvs.",
+      "repository": {
+        "url": "git+https://github.com/totvs/po-theme-totvs.git",
+        "type": "git"
+      },
+      "_npmVersion": "11.16.0",
+      "description": "PO Theme - Totvs Default Theme",
+      "directories": {},
+      "_nodeVersion": "24.18.0",
+      "_hasShrinkwrap": false,
+      "devDependencies": {
+        "@po-ui/style": "21.23.0"
+      },
+      "_npmOperationalInternal": {
+        "tmp": "tmp/po-theme_21.23.0_1783368931744_0.873286188693291",
+        "host": "s3://npm-registry-packages-npm-production"
+      }
     }
   },
   "time": {
     "created": "2020-03-19T02:03:56.790Z",
-    "modified": "2026-05-18T13:36:58.591Z",
+    "modified": "2026-07-06T20:16:57.687Z",
     "1.28.0": "2020-03-19T02:03:57.111Z",
     "2.0.0-beta.1": "2020-03-27T17:07:42.130Z",
     "2.0.0-beta.2": "2020-04-06T19:53:12.745Z",
@@ -51884,7 +53606,21 @@
     "21.14.0": "2026-05-08T17:49:15.118Z",
     "19.39.11": "2026-05-14T14:36:57.750Z",
     "21.15.0": "2026-05-14T18:03:30.861Z",
-    "21.16.0": "2026-05-18T13:35:32.265Z"
+    "21.16.0": "2026-05-18T13:35:32.265Z",
+    "19.39.12": "2026-05-25T19:11:45.104Z",
+    "21.17.0": "2026-05-25T20:13:22.989Z",
+    "21.17.0-beta.1": "2026-05-29T15:53:52.409Z",
+    "19.39.13": "2026-06-01T17:49:55.820Z",
+    "21.18.0": "2026-06-01T19:36:14.906Z",
+    "19.39.14": "2026-06-05T17:44:22.499Z",
+    "21.19.0": "2026-06-05T19:10:14.913Z",
+    "19.39.15": "2026-06-15T18:25:28.895Z",
+    "21.20.0": "2026-06-15T20:41:41.277Z",
+    "21.21.0": "2026-06-18T14:48:59.046Z",
+    "19.39.16": "2026-06-25T18:49:28.498Z",
+    "21.22.0": "2026-06-25T19:48:14.526Z",
+    "19.39.17": "2026-07-06T18:24:18.564Z",
+    "21.23.0": "2026-07-06T20:15:32.083Z"
   },
   "bugs": {
     "url": "https://github.com/totvs/po-theme-totvs/issues"
@@ -51946,7 +53682,7 @@
     },
     {
       "name": "pouidev",
-      "email": "contatopoui@gmail.com"
+      "email": "poui@totvs.com.br"
     },
     {
       "name": "robson.dba",

@@ -117,7 +117,13 @@ export class FeriadosPage implements OnInit {
 
     this.feriadoService.search(this.buildSearchParams()).subscribe({
       next: (result: any) => {
-        this.feriados = this.page === 1 ? result.items : [...this.feriados, ...result.items];
+        const items = result.items.map((item: any) => {
+          if (item.data) {
+            item.data = item.data.split('T')[0] + 'T12:00:00';
+          }
+          return item;
+        });
+        this.feriados = this.page === 1 ? items : [...this.feriados, ...items];
         this.total = result.total;
         this.hasNext = result.hasNext;
         this.syncDisclaimers();

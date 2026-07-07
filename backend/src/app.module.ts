@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
+import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { ClientesModule } from './clientes/clientes.module';
 import { ProfissionaisModule } from './profissionais/profissionais.module';
 import { ContratosModule } from './contratos/contratos.module';
@@ -18,6 +20,7 @@ import { FeriadosModule } from './feriados/feriados.module';
 import { EstadosModule } from './estados/estados.module';
 import { MunicipiosModule } from './municipios/municipios.module';
 import { CepsModule } from './ceps/ceps.module';
+import { LocalidadesModule } from './localidades/localidades.module';
 
 @Module({
   imports: [
@@ -37,9 +40,16 @@ import { CepsModule } from './ceps/ceps.module';
     FeriadosModule,
     EstadosModule,
     MunicipiosModule,
-    CepsModule
+    CepsModule,
+    LocalidadesModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
 export class AppModule {}

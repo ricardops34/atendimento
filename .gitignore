@@ -19,3 +19,4 @@ node_modules/
 .vscode/
 Thumbs.db
 .claude/worktrees/agent-af0aeed72e20cbc1e
+.publish.ps1

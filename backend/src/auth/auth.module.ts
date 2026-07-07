@@ -6,7 +6,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { PrismaModule } from '../prisma/prisma.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 
-const jwtExpiresIn = (process.env.JWT_EXPIRES_IN || '1d') as `${number}${'s' | 'm' | 'h' | 'd'}` | number;
+const envExpiresIn = process.env.JWT_EXPIRES_IN ? process.env.JWT_EXPIRES_IN.trim().replace(/['"]/g, '') : '';
+const jwtExpiresIn = (envExpiresIn || '1d') as `${number}${'s' | 'm' | 'h' | 'd'}` | number;
 
 @Module({
   imports: [

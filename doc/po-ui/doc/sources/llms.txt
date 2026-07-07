@@ -43,6 +43,7 @@ ng add @po-ui/ng-components
 - [PoContextTabsComponent](https://po-ui.io/llms-generated/po-context-tabs.md): #### Tokens customizáveis
 - [PoDatepickerComponent](https://po-ui.io/llms-generated/po-datepicker.md): O `po-datepicker` é um componente específico para manipulação de datas permitindo a digitação e / ou seleção.
 - [PoDatepickerRangeComponent](https://po-ui.io/llms-generated/po-datepicker-range.md): O `po-datepicker-range` é um componente para seleção de um período entre duas datas, onde é possível informar apenas
+- [PoDatetimepickerComponent](https://po-ui.io/llms-generated/po-datetimepicker.md): O `po-datetimepicker` é um componente para manipulação de data e hora, permitindo a digitação e/ou seleção
 - [PoDecimalComponent](https://po-ui.io/llms-generated/po-decimal.md): Este é um componente baseado em input, com várias propriedades do input nativo e outras
 - [PoDisclaimerGroupComponent](https://po-ui.io/llms-generated/po-disclaimer-group.md): O componente `po-disclaimer-group` é recomendado para manipular palavras-chave de filtros aplicados em uma pesquisa.
 - [PoDividerComponent](https://po-ui.io/llms-generated/po-divider.md): Este componente apresenta uma linha demarcadora de blocos e pode conter um *label*.
@@ -94,6 +95,7 @@ ng add @po-ui/ng-components
 - [PoRadioGroupComponent](https://po-ui.io/llms-generated/po-radio-group.md): O componente `po-radio-group` deve ser utilizado para disponibilizar múltiplas opções ao usuário, permitindo a ele que
 - [PoRichTextComponent](https://po-ui.io/llms-generated/po-rich-text.md): O componente `po-rich-text` é um editor de textos enriquecidos.
 - [PoSearchComponent](https://po-ui.io/llms-generated/po-search.md): O componente search, também conhecido como barra de pesquisa, é utilizado para ajudar os usuários a localizar um determinado conteúdo.
+- [PoSearchAiComponent](https://po-ui.io/llms-generated/po-search-ai.md): O `po-search-ai` é um componente de **busca em linguagem natural** baseado em input.
 - [PoSelectComponent](https://po-ui.io/llms-generated/po-select.md): O componente po-select exibe uma lista de valores e permite que o usuário selecione um desses valores.
 - [PoSkeletonComponent](https://po-ui.io/llms-generated/po-skeleton.md): O componente `po-skeleton` é utilizado para exibir placeholders durante o carregamento de conteúdo,
 - [PoSlideComponent](https://po-ui.io/llms-generated/po-slide.md): Componente de slide para visualização e controle de elementos de forma cíclica.
@@ -126,6 +128,7 @@ ng add @po-ui/ng-components
 - [PoStorageService](https://po-ui.io/llms-generated/po-storage-service.md): O PO Storage é uma biblioteca que fornece um serviço para armazenamento de dados no dispositivo local, sendo semelhante
 - [PoSyncService](https://po-ui.io/llms-generated/po-sync-service.md): O `PoSyncService` é utilizado para configurar toda a base de dados que receberá as informações que serão
 - [PoThemeService](https://po-ui.io/llms-generated/po-theme-service.md): O serviço `PoThemeService` permite customizar as cores do tema padrão do `PO-UI` e definir o nível de acessibilidade
+- [PoUserGuideService](https://po-ui.io/llms-generated/po-user-guide-service.md): Serviço responsável por criar e controlar tours guiados na interface da aplicação.
 
 ## Interfaces e Modelos
 
@@ -188,7 +191,7 @@ ng add @po-ui/ng-components
 - [PoHeaderBrand](https://po-ui.io/llms-generated/po-header-brand.md): Interface* que define a seção de brand.
 - [PoHeaderLiterals](https://po-ui.io/llms-generated/po-header-literals.md): Interface para definição das literais usadas no `po-header`.
 - [PoHeaderUser](https://po-ui.io/llms-generated/po-header-user.md): Interface* que define a seção de Customer do header.
-- [PoHelperOptions](https://po-ui.io/llms-generated/po-helper-options.md): Interface* que define as opções de configuração do componente po-helper.
+- [PoHelperOptions](https://po-ui.io/llms-generated/po-helper-options.md): Interface para configuração das opções de ajuda (*helper*).
 - [PoHttpRequestData](https://po-ui.io/llms-generated/po-http-request-data.md): Interface para definição de uma requisição HTTP.
 - [PoI18nConfig](https://po-ui.io/llms-generated/po-i18n-config.md): Interface para a configuração do módulo `PoI18nModule`.
 - [PoI18nConfigContext](https://po-ui.io/llms-generated/po-i18n-config-context.md): Interface para a configuração dos contextos do módulo `PoI18nModule`.
@@ -275,6 +278,12 @@ ng add @po-ui/ng-components
 - [PoRadioGroupOption](https://po-ui.io/llms-generated/po-radio-group-option.md): Interface para as ações do componente po-radio-group.
 - [PoResponseApi](https://po-ui.io/llms-generated/po-response-api.md): Interface que representa a estrutura de resposta de uma coleção de itens.
 - [PoResponseApi](https://po-ui.io/llms-generated/po-response-api.md): Interface que representa a estrutura de uma resposta de sucesso HTTP.
+- [PoSearchAiColumn](https://po-ui.io/llms-generated/po-search-ai-column.md): Interface que define os metadados de uma coluna/campo enviados ao endpoint de IA
+- [PoSearchAiError](https://po-ui.io/llms-generated/po-search-ai-error.md): Interface que define o objeto emitido pelo evento `p-error` quando a chamada à
+- [PoSearchAiLiterals](https://po-ui.io/llms-generated/po-search-ai-literals.md): Interface para definição das literais usadas no `po-search-ai`.
+- [PoSearchAiRequest](https://po-ui.io/llms-generated/po-search-ai-request.md): Interface que define o payload enviado ao endpoint de IA configurado via `p-url`.
+- [PoSearchAiResponse](https://po-ui.io/llms-generated/po-search-ai-response.md): Interface que define a resposta esperada do endpoint de IA configurado via `p-url`.
+- [PoSearchAiResult](https://po-ui.io/llms-generated/po-search-ai-result.md): Interface que define o objeto emitido pelos eventos `p-result` e `p-low-confidence`.
 - [PoSearchFilterSelect](https://po-ui.io/llms-generated/po-search-filter-select.md): Interface que define as opções que serão exibidas no dropdown do `po-search`, ao usar a propriedade `p-filter-select`.
 - [PoSearchLiterals](https://po-ui.io/llms-generated/po-search-literals.md): Interface para definição das literais usadas no `po-search`.
 - [PoSearchLocateSummary](https://po-ui.io/llms-generated/po-search-locate-summary.md): Interface que define o resumo de localização do filtro `p-filter-locate`.
@@ -301,6 +310,7 @@ ng add @po-ui/ng-components
 - [PoTableFilteredItemsParams](https://po-ui.io/llms-generated/po-table-filtered-items-params.md): Interface do objeto enviado como parâmetro da função `getItems`.
 - [PoTableLiterals](https://po-ui.io/llms-generated/po-table-literals.md): Interface para definição das literais usadas no `po-table`.
 - [PoTableResponseApi](https://po-ui.io/llms-generated/po-table-response-api.md): Interface que representa a estrutura de resposta de uma coleção de itens.
+- [PoTableSearchAiField](https://po-ui.io/llms-generated/po-table-search-ai-field.md): Interface de configuração da busca por IA integrada ao `po-table`, utilizada pela
 - [PoTableSubtitleColumn](https://po-ui.io/llms-generated/po-table-subtitle-column.md): Interface para configuração das colunas de legenda do Po-Table.
 - [PoTagLiterals](https://po-ui.io/llms-generated/po-tag-literals.md): Interface para definição das literais usadas no `po-tag`.
 - [PoTheme](https://po-ui.io/llms-generated/po-theme.md): Interface para o método `setTheme()`.
@@ -314,6 +324,12 @@ ng add @po-ui/ng-components
 - [PoTreeViewItem](https://po-ui.io/llms-generated/po-tree-view-item.md): Interface para definição dos itens do componente `po-tree-view`.
 - [PoUploadFileRestrictions](https://po-ui.io/llms-generated/po-upload-file-restrictions.md): Interface que define as restrições dos arquivos a serem selecionados com base em regras predefinidas
 - [PoUploadLiterals](https://po-ui.io/llms-generated/po-upload-literals.md): Interface para definição das literais usadas no `po-upload`.
+- [PoUserGuideEndEvent](https://po-ui.io/llms-generated/po-user-guide-end-event.md): Interface que descreve o evento emitido pelo `PoUserGuideService` no encerramento da execução de um tour guiado.
+- [PoUserGuideLiterals](https://po-ui.io/llms-generated/po-user-guide-literals.md): Interface para definição das literais usadas no `po-user-guide`.
+- [PoUserGuideOptions](https://po-ui.io/llms-generated/po-user-guide-options.md): Interface que descreve as opções globais de configuração do tour guiado executado pelo `PoUserGuideService`.
+- [PoUserGuideStartEvent](https://po-ui.io/llms-generated/po-user-guide-start-event.md): Interface que descreve o evento emitido pelo `PoUserGuideService` no início da execução de um tour guiado.
+- [PoUserGuideStep](https://po-ui.io/llms-generated/po-user-guide-step.md): Interface que descreve um passo individual do tour guiado executado pelo `PoUserGuideService`.
+- [PoUserGuideStepChangeEvent](https://po-ui.io/llms-generated/po-user-guide-step-change-event.md): Interface que descreve o evento emitido pelo `PoUserGuideService` a cada mudança de passo durante a execução do tour.
 - [PoWidgetAvatar](https://po-ui.io/llms-generated/po-widget-avatar.md): Interface para definição do avatar no `po-widget`.
 
 ## Enums
@@ -347,6 +363,7 @@ ng add @po-ui/ng-components
 - [PoProgressStatus](https://po-ui.io/llms-generated/po-progress-status.md): Enum `PoProgressStatus` para os status de barra de progresso.
 - [PoRadioSize](https://po-ui.io/llms-generated/po-radio-size.md): Tamanhos da propriedade `p-size`.
 - [PoRichTextToolbarActions](https://po-ui.io/llms-generated/po-rich-text-toolbar-actions.md): Enumeração que define as ações disponíveis na barra de ferramentas do `PoRichTextComponent`.
+- [PoSearchAiResponseType](https://po-ui.io/llms-generated/po-search-ai-response-type.md): Enum que define os tipos de resposta suportados pelo endpoint de IA.
 - [PoSearchFilterMode](https://po-ui.io/llms-generated/po-search-filter-mode.md): Define o tipo de busca usado no `po-search`.
 - [PoSkeletonAnimation](https://po-ui.io/llms-generated/po-skeleton-animation.md): Define os tipos de animação do componente `po-skeleton`.
 - [PoSkeletonSize](https://po-ui.io/llms-generated/po-skeleton-size.md): Define os tamanhos disponíveis para o componente `po-skeleton`.
@@ -365,6 +382,8 @@ ng add @po-ui/ng-components
 - [PoTimepickerModelFormat](https://po-ui.io/llms-generated/po-timepicker-model-format.md): Enum* que define o padrão de formatação do model de saída do timepicker.
 - [PoTimerFormat](https://po-ui.io/llms-generated/po-timer-format.md): Enum para definição do formato de exibição do timer.
 - [PoToasterType](https://po-ui.io/llms-generated/po-toaster-type.md): Define os tipos possíveis para o `PoToasterComponent`.
+- [PoUserGuideAlignment](https://po-ui.io/llms-generated/po-user-guide-alignment.md): Enum* que define o alinhamento do popover do tour ao longo do eixo da posição configurada,
+- [PoUserGuidePosition](https://po-ui.io/llms-generated/po-user-guide-position.md): Enum* que define a posição preferida do popover do tour em relação ao elemento destacado,
 
 ## Guias
 

@@ -2574,6 +2574,156 @@ onKeyDown(event: KeyboardEvent, inp: PoDatepickerRangeComponent): void {
 
 ---
 
+# PoDatetimepickerComponent
+
+**Seletor:** `po-datetimepicker`
+**Tipo:** Componente / Diretiva
+**Pacote:** `@po-ui/ng-components`
+**Referência:** https://po-ui.io/documentation/po-datetimepicker
+
+O `po-datetimepicker` é um componente para manipulação de data e hora, permitindo a digitação e/ou seleção
+por meio de um calendário integrado com um painel de horários.
+
+O formato de exibição da data é determinado automaticamente pelo locale configurado, podendo ser alterado
+pela propriedade `p-format-date`. O formato de hora pode ser 24h ou 12h (AM/PM), configurável via `p-format-time`.
+
+O idioma padrão do calendário será exibido de acordo com o navegador, caso tenha necessidade de alterar
+use a propriedade `p-locale`.
+
+O componente aceita os seguintes formatos de entrada:
+
+- ISO 8601 com timezone: `'2026-05-12T14:30:00-03:00'`
+- ISO 8601 UTC: `'2026-05-12T14:30:00Z'`
+- ISO 8601 sem timezone: `'2026-05-12T14:30:00'`
+- ISO 8601 apenas data: `'2026-05-12'`
+- JavaScript Date Object: `new Date(2026, 4, 12, 14, 30)`
+
+O formato de saída do *model* é sempre ISO 8601 com timezone local: `'yyyy-mm-ddTHH:mm+/-HH:mm'`
+(ou `'yyyy-mm-ddTHH:mm:ss+/-HH:mm'` quando `p-show-seconds` está ativo).
+*Importante:**
+
+- O valor emitido no model inclui o offset do timezone local do navegador.
+- Ao receber um valor com timezone, o componente converte automaticamente para horário local.
+- Caso a data/hora esteja inválida, o `model` receberá a mensagem de erro localizada.
+- Caso o `input` esteja passando um `[(ngModel)]`, mas não tenha um `name`, então irá ocorrer um erro
+do próprio Angular (`[ngModelOptions]="{standalone: true}"`).
+
+Exemplo:
+
+```
+<po-datetimepicker
+  [(ngModel)]="agendamento"
+  [ngModelOptions]="{standalone: true}"
+</po-datetimepicker>
+```
+
+> Não esqueça de importar o `FormsModule` em seu módulo, tal como para utilizar o `input default`.
+
+#### Tokens customizáveis
+
+É possível alterar o estilo do componente usando os seguintes tokens (CSS):
+
+Obs: Só é possível realizar alterações ao adicionar a classe `.po-input`
+
+> Para maiores informações, acesse o guia [Personalizando o Tema Padrão com Tokens CSS](https://po-ui.io/guides/theme-customization).
+
+| Propriedade | Descrição | Valor Padrão |
+|----------------------------------------|-------------------------------------------------------|--------------------------------------------------|
+| **Default Values** | | |
+| `--font-family` | Família tipográfica usada | `var(--font-family-theme)` |
+| `--font-size` | Tamanho da fonte | `var(--font-size-default)` |
+| `--text-color-placeholder` | Cor principal do texto do placeholder | `var(--color-neutral-light-30)` |
+| `--color` | Cor principal do datetimepicker | `var(--color-neutral-dark-70)` |
+| `--background` | Cor de background | `var(--color-neutral-light-05)` |
+| `--padding` | Preenchimento | `0 0.5rem` |
+| `--text-color` | Cor do texto | `var(--color-neutral-dark-90)` |
+| `--field-container-title-justify` | Alinhamento horizontal do título (`justify-content`) | `space-between` |
+| `--field-container-title-flex` | Flex do título (`flex`) | `1 auto` |
+| **Hover** | | |
+| `--color-hover` | Cor principal no estado hover | `var(--color-brand-01-dark)` |
+| `--background-hover` | Cor de background no estado hover | `var(--color-brand-01-lightest)` |
+| **Focused** | | |
+| `--color-focused` | Cor principal no estado de focus | `var(--color-action-default)` |
+| `--outline-color-focused` | Cor do outline do estado de focus | `var(--color-action-focus)` |
+| **Disabled** | | |
+| `--color-disabled` | Cor principal no estado disabled | `var(--color-neutral-light-30)` |
+| `--background-disabled` | Cor de background no estado disabled | `var(--color-neutral-light-20)` |
+| `--text-color-disabled` | Cor do texto no estado disabled | `var(--color-neutral-dark-70)` |
+
+## Inputs
+
+| Propriedade | Alias | Tipo | Opcional | Padrão | Descrição |
+|---|---|---|---|---|---|
+| `appendBox` | `p-append-in-body` | `boolean` | sim | `false` | Define que o `calendar` e/ou tooltip serão incluídos no body da página e não dentro do componente. |
+| `autoFocus` | `p-auto-focus` | `boolean` | sim | `false` | Aplica foco no elemento ao ser iniciado. |
+| `clean` | `p-clean` | `boolean | string` | sim | `false` | Habilita ação para limpar o campo. |
+| `compactLabel` | `p-compact-label` | `boolean` | sim | `false` | Define se o título do campo será exibido de forma compacta. |
+| `dateFormat` | `p-format-date` | `string` | sim | Determinado pelo locale | Define o formato de exibição da data. |
+| `disabled` | `p-disabled` | `boolean | string` | sim | `false` | Desabilita o campo. |
+| `errorLimit` | `p-error-limit` | `boolean` | sim | `false` | Limita a exibição da mensagem de erro a duas linhas e exibe um tooltip com o texto completo. |
+| `errorPattern` | `p-error-pattern` | `string` | sim | - | Mensagem apresentada quando a data/hora for inválida ou fora do período. |
+| `help` | `p-help` | `string` | sim | - | Texto de apoio do campo. |
+| `label` | `p-label` | `string` | sim | - | Rótulo do campo. |
+| `labelTextWrap` | `p-label-text-wrap` | `boolean` | sim | `false` | Habilita a quebra automática do texto da propriedade `p-label`. |
+| `loading` | `p-loading` | `boolean | string` | sim | `false` | Exibe um ícone de carregamento no lado direito do campo. |
+| `localeInput` | `p-locale` | `string` | sim | - | Idioma do componente. |
+| `maxDateInput` | `p-max-date` | `string | Date` | sim | - | Define uma data máxima para o `po-datetimepicker`. |
+| `maxTime` | `p-max-time` | `string` | sim | - | Define o horário máximo permitido para seleção no timer. |
+| `minDateInput` | `p-min-date` | `string | Date` | sim | - | Define uma data mínima para o `po-datetimepicker`. |
+| `minTime` | `p-min-time` | `string` | sim | - | Define o horário mínimo permitido para seleção no timer. |
+| `minuteInterval` | `p-minute-interval` | `number` | sim | `5` | Define o intervalo entre os minutos exibidos no painel do timer. |
+| `name` | `name` | `string` | sim | - | Nome do componente. |
+| `noAutocomplete` | `p-no-autocomplete` | `boolean | string` | sim | `false` | Define a propriedade nativa `autocomplete` do campo como `off`. |
+| `optional` | `p-optional` | `boolean` | sim | `false` | Define se a indicação de campo opcional será exibida. |
+| `placeholder` | `p-placeholder` | `string` | sim | - | Mensagem que aparecerá enquanto o campo não estiver preenchido. |
+| `poHelperComponent` | `p-helper` | `PoHelperOptions | string` | sim | - | Define as opções do componente de ajuda (po-helper). |
+| `readonly` | `p-readonly` | `boolean | string` | sim | `false` | Torna o componente somente leitura. |
+| `required` | `p-required` | `boolean | string` | sim | `false` | Define que o campo será obrigatório. |
+| `secondInterval` | `p-second-interval` | `number` | sim | `1` | Define o intervalo entre os segundos exibidos no painel do timer. |
+| `showErrorMessageRequired` | `p-required-field-error-message` | `boolean` | sim | `false` | Exibe a mensagem setada na propriedade `p-error-pattern` se o campo estiver vazio e for requerido. |
+| `showRequired` | `p-show-required` | `boolean` | sim | `false` | Define se a indicação de campo obrigatório será exibida. |
+| `showSeconds` | `p-show-seconds` | `boolean` | sim | `false` | Exibe a coluna de segundos no painel de seleção do timer. |
+| `size` | `p-size` | `string` | sim | `medium` | Define o tamanho do componente: |
+| `timerFormat` | `p-format-time` | `PoTimerFormat` | sim | Determinado pelo locale | Define o formato de exibição do timer. |
+
+## Outputs
+
+| Evento | Alias | Tipo | Descrição |
+|---|---|---|---|
+| `keydown` | `'p-keydown'` | `EventEmitter` | Evento disparado quando uma tecla é pressionada enquanto o foco está no componente. |
+| `onblur` | `'p-blur'` | `EventEmitter` | Evento disparado ao sair do campo (blur). |
+| `onchange` | `'p-change'` | `EventEmitter` | Evento disparado ao alterar valor do campo. |
+
+## Métodos
+
+### `showAdditionalHelp()`
+
+Método que exibe `p-helper` ou executa a ação definida em `p-helper{eventOnClick}`.
+Para isso, será necessário configurar uma tecla de atalho utilizando o evento `p-keydown`.
+
+> Exibe ou oculta o conteúdo do componente `po-helper` quando o componente estiver com foco.
+
+```
+// Exemplo com p-label e p-helper
+<po-datetimepicker
+ #datetimepicker
+ ...
+ p-label="Label"
+ [p-helper]="helperOptions"
+ (p-keydown)="onKeyDown($event, datetimepicker)"
+></po-datetimepicker>
+```
+```
+onKeyDown(event: KeyboardEvent, inp: PoDatetimepickerComponent): void {
+ if (event.code === 'F9') {
+   inp.showAdditionalHelp();
+ }
+}
+```
+
+
+---
+
 # PoDecimalComponent
 
 **Seletor:** `po-decimal`
@@ -5137,6 +5287,7 @@ e gerenciamento de ações com agrupamento responsivo via `p-page-actions-layout
 | `actions` | `'p-actions'` | `Array<PoPageAction>` | sim | `[]` | Define a lista de ações que serão exibidas no cabeçalho da página. |
 | `breadcrumb` | `'p-breadcrumb'` | `PoBreadcrumb` | sim | - | Define o sistema de navegação que indica o caminho da página atual na hierarquia da aplicação. |
 | `componentsSize` | `'p-components-size'` | `string` | sim | `medium` | Define o tamanho dos componentes de formulário no template: |
+| `helper` | `p-helper` | `PoHelperOptions | string` | sim | `info` | Define o conteúdo do po-helper informativo exibido ao lado do subtítulo da página. |
 | `literals` | `'p-literals'` | `PoPageDefaultLiterals` | sim | - | Permite a customização das literais utilizadas no componente. |
 | `pageActionsLayout` | `'p-page-actions-layout'` | `string` | sim | `default` | Define o layout de exibição das ações no cabeçalho. |
 | `pageHeaderType` | `'p-page-header-type'` | `string` | sim | `primary` | Define o tipo de cabeçalho da página. |
@@ -5183,7 +5334,7 @@ detalhamento de um registro, tendo a possibilidade de usar as ações de "Voltar
 | `breadcrumb` | `'p-breadcrumb'` | `PoBreadcrumb` | não | - | Objeto com propriedades do breadcrumb. |
 | `componentsSize` | `'p-components-size'` | `string` | sim | `medium` | Define o tamanho dos componentes de formulário no template: |
 | `literals` | `'p-literals'` | `PoPageDetailLiterals` | sim | - | Objeto com as literais usadas no `po-page-detail`. |
-| `subtitle` | `'p-subtitle'` | `string` | sim | - | Subtitulo do Header da página |
+| `subtitle` | `'p-subtitle'` | `string` | sim | - | Subtitulo do Header da página. |
 | `title` | `'p-title'` | `string` | não | - | Título da página. |
 
 ## Outputs
@@ -5694,7 +5845,7 @@ regra de negócio não tenha sido atendida.
 | `componentsSize` | `'p-components-size'` | `string` | sim | `medium` | Define o tamanho dos componentes de formulário no template: |
 | `disableSubmit` | `'p-disable-submit'` | `boolean` | sim | - | Desabilita botões de submissão (save e saveNew) |
 | `literals` | `'p-literals'` | `PoPageEditLiterals` | sim | - | Objeto com as literais usadas no `po-page-edit`. |
-| `subtitle` | `'p-subtitle'` | `string` | sim | - | Subtitulo do Header da página |
+| `subtitle` | `'p-subtitle'` | `string` | sim | - | Subtitulo do Header da página. |
 | `title` | `'p-title'` | `string` | não | - | Título da página. |
 
 ## Outputs
@@ -5802,7 +5953,7 @@ Para facilitar a manipulação e visualização dos filtros aplicados, é possí
 | `filter` | `'p-filter'` | `PoPageFilter` | não | - | Objeto que implementa as propriedades da interface `PoPageFilter`. |
 | `literals` | `'p-literals'` | `PoPageListLiterals` | sim | - | Objeto com as literais usadas no `po-page-list`. |
 | `quickSearchValue` | `'p-quick-search-value'` | `string` | sim | - | Valor padrão na busca rápida ao inicializar o componente |
-| `subtitle` | `'p-subtitle'` | `string` | sim | - | Subtitulo do Header da página |
+| `subtitle` | `'p-subtitle'` | `string` | sim | - | Subtitulo do Header da página. |
 | `title` | `'p-title'` | `string` | não | - | Título da página. |
 
 ## Métodos
@@ -6810,6 +6961,151 @@ proprietário do conteúdo. São elas:
 
 ---
 
+# PoSearchAiComponent
+
+**Seletor:** `po-search-ai`
+**Tipo:** Componente / Diretiva
+**Pacote:** `@po-ui/ng-components`
+**Referência:** https://po-ui.io/documentation/po-search-ai
+
+O `po-search-ai` é um componente de **busca em linguagem natural** baseado em input.
+Ele permite que o usuário digite uma consulta em texto livre (por exemplo,
+"clientes de SP com saldo acima de R$ 500"*) e a converte, através de um provedor de IA,
+em um filtro estruturado (normalmente OData) que pode ser aplicado por outro componente,
+como o [`po-table`](/documentation/po-table).
+
+> **Componente experimental:** o `po-search-ai` está em fase experimental. Sua API
+> (propriedades, eventos e contrato com o backend) pode sofrer alterações
+> entre versões. Utilize com cautela em ambientes de produção.
+
+O componente é **agnóstico ao provedor de IA**. Toda a comunicação ocorre através do
+endpoint informado em `p-url`, que recebe `{ query, columns }` e deve retornar
+`{ filter, description, confidence }`. Isso garante que nenhuma chave de IA seja
+exposta no client-side — a integração com a LLM é responsabilidade do backend (proxy).
+
+Por herdar de `po-input`, o componente suporta as propriedades comuns de formulário
+(label, help, helper, required, disabled, readonly, size, clean, loading, etc.) e
+integra-se a formulários `template-driven` e `reactive`.
+
+#### Endpoint de IA (backend)
+
+O componente **não conversa diretamente com a LLM**. Você deve disponibilizar um endpoint
+próprio (proxy) e informá-lo em `p-url`.
+É nesse backend que devem ficar a chave de acesso da IA e as regras usadas para montar
+o prompt. Essas informações nunca devem ficar expostas no client-side
+
+O contrato é simples. O componente faz um `POST` enviando:
+
+```json
+{
+  "query": "funcionários de São Paulo com salário acima de 5000",
+  "columns": [
+    { "property": "name", "label": "Nome", "type": "string" },
+    { "property": "city", "label": "Cidade", "type": "string" },
+    { "property": "salary", "label": "Salário", "type": "number" }
+  ]
+}
+```
+
+E o endpoint deve responder com:
+
+```json
+{
+  "filter": "city eq 'São Paulo' and salary gt 5000",
+  "description": "Funcionários de São Paulo com salário acima de 5000",
+  "confidence": 0.92
+}
+```
+
+Onde `filter` é o filtro estruturado gerado pela IA (normalmente OData), `description` é um
+resumo legível e `confidence` (`0.0` a `1.0`) indica o quão confiável foi a interpretação —
+comparado com `p-min-confidence` para decidir entre os eventos `p-result` e `p-low-confidence`.
+
+> **Exemplo de implementação:** o PO UI mantém um backend de referência, open source, que recebe
+> esse contrato e o encaminha para um provedor de IA (Groq/Gemini).
+> - Endpoint público: [`/v1/ai/filter`](https://po-sample-api.onrender.com/api#/ai)
+> - Código-fonte: [po-sample-api/src/ai/ai.service.ts](https://github.com/po-ui/po-sample-api/blob/main/src/ai/ai.service.ts)
+
+#### Estados de comportamento
+
+- **Idle:** aguardando a digitação da consulta.
+- **Loading:** consulta em andamento (ícone de carregamento ativo).
+- **Aplicado:** após uma resposta bem-sucedida, exibe um feedback persistente de
+"filtro aplicado via IA" enquanto a consulta estiver ativa, com opção de limpeza rápida.
+- **Baixa confiança:** quando `confidence` for menor que `p-min-confidence`, emite
+`p-low-confidence` e não aplica o filtro automaticamente.
+- **Erro:** quando a chamada falha, emite `p-error`.
+
+#### Tokens customizáveis
+
+É possível alterar o estilo do componente usando os seguintes tokens (CSS):
+
+> Para maiores informações, acesse o guia [Personalizando o Tema Padrão com Tokens CSS](https://po-ui.io/guides/theme-customization).
+
+| Propriedade | Descrição | Valor Padrão |
+|-------------------------------|-----------------------------------------------------------------|------------------------------------|
+| **Default** | | |
+| `--font-family` | Família tipográfica do campo | `var(--font-family-theme)` |
+| `--font-size` | Tamanho da fonte do campo | `var(--font-size)` |
+| `--text-color` | Cor do texto digitado | `var(--color-neutral-dark-90)` |
+| `--text-color-placeholder` | Cor do texto do placeholder | `var(--color-neutral-light-30)` |
+| `--color` | Cor da borda do campo | `var(--color-neutral-dark-70)` |
+| `--background` | Cor de fundo do campo | `var(--color-neutral-light-05)` |
+| `--border-radius` | Raio da borda do campo | `var(--border-radius-md)` |
+| **Ícones e divisória** | | |
+| `--color-icon-read` | Cor do ícone de busca por IA | `var(--color-neutral-dark-70)` |
+| `--color-divider` | Cor da divisória vertical entre o campo e o botão de busca | `var(--color-neutral-mid-40)` |
+| `--color-icon-processing` | Cor do ícone exibido enquanto a consulta está sendo processada | `var(--color-action-default)` |
+| **Hover** | | |
+| `--color-hover` | Cor da borda no estado hover | `var(--color-brand-01-dark)` |
+| `--background-hover` | Cor de fundo no estado hover | `var(--color-brand-01-lightest)` |
+| **Focused** | | |
+| `--color-focused` | Cor da borda no estado de foco | `var(--color-action-default)` |
+| `--outline-color-focused` | Cor do outline no estado de foco | `var(--color-action-focus)` |
+| **Disabled** | | |
+| `--color-disabled` | Cor da borda no estado desabilitado | `var(--color-neutral-light-30)` |
+| `--background-disabled` | Cor de fundo no estado desabilitado | `var(--color-neutral-light-20)` |
+
+## Inputs
+
+| Propriedade | Alias | Tipo | Opcional | Padrão | Descrição |
+|---|---|---|---|---|---|
+| `columns` | `p-columns` | `Array<PoSearchAiColumn>` | sim | `[]` | Metadados das colunas/campos disponíveis para a busca por IA. Essas informações são |
+| `literals` | `p-literals` | `PoSearchAiLiterals` | sim | - | Objeto com os literais usados no componente. Permite sobrescrever as mensagens padrão |
+| `minConfidence` | `p-min-confidence` | `number` | sim | `0.5` | Nível mínimo de confiança (`0.0` a `1.0`) para que o resultado da IA seja considerado |
+| `timeout` | `p-timeout` | `number` | sim | `10000` | Tempo máximo de espera (em milissegundos) pela resposta da IA antes de abortar a |
+| `url` | `p-url` | `string` | sim | - | Endpoint (proxy) responsável por encaminhar a consulta para o provedor de IA. |
+
+## Outputs
+
+| Evento | Alias | Tipo | Descrição |
+|---|---|---|---|
+| `clearEvent` | `p-clear` | `EventEmitter` | Evento disparado quando o filtro aplicado via IA é limpo, seja pela ação do usuário |
+| `error` | `p-error` | `EventEmitter` | Evento disparado quando a chamada à API de IA falha (erro HTTP, timeout, etc.). |
+| `lowConfidence` | `p-low-confidence` | `EventEmitter` | Evento disparado quando a confiança da resposta da IA é menor que `p-min-confidence`. |
+| `result` | `p-result` | `EventEmitter` | Evento disparado quando a IA retorna um resultado com confiança maior ou igual a |
+
+## Métodos
+
+### `search()`
+
+Envia a consulta atual (valor do campo) para o endpoint de IA configurado em `p-url`.
+
+Caso a consulta esteja vazia ou `p-url` não esteja definido, nada é feito.
+O resultado é emitido via `p-result` (ou `p-low-confidence` quando a confiança for baixa)
+e falhas são emitidas via `p-error`.
+
+### `clearSearch()`
+
+Limpa o filtro aplicado via IA, esvazia o campo e emite o evento `p-clear`.
+
+### `onSearchKeydown(event: )`
+
+Manipula a tecla pressionada no campo: dispara a busca ao pressionar `Enter`.
+
+
+---
+
 # PoSelectComponent
 
 **Seletor:** `po-select`
@@ -7518,6 +7814,7 @@ completa visualização dos dados.
 | `loadingShowMore` | `'p-loading-show-more'` | `boolean` | sim | `false` | Permite que seja adicionado o estado de carregamento no botão "Carregar mais resultados". |
 | `maxColumns` | `'p-max-columns'` | `number` | sim | - | Define uma quantidade máxima de colunas que serão exibidas na tabela. |
 | `paramDeleteApi` | `'p-param-delete-api'` | `string` | sim | `id` | Adiciona o parâmetro a ser enviado para a requisição de DELETE. |
+| `searchAiField` | `p-search-ai-field` | `PoTableSearchAiField` | sim | - | Configura a busca por linguagem natural integrada à tabela, substituindo o campo de busca padrão |
 | `selectable` | `'p-selectable'` | `boolean` | sim | `false` | Permite a seleção de linhas na tabela e, caso a propriedade `p-single-select` esteja definida será possível |
 | `selectableEntireLine` | `'p-selectable-entire-line'` | `boolean` | não | `true` | Permite selecionar um item da tabela clicando na linha. |
 | `serviceApi` | `'p-service-api'` | `string` | sim | - | URL da API responsável por retornar os registros. |
@@ -7542,6 +7839,9 @@ completa visualização dos dados.
 | `columnRestoreManager` | `'p-restore-column-manager'` | `EventEmitter` | Evento disparado ao clicar no botão de restaurar padrão no gerenciador de colunas. |
 | `eventDelete` | `'p-delete-items'` | `EventEmitter` | Evento executado após o método de exclusão ser finalizado. |
 | `expanded` | `'p-expanded'` | `EventEmitter` | Evento executado ao expandir uma linha do `po-table`. |
+| `searchAiError` | `'p-search-ai-error'` | `EventEmitter` | Evento emitido quando ocorre um erro na requisição ao endpoint de IA configurado em |
+| `searchAiLowConfidence` | `'p-search-ai-low-confidence'` | `EventEmitter` | Evento emitido quando o `po-search-ai` retorna um resultado cuja confiança é inferior ao |
+| `searchAiResult` | `'p-search-ai-result'` | `EventEmitter` | Evento emitido quando o `po-search-ai` retorna um resultado com confiança igual ou superior |
 | `selected` | `'p-selected'` | `EventEmitter` | Evento executado ao selecionar uma linha do `po-table`. |
 | `showMore` | `'p-show-more'` | `EventEmitter` | Recebe uma ação de clique para o botão "Carregar mais resultados", caso nenhuma ação for definida o mesmo |
 | `sortBy` | `'p-sort-by'` | `EventEmitter` | Evento executado ao ordenar colunas da tabela. |
@@ -7612,6 +7912,17 @@ Caso a tabela utilize `p-height` e esteja sem serviço, é necessário a reatrib
 >
 </po-table>
 ```
+
+### `updateSearchAIQuery(value: string, triggerSearch: boolean)`
+
+Atualiza programaticamente o valor do campo de busca por IA (`po-search-ai`) integrado à tabela
+via `p-search-ai-field`.
+
+Útil quando a aplicação precisa preencher a busca a partir de uma ação externa (por exemplo, o
+clique em um botão que sugere uma consulta pronta), opcionalmente disparando a busca em seguida.
+
+> Só tem efeito quando a propriedade `p-search-ai-field` está configurada. Caso contrário, o método
+> não executa nenhuma ação.
 
 ### `removeItem(item: TypeUnion)`
 
@@ -9797,6 +10108,287 @@ Define o nível de acessibilidade para um tema já ativo.
 
 ---
 
+# PoUserGuideService
+
+**Tipo:** Serviço
+**Pacote:** `@po-ui/ng-components`
+**Referência:** https://po-ui.io/documentation/po-user-guide-service
+
+Serviço responsável por criar e controlar tours guiados na interface da aplicação.
+
+O `PoUserGuideService` permite apresentar uma sequência de passos visuais para orientar
+o usuário durante o uso de uma tela, funcionalidade ou fluxo específico do sistema.
+Ele pode ser utilizado, por exemplo, para apresentar uma nova funcionalidade, guiar um
+primeiro acesso ou destacar pontos importantes da interface.
+
+O serviço centraliza a configuração do guia do usuário, incluindo:
+
+- os passos que serão exibidos;
+- as opções gerais de comportamento;
+- o controle do passo ativo;
+- os eventos emitidos durante o ciclo de vida do tour.
+
+A partir dele, a aplicação pode iniciar, acompanhar e reagir à execução do tour por meio
+dos eventos públicos `tourStartServiço responsável por criar e controlar tours guiados na interface da aplicação.
+
+O `PoUserGuideService` permite apresentar uma sequência de passos visuais para orientar
+o usuário durante o uso de uma tela, funcionalidade ou fluxo específico do sistema.
+Ele pode ser utilizado, por exemplo, para apresentar uma nova funcionalidade, guiar um
+primeiro acesso ou destacar pontos importantes da interface.
+
+O serviço centraliza a configuração do guia do usuário, incluindo:
+
+- os passos que serão exibidos;
+- as opções gerais de comportamento;
+- o controle do passo ativo;
+- os eventos emitidos durante o ciclo de vida do tour.
+
+A partir dele, a aplicação pode iniciar, acompanhar e reagir à execução do tour por meio
+dos eventos públicos , `stepChangeServiço responsável por criar e controlar tours guiados na interface da aplicação.
+
+O `PoUserGuideService` permite apresentar uma sequência de passos visuais para orientar
+o usuário durante o uso de uma tela, funcionalidade ou fluxo específico do sistema.
+Ele pode ser utilizado, por exemplo, para apresentar uma nova funcionalidade, guiar um
+primeiro acesso ou destacar pontos importantes da interface.
+
+O serviço centraliza a configuração do guia do usuário, incluindo:
+
+- os passos que serão exibidos;
+- as opções gerais de comportamento;
+- o controle do passo ativo;
+- os eventos emitidos durante o ciclo de vida do tour.
+
+A partir dele, a aplicação pode iniciar, acompanhar e reagir à execução do tour por meio
+dos eventos públicos `tourStartServiço responsável por criar e controlar tours guiados na interface da aplicação.
+
+O `PoUserGuideService` permite apresentar uma sequência de passos visuais para orientar
+o usuário durante o uso de uma tela, funcionalidade ou fluxo específico do sistema.
+Ele pode ser utilizado, por exemplo, para apresentar uma nova funcionalidade, guiar um
+primeiro acesso ou destacar pontos importantes da interface.
+
+O serviço centraliza a configuração do guia do usuário, incluindo:
+
+- os passos que serão exibidos;
+- as opções gerais de comportamento;
+- o controle do passo ativo;
+- os eventos emitidos durante o ciclo de vida do tour.
+
+A partir dele, a aplicação pode iniciar, acompanhar e reagir à execução do tour por meio
+dos eventos públicos ,  e `tourEndServiço responsável por criar e controlar tours guiados na interface da aplicação.
+
+O `PoUserGuideService` permite apresentar uma sequência de passos visuais para orientar
+o usuário durante o uso de uma tela, funcionalidade ou fluxo específico do sistema.
+Ele pode ser utilizado, por exemplo, para apresentar uma nova funcionalidade, guiar um
+primeiro acesso ou destacar pontos importantes da interface.
+
+O serviço centraliza a configuração do guia do usuário, incluindo:
+
+- os passos que serão exibidos;
+- as opções gerais de comportamento;
+- o controle do passo ativo;
+- os eventos emitidos durante o ciclo de vida do tour.
+
+A partir dele, a aplicação pode iniciar, acompanhar e reagir à execução do tour por meio
+dos eventos públicos `tourStartServiço responsável por criar e controlar tours guiados na interface da aplicação.
+
+O `PoUserGuideService` permite apresentar uma sequência de passos visuais para orientar
+o usuário durante o uso de uma tela, funcionalidade ou fluxo específico do sistema.
+Ele pode ser utilizado, por exemplo, para apresentar uma nova funcionalidade, guiar um
+primeiro acesso ou destacar pontos importantes da interface.
+
+O serviço centraliza a configuração do guia do usuário, incluindo:
+
+- os passos que serão exibidos;
+- as opções gerais de comportamento;
+- o controle do passo ativo;
+- os eventos emitidos durante o ciclo de vida do tour.
+
+A partir dele, a aplicação pode iniciar, acompanhar e reagir à execução do tour por meio
+dos eventos públicos , `stepChangeServiço responsável por criar e controlar tours guiados na interface da aplicação.
+
+O `PoUserGuideService` permite apresentar uma sequência de passos visuais para orientar
+o usuário durante o uso de uma tela, funcionalidade ou fluxo específico do sistema.
+Ele pode ser utilizado, por exemplo, para apresentar uma nova funcionalidade, guiar um
+primeiro acesso ou destacar pontos importantes da interface.
+
+O serviço centraliza a configuração do guia do usuário, incluindo:
+
+- os passos que serão exibidos;
+- as opções gerais de comportamento;
+- o controle do passo ativo;
+- os eventos emitidos durante o ciclo de vida do tour.
+
+A partir dele, a aplicação pode iniciar, acompanhar e reagir à execução do tour por meio
+dos eventos públicos `tourStartServiço responsável por criar e controlar tours guiados na interface da aplicação.
+
+O `PoUserGuideService` permite apresentar uma sequência de passos visuais para orientar
+o usuário durante o uso de uma tela, funcionalidade ou fluxo específico do sistema.
+Ele pode ser utilizado, por exemplo, para apresentar uma nova funcionalidade, guiar um
+primeiro acesso ou destacar pontos importantes da interface.
+
+O serviço centraliza a configuração do guia do usuário, incluindo:
+
+- os passos que serão exibidos;
+- as opções gerais de comportamento;
+- o controle do passo ativo;
+- os eventos emitidos durante o ciclo de vida do tour.
+
+A partir dele, a aplicação pode iniciar, acompanhar e reagir à execução do tour por meio
+dos eventos públicos ,  e .
+
+Como o serviço é disponibilizado com `providedIn: 'root'`, não é necessário declará-lo em
+`providers` nem importá-lo manualmente em módulos específicos.
+Ele pode ser injetado diretamente em qualquer componente, serviço ou diretiva da aplicação.
+
+#### Uso típico
+
+O fluxo recomendado de utilização do serviço, que pode ser encadeado fluentemente, configura os
+passos do tour, ajusta opções globais e dispara a execução em uma única expressão:
+
+```typescript
+import { Component } from '@angular/core';
+import { PoUserGuideService } from '@po-ui/ng-components';
+
+@Component({ selector: 'app-onboarding', templateUrl: './onboarding.component.html' })
+export class OnboardingComponent {
+  constructor(private PoUserGuide: PoUserGuideService) {}
+
+  startTour(): void {
+    this.PoUserGuide
+      .setSteps([
+        { element: '#header', title: 'Bem-vindo!', content: 'Esta é a barra superior.' },
+        { element: '<po-menu>', title: 'Menu', content: 'Acesse aqui as funcionalidades do sistema.' },
+        { element: '#user-profile', title: 'Perfil', content: 'Configure suas preferências.' }
+      ])
+      .setOptions({ showProgress: true, allowClose: true })
+      .start();
+  }
+}
+```
+
+#### Boas práticas para seleção de elementos
+
+Ao configurar o elemento que será destacado em cada passo do tour, recomenda-se evitar
+seletores baseados em classes internas, estruturas de HTML ou elementos muito genéricos,
+como `.minha-classe`, `div`, `span` ou combinações dependentes da hierarquia da página.
+
+Esses seletores podem ser sensíveis a mudanças de implementação, refatorações visuais ou
+alterações nos nomes de classes, o que pode fazer com que o passo deixe de encontrar o
+elemento esperado.
+
+Quando o passo destacar um componente do PO-UI, prefira utilizar o próprio seletor do
+componente, como: `po-button`, `po-input`, `po-combo` ou `po-table`, sempre que isso for
+suficiente para identificar o elemento corretamente.
+
+Quando houver mais de um componente igual na tela ou quando for necessário apontar para
+um elemento específico, recomenda-se adicionar um `id` no elemento alvo ou encapsular a
+área desejada em um elemento próprio da aplicação.
+
+#### Aviso de segurança: HTML em `step.content`
+
+O PO UI sanitiza o conteúdo HTML informado em `step.content` antes de exibi-lo no
+popover* do tour, ajudando a prevenir vulnerabilidades de *Cross-Site Scripting* (XSS).
+
+A mesma proteção é aplicada aos *labels* definidos em `PoUserGuideStep` e
+`PoUserGuideOptions` quando construídos dinamicamente.
+
+Ainda assim, recomenda-se validar conteúdos vindos de fontes não confiáveis, como entrada
+do usuário, APIs externas ou *query strings*, preservando a segurança desde a origem dos dados.
+
+#### Tokens customizáveis
+
+É possível alterar a aparência do *popover* renderizado pelo `PoUserGuideService` através dos tokens
+(CSS) consumidos pelo arquivo `po-user-guide.css` distribuído via `@po-ui/style`.
+
+> Para maiores informações, acesse o guia [Personalizando o Tema Padrão com Tokens CSS](https://po-ui.io/guides/theme-customization).
+
+| Propriedade | Descrição | Valor Padrão |
+|--------------------------------------------------|--------------------------------------------------------------------------|--------------------------------------------------------|
+| **Overlay** | | |
+| `--color-po-user-guide-overlay` | Cor do *overlay* que escurece a página durante o tour | `var(--color-neutral-dark-80)` |
+| **Popover** | | |
+| `--font-family` | Família tipográfica usada no *popover* | `var(--font-family-theme)` |
+| `--color` | Cor padrão do texto do *popover* | `var(--color-neutral-dark-70)` |
+| `--background-color` | Cor de fundo do *popover* | `var(--color-neutral-light-00)` |
+| `--border-color` | Cor da borda do *popover* | `var(--color-neutral-light-20)` |
+| `--border-width` | Espessura da borda do *popover* | `var(--border-width-sm)` |
+| `--border-radius` | Raio dos cantos do *popover* | `var(--border-radius-md)` |
+| `--shadow` | Sombra projetada pelo *popover* | `var(--shadow-lg)` |
+| `--padding` | Espaçamento interno do *popover* | `var(--spacing-sm)` |
+| `--max-width` | Largura máxima do *popover* | `360px` |
+| `--arrow-color` | Cor da seta que aponta para o elemento destacado | `var(--color-neutral-light-00)` |
+| **Título** | | |
+| `--title-font-size` | Tamanho da fonte do título | `var(--font-size-default)` |
+| `--title-font-weight` | Peso da fonte do título | `var(--font-weight-bold)` |
+| `--title-line-height` | Altura de linha do título | `var(--line-height-sm)` |
+| `--title-color` | Cor do texto do título | `var(--color-neutral-dark-95)` |
+| `--title-margin-bottom` | Espaçamento inferior do título | `var(--spacing-xs)` |
+| **Descrição** | | |
+| `--description-font-size` | Tamanho da fonte da descrição | `var(--font-size-sm)` |
+| `--description-font-weight` | Peso da fonte da descrição | `var(--font-weight-normal)` |
+| `--description-line-height` | Altura de linha da descrição | `var(--line-height-md)` |
+| `--description-color` | Cor do texto da descrição | `var(--color-neutral-dark-70)` |
+| `--description-margin-bottom` | Espaçamento inferior da descrição | `var(--spacing-xs)` |
+| **Progresso** | | |
+| `--progress-font-size` | Tamanho da fonte do indicador de progresso | `var(--font-size-xs)` |
+| `--progress-font-weight` | Peso da fonte do indicador de progresso | `var(--font-weight-normal)` |
+| `--progress-line-height` | Altura de linha do indicador de progresso | `var(--line-height-sm)` |
+| `--progress-color` | Cor do texto do indicador de progresso | `var(--color-neutral-mid-60)` |
+| **Rodapé** | | |
+| `--footer-margin-top` | Espaçamento superior do rodapé | `var(--spacing-xs)` |
+| `--footer-gap` | Espaçamento entre os botões de navegação | `var(--spacing-xxs)` |
+| `--footer-gap-tertiary` | Espaçamento adicional aplicado ao botão terciário | `var(--spacing-sm)` |
+| **Botões - base** | | |
+| `--button-font-weight` | Peso da fonte dos botões | `var(--font-weight-bold)` |
+| `--button-font-size` | Tamanho da fonte dos botões | `var(--font-size-sm)` |
+| `--button-line-height` | Altura de linha dos botões | `var(--line-height-none)` |
+| `--button-border-width` | Espessura da borda dos botões | `var(--border-width-md)` |
+| `--button-border-radius` | Raio dos cantos dos botões | `var(--border-radius-md)` |
+| `--button-padding` | Espaçamento interno dos botões | `var(--spacing-xs) var(--spacing-sm)` |
+| **Botão primário (`Próximo` / `Finalizar`)** | | |
+| `--button-primary-text-color` | Cor do texto do botão primário | `var(--color-neutral-light-00)` |
+| `--button-primary-color` | Cor de fundo do botão primário | `var(--color-action-default)` |
+| `--button-primary-color-hover` | Cor de fundo do botão primário no estado *hover* | `var(--color-action-hover)` |
+| `--button-primary-color-pressed` | Cor de fundo do botão primário no estado *pressed* | `var(--color-action-pressed)` |
+| `--button-primary-border-color` | Cor da borda do botão primário | `var(--color-action-default)` |
+| `--button-primary-shadow` | Sombra do botão primário | `var(--shadow-none)` |
+| `--button-primary-text-color-disabled` | Cor do texto do botão primário desabilitado | `var(--color-neutral-dark-70)` |
+| `--button-primary-color-disabled` | Cor de fundo do botão primário desabilitado | `var(--color-neutral-light-30)` |
+| `--button-primary-border-color-disabled` | Cor da borda do botão primário desabilitado | `var(--color-transparent)` |
+| **Botão terciário (`Anterior`)** | | |
+| `--button-tertiary-color` | Cor do texto do botão terciário | `var(--color-action-default)` |
+| `--button-tertiary-color-hover` | Cor do texto do botão terciário no estado *hover* | `var(--color-brand-01-darkest)` |
+| `--button-tertiary-color-pressed` | Cor do texto do botão terciário no estado *pressed* | `var(--color-brand-01-darker)` |
+| `--button-tertiary-background-color` | Cor de fundo do botão terciário | `var(--color-transparent)` |
+| `--button-tertiary-background-hover` | Cor de fundo do botão terciário no estado *hover* | `var(--color-brand-01-lighter)` |
+| `--button-tertiary-background-pressed` | Cor de fundo do botão terciário no estado *pressed* | `var(--color-brand-01-light)` |
+| `--button-tertiary-border-color` | Cor da borda do botão terciário | `var(--color-transparent)` |
+| `--button-tertiary-border-color-hover` | Cor da borda do botão terciário no estado *hover* | `var(--color-transparent)` |
+| `--button-tertiary-border-color-pressed` | Cor da borda do botão terciário no estado *pressed* | `var(--color-transparent)` |
+| `--button-tertiary-shadow` | Sombra do botão terciário | `var(--shadow-none)` |
+| `--button-tertiary-color-disabled` | Cor do texto do botão terciário desabilitado | `var(--color-neutral-light-30)` |
+| `--button-tertiary-background-disabled` | Cor de fundo do botão terciário desabilitado | `var(--color-transparent)` |
+| `--button-tertiary-border-color-disabled` | Cor da borda do botão terciário desabilitado | `var(--color-transparent)` |
+| **Botão fechar (`X`)** | | |
+| `--button-close-color` | Cor do botão fechar | `var(--color-neutral-mid-60)` |
+| `--button-close-color-hover` | Cor do botão fechar no estado *hover* | `var(--color-action-hover)` |
+| `--button-close-color-pressed` | Cor do botão fechar no estado *pressed* | `var(--color-action-pressed)` |
+| `--button-close-color-focused` | Cor do botão fechar no estado de foco visível | `var(--color-action-focus)` |
+| `--button-close-background-color` | Cor de fundo do botão fechar | `var(--color-transparent)` |
+| `--button-close-background-hover` | Cor de fundo do botão fechar no estado *hover* | `var(--color-neutral-light-10)` |
+| `--button-close-background-pressed` | Cor de fundo do botão fechar no estado *pressed* | `var(--color-neutral-light-20)` |
+| `--button-close-border-color` | Cor da borda do botão fechar | `var(--color-transparent)` |
+| `--button-close-font-size` | Tamanho da fonte/ícone do botão fechar | `var(--font-size-md)` |
+| `--button-close-padding` | Espaçamento interno do botão fechar | `var(--spacing-xxs) var(--spacing-xs)` |
+| `--button-close-color-disabled` | Cor do botão fechar desabilitado | `var(--color-neutral-light-30)` |
+| `--button-close-background-disabled` | Cor de fundo do botão fechar desabilitado | `var(--color-transparent)` |
+| `--button-close-border-color-disabled` | Cor da borda do botão fechar desabilitado | `var(--color-transparent)` |
+| **Foco visível** | | |
+| `--outline-color-focused` | Cor do *outline* aplicado aos botões em foco visível | `var(--color-action-focus)` |
+
+
+---
+
 # ErrorAsyncProperties
 
 **Tipo:** Interface / Modelo
@@ -10646,6 +11238,7 @@ Interface para definição das propriedades dos campos de entrada que serão cri
 | `formField` | `string` | sim | Nome do campo de formulário que será enviado para o serviço informado na propriedade `url`. |
 | `format` | `string | Array<string>` | sim | Formato de exibição no campo. |
 | `formatModel` | `boolean` | sim | Indica se o `model` receberá o valor formatado pelas propriedades `p-label-on` e `p-label-off` ou |
+| `formatTime` | `string` | sim | Define o formato de exibição do timer (`'12'` ou `'24'`). |
 | `gridColumns` | `number` | sim | Tamanho de exibição do campo em telas. |
 | `gridLgColumns` | `number` | sim | Tamanho de exibição do campo em telas grandes (lg). |
 | `gridLgPull` | `number` | sim | Tamanho do espaçamento após o campo antes da exibição do próximo campo em telas grandes (lg). |
@@ -10684,8 +11277,10 @@ Interface para definição das propriedades dos campos de entrada que serão cri
 | `maskFormatModel` | `boolean` | sim | Define que o valor do componente será conforme especificado na mascára. O valor padrão é `false`. |
 | `maskNoLengthValidation` | `boolean` | sim | Controla como o componente aplica as validações de comprimento mínimo (`minLength`) e máximo (`maxLength`) quando há uma máscara (`p-mask`) definida. |
 | `maxLength` | `number` | sim | Tamanho máximo de caracteres. |
+| `maxTime` | `string` | sim | Define o horário máximo permitido para seleção no timer. |
 | `maxValue` | `string | number` | sim | Valor máximo a ser informado no componente, podendo ser utilizado quando o tipo de dado por *number*, *date*, *dateTime* ou *time*. |
 | `minLength` | `number` | sim | Tamanho mínimo de caracteres. |
+| `minTime` | `string` | sim | Define o horário mínimo permitido para seleção no timer. |
 | `minValue` | `string | number` | sim | Valor mínimo a ser informado no componente, podendo ser utilizado quando o tipo de dado por *number*, *date*, *dateTime* ou *time*. |
 | `minuteInterval` | `number` | sim | Define o intervalo entre os minutos exibidos no painel do timepicker. |
 | `mode` | `'month-year' | 'year'` | sim | Define o modo de seleção do `po-datepicker`. |
@@ -11225,9 +11820,7 @@ Interface* que define a seção de Customer do header.
 **Pacote:** `@po-ui/ng-components`
 **Referência:** https://po-ui.io/documentation/po-helper-options
 
-Interface* que define as opções de configuração do componente po-helper.
-
-Permite customizar o conteúdo, título, tipo do ícone, modo de abertura do popover, ações customizadas e eventos.
+Interface para configuração das opções de ajuda (*helper*).
 
 ## Propriedades
 
@@ -11506,6 +12099,7 @@ Interface para definição das propriedades dos campos de entrada que serão cri
 | `formField` | `string` | sim | Nome do campo de formulário que será enviado para o serviço informado na propriedade `url`. |
 | `format` | `string | Array<string>` | sim | Formato de exibição no campo. |
 | `formatModel` | `boolean` | sim | Indica se o `model` receberá o valor formatado pelas propriedades `p-label-on` e `p-label-off` ou |
+| `formatTime` | `string` | sim | Define o formato de exibição do timer (`'12'` ou `'24'`). |
 | `gridColumns` | `number` | sim | Tamanho de exibição do campo em telas. |
 | `gridLgColumns` | `number` | sim | Tamanho de exibição do campo em telas grandes (lg). |
 | `gridLgPull` | `number` | sim | Tamanho do espaçamento após o campo antes da exibição do próximo campo em telas grandes (lg). |
@@ -11544,8 +12138,10 @@ Interface para definição das propriedades dos campos de entrada que serão cri
 | `maskFormatModel` | `boolean` | sim | Define que o valor do componente será conforme especificado na mascára. O valor padrão é `false`. |
 | `maskNoLengthValidation` | `boolean` | sim | Controla como o componente aplica as validações de comprimento mínimo (`minLength`) e máximo (`maxLength`) quando há uma máscara (`p-mask`) definida. |
 | `maxLength` | `number` | sim | Tamanho máximo de caracteres. |
+| `maxTime` | `string` | sim | Define o horário máximo permitido para seleção no timer. |
 | `maxValue` | `string | number` | sim | Valor máximo a ser informado no componente, podendo ser utilizado quando o tipo de dado por *number*, *date*, *dateTime* ou *time*. |
 | `minLength` | `number` | sim | Tamanho mínimo de caracteres. |
+| `minTime` | `string` | sim | Define o horário mínimo permitido para seleção no timer. |
 | `minValue` | `string | number` | sim | Valor mínimo a ser informado no componente, podendo ser utilizado quando o tipo de dado por *number*, *date*, *dateTime* ou *time*. |
 | `minuteInterval` | `number` | sim | Define o intervalo entre os minutos exibidos no painel do timepicker. |
 | `mode` | `'month-year' | 'year'` | sim | Define o modo de seleção do `po-datepicker`. |
@@ -11614,6 +12210,7 @@ Interface para configuração das colunas do po-lookup.
 | `fieldLabel` | `boolean` | sim | Indica que a coluna será utilizada como valor do campo e como filtro dentro da modal. |
 | `format` | `string` | sim | Formato de exibição do valor da coluna: |
 | `label` | `string` | sim | Texto para título da coluna. |
+| `mask` | `string` | sim | Define uma máscara para formatação do valor exibido na coluna. |
 | `property` | `string` | sim | Nome identificador da coluna. |
 | `type` | `string` | sim | Tipo da coluna: |
 | `width` | `string` | sim | A largura da coluna pode ser informada em pixels ou porcentagem. Exemplo: '100px' ou '20%' |
@@ -12921,6 +13518,7 @@ Interface para definição das propriedades dos campos de entrada que serão cri
 | `formField` | `string` | sim | Nome do campo de formulário que será enviado para o serviço informado na propriedade `url`. |
 | `format` | `string | Array<string>` | sim | Formato de exibição no campo. |
 | `formatModel` | `boolean` | sim | Indica se o `model` receberá o valor formatado pelas propriedades `p-label-on` e `p-label-off` ou |
+| `formatTime` | `string` | sim | Define o formato de exibição do timer (`'12'` ou `'24'`). |
 | `gridColumns` | `number` | sim | Tamanho de exibição do campo em telas. |
 | `gridLgColumns` | `number` | sim | Tamanho de exibição do campo em telas grandes (lg). |
 | `gridLgPull` | `number` | sim | Tamanho do espaçamento após o campo antes da exibição do próximo campo em telas grandes (lg). |
@@ -12960,8 +13558,10 @@ Interface para definição das propriedades dos campos de entrada que serão cri
 | `maskFormatModel` | `boolean` | sim | Define que o valor do componente será conforme especificado na mascára. O valor padrão é `false`. |
 | `maskNoLengthValidation` | `boolean` | sim | Controla como o componente aplica as validações de comprimento mínimo (`minLength`) e máximo (`maxLength`) quando há uma máscara (`p-mask`) definida. |
 | `maxLength` | `number` | sim | Tamanho máximo de caracteres. |
+| `maxTime` | `string` | sim | Define o horário máximo permitido para seleção no timer. |
 | `maxValue` | `string | number` | sim | Valor máximo a ser informado no componente, podendo ser utilizado quando o tipo de dado por *number*, *date*, *dateTime* ou *time*. |
 | `minLength` | `number` | sim | Tamanho mínimo de caracteres. |
+| `minTime` | `string` | sim | Define o horário mínimo permitido para seleção no timer. |
 | `minValue` | `string | number` | sim | Valor mínimo a ser informado no componente, podendo ser utilizado quando o tipo de dado por *number*, *date*, *dateTime* ou *time*. |
 | `minuteInterval` | `number` | sim | Define o intervalo entre os minutos exibidos no painel do timepicker. |
 | `mode` | `'month-year' | 'year'` | sim | Define o modo de seleção do `po-datepicker`. |
@@ -13072,6 +13672,7 @@ Interface para a customização de uma página dinâmica que permite atribuir va
 | `formField` | `string` | sim | Nome do campo de formulário que será enviado para o serviço informado na propriedade `url`. |
 | `format` | `string | Array<string>` | sim | Formato de exibição no campo. |
 | `formatModel` | `boolean` | sim | Indica se o `model` receberá o valor formatado pelas propriedades `p-label-on` e `p-label-off` ou |
+| `formatTime` | `string` | sim | Define o formato de exibição do timer (`'12'` ou `'24'`). |
 | `gridColumns` | `number` | sim | Tamanho de exibição do campo em telas. |
 | `gridLgColumns` | `number` | sim | Tamanho de exibição do campo em telas grandes (lg). |
 | `gridLgPull` | `number` | sim | Tamanho do espaçamento após o campo antes da exibição do próximo campo em telas grandes (lg). |
@@ -13112,8 +13713,10 @@ Interface para a customização de uma página dinâmica que permite atribuir va
 | `maskFormatModel` | `boolean` | sim | Define que o valor do componente será conforme especificado na mascára. O valor padrão é `false`. |
 | `maskNoLengthValidation` | `boolean` | sim | Controla como o componente aplica as validações de comprimento mínimo (`minLength`) e máximo (`maxLength`) quando há uma máscara (`p-mask`) definida. |
 | `maxLength` | `number` | sim | Tamanho máximo de caracteres. |
+| `maxTime` | `string` | sim | Define o horário máximo permitido para seleção no timer. |
 | `maxValue` | `string | number` | sim | Valor máximo a ser informado no componente, podendo ser utilizado quando o tipo de dado por *number*, *date*, *dateTime* ou *time*. |
 | `minLength` | `number` | sim | Tamanho mínimo de caracteres. |
+| `minTime` | `string` | sim | Define o horário mínimo permitido para seleção no timer. |
 | `minValue` | `string | number` | sim | Valor mínimo a ser informado no componente, podendo ser utilizado quando o tipo de dado por *number*, *date*, *dateTime* ou *time*. |
 | `minuteInterval` | `number` | sim | Define o intervalo entre os minutos exibidos no painel do timepicker. |
 | `mode` | `'month-year' | 'year'` | sim | Define o modo de seleção do `po-datepicker`. |
@@ -13562,6 +14165,131 @@ Interface que representa a estrutura de uma resposta de sucesso HTTP.
 
 ---
 
+# PoSearchAiColumn
+
+**Tipo:** Interface / Modelo
+**Pacote:** `@po-ui/ng-components`
+**Referência:** https://po-ui.io/documentation/po-search-ai-column
+
+Interface que define os metadados de uma coluna/campo enviados ao endpoint de IA
+para contextualizar a interpretação da busca em linguagem natural.
+
+Esses metadados ajudam o provedor de IA a mapear os termos digitados pelo usuário
+para as propriedades reais dos dados e a gerar um filtro (por exemplo, OData) coerente.
+
+## Propriedades
+
+| Propriedade | Tipo | Opcional | Descrição |
+|---|---|---|---|
+| `label` | `string` | não | Rótulo legível exibido ao usuário (ex: `Nome`, `Idade`, `Cidade`). |
+| `property` | `string` | não | Nome da propriedade do campo (ex: `name`, `age`, `city`). |
+| `type` | `string` | sim | Tipo do campo, utilizado pela IA para gerar comparações adequadas. |
+
+
+---
+
+# PoSearchAiError
+
+**Tipo:** Interface / Modelo
+**Pacote:** `@po-ui/ng-components`
+**Referência:** https://po-ui.io/documentation/po-search-ai-error
+
+Interface que define o objeto emitido pelo evento `p-error` quando a chamada à
+API de IA falha (erro HTTP, timeout, resposta inválida, etc.).
+
+## Propriedades
+
+| Propriedade | Tipo | Opcional | Descrição |
+|---|---|---|---|
+| `message` | `string` | não | Mensagem de erro. |
+| `query` | `string` | não | Texto original digitado pelo usuário. |
+| `statusCode` | `number` | não | Código HTTP do erro (ex: `500`, `408` para timeout). |
+
+
+---
+
+# PoSearchAiLiterals
+
+**Tipo:** Interface / Modelo
+**Pacote:** `@po-ui/ng-components`
+**Referência:** https://po-ui.io/documentation/po-search-ai-literals
+
+Interface para definição das literais usadas no `po-search-ai`.
+
+## Propriedades
+
+| Propriedade | Tipo | Opcional | Descrição |
+|---|---|---|---|
+| `clean` | `string` | sim | Texto de acessibilidade do botão de limpar o campo. |
+| `errorMessage` | `string` | sim | Mensagem exibida quando a busca com IA falha. |
+
+
+---
+
+# PoSearchAiRequest
+
+**Tipo:** Interface / Modelo
+**Pacote:** `@po-ui/ng-components`
+**Referência:** https://po-ui.io/documentation/po-search-ai-request
+
+Interface que define o payload enviado ao endpoint de IA configurado via `p-url`.
+
+O componente é **agnóstico ao provedor de IA**: o backend (proxy) recebe este payload,
+encaminha para a LLM e retorna um `PoSearchAiResponse`.
+
+## Propriedades
+
+| Propriedade | Tipo | Opcional | Descrição |
+|---|---|---|---|
+| `columns` | `Array<PoSearchAiColumn>` | não | Metadados dos campos disponíveis para a busca (ver `PoSearchAiColumn`). |
+| `query` | `string` | não | Texto em linguagem natural digitado pelo usuário. |
+
+
+---
+
+# PoSearchAiResponse
+
+**Tipo:** Interface / Modelo
+**Pacote:** `@po-ui/ng-components`
+**Referência:** https://po-ui.io/documentation/po-search-ai-response
+
+Interface que define a resposta esperada do endpoint de IA configurado via `p-url`.
+
+## Propriedades
+
+| Propriedade | Tipo | Opcional | Descrição |
+|---|---|---|---|
+| `confidence` | `number` | sim | Nível de confiança da interpretação da IA, em um intervalo de `0.0` a `1.0`. |
+| `data` | `Record<string, any>` | sim | Payload genérico da resposta da IA (mensagem de chat, ações, dados customizados, etc.). |
+| `description` | `string` | sim | Descrição legível, em linguagem natural, da resposta. |
+| `filter` | `string` | sim | Filtro gerado pela IA, normalmente no padrão OData |
+| `type` | `PoSearchAiResponseType` | sim | Tipo da resposta retornada pela IA. |
+
+
+---
+
+# PoSearchAiResult
+
+**Tipo:** Interface / Modelo
+**Pacote:** `@po-ui/ng-components`
+**Referência:** https://po-ui.io/documentation/po-search-ai-result
+
+Interface que define o objeto emitido pelos eventos `p-result` e `p-low-confidence`.
+
+## Propriedades
+
+| Propriedade | Tipo | Opcional | Descrição |
+|---|---|---|---|
+| `confidence` | `number` | sim | Nível de confiança da interpretação (`0.0` a `1.0`). |
+| `data` | `Record<string, any>` | sim | Payload genérico da resposta (chat, ações, dados customizados, etc.). |
+| `description` | `string` | sim | Descrição legível da resposta. |
+| `filter` | `string` | sim | Filtro retornado pela IA (ex: filtro OData). Presente quando `type` é `'filter'`. |
+| `query` | `string` | não | Texto original digitado pelo usuário. |
+| `type` | `PoSearchAiResponseType` | não | Tipo da resposta retornada pela IA. |
+
+
+---
+
 # PoSearchFilterSelect
 
 **Tipo:** Interface / Modelo
@@ -13915,7 +14643,9 @@ As definições das colunas serão aplicadas linha a linha.
 | `label` | `string` | sim | Texto para título da coluna. |
 | `labels` | `Array<PoTableColumnLabel>` | sim | Define um array de objetos para as colunas de label, onde 'labels' é uma lista de objetos |
 | `link` | `string` | sim | Define o nome da propriedade que conterá o `link` a ser redirecionado. |
+| `mask` | `string` | sim | Define uma máscara para formatação do valor exibido na coluna. |
 | `property` | `string` | sim | Nome identificador da coluna. Também permite objetos aninhados conforme exemplo abaixo. |
+| `searchAiIgnore` | `boolean` | sim | Quando `true`, exclui a coluna dos metadados enviados ao endpoint de IA configurado |
 | `sortable` | `boolean` | sim | Controla se a coluna será considerada como "ordenavel". Caso seja definido um valor falso, a coluna não será usada para |
 | `subtitles` | `Array<PoTableSubtitleColumn>` | sim | Define um array de objetos para as colunas de legenda. Onde, `subtitles` é uma lista de objetos do tipo PoTableSubtitle na qual |
 | `tooltip` | `string` | sim | Define um texto de ajuda que será exibido ao passar o *mouse* sobre um texto. |
@@ -14096,6 +14826,7 @@ Interface para definição das literais usadas no `po-table`.
 | `noItem` | `string` | sim | Texto exibido quando nenhum item for selecionado no checkbox. |
 | `noVisibleColumn` | `string` | sim | Texto exibido quando não existem colunas visíveis para a tabela. |
 | `oneItem` | `string` | sim | Texto exibido quando apenas 1 item for selecionado no checkbox. |
+| `searchAiPlaceholder` | `string` | sim | Texto exibido como placeholder padrão no campo de busca por IA (`p-search-ai-field`) quando nenhum `placeholder` é informado. |
 | `seeCompleteSubtitle` | `string` | sim | Texto do botão **Ver legenda completa** que aparece quando o rodapé de legendas é maior que a tabela. |
 
 
@@ -14115,6 +14846,60 @@ Interface que representa a estrutura de resposta de uma coleção de itens.
 |---|---|---|---|
 | `hasNext` | `boolean` | não | Indica se existe uma próxima página com mais registros para aquela coleção de itens. |
 | `items` | `Array<object>` | não | Lista de itens retornados. |
+
+
+---
+
+# PoTableSearchAiField
+
+**Tipo:** Interface / Modelo
+**Pacote:** `@po-ui/ng-components`
+**Referência:** https://po-ui.io/documentation/po-table-search-ai-field
+
+Interface de configuração da busca por IA integrada ao `po-table`, utilizada pela
+propriedade `p-search-ai-field`.
+
+Quando configurada, a tabela renderiza um campo `po-search-ai` na barra de ações,
+no lugar da busca textual padrão (`po-search`). O filtro gerado pela IA é aplicado
+automaticamente aos dados da tabela, conforme a estratégia definida em `apply`.
+
+#### Endpoint de IA (`url`)
+
+O campo `url` deve apontar para um endpoint (proxy) que implemente o contrato do
+`po-search-ai`: recebe `{ query, columns }` via `POST` e responde com
+`{ filter, description, confidence }`.
+
+> A integração com a LLM e a guarda de chaves devem ocorrer **no backend**, nunca
+> no client-side. O backend de referência open source está disponível em
+> [`po-sample-api`](https://github.com/po-ui/po-sample-api).
+
+#### Colunas enviadas à IA
+
+Por padrão, os metadados enviados ao endpoint são derivados automaticamente de
+`p-columns` da tabela, respeitando as colunas visíveis e excluindo aquelas com
+`searchAiIgnore: true`. O campo `columns` permite sobrescrever esse comportamento.
+
+#### Estratégia de aplicação do filtro (`apply`)
+
+| Valor | Comportamento |
+|-------|---------------|
+| `'auto'` (padrão) | Modo serviço: envia `$filter` ao `p-service-api`; modo local: aplica o parser OData interno sobre `p-items`. |
+| `'parser'` | Sempre usa o parser OData interno. No modo serviço, busca todos os dados e filtra localmente. |
+| `'server'` | Sempre delega o filtro ao `p-service-api` via `$filter`. |
+| `'none'` | Não aplica o filtro; apenas emite `p-search-ai-result` para o desenvolvedor tratar. |
+| `(result) => void` | Override total: o desenvolvedor recebe o resultado e assume o controle. |
+
+## Propriedades
+
+| Propriedade | Tipo | Opcional | Descrição |
+|---|---|---|---|
+| `apply` | `'auto' | 'parser' | 'server' | 'none' | ((result: PoSearchAiResult) => void)` | sim | Define como o filtro OData retornado pela IA é aplicado à tabela. |
+| `columns` | `Array<PoSearchAiColumn>` | sim | Override das colunas enviadas ao endpoint de IA. Quando omitido, os metadados |
+| `literals` | `PoSearchAiLiterals` | sim | Objeto com os literais usados pelo `po-search-ai` integrado à tabela. Permite |
+| `minConfidence` | `number` | sim | Nível mínimo de confiança (`0.0` a `1.0`) para que o filtro gerado pela IA seja |
+| `placeholder` | `string` | sim | Texto exibido como placeholder no campo de busca por IA. |
+| `timeout` | `number` | sim | Tempo máximo de espera (em milissegundos) pela resposta do endpoint de IA. |
+| `url` | `string` | não | Endpoint (proxy) de IA responsável por converter a consulta em linguagem natural |
 
 
 ---
@@ -14406,6 +15191,226 @@ Interface para definição das literais usadas no `po-upload`.
 
 ---
 
+# PoUserGuideEndEvent
+
+**Tipo:** Interface / Modelo
+**Pacote:** `@po-ui/ng-components`
+**Referência:** https://po-ui.io/documentation/po-user-guide-end-event
+
+Interface que descreve o evento emitido pelo `PoUserGuideService` no encerramento da execução de um tour guiado.
+
+É publicado no `Observable` `PoUserGuideService.tourEndInterface que descreve o evento emitido pelo `PoUserGuideService` no encerramento da execução de um tour guiado.
+
+É publicado no `Observable`  exatamente uma vez por execução, sempre após a
+emissão do último `PoUserGuideStepChangeEvent` em `PoUserGuideService.stepChangeInterface que descreve o evento emitido pelo `PoUserGuideService` no encerramento da execução de um tour guiado.
+
+É publicado no `Observable` `PoUserGuideService.tourEndInterface que descreve o evento emitido pelo `PoUserGuideService` no encerramento da execução de um tour guiado.
+
+É publicado no `Observable`  exatamente uma vez por execução, sempre após a
+emissão do último `PoUserGuideStepChangeEvent` em  e após a limpeza do estado
+interno do serviço.
+
+As aplicações consumidoras podem assinar `tourEndInterface que descreve o evento emitido pelo `PoUserGuideService` no encerramento da execução de um tour guiado.
+
+É publicado no `Observable` `PoUserGuideService.tourEndInterface que descreve o evento emitido pelo `PoUserGuideService` no encerramento da execução de um tour guiado.
+
+É publicado no `Observable`  exatamente uma vez por execução, sempre após a
+emissão do último `PoUserGuideStepChangeEvent` em `PoUserGuideService.stepChangeInterface que descreve o evento emitido pelo `PoUserGuideService` no encerramento da execução de um tour guiado.
+
+É publicado no `Observable` `PoUserGuideService.tourEndInterface que descreve o evento emitido pelo `PoUserGuideService` no encerramento da execução de um tour guiado.
+
+É publicado no `Observable`  exatamente uma vez por execução, sempre após a
+emissão do último `PoUserGuideStepChangeEvent` em  e após a limpeza do estado
+interno do serviço.
+
+As aplicações consumidoras podem assinar  para registrar telemetria de conclusão ou de
+abandono do tour, executar limpezas de UI ou disparar lógica de negócio dependente do encerramento
+da jornada do usuário.
+
+## Propriedades
+
+| Propriedade | Tipo | Opcional | Descrição |
+|---|---|---|---|
+| `lastIndex` | `number` | não | Índice, com base zero, do último passo ativo antes do encerramento do tour. |
+| `reason` | `'completed' | 'closed'` | não | Motivo do encerramento do tour. |
+| `totalSteps` | `number` | não | Total de passos configurados no tour, equivalente ao tamanho do array passado a `PoUserGuideService.setSteps`. |
+
+
+---
+
+# PoUserGuideLiterals
+
+**Tipo:** Interface / Modelo
+**Pacote:** `@po-ui/ng-components`
+**Referência:** https://po-ui.io/documentation/po-user-guide-literals
+
+Interface para definição das literais usadas no `po-user-guide`.
+
+## Propriedades
+
+| Propriedade | Tipo | Opcional | Descrição |
+|---|---|---|---|
+| `close` | `string` | sim | Label padrão do botão "Fechar" (X) exibido no canto do popover do tour. |
+| `done` | `string` | sim | Label padrão do botão "Finalizar" aplicado ao último passo do tour. |
+| `next` | `string` | sim | Label padrão do botão "Próximo" aplicado a todos os passos do tour. |
+| `previous` | `string` | sim | Label padrão do botão "Anterior" aplicado a todos os passos do tour. |
+| `progressTemplate` | `string` | sim | Template padrão do texto de progresso exibido no popover (ex: `{ {current} } de { {total} }`). |
+
+
+---
+
+# PoUserGuideOptions
+
+**Tipo:** Interface / Modelo
+**Pacote:** `@po-ui/ng-components`
+**Referência:** https://po-ui.io/documentation/po-user-guide-options
+
+Interface que descreve as opções globais de configuração do tour guiado executado pelo `PoUserGuideService`.
+
+Os valores informados são aplicados a toda a execução do tour e podem ser sobrescritos pontualmente
+em cada `PoUserGuideStep` através das propriedades específicas de *labels* (`nextLabel`, `previousLabel`,
+`doneLabel`) — neste caso, o valor declarado no passo prevalece sobre o valor declarado nas opções globais.
+
+## Propriedades
+
+| Propriedade | Tipo | Opcional | Descrição |
+|---|---|---|---|
+| `allowClose` | `boolean` | sim | Permite que o usuário encerre o tour clicando fora do popover ou utilizando o botão "Fechar" (X). |
+| `allowScroll` | `boolean` | sim | Quando `true`, mantém a rolagem da página totalmente livre durante o tour. |
+| `closeLabel` | `string` | sim | Label* padrão do botão "Fechar" (X) exibido no canto do popover do tour. |
+| `doneLabel` | `string` | sim | Label* padrão do botão "Finalizar" aplicado ao último passo do tour. |
+| `keyboardControl` | `boolean` | sim | Habilita/desabilita o controle do tour por teclado (valor padrão: `true`). |
+| `literals` | `PoUserGuideLiterals` | sim | Objeto com as literais usadas no `po-user-guide`. |
+| `nextLabel` | `string` | sim | Label* padrão do botão "Próximo" aplicado a todos os passos do tour. |
+| `onStepChange` | `(event: PoUserGuideStepChangeEvent) => void` | sim | Função de *callback* invocada a cada mudança de passo durante a execução do tour. |
+| `overlayOpacity` | `number` | sim | Define a opacidade do *overlay* que escurece a página ao redor do elemento destacado. |
+| `popoverClass` | `string` | sim | Classe CSS adicional aplicada ao elemento raiz do popover do tour. |
+| `previousLabel` | `string` | sim | Label* padrão do botão "Anterior" aplicado a todos os passos do tour. |
+| `progressTemplate` | `string` | sim | Template do texto de progresso exibido no popover quando `showProgress` está habilitado. |
+| `showProgress` | `boolean` | sim | Exibe o indicador textual de progresso do tour no popover (por exemplo, `1 de 5`). |
+
+
+---
+
+# PoUserGuideStartEvent
+
+**Tipo:** Interface / Modelo
+**Pacote:** `@po-ui/ng-components`
+**Referência:** https://po-ui.io/documentation/po-user-guide-start-event
+
+Interface que descreve o evento emitido pelo `PoUserGuideService` no início da execução de um tour guiado.
+
+É publicado no `Observable` `PoUserGuideService.tourStartInterface que descreve o evento emitido pelo `PoUserGuideService` no início da execução de um tour guiado.
+
+É publicado no `Observable`  exatamente uma vez por execução, imediatamente
+após a configuração da instância do tour e antes da emissão do primeiro `PoUserGuideStepChangeEvent` em
+`PoUserGuideService.stepChangeInterface que descreve o evento emitido pelo `PoUserGuideService` no início da execução de um tour guiado.
+
+É publicado no `Observable` `PoUserGuideService.tourStartInterface que descreve o evento emitido pelo `PoUserGuideService` no início da execução de um tour guiado.
+
+É publicado no `Observable`  exatamente uma vez por execução, imediatamente
+após a configuração da instância do tour e antes da emissão do primeiro `PoUserGuideStepChangeEvent` em
+.
+
+As aplicações consumidoras podem assinar `tourStartInterface que descreve o evento emitido pelo `PoUserGuideService` no início da execução de um tour guiado.
+
+É publicado no `Observable` `PoUserGuideService.tourStartInterface que descreve o evento emitido pelo `PoUserGuideService` no início da execução de um tour guiado.
+
+É publicado no `Observable`  exatamente uma vez por execução, imediatamente
+após a configuração da instância do tour e antes da emissão do primeiro `PoUserGuideStepChangeEvent` em
+`PoUserGuideService.stepChangeInterface que descreve o evento emitido pelo `PoUserGuideService` no início da execução de um tour guiado.
+
+É publicado no `Observable` `PoUserGuideService.tourStartInterface que descreve o evento emitido pelo `PoUserGuideService` no início da execução de um tour guiado.
+
+É publicado no `Observable`  exatamente uma vez por execução, imediatamente
+após a configuração da instância do tour e antes da emissão do primeiro `PoUserGuideStepChangeEvent` em
+.
+
+As aplicações consumidoras podem assinar  para registrar telemetria do início do tour,
+exibir mensagens contextuais ou disparar lógica de negócio dependente do início da jornada do usuário.
+
+## Propriedades
+
+| Propriedade | Tipo | Opcional | Descrição |
+|---|---|---|---|
+| `startIndex` | `number` | não | Índice do passo inicial do tour, com base zero. |
+| `timestamp` | `number` | não | Marca de tempo, em milissegundos, do momento de emissão do evento, obtida a partir de `Date.now()`. |
+| `totalSteps` | `number` | não | Total de passos configurados no tour, equivalente ao tamanho do array passado a `PoUserGuideService.setSteps`. |
+
+
+---
+
+# PoUserGuideStep
+
+**Tipo:** Interface / Modelo
+**Pacote:** `@po-ui/ng-components`
+**Referência:** https://po-ui.io/documentation/po-user-guide-step
+
+Interface que descreve um passo individual do tour guiado executado pelo `PoUserGuideService`.
+
+Cada passo representa uma parada do tour, com um elemento opcional a ser destacado na página,
+conteúdo textual ou em HTML, configurações de posicionamento do popover, *labels* específicos
+dos botões de navegação e *hooks* de ciclo de vida do passo.
+
+> A propriedade `content` é a única obrigatória e corresponde ao corpo do popover apresentado ao usuário.
+
+## Propriedades
+
+| Propriedade | Tipo | Opcional | Descrição |
+|---|---|---|---|
+| `align` | `PoUserGuideAlignment` | sim | Alinhamento do popover ao longo do eixo da posição configurada em `position`. |
+| `content` | `string` | não | Conteúdo principal do passo, exibido no corpo do popover. Aceita texto puro ou HTML. |
+| `doneLabel` | `string` | sim | Sobrescreve o *label* do botão "Finalizar" exclusivamente para este passo. |
+| `element` | `string | HTMLElement` | sim | Elemento da página que o passo deve destacar. |
+| `nextLabel` | `string` | sim | Sobrescreve o *label* do botão "Próximo" exclusivamente para este passo. |
+| `onBeforeHighlight` | `(step: PoUserGuideStep, index: number) => void` | sim | Hook* executado imediatamente antes de o passo ser destacado na página, sincronamente à transição. |
+| `onDeselected` | `(step: PoUserGuideStep, index: number) => void` | sim | Hook* executado quando o passo deixa de estar ativo, seja por avanço, retrocesso ou encerramento do tour. |
+| `onHighlighted` | `(step: PoUserGuideStep, index: number) => void` | sim | Hook* executado imediatamente após o passo ser destacado na página. |
+| `position` | `PoUserGuidePosition` | sim | Posição preferida do popover em relação ao elemento destacado. |
+| `previousLabel` | `string` | sim | Sobrescreve o *label* do botão "Anterior" exclusivamente para este passo. |
+| `showButtons` | `Array<'next' | 'previous' | 'close'>` | sim | Lista que filtra quais botões de navegação devem ser exibidos no popover deste passo. |
+| `title` | `string` | sim | Título exibido no cabeçalho do popover do passo. |
+
+
+---
+
+# PoUserGuideStepChangeEvent
+
+**Tipo:** Interface / Modelo
+**Pacote:** `@po-ui/ng-components`
+**Referência:** https://po-ui.io/documentation/po-user-guide-step-change-event
+
+Interface que descreve o evento emitido pelo `PoUserGuideService` a cada mudança de passo durante a execução do tour.
+
+É publicado no `Observable` `PoUserGuideService.stepChangeInterface que descreve o evento emitido pelo `PoUserGuideService` a cada mudança de passo durante a execução do tour.
+
+É publicado no `Observable`  toda vez que o passo ativo é alterado, seja por
+interação do usuário (cliques nos botões "Próximo"/"Anterior" ou navegação por teclado) ou por chamada
+programática aos métodos `next`, `previous`, `goTo` e `start` do `PoUserGuideService`.
+
+As aplicações consumidoras podem assinar `stepChangeInterface que descreve o evento emitido pelo `PoUserGuideService` a cada mudança de passo durante a execução do tour.
+
+É publicado no `Observable` `PoUserGuideService.stepChangeInterface que descreve o evento emitido pelo `PoUserGuideService` a cada mudança de passo durante a execução do tour.
+
+É publicado no `Observable`  toda vez que o passo ativo é alterado, seja por
+interação do usuário (cliques nos botões "Próximo"/"Anterior" ou navegação por teclado) ou por chamada
+programática aos métodos `next`, `previous`, `goTo` e `start` do `PoUserGuideService`.
+
+As aplicações consumidoras podem assinar  para reagir à navegação do usuário, atualizar a
+UI conforme o passo ativo, registrar telemetria de progresso ou disparar lógica de negócio contextual.
+
+## Propriedades
+
+| Propriedade | Tipo | Opcional | Descrição |
+|---|---|---|---|
+| `direction` | `'next' | 'previous' | 'goto' | 'start'` | não | Direção da transição que originou a mudança de passo. |
+| `index` | `number` | não | Índice, com base zero, do passo ativo após a transição. |
+| `step` | `PoUserGuideStep` | não | Passo do tour que se tornou ativo após a transição. |
+| `totalSteps` | `number` | não | Total de passos configurados no tour, equivalente ao tamanho do array passado a `PoUserGuideService.setSteps`. |
+
+
+---
+
 # PoWidgetAvatar
 
 **Tipo:** Interface / Modelo
@@ -14554,6 +15559,7 @@ Define os modos de exibição do `po-calendar`.
 | `Range` | Modo de seleção de intervalo (data inicial e final). |
 | `MonthYear` |  |
 | `Year` |  |
+| `DateTime` |  |
 
 
 ---
@@ -14999,6 +16005,25 @@ na barra de ferramentas do editor do rich-text.
 
 ---
 
+# PoSearchAiResponseType
+
+**Tipo:** Enum
+**Pacote:** `@po-ui/ng-components`
+**Referência:** https://po-ui.io/documentation/po-search-ai-response-type
+
+Enum que define os tipos de resposta suportados pelo endpoint de IA.
+
+## Valores
+
+| Valor | Descrição |
+|---|---|
+| `filter` | Resposta contendo um filtro estruturado (ex: OData). |
+| `chat` | Resposta conversacional em linguagem natural. |
+| `custom` | Payload genérico definido pelo consumidor. |
+
+
+---
+
 # PoSearchFilterMode
 
 **Tipo:** Enum
@@ -15364,4 +16389,51 @@ Define os tipos possíveis para o `PoToasterComponent`.
 | `Information` | Tipo de toaster para mensagens informativas. |
 | `Success` | Tipo de toaster para mensagens de sucesso. |
 | `Warning` | Tipo de toaster para mensagens de atenção. |
+
+
+---
+
+# PoUserGuideAlignment
+
+**Tipo:** Enum
+**Pacote:** `@po-ui/ng-components`
+**Referência:** https://po-ui.io/documentation/po-user-guide-alignment
+
+Enum* que define o alinhamento do popover do tour ao longo do eixo da posição configurada,
+utilizado na propriedade `align` de `PoUserGuideStep`.
+
+> Quando o valor não é informado, é aplicado o padrão `PoUserGuideAlignment.Start`.
+
+## Valores
+
+| Valor | Descrição |
+|---|---|
+| `Start` | O popover é alinhado ao início do eixo da posição (topo ou esquerda, conforme a `PoUserGuidePosition`). |
+| `Center` | O popover é alinhado ao centro do eixo da posição. |
+| `End` | O popover é alinhado ao final do eixo da posição (rodapé ou direita, conforme a `PoUserGuidePosition`). |
+
+
+---
+
+# PoUserGuidePosition
+
+**Tipo:** Enum
+**Pacote:** `@po-ui/ng-components`
+**Referência:** https://po-ui.io/documentation/po-user-guide-position
+
+Enum* que define a posição preferida do popover do tour em relação ao elemento destacado,
+utilizado na propriedade `position` de `PoUserGuideStep`.
+
+> Quando o valor não é informado, é aplicado o padrão `PoUserGuidePosition.Auto`.
+
+## Valores
+
+| Valor | Descrição |
+|---|---|
+| `Top` | O popover é renderizado acima do elemento destacado. |
+| `Right` | O popover é renderizado à direita do elemento destacado. |
+| `Bottom` | O popover é renderizado abaixo do elemento destacado. |
+| `Left` | O popover é renderizado à esquerda do elemento destacado. |
+| `Over` | O popover é renderizado sobreposto ao elemento destacado. |
+| `Auto` | A posição é calculada automaticamente conforme o espaço disponível na viewport. |
 

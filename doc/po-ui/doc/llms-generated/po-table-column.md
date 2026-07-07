@@ -22,7 +22,9 @@ As definições das colunas serão aplicadas linha a linha.
 | `label` | `string` | sim | Texto para título da coluna. |
 | `labels` | `Array<PoTableColumnLabel>` | sim | Define um array de objetos para as colunas de label, onde 'labels' é uma lista de objetos |
 | `link` | `string` | sim | Define o nome da propriedade que conterá o `link` a ser redirecionado. |
+| `mask` | `string` | sim | Define uma máscara para formatação do valor exibido na coluna. |
 | `property` | `string` | sim | Nome identificador da coluna. Também permite objetos aninhados conforme exemplo abaixo. |
+| `searchAiIgnore` | `boolean` | sim | Quando `true`, exclui a coluna dos metadados enviados ao endpoint de IA configurado |
 | `sortable` | `boolean` | sim | Controla se a coluna será considerada como "ordenavel". Caso seja definido um valor falso, a coluna não será usada para |
 | `subtitles` | `Array<PoTableSubtitleColumn>` | sim | Define um array de objetos para as colunas de legenda. Onde, `subtitles` é uma lista de objetos do tipo PoTableSubtitle na qual |
 | `tooltip` | `string` | sim | Define um texto de ajuda que será exibido ao passar o *mouse* sobre um texto. |

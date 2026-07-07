@@ -161,8 +161,8 @@ export class ContratosPage implements OnInit {
       next: (result) => {
         const items = result.items.map((item: any) => ({
           ...item,
-          dtInicioFmt: item.dtInicio ? new Date(item.dtInicio).toLocaleDateString('pt-BR') : '',
-          dtFimFmt: item.dtFim ? new Date(item.dtFim).toLocaleDateString('pt-BR') : '',
+          dtInicioFmt: item.dtInicio ? item.dtInicio.substring(0, 10).split('-').reverse().join('/') : '',
+          dtFimFmt: item.dtFim ? item.dtFim.substring(0, 10).split('-').reverse().join('/') : '',
           statusFmt: item.bloqueado ? 'Bloqueado' : 'Ativo',
         }));
         this.contratos = this.page === 1 ? items : [...this.contratos, ...items];

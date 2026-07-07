@@ -4,9 +4,7 @@
 **Pacote:** `@po-ui/ng-components`
 **Referência:** https://po-ui.io/documentation/po-helper-options
 
-Interface* que define as opções de configuração do componente po-helper.
-
-Permite customizar o conteúdo, título, tipo do ícone, modo de abertura do popover, ações customizadas e eventos.
+Interface para configuração das opções de ajuda (*helper*).
 
 ## Propriedades
 

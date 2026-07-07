@@ -34,7 +34,7 @@ regra de negócio não tenha sido atendida.
 | `componentsSize` | `'p-components-size'` | `string` | sim | `medium` | Define o tamanho dos componentes de formulário no template: |
 | `disableSubmit` | `'p-disable-submit'` | `boolean` | sim | - | Desabilita botões de submissão (save e saveNew) |
 | `literals` | `'p-literals'` | `PoPageEditLiterals` | sim | - | Objeto com as literais usadas no `po-page-edit`. |
-| `subtitle` | `'p-subtitle'` | `string` | sim | - | Subtitulo do Header da página |
+| `subtitle` | `'p-subtitle'` | `string` | sim | - | Subtitulo do Header da página. |
 | `title` | `'p-title'` | `string` | não | - | Título da página. |
 
 ## Outputs

@@ -1,0 +1,35 @@
+<po-page-edit [p-title]="title" (p-save)="save()" (p-cancel)="cancel()">
+  <po-loading-overlay *ngIf="loading" p-text="Carregando..."></po-loading-overlay>
+
+  <po-divider p-label="Dados do CEP"></po-divider>
+
+  <div class="po-row" style="align-items: flex-end;">
+    <po-input class="po-md-4" p-label="CEP *" name="cep"
+      p-placeholder="00000000" [p-maxlength]="9"
+      [ngModel]="form.cep" (ngModelChange)="form.cep = $event" [p-disabled]="isEdit ? 'true' : 'false'">
+    </po-input>
+    <div class="po-md-2" style="padding-bottom: 8px;">
+      <po-button p-label="Buscar ViaCEP" p-icon="po-icon-search"
+        [p-loading]="buscandoCep" (p-click)="buscarCep()">
+      </po-button>
+    </div>
+  </div>
+  
+  <div class="po-row">
+    <po-input class="po-md-8" p-label="Logradouro *" name="logradouro"
+      [ngModel]="form.logradouro" (ngModelChange)="form.logradouro = $event">
+    </po-input>
+    <po-input class="po-md-4" p-label="Bairro" name="bairro"
+      [ngModel]="form.bairro" (ngModelChange)="form.bairro = $event">
+    </po-input>
+  </div>
+  
+  <div class="po-row">
+    <po-number class="po-md-4" p-label="Cód. IBGE Município" name="municipioId"
+      [ngModel]="form.municipioId" (ngModelChange)="form.municipioId = $event">
+    </po-number>
+    <po-number class="po-md-4" p-label="Cód. IBGE Estado" name="estadoId"
+      [ngModel]="form.estadoId" (ngModelChange)="form.estadoId = $event">
+    </po-number>
+  </div>
+</po-page-edit>

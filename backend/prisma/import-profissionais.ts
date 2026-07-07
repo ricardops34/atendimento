@@ -10,7 +10,7 @@ async function main() {
   }
 
   const connection = await mysql.createConnection({
-    host: process.env.LEGACY_DB_HOST || 'localhost',
+    host: process.env.LEGACY_DB_HOST || 'mysql',
     port: parseInt(process.env.LEGACY_DB_PORT || '3306'),
     user: process.env.LEGACY_DB_USER || 'root',
     password: process.env.LEGACY_DB_PASSWORD || 'root',

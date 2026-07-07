@@ -12,6 +12,19 @@ export class MunicipiosController {
     return this.municipiosService.findAll(query);
   }
 
+  @Get('metadata')
+  metadata() {
+    return {
+      version: 1,
+      title: 'Municípios',
+      fields: [
+        { property: 'id', label: 'Cód. IBGE', key: true, visible: true, filter: true },
+        { property: 'nome', label: 'Município', visible: true, filter: true },
+        { property: 'estado.sigla', label: 'Estado', visible: true }
+      ]
+    };
+  }
+
   @Get()
   findAll(@Query() query: any) {
     return this.municipiosService.findAll(query);

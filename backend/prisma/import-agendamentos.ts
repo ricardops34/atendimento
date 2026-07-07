@@ -10,10 +10,10 @@ async function main() {
   }
 
   const connection = await mysql.createConnection({
-    host: process.env.LEGACY_DB_HOST || 'localhost',
+    host: process.env.LEGACY_DB_HOST || 'mysql',
     port: parseInt(process.env.LEGACY_DB_PORT || '3306'),
     user: process.env.LEGACY_DB_USER || 'root',
-    password: process.env.LEGACY_DB_PASSWORD || 'root',
+    password: process.env.LEGACY_DB_PASSWORD || 'Senha@1245',
     database: process.env.LEGACY_DB_NAME || 'bjsoft18_portal',
     dateStrings: true,
   });
@@ -27,7 +27,7 @@ async function main() {
 
   let count = 0;
   for (const item of agendamentos) {
-    
+
     // Tratamento de datas com UTC Noon para evitar problemas de fuso no frontend
     const dataAgendaStr = item.data_agenda ? item.data_agenda.split(' ')[0] : '2020-01-01';
     const dataAgenda = new Date(`${dataAgendaStr}T12:00:00Z`);
@@ -41,16 +41,16 @@ async function main() {
     const horarioFinal = parseDatetime(item.horario_final);
 
     const contratoId = item.contrato_id || null;
-    
+
     // Forçar profissional ID 1 se for nulo, como existe apenas 1 profissional (Ricardo)
     const profissionalId = item.profissional_id || 1;
 
     let duracaoMinutos = 0;
     if (item.hora_total) {
-       const parts = item.hora_total.split(':');
-       duracaoMinutos = (parseInt(parts[0]) * 60) + parseInt(parts[1]);
+      const parts = item.hora_total.split(':');
+      duracaoMinutos = (parseInt(parts[0]) * 60) + parseInt(parts[1]);
     } else {
-       duracaoMinutos = Math.round((horarioFinal.getTime() - horarioInicial.getTime()) / 60000);
+      duracaoMinutos = Math.round((horarioFinal.getTime() - horarioInicial.getTime()) / 60000);
     }
 
     await prisma.agendamento.upsert({

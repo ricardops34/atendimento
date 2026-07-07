@@ -96,6 +96,10 @@ export class EmpresasAdminEditPage implements OnInit {
       next: (list: any[]) => {
         this.estadoOptions = list.map((e) => ({ label: `${e.nome} (${e.sigla})`, value: e.sigla }));
       },
+      error: (err) => {
+        console.error('Erro ao buscar estados:', err);
+        this.notify.error('Erro ao buscar estados: ' + (err.message || 'Verifique o console.'));
+      }
     });
   }
 

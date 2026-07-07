@@ -12,6 +12,21 @@ export class CepsController {
     return this.cepsService.findAll(query);
   }
 
+  @Get('metadata')
+  metadata() {
+    return {
+      version: 1,
+      title: 'CEPs',
+      fields: [
+        { property: 'cep', label: 'CEP', key: true, visible: true, filter: true },
+        { property: 'logradouro', label: 'Logradouro', visible: true, filter: true },
+        { property: 'bairro', label: 'Bairro', visible: true, filter: true },
+        { property: 'municipio.nome', label: 'Município', visible: true },
+        { property: 'estado.sigla', label: 'UF', visible: true }
+      ]
+    };
+  }
+
   @Get()
   findAll(@Query() query: any) {
     return this.cepsService.findAll(query);

@@ -1,0 +1,21 @@
+<po-page-edit [p-title]="title" (p-save)="save()" (p-cancel)="cancel()">
+  <po-loading-overlay *ngIf="loading" p-text="Carregando..."></po-loading-overlay>
+
+  <po-divider p-label="Dados do Município"></po-divider>
+
+  <div class="po-row">
+    <po-number class="po-md-4" p-label="Código IBGE *" name="id"
+      [ngModel]="form.id" (ngModelChange)="form.id = $event" [p-disabled]="isEdit ? 'true' : 'false'">
+    </po-number>
+    <po-input class="po-md-8" p-label="Nome *" name="nome"
+      [ngModel]="form.nome" (ngModelChange)="form.nome = $event">
+    </po-input>
+  </div>
+  
+  <div class="po-row">
+    <po-combo class="po-md-4" p-label="Estado *" name="estado"
+      [p-options]="estadosOptions"
+      [ngModel]="form.estadoId" (ngModelChange)="form.estadoId = $event">
+    </po-combo>
+  </div>
+</po-page-edit>

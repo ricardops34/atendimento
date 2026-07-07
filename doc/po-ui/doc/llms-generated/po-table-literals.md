@@ -25,4 +25,5 @@ Interface para definição das literais usadas no `po-table`.
 | `noItem` | `string` | sim | Texto exibido quando nenhum item for selecionado no checkbox. |
 | `noVisibleColumn` | `string` | sim | Texto exibido quando não existem colunas visíveis para a tabela. |
 | `oneItem` | `string` | sim | Texto exibido quando apenas 1 item for selecionado no checkbox. |
+| `searchAiPlaceholder` | `string` | sim | Texto exibido como placeholder padrão no campo de busca por IA (`p-search-ai-field`) quando nenhum `placeholder` é informado. |
 | `seeCompleteSubtitle` | `string` | sim | Texto do botão **Ver legenda completa** que aparece quando o rodapé de legendas é maior que a tabela. |

@@ -13,3 +13,4 @@ Define os modos de exibição do `po-calendar`.
 | `Range` | Modo de seleção de intervalo (data inicial e final). |
 | `MonthYear` |  |
 | `Year` |  |
+| `DateTime` |  |

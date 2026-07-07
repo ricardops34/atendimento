@@ -1,10 +1,33 @@
 # PO UI Offline Docs
 
-Gerado automaticamente em `2026-05-18T21:46:27.345Z`.
+Gerado automaticamente em `2026-07-07T16:20:54.548Z`.
 
 Este diretório espelha os arquivos markdown publicados em `https://po-ui.io/llms-generated/` para consulta local quando a documentação oficial ou o MCP estiverem indisponíveis.
 
-## Fontes
+## Fontes Oficiais para LLMs (IA)
+
+A documentação oficial do PO UI otimizada para modelos de linguagem (LLMs) pode ser consumida diretamente através das seguintes URLs base:
+
+- **Prompt Completo / Geral:** [https://po-ui.io/llms.txt](https://po-ui.io/llms.txt)
+- **Prompt Expandido:** [https://po-ui.io/llms-full.txt](https://po-ui.io/llms-full.txt)
+
+### Documentação Individual por Componente
+**URL Base:** `https://po-ui.io/llms-generated/<componente>.md`
+
+*Exemplos de consumo via URL Base:*
+- Componente (`po-button`): [https://po-ui.io/llms-generated/po-button.md](https://po-ui.io/llms-generated/po-button.md)
+- Componente (`po-table`): [https://po-ui.io/llms-generated/po-table.md](https://po-ui.io/llms-generated/po-table.md)
+- Componente (`po-modal`): [https://po-ui.io/llms-generated/po-modal.md](https://po-ui.io/llms-generated/po-modal.md)
+- Serviço (`PoNotificationService`): [https://po-ui.io/llms-generated/po-notification-service.md](https://po-ui.io/llms-generated/po-notification-service.md)
+- Interface (`PoTableColumn`): [https://po-ui.io/llms-generated/po-table-column.md](https://po-ui.io/llms-generated/po-table-column.md)
+- Enum (`PoButtonKind`): [https://po-ui.io/llms-generated/po-button-kind.md](https://po-ui.io/llms-generated/po-button-kind.md)
+
+**Referência / Guia Completo:**
+[https://po-ui.io/documentation/ia-tools-llms](https://po-ui.io/documentation/ia-tools-llms)
+
+---
+
+## Fontes Locais (Backup)
 
 - [llms.txt](./sources/llms.txt)
 - [llms-full.txt](./sources/llms-full.txt)
@@ -14,7 +37,7 @@ Este diretório espelha os arquivos markdown publicados em `https://po-ui.io/llm
 
 ## Resumo
 
-- Total de arquivos espelhados: **337**
+- Total de arquivos espelhados: **356**
 - Total de seções encontradas no índice: **6**
 
 ## Instalação
@@ -55,6 +78,7 @@ Este diretório espelha os arquivos markdown publicados em `https://po-ui.io/llm
 - [PoContextTabsComponent](./llms-generated/po-context-tabs.md): #### Tokens customizáveis
 - [PoDatepickerComponent](./llms-generated/po-datepicker.md): O `po-datepicker` é um componente específico para manipulação de datas permitindo a digitação e / ou seleção.
 - [PoDatepickerRangeComponent](./llms-generated/po-datepicker-range.md): O `po-datepicker-range` é um componente para seleção de um período entre duas datas, onde é possível informar apenas
+- [PoDatetimepickerComponent](./llms-generated/po-datetimepicker.md): O `po-datetimepicker` é um componente para manipulação de data e hora, permitindo a digitação e/ou seleção
 - [PoDecimalComponent](./llms-generated/po-decimal.md): Este é um componente baseado em input, com várias propriedades do input nativo e outras
 - [PoDisclaimerGroupComponent](./llms-generated/po-disclaimer-group.md): O componente `po-disclaimer-group` é recomendado para manipular palavras-chave de filtros aplicados em uma pesquisa.
 - [PoDividerComponent](./llms-generated/po-divider.md): Este componente apresenta uma linha demarcadora de blocos e pode conter um *label*.
@@ -106,6 +130,7 @@ Este diretório espelha os arquivos markdown publicados em `https://po-ui.io/llm
 - [PoRadioGroupComponent](./llms-generated/po-radio-group.md): O componente `po-radio-group` deve ser utilizado para disponibilizar múltiplas opções ao usuário, permitindo a ele que
 - [PoRichTextComponent](./llms-generated/po-rich-text.md): O componente `po-rich-text` é um editor de textos enriquecidos.
 - [PoSearchComponent](./llms-generated/po-search.md): O componente search, também conhecido como barra de pesquisa, é utilizado para ajudar os usuários a localizar um determinado conteúdo.
+- [PoSearchAiComponent](./llms-generated/po-search-ai.md): O `po-search-ai` é um componente de **busca em linguagem natural** baseado em input.
 - [PoSelectComponent](./llms-generated/po-select.md): O componente po-select exibe uma lista de valores e permite que o usuário selecione um desses valores.
 - [PoSkeletonComponent](./llms-generated/po-skeleton.md): O componente `po-skeleton` é utilizado para exibir placeholders durante o carregamento de conteúdo,
 - [PoSlideComponent](./llms-generated/po-slide.md): Componente de slide para visualização e controle de elementos de forma cíclica.
@@ -138,6 +163,7 @@ Este diretório espelha os arquivos markdown publicados em `https://po-ui.io/llm
 - [PoStorageService](./llms-generated/po-storage-service.md): O PO Storage é uma biblioteca que fornece um serviço para armazenamento de dados no dispositivo local, sendo semelhante
 - [PoSyncService](./llms-generated/po-sync-service.md): O `PoSyncService` é utilizado para configurar toda a base de dados que receberá as informações que serão
 - [PoThemeService](./llms-generated/po-theme-service.md): O serviço `PoThemeService` permite customizar as cores do tema padrão do `PO-UI` e definir o nível de acessibilidade
+- [PoUserGuideService](./llms-generated/po-user-guide-service.md): Serviço responsável por criar e controlar tours guiados na interface da aplicação.
 
 ## Interfaces e Modelos
 
@@ -200,7 +226,7 @@ Este diretório espelha os arquivos markdown publicados em `https://po-ui.io/llm
 - [PoHeaderBrand](./llms-generated/po-header-brand.md): Interface* que define a seção de brand.
 - [PoHeaderLiterals](./llms-generated/po-header-literals.md): Interface para definição das literais usadas no `po-header`.
 - [PoHeaderUser](./llms-generated/po-header-user.md): Interface* que define a seção de Customer do header.
-- [PoHelperOptions](./llms-generated/po-helper-options.md): Interface* que define as opções de configuração do componente po-helper.
+- [PoHelperOptions](./llms-generated/po-helper-options.md): Interface para configuração das opções de ajuda (*helper*).
 - [PoHttpRequestData](./llms-generated/po-http-request-data.md): Interface para definição de uma requisição HTTP.
 - [PoI18nConfig](./llms-generated/po-i18n-config.md): Interface para a configuração do módulo `PoI18nModule`.
 - [PoI18nConfigContext](./llms-generated/po-i18n-config-context.md): Interface para a configuração dos contextos do módulo `PoI18nModule`.
@@ -287,6 +313,12 @@ Este diretório espelha os arquivos markdown publicados em `https://po-ui.io/llm
 - [PoRadioGroupOption](./llms-generated/po-radio-group-option.md): Interface para as ações do componente po-radio-group.
 - [PoResponseApi](./llms-generated/po-response-api.md): Interface que representa a estrutura de resposta de uma coleção de itens.
 - [PoResponseApi](./llms-generated/po-response-api.md): Interface que representa a estrutura de uma resposta de sucesso HTTP.
+- [PoSearchAiColumn](./llms-generated/po-search-ai-column.md): Interface que define os metadados de uma coluna/campo enviados ao endpoint de IA
+- [PoSearchAiError](./llms-generated/po-search-ai-error.md): Interface que define o objeto emitido pelo evento `p-error` quando a chamada à
+- [PoSearchAiLiterals](./llms-generated/po-search-ai-literals.md): Interface para definição das literais usadas no `po-search-ai`.
+- [PoSearchAiRequest](./llms-generated/po-search-ai-request.md): Interface que define o payload enviado ao endpoint de IA configurado via `p-url`.
+- [PoSearchAiResponse](./llms-generated/po-search-ai-response.md): Interface que define a resposta esperada do endpoint de IA configurado via `p-url`.
+- [PoSearchAiResult](./llms-generated/po-search-ai-result.md): Interface que define o objeto emitido pelos eventos `p-result` e `p-low-confidence`.
 - [PoSearchFilterSelect](./llms-generated/po-search-filter-select.md): Interface que define as opções que serão exibidas no dropdown do `po-search`, ao usar a propriedade `p-filter-select`.
 - [PoSearchLiterals](./llms-generated/po-search-literals.md): Interface para definição das literais usadas no `po-search`.
 - [PoSearchLocateSummary](./llms-generated/po-search-locate-summary.md): Interface que define o resumo de localização do filtro `p-filter-locate`.
@@ -313,6 +345,7 @@ Este diretório espelha os arquivos markdown publicados em `https://po-ui.io/llm
 - [PoTableFilteredItemsParams](./llms-generated/po-table-filtered-items-params.md): Interface do objeto enviado como parâmetro da função `getItems`.
 - [PoTableLiterals](./llms-generated/po-table-literals.md): Interface para definição das literais usadas no `po-table`.
 - [PoTableResponseApi](./llms-generated/po-table-response-api.md): Interface que representa a estrutura de resposta de uma coleção de itens.
+- [PoTableSearchAiField](./llms-generated/po-table-search-ai-field.md): Interface de configuração da busca por IA integrada ao `po-table`, utilizada pela
 - [PoTableSubtitleColumn](./llms-generated/po-table-subtitle-column.md): Interface para configuração das colunas de legenda do Po-Table.
 - [PoTagLiterals](./llms-generated/po-tag-literals.md): Interface para definição das literais usadas no `po-tag`.
 - [PoTheme](./llms-generated/po-theme.md): Interface para o método `setTheme()`.
@@ -326,6 +359,12 @@ Este diretório espelha os arquivos markdown publicados em `https://po-ui.io/llm
 - [PoTreeViewItem](./llms-generated/po-tree-view-item.md): Interface para definição dos itens do componente `po-tree-view`.
 - [PoUploadFileRestrictions](./llms-generated/po-upload-file-restrictions.md): Interface que define as restrições dos arquivos a serem selecionados com base em regras predefinidas
 - [PoUploadLiterals](./llms-generated/po-upload-literals.md): Interface para definição das literais usadas no `po-upload`.
+- [PoUserGuideEndEvent](./llms-generated/po-user-guide-end-event.md): Interface que descreve o evento emitido pelo `PoUserGuideService` no encerramento da execução de um tour guiado.
+- [PoUserGuideLiterals](./llms-generated/po-user-guide-literals.md): Interface para definição das literais usadas no `po-user-guide`.
+- [PoUserGuideOptions](./llms-generated/po-user-guide-options.md): Interface que descreve as opções globais de configuração do tour guiado executado pelo `PoUserGuideService`.
+- [PoUserGuideStartEvent](./llms-generated/po-user-guide-start-event.md): Interface que descreve o evento emitido pelo `PoUserGuideService` no início da execução de um tour guiado.
+- [PoUserGuideStep](./llms-generated/po-user-guide-step.md): Interface que descreve um passo individual do tour guiado executado pelo `PoUserGuideService`.
+- [PoUserGuideStepChangeEvent](./llms-generated/po-user-guide-step-change-event.md): Interface que descreve o evento emitido pelo `PoUserGuideService` a cada mudança de passo durante a execução do tour.
 - [PoWidgetAvatar](./llms-generated/po-widget-avatar.md): Interface para definição do avatar no `po-widget`.
 
 ## Enums
@@ -359,6 +398,7 @@ Este diretório espelha os arquivos markdown publicados em `https://po-ui.io/llm
 - [PoProgressStatus](./llms-generated/po-progress-status.md): Enum `PoProgressStatus` para os status de barra de progresso.
 - [PoRadioSize](./llms-generated/po-radio-size.md): Tamanhos da propriedade `p-size`.
 - [PoRichTextToolbarActions](./llms-generated/po-rich-text-toolbar-actions.md): Enumeração que define as ações disponíveis na barra de ferramentas do `PoRichTextComponent`.
+- [PoSearchAiResponseType](./llms-generated/po-search-ai-response-type.md): Enum que define os tipos de resposta suportados pelo endpoint de IA.
 - [PoSearchFilterMode](./llms-generated/po-search-filter-mode.md): Define o tipo de busca usado no `po-search`.
 - [PoSkeletonAnimation](./llms-generated/po-skeleton-animation.md): Define os tipos de animação do componente `po-skeleton`.
 - [PoSkeletonSize](./llms-generated/po-skeleton-size.md): Define os tamanhos disponíveis para o componente `po-skeleton`.
@@ -377,6 +417,8 @@ Este diretório espelha os arquivos markdown publicados em `https://po-ui.io/llm
 - [PoTimepickerModelFormat](./llms-generated/po-timepicker-model-format.md): Enum* que define o padrão de formatação do model de saída do timepicker.
 - [PoTimerFormat](./llms-generated/po-timer-format.md): Enum para definição do formato de exibição do timer.
 - [PoToasterType](./llms-generated/po-toaster-type.md): Define os tipos possíveis para o `PoToasterComponent`.
+- [PoUserGuideAlignment](./llms-generated/po-user-guide-alignment.md): Enum* que define o alinhamento do popover do tour ao longo do eixo da posição configurada,
+- [PoUserGuidePosition](./llms-generated/po-user-guide-position.md): Enum* que define a posição preferida do popover do tour em relação ao elemento destacado,
 
 ## Guias
 

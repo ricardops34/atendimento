@@ -13,6 +13,16 @@ export const routes: Routes = [
     loadComponent: () => import('./features/cadastros-apoio/clientes/clientes.page').then((m) => m.ClientesPage),
   },
   {
+    path: 'clientes/novo',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/cadastros-apoio/clientes/clientes-edit.page').then((m) => m.ClientesEditPage),
+  },
+  {
+    path: 'clientes/:id/editar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/cadastros-apoio/clientes/clientes-edit.page').then((m) => m.ClientesEditPage),
+  },
+  {
     path: 'profissionais',
     canActivate: [authGuard],
     loadComponent: () => import('./features/cadastros-apoio/profissionais/profissionais.page').then((m) => m.ProfissionaisPage),
@@ -36,6 +46,16 @@ export const routes: Routes = [
     path: 'configuracoes/empresas',
     canActivate: [authGuard],
     loadComponent: () => import('./features/configuracoes/empresas/empresas.page').then((m) => m.ConfigEmpresasPage),
+  },
+  {
+    path: 'configuracoes/empresas/novo',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/empresas/empresas-edit.page').then((m) => m.EmpresasAdminEditPage),
+  },
+  {
+    path: 'configuracoes/empresas/:id/editar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/empresas/empresas-edit.page').then((m) => m.EmpresasAdminEditPage),
   },
   {
     path: 'configuracoes/modulos',
@@ -68,14 +88,44 @@ export const routes: Routes = [
     loadComponent: () => import('./features/configuracoes/estados/estados.page').then((m) => m.EstadosPage),
   },
   {
+    path: 'configuracoes/estados/novo',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/estados/estados-edit.page').then((m) => m.EstadosEditPage),
+  },
+  {
+    path: 'configuracoes/estados/:id/editar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/estados/estados-edit.page').then((m) => m.EstadosEditPage),
+  },
+  {
     path: 'configuracoes/municipios',
     canActivate: [authGuard],
     loadComponent: () => import('./features/configuracoes/municipios/municipios.page').then((m) => m.MunicipiosPage),
   },
   {
+    path: 'configuracoes/municipios/novo',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/municipios/municipios-edit.page').then((m) => m.MunicipiosEditPage),
+  },
+  {
+    path: 'configuracoes/municipios/:id/editar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/municipios/municipios-edit.page').then((m) => m.MunicipiosEditPage),
+  },
+  {
     path: 'configuracoes/ceps',
     canActivate: [authGuard],
     loadComponent: () => import('./features/configuracoes/ceps/ceps.page').then((m) => m.CepsPage),
+  },
+  {
+    path: 'configuracoes/ceps/novo',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/ceps/ceps-edit.page').then((m) => m.CepsEditPage),
+  },
+  {
+    path: 'configuracoes/ceps/:id/editar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/ceps/ceps-edit.page').then((m) => m.CepsEditPage),
   },
   { 
     path: 'agendamentos/lista', 

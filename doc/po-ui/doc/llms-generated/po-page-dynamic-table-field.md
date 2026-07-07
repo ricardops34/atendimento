@@ -52,6 +52,7 @@ Interface para definição das propriedades dos campos de entrada que serão cri
 | `formField` | `string` | sim | Nome do campo de formulário que será enviado para o serviço informado na propriedade `url`. |
 | `format` | `string | Array<string>` | sim | Formato de exibição no campo. |
 | `formatModel` | `boolean` | sim | Indica se o `model` receberá o valor formatado pelas propriedades `p-label-on` e `p-label-off` ou |
+| `formatTime` | `string` | sim | Define o formato de exibição do timer (`'12'` ou `'24'`). |
 | `gridColumns` | `number` | sim | Tamanho de exibição do campo em telas. |
 | `gridLgColumns` | `number` | sim | Tamanho de exibição do campo em telas grandes (lg). |
 | `gridLgPull` | `number` | sim | Tamanho do espaçamento após o campo antes da exibição do próximo campo em telas grandes (lg). |
@@ -91,8 +92,10 @@ Interface para definição das propriedades dos campos de entrada que serão cri
 | `maskFormatModel` | `boolean` | sim | Define que o valor do componente será conforme especificado na mascára. O valor padrão é `false`. |
 | `maskNoLengthValidation` | `boolean` | sim | Controla como o componente aplica as validações de comprimento mínimo (`minLength`) e máximo (`maxLength`) quando há uma máscara (`p-mask`) definida. |
 | `maxLength` | `number` | sim | Tamanho máximo de caracteres. |
+| `maxTime` | `string` | sim | Define o horário máximo permitido para seleção no timer. |
 | `maxValue` | `string | number` | sim | Valor máximo a ser informado no componente, podendo ser utilizado quando o tipo de dado por *number*, *date*, *dateTime* ou *time*. |
 | `minLength` | `number` | sim | Tamanho mínimo de caracteres. |
+| `minTime` | `string` | sim | Define o horário mínimo permitido para seleção no timer. |
 | `minValue` | `string | number` | sim | Valor mínimo a ser informado no componente, podendo ser utilizado quando o tipo de dado por *number*, *date*, *dateTime* ou *time*. |
 | `minuteInterval` | `number` | sim | Define o intervalo entre os minutos exibidos no painel do timepicker. |
 | `mode` | `'month-year' | 'year'` | sim | Define o modo de seleção do `po-datepicker`. |

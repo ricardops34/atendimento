@@ -74,29 +74,24 @@ export class ClientesEditPage implements OnInit {
     this.svc.findOne(this.id!).subscribe({
       next: (data: any) => {
         this.form = {
-          tipoPessoa:         data.tipoPessoa         || 'PJ',
+          tipoPessoa:         data.tipoPessoa === 'J' ? 'PJ' : 'PF',
           nome:               data.nome               || '',
-          razaoSocial:        data.razaoSocial        || '',
-          cnpj:               data.cnpj               || '',
-          inscricaoEstadual:  data.inscricaoEstadual  || '',
-          inscricaoMunicipal: data.inscricaoMunicipal || '',
-          cpf:                data.cpf                || '',
-          rg:                 data.rg                 || '',
+          razaoSocial:        data.razao                || '',
+          cnpj:               data.tipoPessoa === 'J' ? data.documento : '',
+          cpf:                data.tipoPessoa === 'F' ? data.documento : '',
           dataNascimento:     data.dataNascimento ? data.dataNascimento.substring(0, 10) : '',
           telefone:           data.telefone           || '',
-          celular:            data.celular            || '',
           email:              data.email              || '',
           cep:                data.cep                || '',
-          logradouro:         data.logradouro         || '',
+          logradouro:         data.endereco         || '',
           numero:             data.numero             || '',
           complemento:        data.complemento        || '',
           bairro:             data.bairro             || '',
-          municipio:          data.municipio          || '',
-          uf:                 data.uf                 || '',
-          pais:               data.pais               || 'Brasil',
+          municipio:          data.cidade          || '',
+          uf:                 data.estado                 || '',
           cor:                data.cor                || '',
         };
-        if (data.uf) this.loadMunicipios(data.uf);
+        if (this.form.uf) this.loadMunicipios(this.form.uf);
         this.loading = false;
       },
       error: () => {
@@ -153,8 +148,23 @@ export class ClientesEditPage implements OnInit {
   save() {
     if (!this.form.nome?.trim()) { this.notify.warning('O nome é obrigatório.'); return; }
     this.saving = true;
-    const payload = { ...this.form };
-    if (!payload.dataNascimento) delete payload.dataNascimento;
+    const payload: any = {
+      tipoPessoa: this.form.tipoPessoa === 'PJ' ? 'J' : 'F',
+      nome: this.form.nome,
+      razao: this.form.razaoSocial,
+      documento: this.form.tipoPessoa === 'PJ' ? this.form.cnpj : this.form.cpf,
+      telefone: this.form.telefone,
+      email: this.form.email,
+      cep: this.form.cep,
+      endereco: this.form.logradouro,
+      numero: this.form.numero,
+      complemento: this.form.complemento,
+      bairro: this.form.bairro,
+      cidade: this.form.municipio,
+      estado: this.form.uf,
+      cor: this.form.cor
+    };
+    if (this.form.dataNascimento) payload.dataNascimento = this.form.dataNascimento;
 
     const req$ = this.id ? this.svc.update(this.id, payload) : this.svc.create(payload);
     req$.subscribe({
