@@ -92,10 +92,11 @@ export class ClientesEditPage implements OnInit {
           complemento:        data.complemento        || '',
           bairro:             data.bairro             || '',
           municipio:          data.cidade          || '',
-          uf:                 data.estado                 || '',
-          pais:               data.pais               || '',
+          uf:                 data.estado             || '',
+          pais:               data.pais               || 'Brasil',
           cor:                data.cor                || '',
         };
+        // Carrega municípios se tiver UF, mas sem chamar onUfChange que limparia a cidade
         if (this.form.uf) this.loadMunicipios(this.form.uf);
         this.loading = false;
       },

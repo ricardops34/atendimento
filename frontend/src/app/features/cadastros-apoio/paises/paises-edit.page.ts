@@ -86,7 +86,7 @@ export class PaisesEditPage implements OnInit {
           this.id ? 'País atualizado com sucesso.' : 'País criado com sucesso.'
         );
         this.saving = false;
-        this.router.navigate(['/paises']);
+        this.router.navigate(['/configuracoes/paises']);
       },
       error: (err: any) => {
         const msg = err?.error?.message || 'Erro ao salvar o país.';
@@ -97,6 +97,6 @@ export class PaisesEditPage implements OnInit {
   }
 
   cancel() {
-    this.router.navigate(['/paises']);
+    this.router.navigate(['/configuracoes/paises']);
   }
 }

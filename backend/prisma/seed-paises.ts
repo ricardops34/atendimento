@@ -7,7 +7,7 @@ async function main() {
   try {
     const paisesRes = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/paises');
     if (paisesRes.ok) {
-      const paises = await paisesRes.json();
+      const paises = await paisesRes.json() as any[];
       console.log(`Loaded ${paises.length} paises from IBGE API. Saving...`);
       let count = 0;
       for (const pais of paises) {

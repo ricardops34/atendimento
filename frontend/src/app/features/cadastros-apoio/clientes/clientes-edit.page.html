@@ -109,7 +109,8 @@
     </po-input>
     <po-combo class="po-md-3" p-label="UF" name="uf"
       [p-options]="estadoOptions"
-      [ngModel]="form.uf" (ngModelChange)="form.uf = $event; onUfChange($event)">
+      [ngModel]="form.uf" (ngModelChange)="form.uf = $event"
+      (p-change)="onUfChange($event)">
     </po-combo>
     <po-combo class="po-md-5" p-label="Município" name="municipio"
       [p-options]="municipioOptions"

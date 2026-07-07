@@ -28,9 +28,29 @@ export const routes: Routes = [
     loadComponent: () => import('./features/cadastros-apoio/profissionais/profissionais.page').then((m) => m.ProfissionaisPage),
   },
   {
+    path: 'profissionais/novo',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/cadastros-apoio/profissionais/profissionais-edit.page').then((m) => m.ProfissionaisEditPage),
+  },
+  {
+    path: 'profissionais/:id/editar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/cadastros-apoio/profissionais/profissionais-edit.page').then((m) => m.ProfissionaisEditPage),
+  },
+  {
     path: 'contratos',
     canActivate: [authGuard],
     loadComponent: () => import('./features/cadastros-apoio/contratos/contratos.page').then((m) => m.ContratosPage),
+  },
+  {
+    path: 'contratos/novo',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/cadastros-apoio/contratos/contratos-edit.page').then((m) => m.ContratosEditPage),
+  },
+  {
+    path: 'contratos/:id/editar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/cadastros-apoio/contratos/contratos-edit.page').then((m) => m.ContratosEditPage),
   },
   {
     path: 'feriados',
@@ -38,17 +58,27 @@ export const routes: Routes = [
     loadComponent: () => import('./features/cadastros-apoio/feriados/feriados.page').then((m) => m.FeriadosPage),
   },
   {
-    path: 'paises',
+    path: 'feriados/novo',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/cadastros-apoio/feriados/feriados-edit.page').then((m) => m.FeriadosEditPage),
+  },
+  {
+    path: 'feriados/:id/editar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/cadastros-apoio/feriados/feriados-edit.page').then((m) => m.FeriadosEditPage),
+  },
+  {
+    path: 'configuracoes/paises',
     canActivate: [authGuard],
     loadComponent: () => import('./features/cadastros-apoio/paises/paises.page').then((m) => m.PaisesPage),
   },
   {
-    path: 'paises/novo',
+    path: 'configuracoes/paises/novo',
     canActivate: [authGuard],
     loadComponent: () => import('./features/cadastros-apoio/paises/paises-edit.page').then((m) => m.PaisesEditPage),
   },
   {
-    path: 'paises/:id/editar',
+    path: 'configuracoes/paises/:id/editar',
     canActivate: [authGuard],
     loadComponent: () => import('./features/cadastros-apoio/paises/paises-edit.page').then((m) => m.PaisesEditPage),
   },

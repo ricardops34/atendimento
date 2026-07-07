@@ -46,6 +46,7 @@ async function main() {
     { moduleKey: 'settings', name: 'Estados', key: 'settings-estados', path: '/configuracoes/estados', icon: 'an an-map-trifold', shortLabel: 'UF', sortOrder: 67 },
     { moduleKey: 'settings', name: 'Municípios', key: 'settings-municipios', path: '/configuracoes/municipios', icon: 'an an-map-pin', shortLabel: 'MUN', sortOrder: 68 },
     { moduleKey: 'settings', name: 'CEPs', key: 'settings-ceps', path: '/configuracoes/ceps', icon: 'an an-mailbox', shortLabel: 'CEP', sortOrder: 69 },
+    { moduleKey: 'settings', name: 'Países', key: 'settings-paises', path: '/configuracoes/paises', icon: 'an an-globe', shortLabel: 'PAI', sortOrder: 70 },
   ];
 
   for (const routine of defaultRoutines) {
@@ -121,6 +122,7 @@ async function main() {
   const settingsEstadosRoutine = allRoutines.find((item) => item.key === 'settings-estados');
   const settingsMunicipiosRoutine = allRoutines.find((item) => item.key === 'settings-municipios');
   const settingsCepsRoutine = allRoutines.find((item) => item.key === 'settings-ceps');
+  const settingsPaisesRoutine = allRoutines.find((item) => item.key === 'settings-paises');
 
   await ensureMenu('/', {
     label: 'Inicio',
@@ -219,6 +221,7 @@ async function main() {
     settingsEstadosRoutine,
     settingsMunicipiosRoutine,
     settingsCepsRoutine,
+    settingsPaisesRoutine,
   ]) {
     if (!routine) {
       continue;

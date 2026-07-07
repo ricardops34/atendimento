@@ -27,8 +27,8 @@ export class PaisesPage {
   ];
 
   readonly actions = {
-    new: '/paises/novo',
-    edit: '/paises/:id/editar',
+    new: '/configuracoes/paises/novo',
+    edit: '/configuracoes/paises/:id/editar',
     remove: true,
   };
 }
