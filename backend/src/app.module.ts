@@ -21,6 +21,7 @@ import { EstadosModule } from './estados/estados.module';
 import { MunicipiosModule } from './municipios/municipios.module';
 import { CepsModule } from './ceps/ceps.module';
 import { LocalidadesModule } from './localidades/localidades.module';
+import { PaisesModule } from './paises/paises.module';
 
 @Module({
   imports: [
@@ -41,7 +42,8 @@ import { LocalidadesModule } from './localidades/localidades.module';
     EstadosModule,
     MunicipiosModule,
     CepsModule,
-    LocalidadesModule
+    LocalidadesModule,
+    PaisesModule
   ],
   controllers: [AppController],
   providers: [

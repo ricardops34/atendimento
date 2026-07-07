@@ -1,0 +1,20 @@
+<po-page-edit [p-title]="title" (p-save)="save()" (p-cancel)="cancel()">
+  <po-loading-overlay *ngIf="loading || saving" p-text="Carregando..."></po-loading-overlay>
+
+  <div class="po-row">
+    <po-number class="po-md-2" p-label="Código IBGE/Bacen *" name="id"
+      [p-disabled]="id !== null ? 'true' : 'false'"
+      [ngModel]="form.id" (ngModelChange)="form.id = $event">
+    </po-number>
+
+    <po-input class="po-md-8" p-label="Nome do País *" name="nome"
+      [p-maxlength]="255"
+      [ngModel]="form.nome" (ngModelChange)="form.nome = $event">
+    </po-input>
+
+    <po-input class="po-md-2" p-label="Sigla *" name="sigla"
+      [p-maxlength]="2"
+      [ngModel]="form.sigla" (ngModelChange)="form.sigla = $event">
+    </po-input>
+  </div>
+</po-page-edit>

@@ -13,6 +13,7 @@ import {
 } from '@po-ui/ng-components';
 import { ClienteService } from '../../../core/services/cliente.service';
 import { LocalidadeService } from '../../../core/services/localidade.service';
+import { PaisService } from '../../../core/services/pais.service';
 
 @Component({
   selector: 'app-clientes-edit-page',
@@ -33,6 +34,7 @@ export class ClientesEditPage implements OnInit {
   private router   = inject(Router);
   private svc      = inject(ClienteService);
   private localSvc = inject(LocalidadeService);
+  private paisSvc  = inject(PaisService);
   private notify   = inject(PoNotificationService);
 
   id: number | null = null;
@@ -47,6 +49,7 @@ export class ClientesEditPage implements OnInit {
 
   estadoOptions: PoComboOption[] = [];
   municipioOptions: PoComboOption[] = [];
+  paisOptions: PoComboOption[] = [];
 
   form: any = {
     tipoPessoa: 'PJ',
@@ -62,6 +65,7 @@ export class ClientesEditPage implements OnInit {
 
   ngOnInit() {
     this.loadEstados();
+    this.loadPaises();
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.id = Number(idParam);
@@ -89,6 +93,7 @@ export class ClientesEditPage implements OnInit {
           bairro:             data.bairro             || '',
           municipio:          data.cidade          || '',
           uf:                 data.estado                 || '',
+          pais:               data.pais               || '',
           cor:                data.cor                || '',
         };
         if (this.form.uf) this.loadMunicipios(this.form.uf);
@@ -124,6 +129,14 @@ export class ClientesEditPage implements OnInit {
     });
   }
 
+  loadPaises() {
+    this.paisSvc.search(1, 9999).subscribe({
+      next: (res: any) => {
+        this.paisOptions = res.items.map((p: any) => ({ label: `${p.nome} (${p.sigla})`, value: p.nome }));
+      }
+    });
+  }
+
   buscarCep() {
     const cep = this.form.cep?.replace(/\D/g, '');
     if (!cep || cep.length !== 8) { this.notify.warning('Informe um CEP com 8 dígitos.'); return; }
@@ -150,20 +163,23 @@ export class ClientesEditPage implements OnInit {
     this.saving = true;
     const payload: any = {
       tipoPessoa: this.form.tipoPessoa === 'PJ' ? 'J' : 'F',
-      nome: this.form.nome,
-      razao: this.form.razaoSocial,
-      documento: this.form.tipoPessoa === 'PJ' ? this.form.cnpj : this.form.cpf,
-      telefone: this.form.telefone,
-      email: this.form.email,
-      cep: this.form.cep,
-      endereco: this.form.logradouro,
-      numero: this.form.numero,
-      complemento: this.form.complemento,
-      bairro: this.form.bairro,
-      cidade: this.form.municipio,
-      estado: this.form.uf,
-      cor: this.form.cor
+      nome: this.form.nome
     };
+
+    if (this.form.razaoSocial) payload.razao = this.form.razaoSocial;
+    if (this.form.tipoPessoa === 'PJ' && this.form.cnpj) payload.documento = this.form.cnpj;
+    if (this.form.tipoPessoa === 'PF' && this.form.cpf) payload.documento = this.form.cpf;
+    if (this.form.telefone) payload.telefone = this.form.telefone;
+    if (this.form.email) payload.email = this.form.email;
+    if (this.form.cep) payload.cep = this.form.cep;
+    if (this.form.logradouro) payload.endereco = this.form.logradouro;
+    if (this.form.numero) payload.numero = this.form.numero;
+    if (this.form.complemento) payload.complemento = this.form.complemento;
+    if (this.form.bairro) payload.bairro = this.form.bairro;
+    if (this.form.municipio) payload.cidade = this.form.municipio;
+    if (this.form.uf) payload.estado = this.form.uf;
+    if (this.form.pais) payload.pais = this.form.pais;
+    if (this.form.cor) payload.cor = this.form.cor;
     if (this.form.dataNascimento) payload.dataNascimento = this.form.dataNascimento;
 
     const req$ = this.id ? this.svc.update(this.id, payload) : this.svc.create(payload);

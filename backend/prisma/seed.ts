@@ -411,6 +411,33 @@ async function main() {
     console.error('Error fetching IBGE data:', error);
   }
 
+  // 7. IBGE Data (Paises)
+  console.log('Fetching IBGE data for Paises...');
+  try {
+    const paisesRes = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/paises');
+    if (paisesRes.ok) {
+      const paises = await paisesRes.json();
+      console.log(`Loaded ${paises.length} paises from IBGE API. Saving...`);
+      for (const pais of paises) {
+        const id = pais.id?.M49;
+        const sigla = pais.id?.['ISO-ALPHA-2'];
+        const nome = pais.nome;
+        
+        if (id && sigla) {
+          await prisma.pais.upsert({
+            where: { id: id },
+            update: { nome: nome, sigla: sigla },
+            create: { id: id, nome: nome, sigla: sigla },
+          });
+        }
+      }
+    } else {
+      console.warn('Failed to fetch Paises from IBGE');
+    }
+  } catch (error) {
+    console.error('Error fetching IBGE data for Paises:', error);
+  }
+
   console.log('Seed completed successfully!');
 }
 

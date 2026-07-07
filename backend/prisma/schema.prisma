@@ -164,6 +164,7 @@ model Cliente {
   endereco       String?    @db.VarChar(500)
   cidade         String?    @db.VarChar(255)
   estado         String?    @db.VarChar(2)
+  pais           String?    @db.VarChar(50)
   contratos      Contrato[]
 
   @@map("cliente")
@@ -337,4 +338,12 @@ model Cep {
   estado      Estado    @relation(fields: [estadoId], references: [id], onDelete: Restrict)
 
   @@map("cep")
+}
+
+model Pais {
+  id    Int    @id
+  nome  String @db.VarChar(255)
+  sigla String @unique @db.VarChar(2)
+
+  @@map("pais")
 }

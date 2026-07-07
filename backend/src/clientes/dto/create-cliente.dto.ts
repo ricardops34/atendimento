@@ -60,4 +60,8 @@ export class CreateClienteDto {
   @IsOptional()
   @IsEmail({}, { message: 'Informe um email válido.' })
   email?: string;
+
+  @IsOptional()
+  @IsString()
+  pais?: string;
 }

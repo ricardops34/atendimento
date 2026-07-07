@@ -69,3 +69,10 @@ Para todas as telas de listagem de cadastros, é **OBRIGATÓRIO** utilizar o com
 1. Não utilize `<po-modal>` para formulários de criação/edição.
 2. Utilize páginas de edição dedicadas com rotas próprias (ex: `/clientes/novo` e `/clientes/:id/editar`).
 3. O componente de tabela dinâmica (`PoPageDynamicTable`) já gera automaticamente o botão padrão "Novo" e as ações de linha, delegando as requisições de listagem, deleção e navegação para a rota fornecida.
+
+## Verificação Obrigatória Full-Stack (Frontend + Backend)
+
+Sempre que fizer alterações, ajustes ou criar novos cadastros/listagens no frontend (ex: migração para `PoPageDynamicTable`), é **OBRIGATÓRIO** realizar o check de ponta a ponta:
+1. **Verificar os Controllers e Services correspondentes na API (Backend).**
+2. **Garantir o Formato de Resposta do PO UI:** Listagens dinâmicas exigem o envelopamento do array. O endpoint `GET` padrão (e o `/search`) deve retornar obrigatoriamente um objeto contendo a propriedade `items` (e idealmente paginação: `hasNext`, `page`, `pageSize`, `total`), e NUNCA um array simples.
+3. Se um endpoint de listagem retornar um array direto, ajuste o Controller para delegar a resposta para o formato paginado (geralmente invocando o método `search` do service).

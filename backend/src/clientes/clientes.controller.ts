@@ -13,8 +13,8 @@ export class ClientesController {
   }
 
   @Get()
-  findAll(@Request() req: any) {
-    return this.clientesService.findAll(req.tenantId as number);
+  findAll(@Query() query: Record<string, string | undefined>, @Request() req: any) {
+    return this.clientesService.search(query, req.tenantId as number);
   }
 
   @Get('search')

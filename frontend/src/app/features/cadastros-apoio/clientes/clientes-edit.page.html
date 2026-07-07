@@ -117,9 +117,9 @@
     </po-combo>
   </div>
   <div class="po-row">
-    <po-input class="po-md-4" p-label="País" name="pais"
-      [p-maxlength]="50"
+    <po-combo class="po-md-4" p-label="País" name="pais"
+      [p-options]="paisOptions"
       [ngModel]="form.pais" (ngModelChange)="form.pais = $event">
-    </po-input>
+    </po-combo>
   </div>
 </po-page-edit>

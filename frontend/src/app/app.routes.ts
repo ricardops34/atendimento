@@ -38,6 +38,21 @@ export const routes: Routes = [
     loadComponent: () => import('./features/cadastros-apoio/feriados/feriados.page').then((m) => m.FeriadosPage),
   },
   {
+    path: 'paises',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/cadastros-apoio/paises/paises.page').then((m) => m.PaisesPage),
+  },
+  {
+    path: 'paises/novo',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/cadastros-apoio/paises/paises-edit.page').then((m) => m.PaisesEditPage),
+  },
+  {
+    path: 'paises/:id/editar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/cadastros-apoio/paises/paises-edit.page').then((m) => m.PaisesEditPage),
+  },
+  {
     path: 'configuracoes',
     canActivate: [authGuard],
     loadComponent: () => import('./features/configuracoes/configuracoes.page').then((m) => m.ConfiguracoesPage),
