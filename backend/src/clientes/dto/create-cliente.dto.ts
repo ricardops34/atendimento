@@ -1,4 +1,4 @@
-import { IsHexColor, IsNotEmpty, IsOptional, IsString, MaxLength, IsEmail } from 'class-validator';
+import { IsHexColor, IsNotEmpty, IsOptional, IsString, MaxLength, IsEmail, IsNumber } from 'class-validator';
 
 export class CreateClienteDto {
   @IsNotEmpty({ message: 'O nome do cliente é obrigatório.' })
@@ -18,13 +18,12 @@ export class CreateClienteDto {
   endereco?: string;
 
   @IsOptional()
-  @IsString()
-  cidade?: string;
+  @IsNumber()
+  municipioId?: number;
 
   @IsOptional()
-  @IsString()
-  @MaxLength(2)
-  estado?: string;
+  @IsNumber()
+  estadoId?: number;
 
   @IsOptional()
   @IsString()
@@ -62,6 +61,6 @@ export class CreateClienteDto {
   email?: string;
 
   @IsOptional()
-  @IsString()
-  pais?: string;
+  @IsNumber()
+  paisId?: number;
 }

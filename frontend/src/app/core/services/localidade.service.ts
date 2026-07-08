@@ -23,8 +23,13 @@ export class LocalidadeService {
     return this.http.get<any[]>(`${this.apiUrl}/estados`);
   }
 
-  findMunicipios(siglaUf: string, search?: string): Observable<{ id: number; nome: string }[]> {
-    const params: any = { sigla: siglaUf };
+  findMunicipios(ufOuEstadoId: number | string, search?: string): Observable<{ id: number; nome: string }[]> {
+    const params: any = {};
+    if (typeof ufOuEstadoId === 'number') {
+      params['estadoId'] = ufOuEstadoId.toString();
+    } else {
+      params['sigla'] = ufOuEstadoId;
+    }
     if (search) params['search'] = search;
     return this.http.get<any[]>(`${this.apiUrl}/municipios`, { params });
   }

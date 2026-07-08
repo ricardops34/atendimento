@@ -28,3 +28,8 @@ O projeto utiliza a **versão 21+** do PO UI (`@po-ui/ng-components`). Nesta ver
 - Módulos base de página, como `PoPageModule` (que atende `<po-page-edit>`, `<po-page-default>`, etc.), ficam em `@po-ui/ng-components`. NÃO importe de `@po-ui/ng-templates`.
 - Componentes de tabela dinâmica, como `PoPageDynamicTableModule`, ficam em `@po-ui/ng-templates`.
 Sempre valide a documentação da v21 para os imports corretos, evitando quebrar o processo de build da aplicação.
+
+## Ambiente de Produção
+
+**ESTAMOS EM AMBIENTE DE PRODUÇÃO!**
+Regra Estrita: Ao adicionar novas funcionalidades ou colunas (como novos relacionamentos ou campos de IDs), NUNCA apague ou sobrescreva as colunas legadas existentes no `schema.prisma`. Sempre mantenha os campos antigos (ex: `cidade`, `estado`, `pais`) em paralelo aos campos novos (`municipioId`, `estadoId`, `paisId`) para não causar perda de dados de clientes antigos.

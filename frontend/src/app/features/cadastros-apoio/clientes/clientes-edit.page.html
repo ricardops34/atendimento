@@ -107,20 +107,20 @@
       [p-maxlength]="100"
       [ngModel]="form.bairro" (ngModelChange)="form.bairro = $event">
     </po-input>
-    <po-combo class="po-md-3" p-label="UF" name="uf"
+    <po-combo class="po-md-3" p-label="UF" name="estadoId"
       [p-options]="estadoOptions"
-      [ngModel]="form.uf" (ngModelChange)="form.uf = $event"
+      [ngModel]="form.estadoId" (ngModelChange)="form.estadoId = $event"
       (p-change)="onUfChange($event)">
     </po-combo>
-    <po-combo class="po-md-5" p-label="Município" name="municipio"
+    <po-combo class="po-md-5" p-label="Município" name="municipioId"
       [p-options]="municipioOptions"
-      [ngModel]="form.municipio" (ngModelChange)="form.municipio = $event">
+      [ngModel]="form.municipioId" (ngModelChange)="form.municipioId = $event">
     </po-combo>
   </div>
   <div class="po-row">
-    <po-combo class="po-md-4" p-label="País" name="pais"
+    <po-combo class="po-md-4" p-label="País" name="paisId"
       [p-options]="paisOptions"
-      [ngModel]="form.pais" (ngModelChange)="form.pais = $event">
+      [ngModel]="form.paisId" (ngModelChange)="form.paisId = $event">
     </po-combo>
   </div>
 </po-page-edit>

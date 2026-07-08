@@ -164,7 +164,13 @@ model Cliente {
   endereco       String?    @db.VarChar(500)
   cidade         String?    @db.VarChar(255)
   estado         String?    @db.VarChar(2)
-  pais           String?    @db.VarChar(50)
+  pais           String?    @db.VarChar(255)
+  municipioId    Int?       @map("municipio_id")
+  municipio      Municipio? @relation(fields: [municipioId], references: [id], onDelete: SetNull)
+  estadoId       Int?       @map("estado_id")
+  estadoRel      Estado?    @relation(fields: [estadoId], references: [id], onDelete: SetNull)
+  paisId         Int?       @map("pais_id")
+  paisRel        Pais?      @relation(fields: [paisId], references: [id], onDelete: SetNull)
   contratos      Contrato[]
 
   @@map("cliente")
@@ -313,6 +319,7 @@ model Estado {
 
   municipios Municipio[]
   ceps       Cep[]
+  clientes   Cliente[]
 
   @@map("estado")
 }
@@ -323,7 +330,8 @@ model Municipio {
   estado   Estado @relation(fields: [estadoId], references: [id], onDelete: Restrict)
   nome     String @db.VarChar(255)
 
-  ceps Cep[]
+  ceps     Cep[]
+  clientes Cliente[]
 
   @@map("municipio")
 }
@@ -344,6 +352,8 @@ model Pais {
   id    Int    @id
   nome  String @db.VarChar(255)
   sigla String @unique @db.VarChar(2)
+
+  clientes Cliente[]
 
   @@map("pais")
 }

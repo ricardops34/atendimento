@@ -26,7 +26,11 @@ export class ClientesService {
   }
 
   findAll(empresaId: number) {
-    return this.prisma.cliente.findMany({ where: { empresaId }, orderBy: { nome: 'asc' } });
+    return this.prisma.cliente.findMany({ 
+      where: { empresaId }, 
+      orderBy: { nome: 'asc' },
+      include: { municipio: true, estadoRel: true, paisRel: true }
+    });
   }
 
   async search(query: ClienteSearchQuery, empresaId: number) {
@@ -39,16 +43,27 @@ export class ClientesService {
       orderBy: this.buildOrderBy(query.sortProperty, query.sortDirection),
       skip: (page - 1) * pageSize,
       take: pageSize,
+      include: { municipio: true, estadoRel: true, paisRel: true }
     });
 
-    return { items, page, pageSize, total, hasNext: page * pageSize < total };
+    const mappedItems = items.map(i => ({
+      ...i,
+      cidade: i.municipio?.nome || i.cidade || '',
+      estadoSigla: i.estadoRel?.sigla || i.estado || '',
+      paisNome: i.paisRel?.nome || i.pais || ''
+    }));
+
+    return { items: mappedItems, page, pageSize, total, hasNext: page * pageSize < total };
   }
 
   async findOne(id: number, empresaId?: number) {
     const where: any = { id };
     if (empresaId) where.empresaId = empresaId;
 
-    const cliente = await this.prisma.cliente.findFirst({ where });
+    const cliente = await this.prisma.cliente.findFirst({ 
+      where,
+      include: { municipio: true, estadoRel: true, paisRel: true }
+    });
     if (!cliente) throw new NotFoundException('Cliente não encontrado.');
     return cliente;
   }

@@ -56,7 +56,7 @@ export class ClientesEditPage implements OnInit {
     nome: '', razaoSocial: '', cnpj: '', inscricaoEstadual: '', inscricaoMunicipal: '',
     cpf: '', rg: '', dataNascimento: '',
     telefone: '', celular: '', email: '',
-    cep: '', logradouro: '', numero: '', complemento: '', bairro: '', municipio: '', uf: '', pais: 'Brasil',
+    cep: '', logradouro: '', numero: '', complemento: '', bairro: '', municipioId: null, estadoId: null, paisId: null,
     cor: '',
   };
 
@@ -77,6 +77,10 @@ export class ClientesEditPage implements OnInit {
     this.loading = true;
     this.svc.findOne(this.id!).subscribe({
       next: (data: any) => {
+        // Guarda valores que dependem de options async
+        const initialMunicipio = data.cidade?.trim() || '';
+        const initialPais = data.pais?.trim() || 'Brasil';
+
         this.form = {
           tipoPessoa:         data.tipoPessoa === 'J' ? 'PJ' : 'PF',
           nome:               data.nome               || '',
@@ -91,13 +95,16 @@ export class ClientesEditPage implements OnInit {
           numero:             data.numero             || '',
           complemento:        data.complemento        || '',
           bairro:             data.bairro             || '',
-          municipio:          data.cidade          || '',
-          uf:                 data.estado             || '',
-          pais:               data.pais               || 'Brasil',
+          municipioId:        data.municipioId        || null,
+          estadoId:           data.estadoId           || null,
+          paisId:             data.paisId             || null,
           cor:                data.cor                || '',
         };
-        // Carrega municípios se tiver UF, mas sem chamar onUfChange que limparia a cidade
-        if (this.form.uf) this.loadMunicipios(this.form.uf);
+
+        if (this.form.estadoId) {
+          this.loadMunicipios(this.form.estadoId);
+        }
+
         this.loading = false;
       },
       error: () => {
@@ -111,21 +118,21 @@ export class ClientesEditPage implements OnInit {
   loadEstados() {
     this.localSvc.findEstados().subscribe({
       next: (list: any[]) => {
-        this.estadoOptions = list.map((e) => ({ label: `${e.nome} (${e.sigla})`, value: e.sigla }));
+        this.estadoOptions = list.map((e) => ({ label: `${e.nome} (${e.sigla})`, value: e.id, sigla: e.sigla }));
       },
     });
   }
 
-  onUfChange(uf: string) {
-    this.form.municipio = '';
+  onUfChange(estadoId: number) {
+    this.form.municipioId = null;
     this.municipioOptions = [];
-    if (uf) this.loadMunicipios(uf);
+    if (estadoId) this.loadMunicipios(estadoId);
   }
 
-  loadMunicipios(sigla: string) {
-    this.localSvc.findMunicipios(sigla).subscribe({
+  loadMunicipios(estadoId: number) {
+    this.localSvc.findMunicipios(estadoId).subscribe({
       next: (list: any[]) => {
-        this.municipioOptions = list.map((m) => ({ label: m.nome, value: m.nome }));
+        this.municipioOptions = list.map((m) => ({ label: m.nome, value: m.id }));
       },
     });
   }
@@ -133,7 +140,15 @@ export class ClientesEditPage implements OnInit {
   loadPaises() {
     this.paisSvc.search(1, 9999).subscribe({
       next: (res: any) => {
-        this.paisOptions = res.items.map((p: any) => ({ label: `${p.nome} (${p.sigla})`, value: p.nome }));
+        this.paisOptions = res.items.map((p: any) => ({ label: `${p.nome} (${p.sigla})`, value: p.id }));
+        if (!this.id && !this.form.paisId) {
+          const brasil = this.paisOptions.find(p => p.label?.includes('Brasil'));
+          if (brasil) {
+            setTimeout(() => {
+              this.form.paisId = brasil.value;
+            }, 50);
+          }
+        }
       }
     });
   }
@@ -148,9 +163,21 @@ export class ClientesEditPage implements OnInit {
         else {
           this.form.logradouro = res.logradouro || '';
           this.form.bairro     = res.bairro     || '';
-          this.form.municipio  = res.localidade || '';
-          this.form.uf         = res.uf         || '';
-          if (res.uf) this.loadMunicipios(res.uf);
+          
+          if (res.uf) {
+            const estadoObj = this.estadoOptions.find(e => (e as any).sigla === res.uf);
+            if (estadoObj) {
+              this.form.estadoId = estadoObj.value;
+              this.localSvc.findMunicipios(estadoObj.value).subscribe(list => {
+                this.municipioOptions = list.map((m) => ({ label: m.nome, value: m.id }));
+                const normalize = (str: string) => str ? str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : '';
+                const munMatch = list.find(m => normalize(m.nome) === normalize(res.localidade));
+                if (munMatch) {
+                  this.form.municipioId = munMatch.id;
+                }
+              });
+            }
+          }
           this.notify.success('Endereço preenchido pelo CEP.');
         }
         this.buscandoCep = false;
@@ -177,9 +204,9 @@ export class ClientesEditPage implements OnInit {
     if (this.form.numero) payload.numero = this.form.numero;
     if (this.form.complemento) payload.complemento = this.form.complemento;
     if (this.form.bairro) payload.bairro = this.form.bairro;
-    if (this.form.municipio) payload.cidade = this.form.municipio;
-    if (this.form.uf) payload.estado = this.form.uf;
-    if (this.form.pais) payload.pais = this.form.pais;
+    if (this.form.municipioId) payload.municipioId = this.form.municipioId;
+    if (this.form.estadoId) payload.estadoId = this.form.estadoId;
+    if (this.form.paisId) payload.paisId = this.form.paisId;
     if (this.form.cor) payload.cor = this.form.cor;
     if (this.form.dataNascimento) payload.dataNascimento = this.form.dataNascimento;
 
