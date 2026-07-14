@@ -77,9 +77,7 @@ export class ClientesEditPage implements OnInit {
     this.loading = true;
     this.svc.findOne(this.id!).subscribe({
       next: (data: any) => {
-        // Guarda valores que dependem de options async
-        const initialMunicipio = data.cidade?.trim() || '';
-        const initialPais = data.pais?.trim() || 'Brasil';
+        const municipioId = data.municipioId || null;
 
         this.form = {
           tipoPessoa:         data.tipoPessoa === 'J' ? 'PJ' : 'PF',
@@ -95,14 +93,15 @@ export class ClientesEditPage implements OnInit {
           numero:             data.numero             || '',
           complemento:        data.complemento        || '',
           bairro:             data.bairro             || '',
-          municipioId:        data.municipioId        || null,
+          // municipioId só é atribuído após o po-combo ter as options carregadas (ver loadMunicipios)
+          municipioId:        null,
           estadoId:           data.estadoId           || null,
           paisId:             data.paisId             || null,
           cor:                data.cor                || '',
         };
 
         if (this.form.estadoId) {
-          this.loadMunicipios(this.form.estadoId);
+          this.loadMunicipios(this.form.estadoId, municipioId);
         }
 
         this.loading = false;
@@ -129,10 +128,15 @@ export class ClientesEditPage implements OnInit {
     if (estadoId) this.loadMunicipios(estadoId);
   }
 
-  loadMunicipios(estadoId: number) {
+  loadMunicipios(estadoId: number, selectedId?: number | null) {
     this.localSvc.findMunicipios(estadoId).subscribe({
       next: (list: any[]) => {
         this.municipioOptions = list.map((m) => ({ label: m.nome, value: m.id }));
+        if (selectedId) {
+          setTimeout(() => {
+            this.form.municipioId = selectedId;
+          }, 50);
+        }
       },
     });
   }
@@ -199,7 +203,7 @@ export class ClientesEditPage implements OnInit {
     if (this.form.tipoPessoa === 'PF' && this.form.cpf) payload.documento = this.form.cpf;
     if (this.form.telefone) payload.telefone = this.form.telefone;
     if (this.form.email) payload.email = this.form.email;
-    if (this.form.cep) payload.cep = this.form.cep;
+    if (this.form.cep) payload.cep = this.form.cep.replace(/\D/g, '');
     if (this.form.logradouro) payload.endereco = this.form.logradouro;
     if (this.form.numero) payload.numero = this.form.numero;
     if (this.form.complemento) payload.complemento = this.form.complemento;

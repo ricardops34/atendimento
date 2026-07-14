@@ -48,12 +48,25 @@ export class ClientesService {
 
     const mappedItems = items.map(i => ({
       ...i,
+      documento: this.formatDocumento(i.documento, i.tipoPessoa),
       cidade: i.municipio?.nome || i.cidade || '',
       estadoSigla: i.estadoRel?.sigla || i.estado || '',
       paisNome: i.paisRel?.nome || i.pais || ''
     }));
 
     return { items: mappedItems, page, pageSize, total, hasNext: page * pageSize < total };
+  }
+
+  private formatDocumento(documento?: string | null, tipoPessoa?: string): string {
+    if (!documento) return '';
+    const digits = documento.replace(/\D/g, '');
+    if (tipoPessoa === 'J' && digits.length === 14) {
+      return digits.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+    }
+    if (tipoPessoa === 'F' && digits.length === 11) {
+      return digits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    }
+    return documento;
   }
 
   async findOne(id: number, empresaId?: number) {

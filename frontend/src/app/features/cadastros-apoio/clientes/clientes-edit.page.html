@@ -26,7 +26,7 @@
   </div>
   <div class="po-row" *ngIf="isPJ">
     <po-input class="po-md-4" p-label="CNPJ" name="cnpj"
-      p-placeholder="00.000.000/0000-00" [p-maxlength]="18"
+      p-mask="99.999.999/9999-99" p-placeholder="00.000.000/0000-00"
       [ngModel]="form.cnpj" (ngModelChange)="form.cnpj = $event">
     </po-input>
     <po-input class="po-md-4" p-label="Inscrição Estadual" name="inscricaoEstadual"
@@ -50,7 +50,7 @@
   </div>
   <div class="po-row" *ngIf="!isPJ">
     <po-input class="po-md-4" p-label="CPF" name="cpf"
-      p-placeholder="000.000.000-00" [p-maxlength]="14"
+      p-mask="999.999.999-99" p-placeholder="000.000.000-00"
       [ngModel]="form.cpf" (ngModelChange)="form.cpf = $event">
     </po-input>
     <po-input class="po-md-4" p-label="RG" name="rg"
@@ -79,7 +79,7 @@
 
   <div class="po-row" style="align-items: flex-end;">
     <po-input class="po-md-3" p-label="CEP" name="cep"
-      p-placeholder="00000-000" [p-maxlength]="9"
+      p-mask="99999-999" p-placeholder="00000-000"
       [ngModel]="form.cep" (ngModelChange)="form.cep = $event">
     </po-input>
     <div class="po-md-2" style="padding-bottom: 8px;">

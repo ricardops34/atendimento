@@ -9,8 +9,9 @@ RUN npm install
 # Copia o restante do código fonte
 COPY . .
 
-# Executa o build de produção do Angular
-RUN npm run build
+# Executa o build do Angular (production por padrão; local test usa development)
+ARG BUILD_CONFIGURATION=production
+RUN npm run build -- --configuration=$BUILD_CONFIGURATION
 
 # Prepara a imagem do Nginx para servir a aplicação
 FROM nginx:alpine

@@ -24,3 +24,6 @@ Thumbs.db
 
 # Legacy project (kept locally, not versioned)
 /antigo/
+/postgres/
+docker-compose.local.yml
+publish.ps1
