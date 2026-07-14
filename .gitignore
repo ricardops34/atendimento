@@ -16,7 +16,11 @@ node_modules/
 # IDE logs and system files
 .DS_Store
 .idea/
+.reversa/
 .vscode/
 Thumbs.db
 .claude/worktrees/agent-af0aeed72e20cbc1e
 .publish.ps1
+
+# Legacy project (kept locally, not versioned)
+/antigo/
