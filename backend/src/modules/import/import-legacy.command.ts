@@ -44,17 +44,21 @@ async function bootstrap() {
     let adminProfile = await prisma.profile.findFirst({
       where: { name: 'Administrador' }
     });
+    const adminMenu = await prisma.menu.upsert({
+      where: { title: 'Menu do Administrador' },
+      update: { isActive: true },
+      create: { title: 'Menu do Administrador', isActive: true },
+    });
     if (!adminProfile) {
       adminProfile = await prisma.profile.create({
-        data: { name: 'Administrador' }
+        data: { name: 'Administrador', menuId: adminMenu.id }
       });
-      const allMenus = await prisma.menu.findMany();
-      for (const menu of allMenus) {
-        await prisma.profileMenu.create({
-          data: { profileId: adminProfile.id, menuId: menu.id, canRead: true, canWrite: true }
-        });
-      }
-      console.log('Created Admin profile with all menus.');
+      console.log('Created Admin profile.');
+    } else if (adminProfile.menuId !== adminMenu.id) {
+      adminProfile = await prisma.profile.update({
+        where: { id: adminProfile.id },
+        data: { menuId: adminMenu.id },
+      });
     }
 
     // 3. Fallback Admin User

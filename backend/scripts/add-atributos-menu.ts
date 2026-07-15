@@ -1,10 +1,5 @@
-// Script pontual: adiciona SÓ a rotina + item de menu "Atributos" (cadastros > Atributos).
-// Não mexe em módulos, outras rotinas/menus, nem em Estados/Municípios/Países.
-//
-// Como rodar (de dentro do container/pasta backend, com DATABASE_URL configurado):
-//   npx tsx scripts/add-atributos-menu.ts
-//
-// É seguro rodar mais de uma vez (idempotente).
+// Adiciona a rotina Atributos ao Menu do Administrador.
+// Seguro para execucao repetida.
 
 import { PrismaClient } from '@prisma/client';
 
@@ -12,14 +7,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   const cadastrosModule = await prisma.module.findUnique({ where: { key: 'cadastros' } });
-  if (!cadastrosModule) {
-    throw new Error('Módulo "cadastros" não encontrado. Rode o seed completo (prisma/seed.ts) antes deste script.');
-  }
-
-  const cadastrosHomeRoutine = await prisma.routine.findUnique({ where: { key: 'cadastros-home' } });
-  if (!cadastrosHomeRoutine) {
-    throw new Error('Rotina "cadastros-home" não encontrada. Rode o seed completo (prisma/seed.ts) antes deste script.');
-  }
+  if (!cadastrosModule) throw new Error('Modulo cadastros nao encontrado.');
 
   const attributesRoutine = await prisma.routine.upsert({
     where: { key: 'atributos-list' },
@@ -44,38 +32,26 @@ async function main() {
     },
   });
 
-  const cadastrosMenu = await prisma.menu.findFirst({ where: { routineId: cadastrosHomeRoutine.id } });
+  const adminMenu = await prisma.menu.findUnique({ where: { title: 'Menu do Administrador' } });
+  if (!adminMenu) throw new Error('Menu do Administrador nao encontrado.');
 
-  const menuData = {
-    moduleId: attributesRoutine.moduleId,
-    routineId: attributesRoutine.id,
-    parentId: cadastrosMenu?.id ?? null,
-    label: attributesRoutine.name,
-    shortLabel: attributesRoutine.shortLabel,
-    icon: attributesRoutine.icon,
-    link: attributesRoutine.path,
-    sortOrder: attributesRoutine.sortOrder,
-    isActive: true,
-  };
-
-  const existingMenu = await prisma.menu.findFirst({
-    where: { OR: [{ routineId: attributesRoutine.id }, { link: attributesRoutine.path }] },
+  const menuItem = await prisma.menuItem.upsert({
+    where: { menuId_routineId: { menuId: adminMenu.id, routineId: attributesRoutine.id } },
+    update: { sortOrder: attributesRoutine.sortOrder, isActive: true },
+    create: {
+      menuId: adminMenu.id,
+      routineId: attributesRoutine.id,
+      sortOrder: attributesRoutine.sortOrder,
+      isActive: true,
+    },
   });
 
-  if (existingMenu) {
-    await prisma.menu.update({ where: { id: existingMenu.id }, data: menuData });
-    console.log('Menu "Atributos" atualizado (id existente):', existingMenu.id);
-  } else {
-    const created = await prisma.menu.create({ data: menuData });
-    console.log('Menu "Atributos" criado:', created.id);
-  }
-
-  console.log('Concluído.');
+  console.log('Item de menu Atributos configurado:', menuItem.id);
 }
 
 main()
-  .catch((err) => {
-    console.error(err);
+  .catch((error) => {
+    console.error(error);
     process.exitCode = 1;
   })
   .finally(() => prisma.$disconnect());

@@ -83,7 +83,7 @@ export class App {
   public menus = signal<PoMenuItem[]>([]);
 
   private readonly menuCatalog: Record<string, PoMenuItem> = {
-    home: { label: 'Inicio', shortLabel: 'INI', icon: 'an an-house', link: '/' },
+    home: { label: 'Inicio', shortLabel: 'INI', icon: 'an an-house', link: '/dashboard' },
     companies: { label: 'Clientes', shortLabel: 'CLI', icon: 'an an-buildings', link: '/clientes' },
     professionals: { label: 'Profissionais', shortLabel: 'PRO', icon: 'an an-user', link: '/profissionais' },
     contracts: { label: 'Contratos', shortLabel: 'CON', icon: 'an an-file-text', link: '/contratos' },
@@ -142,13 +142,11 @@ export class App {
 
   buildMenus(allowedModules: string[], dynamicMenus: PoMenuItem[] = []): PoMenuItem[] {
     const normalizedDynamicMenus = this.cloneMenus(dynamicMenus);
-    const menus: PoMenuItem[] = [];
+    const menus: PoMenuItem[] = [{ ...this.menuCatalog['home'] }];
 
     if (normalizedDynamicMenus.length > 0) {
-      menus.push(...normalizedDynamicMenus);
+      menus.push(...normalizedDynamicMenus.filter((item) => item.link !== '/dashboard' && item.label !== 'Inicio'));
     } else {
-      menus.push({ ...this.menuCatalog['home'] });
-
       for (const moduleKey of allowedModules) {
         const menuItem = this.menuCatalog[moduleKey];
 
@@ -299,7 +297,7 @@ export class App {
 
     const path = url.split('?')[0].split('#')[0];
     const segments = path.split('/').filter(Boolean);
-    const items: PoBreadcrumbItem[] = [{ label: 'Inicio', link: '/agendamentos/lista' }];
+    const items: PoBreadcrumbItem[] = [{ label: 'Inicio', link: '/dashboard' }];
     let currentPath = '';
 
     for (const segment of segments) {

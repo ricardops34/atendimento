@@ -21,7 +21,7 @@ export class ContratosPage {
   readonly apiUrl = `${environment.apiUrl}/contratos/search`;
 
   readonly fields: Array<any> = [
-    { property: 'id', label: 'ID', isKey: true, width: '10%' },
+    { property: 'id', label: 'ID', key: true, width: '10%' },
     { property: 'descricao', label: 'Descrição' },
     { property: 'cliente.nome', label: 'Cliente' },
     { property: 'tipo', label: 'Tipo' },

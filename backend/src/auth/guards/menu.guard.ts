@@ -1,7 +1,7 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { REQUIRE_MENU_ROUTINE_KEY } from '../decorators/require-menu.decorator';
 import { PrismaService } from '../../prisma/prisma.service';
+import { REQUIRE_MENU_ROUTINE_KEY } from '../decorators/require-menu.decorator';
 
 @Injectable()
 export class MenuGuard implements CanActivate {
@@ -12,38 +12,25 @@ export class MenuGuard implements CanActivate {
       context.getHandler(),
       context.getClass(),
     ]);
+    if (!requiredRoutineKey) return true;
 
-    if (!requiredRoutineKey) {
-      return true; // Rota não exige menu específico
-    }
+    const user = context.switchToHttp().getRequest().user;
+    if (!user?.profileId) throw new ForbiddenException('Acesso negado: perfil nao identificado.');
 
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
-
-    if (!user || !user.profileId) {
-      throw new ForbiddenException('Acesso negado: Perfil não identificado.');
-    }
-
-    const menu = await this.prisma.menu.findFirst({
-      where: { routine: { key: requiredRoutineKey } },
-    });
-
-    if (!menu) {
-      throw new ForbiddenException(`Acesso negado: Menu para a rotina '${requiredRoutineKey}' não encontrado.`);
-    }
-
-    const profileMenu = await this.prisma.profileMenu.findFirst({
+    const menuItem = await this.prisma.menuItem.findFirst({
       where: {
-        profileId: user.profileId,
-        menuId: menu.id,
-        canRead: true,
+        isActive: true,
+        routine: { key: requiredRoutineKey, isActive: true },
+        menu: {
+          isActive: true,
+          profiles: { some: { id: user.profileId } },
+        },
       },
     });
 
-    if (!profileMenu) {
-      throw new ForbiddenException(`Acesso negado: Você não possui permissão para '${requiredRoutineKey}'.`);
+    if (!menuItem) {
+      throw new ForbiddenException(`Acesso negado: voce nao possui permissao para '${requiredRoutineKey}'.`);
     }
-
     return true;
   }
 }

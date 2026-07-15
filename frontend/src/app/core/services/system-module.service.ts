@@ -8,6 +8,7 @@ export interface SystemModuleSearchParams {
   search?: string;
   name?: string;
   key?: string;
+  sortOrder?: number;
   sortProperty?: string;
   sortDirection?: 'ascending' | 'descending';
 }

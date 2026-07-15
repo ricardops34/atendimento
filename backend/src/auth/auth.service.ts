@@ -31,9 +31,7 @@ export class AuthService {
       include: {
         profile: {
           include: {
-            profileMenus: {
-              include: { menu: { include: { module: true, routine: { include: { module: true } } } } },
-            },
+            menu: { include: { items: { include: { routine: { include: { module: true } } } } } },
           },
         },
         userEmpresas: {
@@ -104,17 +102,13 @@ export class AuthService {
       throw new UnauthorizedException('Usuário sem vínculo com empresa.');
     }
 
-    const grantedMenus = (user.profile?.profileMenus || []).filter((pm: any) => pm.canRead);
-
+    const menuItems = user.profile?.menu?.isActive
+      ? (user.profile.menu.items || []).filter((item: any) => item.isActive && item.routine?.isActive)
+      : [];
     const modules = Array.from(
-      new Set(
-        grantedMenus
-          .map((pm: any) => pm.menu?.module?.key || pm.menu?.routine?.module?.key)
-          .filter(Boolean),
-      ),
+      new Set(menuItems.map((item: any) => item.routine?.module?.key).filter(Boolean)),
     ) as string[];
-
-    const menus = await this.getMenusForProfile(grantedMenus.map((pm: any) => pm.menuId));
+    const menus = this.buildSessionMenus(menuItems);
 
     return {
       id: user.id,
@@ -148,9 +142,7 @@ export class AuthService {
         include: {
           profile: {
             include: {
-              profileMenus: {
-                include: { menu: { include: { module: true, routine: { include: { module: true } } } } },
-              },
+              menu: { include: { items: { include: { routine: { include: { module: true } } } } } },
             },
           },
           userEmpresas: {
@@ -174,9 +166,7 @@ export class AuthService {
       include: {
         profile: {
           include: {
-            profileMenus: {
-              include: { menu: { include: { module: true, routine: { include: { module: true } } } } },
-            },
+            menu: { include: { items: { include: { routine: { include: { module: true } } } } } },
           },
         },
         userEmpresas: {
@@ -232,57 +222,35 @@ export class AuthService {
     return null;
   }
 
-  private async getMenusForProfile(grantedMenuIds: number[]): Promise<SessionMenuItem[]> {
-    const allMenus = await this.prisma.menu.findMany({
-      where: { isActive: true },
-      include: { routine: true },
-      orderBy: [{ sortOrder: 'asc' }, { label: 'asc' }],
-    });
+  private buildSessionMenus(items: any[]): SessionMenuItem[] {
+    const byModule = new Map<number, { module: any; items: any[] }>();
 
-    const byId = new Map(allMenus.map((item: any) => [item.id, item]));
-    const visibleIds = new Set<number>();
-
-    for (const menuId of grantedMenuIds) {
-      let current = byId.get(menuId);
-      while (current) {
-        visibleIds.add(current.id);
-        current = current.parentId ? byId.get(current.parentId) : undefined;
-      }
+    for (const item of items.filter((entry) => entry.routine?.key !== 'dashboard-home')) {
+      const routine = item.routine;
+      if (!routine?.module) continue;
+      const entry = byModule.get(routine.moduleId) ?? { module: routine.module, items: [] };
+      entry.items.push(item);
+      byModule.set(routine.moduleId, entry);
     }
 
     // Itens sem módulo/rotina (ex: "Inicio") ficam sempre visíveis para quem tem sessão.
-    for (const item of allMenus) {
-      if (item.moduleId == null && item.routineId == null) {
-        visibleIds.add(item.id);
-      }
-    }
-
-    if (!visibleIds.size) {
-      return [];
-    }
-
-    const items = allMenus.filter((item: any) => visibleIds.has(item.id));
-    return this.buildMenuTree(items, null);
-  }
-
-  private buildMenuTree(items: any[], parentId: number | null): SessionMenuItem[] {
-    return items
-      .filter((item) => (item.parentId ?? null) === parentId)
-      .map((item) => {
-        const subItems = this.buildMenuTree(items, item.id);
-        const menuItem: SessionMenuItem = {
-          label: item.label,
-          shortLabel: item.shortLabel ?? item.routine?.shortLabel ?? undefined,
-          icon: item.icon ?? item.routine?.icon ?? undefined,
-          link: item.link ?? item.routine?.path ?? undefined,
-        };
-
-        if (subItems.length > 0) {
-          menuItem.link = undefined;
-          menuItem.subItems = subItems;
-        }
-
-        return menuItem;
-      });
+    return Array.from(byModule.values())
+      .sort((a, b) =>
+        ((a.module.sortOrder ?? 0) - (b.module.sortOrder ?? 0)) ||
+        a.module.name.localeCompare(b.module.name, 'pt-BR', { sensitivity: 'base' })
+      )
+      .map(({ module, items: moduleItems }) => ({
+        label: module.name,
+        shortLabel: module.name.substring(0, 3).toUpperCase(),
+        icon: moduleItems[0]?.routine?.icon ?? 'an an-folder',
+        subItems: moduleItems
+          .sort((a, b) => (a.sortOrder - b.sortOrder) || a.routine.name.localeCompare(b.routine.name))
+          .map((item) => ({
+            label: item.routine.name,
+            shortLabel: item.routine.shortLabel,
+            icon: item.routine.icon,
+            link: item.routine.path,
+          })),
+      }));
   }
 }

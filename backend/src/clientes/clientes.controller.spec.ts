@@ -27,6 +27,14 @@ describe('ClientesController', () => {
     expect(controller).toBeDefined();
   });
 
+  it('creates the client in the authenticated company', () => {
+    const dto = { nome: 'Cliente A' } as any;
+
+    controller.create(dto, { user: { empresaId: 1 } } as any);
+
+    expect(service.create).toHaveBeenCalledWith(dto, 1);
+  });
+
   it('delegates search query to service', () => {
     controller.search({ page: '1', pageSize: '20', search: 'acme' } as any, { user: { empresaId: 1 } } as any);
     expect(service.search).toHaveBeenCalledWith({ page: '1', pageSize: '20', search: 'acme' }, 1);

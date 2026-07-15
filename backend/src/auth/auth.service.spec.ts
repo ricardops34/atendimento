@@ -7,15 +7,12 @@ import { PrismaService } from '../prisma/prisma.service';
 
 describe('AuthService', () => {
   let service: AuthService;
-  let prisma: { user: { findFirst: jest.Mock }, menu: { findMany: jest.Mock } };
+  let prisma: { user: { findFirst: jest.Mock } };
 
   beforeEach(async () => {
     prisma = {
       user: {
         findFirst: jest.fn(),
-      },
-      menu: {
-        findMany: jest.fn(),
       },
     };
 
@@ -37,7 +34,7 @@ describe('AuthService', () => {
       password: await bcrypt.hash('admin123', 4),
       isActive: true,
       profileId: 1,
-      profile: { id: 1, name: 'Administrador', profileMenus: [] },
+      profile: { id: 1, name: 'Administrador', menu: { isActive: true, items: [] } },
       userEmpresas: [
         {
           empresaId: 1,
@@ -58,7 +55,7 @@ describe('AuthService', () => {
       password: await bcrypt.hash('admin123', 4),
       isActive: true,
       profileId: 1,
-      profile: { id: 1, name: 'Administrador', profileMenus: [] },
+      profile: { id: 1, name: 'Administrador', menu: { isActive: true, items: [] } },
       userEmpresas: [
         {
           empresaId: 1,
@@ -78,7 +75,7 @@ describe('AuthService', () => {
       email: 'admin@fallback.com',
       name: 'Admin',
       profileId: 1,
-      profile: { id: 1, name: 'Administrador', profileMenus: [] },
+      profile: { id: 1, name: 'Administrador', menu: { isActive: true, items: [] } },
       userEmpresas: [
         {
           empresaId: 1,
@@ -103,11 +100,6 @@ describe('AuthService', () => {
   });
 
   it('returns menu tree based on registered menus for selected empresa', async () => {
-    prisma.menu.findMany.mockResolvedValue([
-      { id: 10, parentId: null, label: 'Configuracoes', shortLabel: 'CFG', icon: 'an an-gear', link: null },
-      { id: 11, parentId: 10, label: 'Usuarios', shortLabel: 'USR', icon: 'an an-users-three', link: '/configuracoes/usuarios' },
-    ]);
-
     const result = await service.login({
       id: 1,
       email: 'admin@fallback.com',
@@ -116,7 +108,22 @@ describe('AuthService', () => {
       profile: {
         id: 1,
         name: 'Administrador',
-        profileMenus: [{ canRead: true, menuId: 11 }],
+        menu: {
+          isActive: true,
+          items: [{
+            sortOrder: 10,
+            isActive: true,
+            routine: {
+              name: 'Usuarios',
+              shortLabel: 'USR',
+              icon: 'an an-users-three',
+              path: '/configuracoes/usuarios',
+              isActive: true,
+              moduleId: 5,
+              module: { id: 5, key: 'configuracoes', name: 'Configuracoes' },
+            },
+          }],
+        },
       },
       userEmpresas: [
         {
@@ -127,12 +134,11 @@ describe('AuthService', () => {
       ],
     } as any, 1);
 
-    expect(prisma.menu.findMany).toHaveBeenCalled();
     expect(result?.user?.menus).toEqual([
       {
         label: 'Configuracoes',
-        shortLabel: 'CFG',
-        icon: 'an an-gear',
+        shortLabel: 'CON',
+        icon: 'an an-users-three',
         subItems: [
           {
             label: 'Usuarios',
@@ -148,5 +154,45 @@ describe('AuthService', () => {
     ]);
     expect(result?.user?.profile).toBe('Administrador');
     expect(result?.user?.profileId).toBe(1);
+  });
+
+  it('orders menu groups by module order before module name', async () => {
+    const menuItem = (module: any, routineName: string) => ({
+      sortOrder: 10,
+      isActive: true,
+      routine: {
+        name: routineName,
+        shortLabel: routineName.substring(0, 3).toUpperCase(),
+        icon: 'an an-folder',
+        path: `/${routineName.toLowerCase()}`,
+        isActive: true,
+        moduleId: module.id,
+        module,
+      },
+    });
+    const result = await service.login({
+      id: 1,
+      email: 'admin@fallback.com',
+      name: 'Admin',
+      profileId: 1,
+      profile: {
+        id: 1,
+        name: 'Administrador',
+        menu: {
+          isActive: true,
+          items: [
+            menuItem({ id: 1, key: 'basicos', name: 'Básicos', sortOrder: 20 }, 'Estados'),
+            menuItem({ id: 2, key: 'usuarios', name: 'Usuário', sortOrder: 10 }, 'Perfis'),
+          ],
+        },
+      },
+      userEmpresas: [{
+        empresaId: 1,
+        empresa: { id: 1, name: 'Default Empresa' },
+        isDefault: true,
+      }],
+    } as any, 1);
+
+    expect(result?.user?.menus.map((menu) => menu.label)).toEqual(['Usuário', 'Básicos']);
   });
 });

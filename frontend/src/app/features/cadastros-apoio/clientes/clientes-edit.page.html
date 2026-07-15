@@ -9,10 +9,11 @@
           [p-options]="tipoPessoaOptions"
           [ngModel]="form.tipoPessoa" (ngModelChange)="form.tipoPessoa = $event">
         </po-combo>
-        <po-input class="po-md-3" p-label="Cor na Agenda (hex)" name="cor"
-          p-placeholder="#RRGGBB" [p-maxlength]="7"
-          [ngModel]="form.cor" (ngModelChange)="form.cor = $event">
-        </po-input>
+        <div class="po-md-3 agenda-color-field">
+          <label for="corAgenda">Cor na Agenda</label>
+          <input id="corAgenda" class="agenda-color-picker" type="color" name="cor"
+            [(ngModel)]="form.cor" aria-label="Selecionar cor na agenda">
+        </div>
       </div>
 
       <po-divider p-label="Identificação"></po-divider>

@@ -12,8 +12,9 @@ import { SystemModuleService } from '../../../core/services/system-module.servic
   template: `
     <po-page-edit [p-title]="title" (p-save)="save()" (p-cancel)="cancel()">
       <div class="po-row">
-        <po-input class="po-md-6" p-label="Nome *" [ngModel]="formData.name" (ngModelChange)="formData.name = $event" name="name"></po-input>
-        <po-input class="po-md-6" p-label="Key *" [ngModel]="formData.key" (ngModelChange)="formData.key = $event" name="key"></po-input>
+        <po-input class="po-md-5" p-label="Nome *" [ngModel]="formData.name" (ngModelChange)="formData.name = $event" name="name"></po-input>
+        <po-input class="po-md-5" p-label="Key *" [ngModel]="formData.key" (ngModelChange)="formData.key = $event" name="key"></po-input>
+        <po-number class="po-md-2" p-label="Ordem" [ngModel]="formData.sortOrder" (ngModelChange)="formData.sortOrder = $event" name="sortOrder"></po-number>
       </div>
     </po-page-edit>
   `,
@@ -28,7 +29,7 @@ export class ModulosEditPage implements OnInit {
   saving = false;
   id: number | null = null;
   title = 'Novo';
-  formData: any = { name: '', key: '' };
+  formData: any = { name: '', key: '', sortOrder: 0 };
 
   ngOnInit() {
     const idParam = this.route.snapshot.params['id'];
@@ -43,7 +44,7 @@ export class ModulosEditPage implements OnInit {
   loadRecord() {
     this.service.findOne(this.id!).subscribe({
       next: (data: any) => {
-        this.formData = { name: data.name || '', key: data.key || '' };
+        this.formData = { name: data.name || '', key: data.key || '', sortOrder: data.sortOrder || 0 };
       },
       error: () => {
         this.poNotification.error('Erro ao carregar modulo.');
@@ -59,7 +60,11 @@ export class ModulosEditPage implements OnInit {
     }
 
     this.saving = true;
-    const payload = { name: this.formData.name.trim(), key: this.formData.key.trim() };
+    const payload = {
+      name: this.formData.name.trim(),
+      key: this.formData.key.trim(),
+      sortOrder: Number(this.formData.sortOrder) || 0,
+    };
 
     const request$ = this.isEdit
       ? this.service.update(this.id!, payload)

@@ -23,6 +23,7 @@ export class PerfisPage {
   fields: PoPageDynamicTableField[] = [
     { property: 'id', label: 'ID', key: true, visible: true, filter: true },
     { property: 'name', label: 'Perfil', visible: true, filter: true },
+    { property: 'menu.title', label: 'Menu', visible: true },
   ];
 
   actions: PoPageDynamicTableActions = {

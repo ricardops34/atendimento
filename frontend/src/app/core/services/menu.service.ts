@@ -58,4 +58,16 @@ export class MenuService {
   remove(id: number) {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
+
+  findRoutineLink(menuId: number) {
+    return this.http.get<any>(`${this.apiUrl}/routine-links/${menuId}`);
+  }
+
+  createRoutineLink(data: { menuId: number; routineId: number; sortOrder?: number; isActive?: boolean }) {
+    return this.http.post<any>(`${this.apiUrl}/routine-links`, data);
+  }
+
+  updateRoutineLink(id: number, data: { menuId: number; routineId: number; sortOrder?: number; isActive?: boolean }) {
+    return this.http.patch<any>(`${this.apiUrl}/routine-links/${id}`, data);
+  }
 }

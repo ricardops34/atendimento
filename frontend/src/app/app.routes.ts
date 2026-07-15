@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'agendamentos/lista', pathMatch: 'full' },
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   {
     path: 'dashboard',
     canActivate: [authGuard],
@@ -101,11 +101,6 @@ export const routes: Routes = [
     path: 'configuracoes/paises/:id/editar',
     canActivate: [authGuard],
     loadComponent: () => import('./features/cadastros-apoio/paises/paises-edit.page').then((m) => m.PaisesEditPage),
-  },
-  {
-    path: 'configuracoes',
-    canActivate: [authGuard],
-    loadComponent: () => import('./features/configuracoes/configuracoes.page').then((m) => m.ConfiguracoesPage),
   },
   {
     path: 'configuracoes/empresas',

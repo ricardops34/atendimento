@@ -9,31 +9,31 @@ export class ClientesController {
 
   @Post()
   create(@Body() createClienteDto: CreateClienteDto, @Request() req: any) {
-    return this.clientesService.create(createClienteDto, req.tenantId as number);
+    return this.clientesService.create(createClienteDto, req.user.empresaId as number);
   }
 
   @Get()
   findAll(@Query() query: Record<string, string | undefined>, @Request() req: any) {
-    return this.clientesService.search(query, req.tenantId as number);
+    return this.clientesService.search(query, req.user.empresaId as number);
   }
 
   @Get('search')
   search(@Query() query: Record<string, string | undefined>, @Request() req: any) {
-    return this.clientesService.search(query, req.tenantId as number);
+    return this.clientesService.search(query, req.user.empresaId as number);
   }
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
-    return this.clientesService.findOne(id, req.tenantId as number);
+    return this.clientesService.findOne(id, req.user.empresaId as number);
   }
 
   @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() updateClienteDto: UpdateClienteDto, @Request() req: any) {
-    return this.clientesService.update(id, updateClienteDto, req.tenantId as number);
+    return this.clientesService.update(id, updateClienteDto, req.user.empresaId as number);
   }
 
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
-    return this.clientesService.remove(id, req.tenantId as number);
+    return this.clientesService.remove(id, req.user.empresaId as number);
   }
 }

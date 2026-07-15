@@ -16,7 +16,7 @@ import { MenuService } from '../../../core/services/menu.service';
         <po-input class="po-md-12" p-label="Nome *" [ngModel]="formData.name" (ngModelChange)="formData.name = $event" name="name"></po-input>
       </div>
       <div class="po-row">
-        <po-multiselect class="po-md-12" p-label="Menus" [p-options]="menuOptions" [ngModel]="formData.menuIds" (ngModelChange)="formData.menuIds = $event" name="menuIds"></po-multiselect>
+        <po-combo class="po-md-12" p-label="Menu" [p-options]="menuOptions" [ngModel]="formData.menuId" (ngModelChange)="formData.menuId = $event" name="menuId"></po-combo>
       </div>
     </po-page-edit>
   `,
@@ -33,7 +33,7 @@ export class PerfisEditPage implements OnInit {
   id: number | null = null;
   title = 'Novo';
   menuOptions: PoComboOption[] = [];
-  formData: any = { name: '', menuIds: [] as Array<number | string> };
+  formData: any = { name: '', menuId: null as number | null };
 
   ngOnInit() {
     this.loadDependencies();
@@ -49,7 +49,7 @@ export class PerfisEditPage implements OnInit {
   loadDependencies() {
     this.menuService.findAll().subscribe((data) => {
       this.menuOptions = (data || []).map((item) => ({
-        label: item.parent?.label ? `${item.parent.label} > ${item.label}` : item.label,
+        label: item.title,
         value: item.id,
       }));
     });
@@ -60,7 +60,7 @@ export class PerfisEditPage implements OnInit {
       next: (data: any) => {
         this.formData = {
           name: data.name || '',
-          menuIds: (data.profileMenus || []).map((pm: any) => pm.menuId),
+          menuId: data.menuId,
         };
       },
       error: () => {
@@ -79,7 +79,7 @@ export class PerfisEditPage implements OnInit {
     this.saving = true;
     const payload = {
       name: this.formData.name.trim(),
-      menuIds: (this.formData.menuIds || []).map((value: number | string) => Number(value)),
+      menuId: this.formData.menuId ? Number(this.formData.menuId) : null,
     };
 
     const request$ = this.isEdit

@@ -7,6 +7,7 @@ import { App } from './app';
 import { AuthService } from './core/auth/auth.service';
 import { EmpresaStateService } from './core/auth/empresa-state.service';
 import { PoBreadcrumbModule, PoMenuItem, PoMenuModule, PoPageModule, PoToolbarModule } from '@po-ui/ng-components';
+import { routes } from './app.routes';
 
 describe('App', () => {
   const createEmpresaState = (user: any = null) => ({
@@ -55,6 +56,11 @@ describe('App', () => {
   it('should create the app', () => {
     const fixture = TestBed.createComponent(App);
     expect(fixture.componentInstance).toBeTruthy();
+  });
+
+  it('does not expose standalone Configuracao or Menus x Rotinas routes', () => {
+    expect(routes.some((route) => route.path === 'configuracoes')).toBe(false);
+    expect(routes.some((route) => route.path?.startsWith('configuracoes/menus-rotinas'))).toBe(false);
   });
 
   it('builds authenticated menus with icon and shortLabel', () => {
@@ -181,6 +187,12 @@ describe('App', () => {
     const menus = fixture.componentInstance.menus();
 
     expect(menus[0]).toEqual({
+      label: 'Inicio',
+      shortLabel: 'INI',
+      icon: 'an an-house',
+      link: '/dashboard'
+    });
+    expect(menus[1]).toEqual({
       label: 'Configuracoes',
       shortLabel: 'CFG',
       icon: 'an an-gear',
@@ -274,7 +286,7 @@ describe('App', () => {
       'Agendamentos',
       'Lista de Atendimentos'
     ]);
-    expect(breadcrumb.items[0].link).toBe('/agendamentos/lista');
+    expect(breadcrumb.items[0].link).toBe('/dashboard');
     expect(breadcrumb.items.at(-1)?.link).toBeUndefined();
   });
 });

@@ -36,6 +36,7 @@ interface ClienteAtributoLinha {
     PoTabsModule,
   ],
   templateUrl: './clientes-edit.page.html',
+  styleUrl: './clientes-edit.page.css',
 })
 export class ClientesEditPage implements OnInit {
   private route       = inject(ActivatedRoute);

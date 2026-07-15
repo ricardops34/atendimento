@@ -43,9 +43,7 @@ export class AuthController {
       include: {
         profile: {
           include: {
-            profileMenus: {
-              include: { menu: { include: { module: true, routine: { include: { module: true } } } } },
-            },
+            menu: { include: { items: { include: { routine: { include: { module: true } } } } } },
           },
         },
         userEmpresas: {
@@ -71,9 +69,7 @@ export class AuthController {
       include: {
         profile: {
           include: {
-            profileMenus: {
-              include: { menu: { include: { module: true, routine: { include: { module: true } } } } },
-            },
+            menu: { include: { items: { include: { routine: { include: { module: true } } } } } },
           },
         },
         userEmpresas: {

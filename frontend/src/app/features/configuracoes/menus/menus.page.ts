@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { PoPageDynamicTableModule, PoPageDynamicTableActions, PoPageDynamicTableField } from '@po-ui/ng-templates';
 import { environment } from '../../../../environments/environment';
 
@@ -9,7 +9,7 @@ import { environment } from '../../../../environments/environment';
   imports: [CommonModule, PoPageDynamicTableModule],
   template: `
     <po-page-dynamic-table
-      p-title="Menu"
+      p-title="Menus"
       [p-service-api]="apiUrl"
       [p-fields]="fields"
       [p-actions]="actions"
@@ -22,11 +22,8 @@ export class MenusPage {
 
   fields: PoPageDynamicTableField[] = [
     { property: 'id', label: 'ID', key: true, visible: true, filter: true },
-    { property: 'label', label: 'Menu', visible: true, filter: true },
-    { property: 'module.name', label: 'Modulo', visible: true },
-    { property: 'routine.name', label: 'Rotina', visible: true },
-    { property: 'link', label: 'Link', visible: true, filter: true },
-    { property: 'isActive', label: 'Ativo', visible: true, type: 'boolean' },
+    { property: 'title', label: 'Titulo', visible: true, filter: true },
+    { property: 'isActive', label: 'Ativo', visible: true, type: 'boolean', filter: true },
   ];
 
   actions: PoPageDynamicTableActions = {

@@ -24,6 +24,7 @@ export class ModulosPage {
     { property: 'id', label: 'ID', key: true, visible: true, filter: true },
     { property: 'name', label: 'Modulo', visible: true, filter: true },
     { property: 'key', label: 'Key', visible: true, filter: true },
+    { property: 'sortOrder', label: 'Ordem', visible: true, type: 'number', filter: true },
   ];
 
   actions: PoPageDynamicTableActions = {

@@ -1,0 +1,21 @@
+.agenda-color-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.agenda-color-field label {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.agenda-color-picker {
+  width: 100%;
+  height: 44px;
+  padding: 4px;
+  border: 1px solid var(--color-neutral-mid-40, #9da7a9);
+  border-radius: 3px;
+  background: var(--color-neutral-light-00, #fff);
+  cursor: pointer;
+}

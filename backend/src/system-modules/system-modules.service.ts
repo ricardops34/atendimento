@@ -8,6 +8,7 @@ interface ModuleSearchQuery {
   search?: string;
   name?: string;
   key?: string;
+  sortOrder?: string;
   sortProperty?: string;
   sortDirection?: string;
 }
@@ -17,11 +18,11 @@ export class SystemModulesService {
   constructor(private prisma: PrismaService) {}
 
   create(data: any) {
-    return this.prisma.module.create({ data });
+    return this.prisma.module.create({ data: this.mapPayload(data) });
   }
 
   findAll() {
-    return this.prisma.module.findMany({ orderBy: { name: 'asc' } });
+    return this.prisma.module.findMany({ orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }] });
   }
 
   async search(query: ModuleSearchQuery) {
@@ -47,7 +48,7 @@ export class SystemModulesService {
 
   async update(id: number, data: any) {
     await this.findOne(id);
-    return this.prisma.module.update({ where: { id }, data });
+    return this.prisma.module.update({ where: { id }, data: this.mapPayload(data) });
   }
 
   async remove(id: number) {
@@ -69,13 +70,23 @@ export class SystemModulesService {
     }
     if (query.name?.trim()) andFilters.push({ name: { contains: query.name.trim(), mode: 'insensitive' } });
     if (query.key?.trim()) andFilters.push({ key: { contains: query.key.trim(), mode: 'insensitive' } });
+    if (query.sortOrder !== undefined && query.sortOrder !== '') andFilters.push({ sortOrder: Number(query.sortOrder) });
 
     return andFilters.length > 0 ? { AND: andFilters } : {};
   }
 
   private buildOrderBy(sortProperty?: string, sortDirection?: string) {
     const direction = sortDirection === 'descending' ? 'desc' : 'asc';
-    const property = sortProperty === 'key' ? 'key' : 'name';
-    return { [property]: direction };
+    if (sortProperty === 'key') return [{ key: direction }, { name: 'asc' }];
+    if (sortProperty === 'name') return [{ name: direction }];
+    return [{ sortOrder: direction }, { name: 'asc' }];
+  }
+
+  private mapPayload(data: any) {
+    return {
+      name: data.name?.trim(),
+      key: data.key?.trim(),
+      sortOrder: Number(data.sortOrder) || 0,
+    };
   }
 }
