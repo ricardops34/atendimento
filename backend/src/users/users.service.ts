@@ -39,6 +39,7 @@ export class UsersService {
       return tx.user.findUnique({
         where: { id: user.id },
         include: { profile: true, userEmpresas: { include: { empresa: true } } },
+        omit: { password: true },
       });
     });
   }
@@ -46,6 +47,7 @@ export class UsersService {
   findAll() {
     return this.prisma.user.findMany({
       include: { profile: true, userEmpresas: { include: { empresa: true } } },
+      omit: { password: true },
       orderBy: { name: 'asc' },
     });
   }
@@ -58,6 +60,7 @@ export class UsersService {
     const items = await this.prisma.user.findMany({
       where,
       include: { profile: true, userEmpresas: { include: { empresa: true } } },
+      omit: { password: true },
       orderBy: this.buildOrderBy(query.sortProperty, query.sortDirection),
       skip: (page - 1) * pageSize,
       take: pageSize,
@@ -69,6 +72,7 @@ export class UsersService {
     const item = await this.prisma.user.findUnique({
       where: { id },
       include: { profile: true, userEmpresas: { include: { empresa: true } } },
+      omit: { password: true },
     });
     if (!item) throw new NotFoundException('Usuário não encontrado.');
     return item;
@@ -101,6 +105,7 @@ export class UsersService {
       return tx.user.findUnique({
         where: { id },
         include: { profile: true, userEmpresas: { include: { empresa: true } } },
+        omit: { password: true },
       });
     });
   }
