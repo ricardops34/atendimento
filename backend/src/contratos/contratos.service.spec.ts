@@ -13,6 +13,9 @@ describe('ContratosService', () => {
       delete: jest.Mock;
       count: jest.Mock;
     };
+    agendamento: {
+      count: jest.Mock;
+    };
   };
 
   beforeEach(async () => {
@@ -23,6 +26,9 @@ describe('ContratosService', () => {
         findUnique: jest.fn(),
         update: jest.fn(),
         delete: jest.fn(),
+        count: jest.fn(),
+      },
+      agendamento: {
         count: jest.fn(),
       },
     };
@@ -40,7 +46,9 @@ describe('ContratosService', () => {
 
   it('returns paginated contracts with advanced filters and ordering', async () => {
     prisma.contrato.count.mockResolvedValue(21);
-    prisma.contrato.findMany.mockResolvedValue([{ id: 7, descricao: 'Contrato B' }]);
+    prisma.contrato.findMany.mockResolvedValue([
+      { id: 7, descricao: 'Contrato B', bloqueado: true, _count: { agendamentos: 2 } },
+    ]);
 
     const result = await service.search({
       page: '1',
@@ -55,6 +63,7 @@ describe('ContratosService', () => {
     expect(prisma.contrato.count).toHaveBeenCalledWith({
       where: {
         AND: [
+          { empresaId: 1 },
           {
             OR: [
               { descricao: { contains: 'empresa', mode: 'insensitive' } },
@@ -63,13 +72,13 @@ describe('ContratosService', () => {
           },
           { clienteId: 3 },
           { isFeriado: true },
-          { empresaId: 1 },
         ],
       },
     });
     expect(prisma.contrato.findMany).toHaveBeenCalledWith({
       where: {
         AND: [
+          { empresaId: 1 },
           {
             OR: [
               { descricao: { contains: 'empresa', mode: 'insensitive' } },
@@ -78,16 +87,24 @@ describe('ContratosService', () => {
           },
           { clienteId: 3 },
           { isFeriado: true },
-          { empresaId: 1 },
         ],
       },
-      include: { cliente: true },
+      include: {
+        cliente: true,
+        _count: { select: { agendamentos: true } },
+      },
       orderBy: { cliente: { nome: 'asc' } },
       skip: 0,
       take: 20,
     });
     expect(result).toEqual({
-      items: [{ id: 7, descricao: 'Contrato B' }],
+      items: [{
+        id: 7,
+        descricao: 'Contrato B',
+        bloqueado: true,
+        bloqueadoStatus: 'Sim',
+        temAgendamentos: true,
+      }],
       page: 1,
       pageSize: 20,
       total: 21,
@@ -97,7 +114,9 @@ describe('ContratosService', () => {
 
   it('filters by tipo', async () => {
     prisma.contrato.count.mockResolvedValue(5);
-    prisma.contrato.findMany.mockResolvedValue([{ id: 1, tipo: 'F' }]);
+    prisma.contrato.findMany.mockResolvedValue([
+      { id: 1, tipo: 'F', _count: { agendamentos: 0 } },
+    ]);
 
     await service.search({ tipo: 'F' }, 1);
 
@@ -121,5 +140,24 @@ describe('ContratosService', () => {
         ],
       },
     });
+  });
+
+  it('rejects deletion when the contract has appointments', async () => {
+    jest.spyOn(service, 'findOne').mockResolvedValue({ id: 7 } as any);
+    prisma.agendamento.count.mockResolvedValue(1);
+
+    await expect(service.remove(7, 1)).rejects.toThrow(
+      'Contrato com agendamentos lançados não pode ser excluído. Bloqueie o contrato.',
+    );
+    expect(prisma.contrato.delete).not.toHaveBeenCalled();
+  });
+
+  it('deletes a contract without appointments', async () => {
+    jest.spyOn(service, 'findOne').mockResolvedValue({ id: 8 } as any);
+    prisma.agendamento.count.mockResolvedValue(0);
+    prisma.contrato.delete.mockResolvedValue({ id: 8 });
+
+    await expect(service.remove(8, 1)).resolves.toEqual({ id: 8 });
+    expect(prisma.contrato.delete).toHaveBeenCalledWith({ where: { id: 8 } });
   });
 });

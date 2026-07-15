@@ -69,7 +69,7 @@ export class HomePage implements OnInit {
     });
 
     const hoje = new Date().toISOString().slice(0, 10);
-    this.http.get<any>(`${api}/agendamentos/search?pageSize=1&data=${hoje}`).subscribe({
+    this.http.get<any>(`${api}/agendamentos/search?pageSize=1&dataInicial=${hoje}&dataFinal=${hoje}`).subscribe({
       next: (r) => { this.indicadores.agendamentosHoje = r.total ?? 0; done(); },
       error: () => done(),
     });

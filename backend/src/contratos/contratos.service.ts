@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateContratoDto } from './dto/create-contrato.dto';
@@ -75,13 +75,22 @@ export class ContratosService {
     const total = await this.prisma.contrato.count({ where });
     const items = await this.prisma.contrato.findMany({
       where,
-      include: { cliente: true },
+      include: {
+        cliente: true,
+        _count: { select: { agendamentos: true } },
+      },
       orderBy: this.buildOrderBy(query.sortProperty, query.sortDirection),
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
 
-    return { items, page, pageSize, total, hasNext: page * pageSize < total };
+    const mappedItems = items.map(({ _count, ...item }) => ({
+      ...item,
+      bloqueadoStatus: item.bloqueado ? 'Sim' : 'Não',
+      temAgendamentos: _count.agendamentos > 0,
+    }));
+
+    return { items: mappedItems, page, pageSize, total, hasNext: page * pageSize < total };
   }
 
   async findOne(id: number, empresaId?: number) {
@@ -144,6 +153,14 @@ export class ContratosService {
 
   async remove(id: number, empresaId?: number) {
     await this.findOne(id, empresaId);
+    const totalAgendamentos = await this.prisma.agendamento.count({
+      where: { contratoId: id },
+    });
+    if (totalAgendamentos > 0) {
+      throw new ConflictException(
+        'Contrato com agendamentos lançados não pode ser excluído. Bloqueie o contrato.',
+      );
+    }
     return this.prisma.contrato.delete({ where: { id } });
   }
 
