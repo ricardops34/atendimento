@@ -98,6 +98,17 @@ const TIPO_OPTIONS: PoComboOption[] = [
       </div>
 
       <div class="po-row">
+        <po-switch
+          class="po-md-4"
+          p-label="Bloqueado"
+          p-help="Se bloqueado, não será listado nos agendamentos."
+          [ngModel]="formData.bloqueado"
+          (ngModelChange)="formData.bloqueado = $event"
+          name="bloqueado">
+        </po-switch>
+      </div>
+
+      <div class="po-row">
         <po-decimal
           class="po-md-6"
           p-label="Valor Hora"
@@ -214,6 +225,75 @@ const TIPO_OPTIONS: PoComboOption[] = [
           </table>
         </div>
       </div>
+
+      <!-- Adiantamentos -->
+      <div style="margin-top: 16px; border-top: 1px solid #ddd; padding-top: 12px;">
+        <p style="font-weight: 600; margin-bottom: 8px;">Adiantamentos</p>
+
+        <div class="po-row">
+          <po-input
+            class="po-md-4"
+            p-label="Descrição"
+            [ngModel]="novoAdiantamento.descricao"
+            (ngModelChange)="novoAdiantamento.descricao = $event"
+            name="novoAdiantamentoDescricao"
+            p-placeholder="Adiantamento">
+          </po-input>
+          <po-decimal
+            class="po-md-2"
+            p-label="Valor Total"
+            [ngModel]="novoAdiantamento.valorTotal"
+            (ngModelChange)="novoAdiantamento.valorTotal = $event"
+            name="novoAdiantamentoValorTotal"
+            [p-decimals-length]="2">
+          </po-decimal>
+          <po-number
+            class="po-md-2"
+            p-label="Parcelas"
+            [ngModel]="novoAdiantamento.parcelas"
+            (ngModelChange)="novoAdiantamento.parcelas = $event"
+            name="novoAdiantamentoParcelas">
+          </po-number>
+          <po-input
+            class="po-md-2"
+            p-label="Data Início"
+            p-type="date"
+            [ngModel]="novoAdiantamento.dataInicio"
+            (ngModelChange)="novoAdiantamento.dataInicio = $event"
+            name="novoAdiantamentoDataInicio">
+          </po-input>
+          <div class="po-md-2" style="display: flex; align-items: flex-end; padding-bottom: 4px;">
+            <po-button p-label="Adicionar" p-icon="an an-plus" (p-click)="addAdiantamento()"></po-button>
+          </div>
+        </div>
+
+        <div *ngIf="formData.adiantamentos?.length" style="margin-top: 8px;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+            <thead>
+              <tr style="background: #f5f5f5;">
+                <th style="padding: 4px 8px; text-align: left;">Descrição</th>
+                <th style="padding: 4px 8px;">Valor Total</th>
+                <th style="padding: 4px 8px;">Parcelas</th>
+                <th style="padding: 4px 8px;">Valor Parcela</th>
+                <th style="padding: 4px 8px;">Data Início</th>
+                <th style="padding: 4px 8px;"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let a of formData.adiantamentos; let i = index" style="border-bottom: 1px solid #eee;">
+                <td style="padding: 4px 8px;">{{ a.descricao }}</td>
+                <td style="padding: 4px 8px; text-align: center;">{{ a.valorTotal }}</td>
+                <td style="padding: 4px 8px; text-align: center;">{{ a.parcelas }}</td>
+                <td style="padding: 4px 8px; text-align: center;">{{ a.valorParcela }}</td>
+                <td style="padding: 4px 8px; text-align: center;">{{ a.dataInicio }}</td>
+                <td style="padding: 4px 8px; text-align: center;">
+                  <po-button p-icon="po-icon-delete" p-kind="tertiary" (p-click)="removeAdiantamento(i)"></po-button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </po-page-edit>
   `,
 })
@@ -246,8 +326,10 @@ export class ContratosEditPage implements OnInit {
     valorHora: null,
     valorFixo: null,
     isFeriado: false,
+    bloqueado: false,
     profissionalIds: [],
     escalas: [],
+    adiantamentos: [],
   };
 
   novaEscala: any = {
@@ -257,6 +339,13 @@ export class ContratosEditPage implements OnInit {
     horaFim: '18:00',
     intervaloIni: '11:30',
     intervaloFim: '13:00',
+  };
+
+  novoAdiantamento: any = {
+    descricao: '',
+    valorTotal: null,
+    parcelas: 1,
+    dataInicio: '',
   };
 
   ngOnInit() {
@@ -297,6 +386,7 @@ export class ContratosEditPage implements OnInit {
           valorHora: contrato.valorHora ?? null,
           valorFixo: contrato.valorFixo ?? null,
           isFeriado: !!contrato.isFeriado,
+          bloqueado: !!contrato.bloqueado,
           profissionalIds: (contrato.profissionais || []).map((p: any) => p.profissionalId),
           escalas: (contrato.escalas || []).map((e: any) => ({
             diaSemana: e.diaSemana,
@@ -306,8 +396,16 @@ export class ContratosEditPage implements OnInit {
             intervaloIni: e.intervaloIni,
             intervaloFim: e.intervaloFim,
           })),
+          adiantamentos: (contrato.adiantamentos || []).map((a: any) => ({
+            descricao: a.descricao,
+            valorTotal: a.valorTotal,
+            parcelas: a.parcelas,
+            valorParcela: a.valorParcela,
+            dataInicio: a.dataInicio ? a.dataInicio.substring(0, 10) : '',
+          })),
         };
         this.resetNovaEscala();
+        this.resetNovoAdiantamento();
       },
       error: () => {
         this.poNotification.error('Erro ao carregar contrato.');
@@ -343,6 +441,30 @@ export class ContratosEditPage implements OnInit {
     this.formData.escalas = this.formData.escalas.filter((_: any, i: number) => i !== index);
   }
 
+  addAdiantamento() {
+    const valorTotal = Number(this.novoAdiantamento.valorTotal);
+    const parcelas = Number(this.novoAdiantamento.parcelas);
+    if (!this.novoAdiantamento.descricao?.trim() || !valorTotal || !parcelas || !this.novoAdiantamento.dataInicio) {
+      this.poNotification.warning('Preencha descrição, valor total, parcelas e data de início do adiantamento.');
+      return;
+    }
+    this.formData.adiantamentos = [
+      ...this.formData.adiantamentos,
+      {
+        descricao: this.novoAdiantamento.descricao.trim(),
+        valorTotal,
+        parcelas,
+        valorParcela: Math.round((valorTotal / parcelas) * 100) / 100,
+        dataInicio: this.novoAdiantamento.dataInicio,
+      },
+    ];
+    this.resetNovoAdiantamento();
+  }
+
+  removeAdiantamento(index: number) {
+    this.formData.adiantamentos = this.formData.adiantamentos.filter((_: any, i: number) => i !== index);
+  }
+
   getDiaSemanaLabel(value: number): string {
     return DIAS_SEMANA.find((d) => d.value === value)?.label || String(value);
   }
@@ -374,8 +496,10 @@ export class ContratosEditPage implements OnInit {
       dtFim: this.formData.dtFim,
       tipo: this.formData.tipo,
       isFeriado: !!this.formData.isFeriado,
+      bloqueado: !!this.formData.bloqueado,
       profissionalIds: (this.formData.profissionalIds || []).map((id: any) => Number(id)),
       escalas: this.formData.escalas || [],
+      adiantamentos: this.formData.adiantamentos || [],
     };
     if (this.formData.valorHora !== null && this.formData.valorHora !== '') {
       payload.valorHora = Number(this.formData.valorHora);
@@ -413,6 +537,15 @@ export class ContratosEditPage implements OnInit {
       horaFim: '18:00',
       intervaloIni: '11:30',
       intervaloFim: '13:00',
+    };
+  }
+
+  private resetNovoAdiantamento() {
+    this.novoAdiantamento = {
+      descricao: '',
+      valorTotal: null,
+      parcelas: 1,
+      dataInicio: '',
     };
   }
 }

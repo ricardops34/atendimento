@@ -31,6 +31,7 @@ model Empresa {
   uf                 String?  @db.VarChar(2)
   municipio          String?  @db.VarChar(255)
   pais               String?  @db.VarChar(50)
+  atributos          Json?
 
   userEmpresas  UserEmpresa[]
   clientes      Cliente[]
@@ -38,9 +39,20 @@ model Empresa {
   contratos     Contrato[]
   agendamentos  Agendamento[]
   feriados      Feriado[]
+  atributosCatalogo Atributo[]
 
   @@map("empresas")
 }
+
+// ----------------------------------------------------------------------------
+// CADASTROS DE ACESSO: Modulo, Rotina, Menu, Perfil, Usuario
+//
+//   Modulo  1—N  Rotina   (Routine.moduleId)      -> modulo agrupa rotinas
+//   Modulo  1—N  Menu     (Menu.moduleId)         -> menu pertence a um modulo
+//   Rotina  1—N  Menu     (Menu.routineId)        -> menu aponta pra tela/rotina
+//   Perfil  N—N  Menu     (ProfileMenu)           -> perfil concede acesso a menus
+//   Perfil  1—N  Usuario  (User.profileId)        -> usuario pertence a um perfil
+// ----------------------------------------------------------------------------
 
 model User {
   id            Int            @id @default(autoincrement())
@@ -61,8 +73,8 @@ model Profile {
   id   Int    @id @default(autoincrement())
   name String @db.VarChar(255)
 
-  profileModules ProfileModule[]
-  users          User[]
+  profileMenus ProfileMenu[]
+  users        User[]
 
   @@unique([name])
   @@map("profiles")
@@ -83,26 +95,25 @@ model UserEmpresa {
 model Module {
   id   Int    @id @default(autoincrement())
   name String @db.VarChar(255)
-  key  String @unique @db.VarChar(255) // ex: 'companies', 'appointments-calendar'
+  key  String @unique @db.VarChar(255) // ex: 'cadastros', 'appointments-calendar' — agrupa Rotinas/Menus, não concede permissão
 
-  profileModules ProfileModule[]
-  routines       Routine[]
-  menus          Menu[]
+  routines Routine[]
+  menus    Menu[]
 
   @@map("modules")
 }
 
-model ProfileModule {
+model ProfileMenu {
   id        Int     @id @default(autoincrement())
   profileId Int     @map("profile_id")
   profile   Profile @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  moduleId  Int     @map("module_id")
-  module    Module  @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  menuId    Int     @map("menu_id")
+  menu      Menu    @relation(fields: [menuId], references: [id], onDelete: Cascade)
   canRead   Boolean @default(true) @map("can_read")
   canWrite  Boolean @default(false) @map("can_write")
 
-  @@unique([profileId, moduleId])
-  @@map("profile_modules")
+  @@unique([profileId, menuId])
+  @@map("profile_menus")
 }
 
 model Routine {
@@ -136,6 +147,8 @@ model Menu {
   link       String?  @db.VarChar(255)
   sortOrder  Int      @default(0) @map("sort_order")
   isActive   Boolean  @default(true) @map("is_active")
+
+  profileMenus ProfileMenu[]
 
   @@map("menus")
 }
@@ -171,6 +184,7 @@ model Cliente {
   estadoRel      Estado?    @relation(fields: [estadoId], references: [id], onDelete: SetNull)
   paisId         Int?       @map("pais_id")
   paisRel        Pais?      @relation(fields: [paisId], references: [id], onDelete: SetNull)
+  atributos      Json?
   contratos      Contrato[]
 
   @@map("cliente")
@@ -184,6 +198,7 @@ model Profissional {
   userId       Int?                   @map("user_id")
   user         User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
   nome         String                 @db.VarChar(255)
+  atributos    Json?
   agendamentos Agendamento[]
   escalas      ContratoItem[]
   contratos    ContratoProfissional[]
@@ -207,6 +222,7 @@ model Contrato {
   valorFixo     Decimal?               @map("valor_fixo") @db.Decimal(10, 2)
   isFeriado     Boolean                @default(false) @map("is_feriado") // Flag para identificar dinamicamente o contrato de feriados
   bloqueado     Boolean                @default(false)
+  atributos     Json?
   agendamentos  Agendamento[]
   escalas       ContratoItem[]
   profissionais ContratoProfissional[]
@@ -306,6 +322,22 @@ model Feriado {
 
   @@unique([empresaId, data])
   @@map("feriado")
+}
+
+/// Catálogo de atributos personalizados, compartilhado entre Cliente/Empresa/Contrato/Profissional
+model Atributo {
+  id          Int     @id @default(autoincrement())
+  empresaId   Int     @map("empresa_id")
+  empresa     Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  sequencia   Int     @default(0)
+  titulo      String  @db.VarChar(255)
+  tipo        String  @db.VarChar(20) // 'Data' | 'Texto' | 'Numero' | 'Email' | 'Senha'
+  tamanho     Int?
+  obrigatorio Boolean @default(false)
+  cadastro    String  @db.VarChar(20) // 'Cliente' | 'Empresa' | 'Contrato' | 'Profissional'
+  ativo       Boolean @default(true)
+
+  @@map("atributo")
 }
 
 // ----------------------------------------------------------------------------

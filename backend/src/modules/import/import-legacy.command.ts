@@ -32,7 +32,7 @@ async function bootstrap() {
     const empresaId = defaultEmpresa.id;
 
     // 2. Setup Modules and Admin Profile
-    const modules = ['dashboard', 'companies', 'professionals', 'contracts', 'appointments-calendar', 'appointments-list', 'settings'];
+    const modules = ['dashboard', 'cadastros', 'agendamentos-calendario', 'agendamentos-list', 'configuracoes'];
     for (const key of modules) {
       await prisma.module.upsert({
         where: { key },
@@ -48,13 +48,13 @@ async function bootstrap() {
       adminProfile = await prisma.profile.create({
         data: { name: 'Administrador' }
       });
-      const allModules = await prisma.module.findMany();
-      for (const mod of allModules) {
-        await prisma.profileModule.create({
-          data: { profileId: adminProfile.id, moduleId: mod.id, canRead: true, canWrite: true }
+      const allMenus = await prisma.menu.findMany();
+      for (const menu of allMenus) {
+        await prisma.profileMenu.create({
+          data: { profileId: adminProfile.id, menuId: menu.id, canRead: true, canWrite: true }
         });
       }
-      console.log('Created Admin profile with all modules.');
+      console.log('Created Admin profile with all menus.');
     }
 
     // 3. Fallback Admin User

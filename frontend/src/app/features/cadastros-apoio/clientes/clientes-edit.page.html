@@ -1,126 +1,184 @@
 <po-page-edit [p-title]="title" (p-save)="save()" (p-cancel)="cancel()">
   <po-loading-overlay *ngIf="loading" p-text="Carregando..."></po-loading-overlay>
 
-  <!-- Tipo de Pessoa -->
-  <div class="po-row">
-    <po-combo class="po-md-6" p-label="Tipo de Pessoa *" name="tipoPessoa"
-      [p-options]="tipoPessoaOptions"
-      [ngModel]="form.tipoPessoa" (ngModelChange)="form.tipoPessoa = $event">
-    </po-combo>
-    <po-input class="po-md-3" p-label="Cor na Agenda (hex)" name="cor"
-      p-placeholder="#RRGGBB" [p-maxlength]="7"
-      [ngModel]="form.cor" (ngModelChange)="form.cor = $event">
-    </po-input>
-  </div>
+  <po-tabs>
+    <po-tab p-label="Dados Cadastrais" [p-active]="true">
+      <!-- Tipo de Pessoa -->
+      <div class="po-row">
+        <po-combo class="po-md-6" p-label="Tipo de Pessoa *" name="tipoPessoa"
+          [p-options]="tipoPessoaOptions"
+          [ngModel]="form.tipoPessoa" (ngModelChange)="form.tipoPessoa = $event">
+        </po-combo>
+        <po-input class="po-md-3" p-label="Cor na Agenda (hex)" name="cor"
+          p-placeholder="#RRGGBB" [p-maxlength]="7"
+          [ngModel]="form.cor" (ngModelChange)="form.cor = $event">
+        </po-input>
+      </div>
 
-  <po-divider p-label="Identificação"></po-divider>
+      <po-divider p-label="Identificação"></po-divider>
 
-  <!-- Nome / Razão Social (PJ) -->
-  <div class="po-row" *ngIf="isPJ">
-    <po-input class="po-md-6" p-label="Nome Fantasia *" name="nome"
-      [ngModel]="form.nome" (ngModelChange)="form.nome = $event">
-    </po-input>
-    <po-input class="po-md-6" p-label="Razão Social" name="razaoSocial"
-      [ngModel]="form.razaoSocial" (ngModelChange)="form.razaoSocial = $event">
-    </po-input>
-  </div>
-  <div class="po-row" *ngIf="isPJ">
-    <po-input class="po-md-4" p-label="CNPJ" name="cnpj"
-      p-mask="99.999.999/9999-99" p-placeholder="00.000.000/0000-00"
-      [ngModel]="form.cnpj" (ngModelChange)="form.cnpj = $event">
-    </po-input>
-    <po-input class="po-md-4" p-label="Inscrição Estadual" name="inscricaoEstadual"
-      [p-maxlength]="20"
-      [ngModel]="form.inscricaoEstadual" (ngModelChange)="form.inscricaoEstadual = $event">
-    </po-input>
-    <po-input class="po-md-4" p-label="Inscrição Municipal" name="inscricaoMunicipal"
-      [p-maxlength]="20"
-      [ngModel]="form.inscricaoMunicipal" (ngModelChange)="form.inscricaoMunicipal = $event">
-    </po-input>
-  </div>
+      <!-- Nome / Razão Social (PJ) -->
+      <div class="po-row" *ngIf="isPJ">
+        <po-input class="po-md-6" p-label="Nome Fantasia *" name="nome"
+          [ngModel]="form.nome" (ngModelChange)="form.nome = $event">
+        </po-input>
+        <po-input class="po-md-6" p-label="Razão Social" name="razaoSocial"
+          [ngModel]="form.razaoSocial" (ngModelChange)="form.razaoSocial = $event">
+        </po-input>
+      </div>
+      <div class="po-row" *ngIf="isPJ">
+        <po-input class="po-md-4" p-label="CNPJ" name="cnpj"
+          p-mask="99.999.999/9999-99" p-placeholder="00.000.000/0000-00"
+          [ngModel]="form.cnpj" (ngModelChange)="form.cnpj = $event">
+        </po-input>
+        <po-input class="po-md-4" p-label="Inscrição Estadual" name="inscricaoEstadual"
+          [p-maxlength]="20"
+          [ngModel]="form.inscricaoEstadual" (ngModelChange)="form.inscricaoEstadual = $event">
+        </po-input>
+        <po-input class="po-md-4" p-label="Inscrição Municipal" name="inscricaoMunicipal"
+          [p-maxlength]="20"
+          [ngModel]="form.inscricaoMunicipal" (ngModelChange)="form.inscricaoMunicipal = $event">
+        </po-input>
+      </div>
 
-  <!-- Nome / CPF / RG (PF) -->
-  <div class="po-row" *ngIf="!isPJ">
-    <po-input class="po-md-8" p-label="Nome Completo *" name="nome"
-      [ngModel]="form.nome" (ngModelChange)="form.nome = $event">
-    </po-input>
-    <po-datepicker class="po-md-4" p-label="Data de Nascimento" name="dataNascimento"
-      [ngModel]="form.dataNascimento" (ngModelChange)="form.dataNascimento = $event">
-    </po-datepicker>
-  </div>
-  <div class="po-row" *ngIf="!isPJ">
-    <po-input class="po-md-4" p-label="CPF" name="cpf"
-      p-mask="999.999.999-99" p-placeholder="000.000.000-00"
-      [ngModel]="form.cpf" (ngModelChange)="form.cpf = $event">
-    </po-input>
-    <po-input class="po-md-4" p-label="RG" name="rg"
-      [p-maxlength]="20"
-      [ngModel]="form.rg" (ngModelChange)="form.rg = $event">
-    </po-input>
-  </div>
+      <!-- Nome / CPF / RG (PF) -->
+      <div class="po-row" *ngIf="!isPJ">
+        <po-input class="po-md-8" p-label="Nome Completo *" name="nome"
+          [ngModel]="form.nome" (ngModelChange)="form.nome = $event">
+        </po-input>
+        <po-datepicker class="po-md-4" p-label="Data de Nascimento" name="dataNascimento"
+          [ngModel]="form.dataNascimento" (ngModelChange)="form.dataNascimento = $event">
+        </po-datepicker>
+      </div>
+      <div class="po-row" *ngIf="!isPJ">
+        <po-input class="po-md-4" p-label="CPF" name="cpf"
+          p-mask="999.999.999-99" p-placeholder="000.000.000-00"
+          [ngModel]="form.cpf" (ngModelChange)="form.cpf = $event">
+        </po-input>
+        <po-input class="po-md-4" p-label="RG" name="rg"
+          [p-maxlength]="20"
+          [ngModel]="form.rg" (ngModelChange)="form.rg = $event">
+        </po-input>
+      </div>
 
-  <po-divider p-label="Contato"></po-divider>
+      <po-divider p-label="Contato"></po-divider>
 
-  <div class="po-row">
-    <po-input class="po-md-4" p-label="Telefone / WhatsApp" name="telefone"
-      p-placeholder="(00) 9 0000-0000" [p-maxlength]="20"
-      [ngModel]="form.telefone" (ngModelChange)="form.telefone = $event">
-    </po-input>
-    <po-input class="po-md-4" p-label="Celular" name="celular"
-      p-placeholder="(00) 9 0000-0000" [p-maxlength]="20"
-      [ngModel]="form.celular" (ngModelChange)="form.celular = $event">
-    </po-input>
-    <po-email class="po-md-4" p-label="E-mail" name="email"
-      [ngModel]="form.email" (ngModelChange)="form.email = $event">
-    </po-email>
-  </div>
+      <div class="po-row">
+        <po-input class="po-md-4" p-label="Telefone / WhatsApp" name="telefone"
+          p-placeholder="(00) 9 0000-0000" [p-maxlength]="20"
+          [ngModel]="form.telefone" (ngModelChange)="form.telefone = $event">
+        </po-input>
+        <po-input class="po-md-4" p-label="Celular" name="celular"
+          p-placeholder="(00) 9 0000-0000" [p-maxlength]="20"
+          [ngModel]="form.celular" (ngModelChange)="form.celular = $event">
+        </po-input>
+        <po-email class="po-md-4" p-label="E-mail" name="email"
+          [ngModel]="form.email" (ngModelChange)="form.email = $event">
+        </po-email>
+      </div>
 
-  <po-divider p-label="Endereço"></po-divider>
+      <po-divider p-label="Endereço"></po-divider>
 
-  <div class="po-row" style="align-items: flex-end;">
-    <po-input class="po-md-3" p-label="CEP" name="cep"
-      p-mask="99999-999" p-placeholder="00000-000"
-      [ngModel]="form.cep" (ngModelChange)="form.cep = $event">
-    </po-input>
-    <div class="po-md-2" style="padding-bottom: 8px;">
-      <po-button p-label="Buscar CEP" p-icon="po-icon-search"
-        [p-loading]="buscandoCep" (p-click)="buscarCep()">
-      </po-button>
-    </div>
-  </div>
-  <div class="po-row">
-    <po-input class="po-md-8" p-label="Logradouro" name="logradouro"
-      [p-maxlength]="255"
-      [ngModel]="form.logradouro" (ngModelChange)="form.logradouro = $event">
-    </po-input>
-    <po-input class="po-md-2" p-label="Número" name="numero"
-      [p-maxlength]="10"
-      [ngModel]="form.numero" (ngModelChange)="form.numero = $event">
-    </po-input>
-    <po-input class="po-md-2" p-label="Complemento" name="complemento"
-      [p-maxlength]="100"
-      [ngModel]="form.complemento" (ngModelChange)="form.complemento = $event">
-    </po-input>
-  </div>
-  <div class="po-row">
-    <po-input class="po-md-4" p-label="Bairro" name="bairro"
-      [p-maxlength]="100"
-      [ngModel]="form.bairro" (ngModelChange)="form.bairro = $event">
-    </po-input>
-    <po-combo class="po-md-3" p-label="UF" name="estadoId"
-      [p-options]="estadoOptions"
-      [ngModel]="form.estadoId" (ngModelChange)="form.estadoId = $event"
-      (p-change)="onUfChange($event)">
-    </po-combo>
-    <po-combo class="po-md-5" p-label="Município" name="municipioId"
-      [p-options]="municipioOptions"
-      [ngModel]="form.municipioId" (ngModelChange)="form.municipioId = $event">
-    </po-combo>
-  </div>
-  <div class="po-row">
-    <po-combo class="po-md-4" p-label="País" name="paisId"
-      [p-options]="paisOptions"
-      [ngModel]="form.paisId" (ngModelChange)="form.paisId = $event">
-    </po-combo>
-  </div>
+      <div class="po-row" style="align-items: flex-end;">
+        <po-input class="po-md-3" p-label="CEP" name="cep"
+          p-mask="99999-999" p-placeholder="00000-000"
+          [ngModel]="form.cep" (ngModelChange)="form.cep = $event">
+        </po-input>
+        <div class="po-md-2" style="padding-bottom: 8px;">
+          <po-button p-label="Buscar CEP" p-icon="an an-magnifying-glass"
+            [p-loading]="buscandoCep" (p-click)="buscarCep()">
+          </po-button>
+        </div>
+      </div>
+      <div class="po-row">
+        <po-input class="po-md-8" p-label="Logradouro" name="logradouro"
+          [p-maxlength]="255"
+          [ngModel]="form.logradouro" (ngModelChange)="form.logradouro = $event">
+        </po-input>
+        <po-input class="po-md-2" p-label="Número" name="numero"
+          [p-maxlength]="10"
+          [ngModel]="form.numero" (ngModelChange)="form.numero = $event">
+        </po-input>
+        <po-input class="po-md-2" p-label="Complemento" name="complemento"
+          [p-maxlength]="100"
+          [ngModel]="form.complemento" (ngModelChange)="form.complemento = $event">
+        </po-input>
+      </div>
+      <div class="po-row">
+        <po-input class="po-md-4" p-label="Bairro" name="bairro"
+          [p-maxlength]="100"
+          [ngModel]="form.bairro" (ngModelChange)="form.bairro = $event">
+        </po-input>
+        <po-combo class="po-md-3" p-label="UF" name="estadoId"
+          [p-options]="estadoOptions"
+          [ngModel]="form.estadoId" (ngModelChange)="form.estadoId = $event"
+          (p-change)="onUfChange($event)">
+        </po-combo>
+        <po-combo class="po-md-5" p-label="Município" name="municipioId"
+          [p-options]="municipioOptions"
+          [ngModel]="form.municipioId" (ngModelChange)="form.municipioId = $event">
+        </po-combo>
+      </div>
+      <div class="po-row">
+        <po-combo class="po-md-4" p-label="País" name="paisId"
+          [p-options]="paisOptions"
+          [ngModel]="form.paisId" (ngModelChange)="form.paisId = $event">
+        </po-combo>
+      </div>
+    </po-tab>
+
+    <po-tab p-label="Atributos" *ngIf="temAtributosParaCadastro">
+      <div class="po-row">
+        <ng-container *ngFor="let item of form.atributos; let i = index">
+          <ng-container *ngIf="!isAtributoInativo(item.atributoId)" [ngSwitch]="tipoAtributo(item.atributoId)">
+            <po-datepicker *ngSwitchCase="'Data'" [class]="larguraAtributo(item.atributoId)" [p-label]="labelAtributo(item.atributoId)" [name]="'valor_' + i"
+              [ngModel]="item.conteudo" (ngModelChange)="item.conteudo = $event">
+            </po-datepicker>
+            <po-number *ngSwitchCase="'Numero'" [class]="larguraAtributo(item.atributoId)" [p-label]="labelAtributo(item.atributoId)" [name]="'valor_' + i"
+              [(ngModel)]="item.conteudo">
+            </po-number>
+            <po-email *ngSwitchCase="'Email'" [class]="larguraAtributo(item.atributoId)" [p-label]="labelAtributo(item.atributoId)" [name]="'valor_' + i"
+              [ngModel]="item.conteudo" (ngModelChange)="item.conteudo = $event">
+            </po-email>
+            <po-password *ngSwitchCase="'Senha'" [class]="larguraAtributo(item.atributoId)" [p-label]="labelAtributo(item.atributoId)" [name]="'valor_' + i"
+              [ngModel]="item.conteudo" (ngModelChange)="item.conteudo = $event">
+            </po-password>
+            <po-input *ngSwitchDefault [class]="larguraAtributo(item.atributoId)" [p-label]="labelAtributo(item.atributoId)" [name]="'valor_' + i"
+              [p-maxlength]="tamanhoAtributo(item.atributoId) || 255"
+              [ngModel]="item.conteudo" (ngModelChange)="item.conteudo = $event">
+            </po-input>
+          </ng-container>
+        </ng-container>
+      </div>
+
+      <div class="po-row" *ngIf="temAtributoLegadoInativo()">
+        <po-divider p-label="Atributos inativos preenchidos anteriormente"></po-divider>
+      </div>
+      <div class="po-row">
+        <ng-container *ngFor="let item of form.atributos; let i = index">
+          <ng-container *ngIf="isAtributoInativo(item.atributoId)" [ngSwitch]="tipoAtributo(item.atributoId)">
+            <po-datepicker *ngSwitchCase="'Data'" [class]="larguraAtributo(item.atributoId)" [p-label]="labelAtributo(item.atributoId)" [name]="'valor_inativo_' + i"
+              [ngModel]="item.conteudo" (ngModelChange)="item.conteudo = $event">
+            </po-datepicker>
+            <po-number *ngSwitchCase="'Numero'" [class]="larguraAtributo(item.atributoId)" [p-label]="labelAtributo(item.atributoId)" [name]="'valor_inativo_' + i"
+              [(ngModel)]="item.conteudo">
+            </po-number>
+            <po-email *ngSwitchCase="'Email'" [class]="larguraAtributo(item.atributoId)" [p-label]="labelAtributo(item.atributoId)" [name]="'valor_inativo_' + i"
+              [ngModel]="item.conteudo" (ngModelChange)="item.conteudo = $event">
+            </po-email>
+            <po-password *ngSwitchCase="'Senha'" [class]="larguraAtributo(item.atributoId)" [p-label]="labelAtributo(item.atributoId)" [name]="'valor_inativo_' + i"
+              [ngModel]="item.conteudo" (ngModelChange)="item.conteudo = $event">
+            </po-password>
+            <po-input *ngSwitchDefault [class]="larguraAtributo(item.atributoId)" [p-label]="labelAtributo(item.atributoId)" [name]="'valor_inativo_' + i"
+              [p-maxlength]="tamanhoAtributo(item.atributoId) || 255"
+              [ngModel]="item.conteudo" (ngModelChange)="item.conteudo = $event">
+            </po-input>
+          </ng-container>
+          <div class="po-md-1" style="padding-bottom: 8px;" *ngIf="isAtributoInativo(item.atributoId)">
+            <po-button p-icon="an an-trash" p-kind="tertiary" p-danger="true" (p-click)="removerLinhaAtributo(i)"></po-button>
+          </div>
+        </ng-container>
+      </div>
+    </po-tab>
+  </po-tabs>
 </po-page-edit>

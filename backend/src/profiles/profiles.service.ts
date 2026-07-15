@@ -20,12 +20,12 @@ export class ProfilesService {
       const profile = await tx.profile.create({
         data: { name: data.name },
       });
-      const moduleIds = Array.isArray(data.moduleIds) ? data.moduleIds.map((id) => Number(id)) : [];
-      if (moduleIds.length > 0) {
-        await tx.profileModule.createMany({
-          data: moduleIds.map((moduleId) => ({
+      const menuIds = Array.isArray(data.menuIds) ? data.menuIds.map((id) => Number(id)) : [];
+      if (menuIds.length > 0) {
+        await tx.profileMenu.createMany({
+          data: menuIds.map((menuId) => ({
             profileId: profile.id,
-            moduleId,
+            menuId,
             canRead: true,
             canWrite: true,
           })),
@@ -33,14 +33,14 @@ export class ProfilesService {
       }
       return tx.profile.findUnique({
         where: { id: profile.id },
-        include: { profileModules: { include: { module: true } } },
+        include: { profileMenus: { include: { menu: true } } },
       });
     });
   }
 
   findAll() {
     return this.prisma.profile.findMany({
-      include: { profileModules: { include: { module: true } } },
+      include: { profileMenus: { include: { menu: true } } },
       orderBy: { name: 'asc' },
     });
   }
@@ -52,7 +52,7 @@ export class ProfilesService {
     const total = await this.prisma.profile.count({ where });
     const items = await this.prisma.profile.findMany({
       where,
-      include: { profileModules: { include: { module: true } } },
+      include: { profileMenus: { include: { menu: true } } },
       orderBy: this.buildOrderBy(query.sortProperty, query.sortDirection),
       skip: (page - 1) * pageSize,
       take: pageSize,
@@ -63,7 +63,7 @@ export class ProfilesService {
   async findOne(id: number) {
     const item = await this.prisma.profile.findUnique({
       where: { id },
-      include: { profileModules: { include: { module: true } } },
+      include: { profileMenus: { include: { menu: true } } },
     });
     if (!item) throw new NotFoundException('Perfil não encontrado.');
     return item;
@@ -78,14 +78,14 @@ export class ProfilesService {
           name: data.name,
         },
       });
-      if (Array.isArray(data.moduleIds)) {
-        await tx.profileModule.deleteMany({ where: { profileId: id } });
-        const moduleIds = data.moduleIds.map((moduleId) => Number(moduleId));
-        if (moduleIds.length > 0) {
-          await tx.profileModule.createMany({
-            data: moduleIds.map((moduleId) => ({
+      if (Array.isArray(data.menuIds)) {
+        await tx.profileMenu.deleteMany({ where: { profileId: id } });
+        const menuIds = data.menuIds.map((menuId) => Number(menuId));
+        if (menuIds.length > 0) {
+          await tx.profileMenu.createMany({
+            data: menuIds.map((menuId) => ({
               profileId: id,
-              moduleId,
+              menuId,
               canRead: true,
               canWrite: true,
             })),
@@ -94,7 +94,7 @@ export class ProfilesService {
       }
       return tx.profile.findUnique({
         where: { id },
-        include: { profileModules: { include: { module: true } } },
+        include: { profileMenus: { include: { menu: true } } },
       });
     });
   }

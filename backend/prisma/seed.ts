@@ -7,46 +7,45 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Seeding MVP modules and default access...');
 
-  const moduleKeys = [
-    'dashboard',
-    'cadastros',
-    'companies',
-    'professionals',
-    'contracts',
-    'holidays',
-    'appointments-calendar',
-    'appointments-list',
-    'settings',
+  const modules = [
+    { key: 'dashboard', name: 'Inicio' },
+    { key: 'basicos', name: 'Básicos' },
+    { key: 'cadastros', name: 'Cadastro' },
+    { key: 'atendimentos', name: 'Atendimentos' },
+    { key: 'configuracoes', name: 'Configuração' },
+    { key: 'usuarios', name: 'Usuário' },
   ];
 
-  for (const key of moduleKeys) {
+  for (const { key, name } of modules) {
     await prisma.module.upsert({
       where: { key },
-      update: {},
-      create: { key, name: key },
+      update: { name },
+      create: { key, name },
     });
   }
   const allModules = await prisma.module.findMany();
 
   const defaultRoutines = [
-    { moduleKey: 'cadastros', name: 'Cadastros', key: 'cadastros-home', path: '/cadastros', icon: 'an an-folders', shortLabel: 'CAD', sortOrder: 10 },
-    { moduleKey: 'companies', name: 'Clientes', key: 'companies-list', path: '/clientes', icon: 'an an-buildings', shortLabel: 'CLI', sortOrder: 11 },
-    { moduleKey: 'professionals', name: 'Profissionais', key: 'professionals-list', path: '/profissionais', icon: 'an an-user', shortLabel: 'PRO', sortOrder: 12 },
-    { moduleKey: 'contracts', name: 'Contratos', key: 'contracts-list', path: '/contratos', icon: 'an an-file-text', shortLabel: 'CON', sortOrder: 13 },
-    { moduleKey: 'holidays', name: 'Feriados', key: 'holidays-list', path: '/feriados', icon: 'an an-calendar-x', shortLabel: 'FER', sortOrder: 14 },
-    { moduleKey: 'appointments-list', name: 'Lista de Atendimentos', key: 'appointments-list', path: '/agendamentos/lista', icon: 'an an-list-dashes', shortLabel: 'LST', sortOrder: 40 },
-    { moduleKey: 'appointments-calendar', name: 'Calendario', key: 'appointments-calendar', path: '/agendamentos/calendario', icon: 'an an-calendar-blank', shortLabel: 'CAL', sortOrder: 50 },
-    { moduleKey: 'settings', name: 'Configuracoes', key: 'settings-home', path: '/configuracoes', icon: 'an an-gear', shortLabel: 'CFG', sortOrder: 60 },
-    { moduleKey: 'settings', name: 'Empresas', key: 'settings-empresas', path: '/configuracoes/empresas', icon: 'an an-buildings', shortLabel: 'EMP', sortOrder: 61 },
-    { moduleKey: 'settings', name: 'Modulos', key: 'settings-modules', path: '/configuracoes/modulos', icon: 'an an-squares-four', shortLabel: 'MOD', sortOrder: 62 },
-    { moduleKey: 'settings', name: 'Rotinas', key: 'settings-routines', path: '/configuracoes/rotinas', icon: 'an an-list-checks', shortLabel: 'ROT', sortOrder: 63 },
-    { moduleKey: 'settings', name: 'Perfis', key: 'settings-profiles', path: '/configuracoes/perfis', icon: 'an an-identification-card', shortLabel: 'PRF', sortOrder: 64 },
-    { moduleKey: 'settings', name: 'Menus', key: 'settings-menus', path: '/configuracoes/menus', icon: 'an an-tree-structure', shortLabel: 'MNU', sortOrder: 65 },
-    { moduleKey: 'settings', name: 'Usuarios', key: 'settings-users', path: '/configuracoes/usuarios', icon: 'an an-users-three', shortLabel: 'USR', sortOrder: 66 },
-    { moduleKey: 'settings', name: 'Estados', key: 'settings-estados', path: '/configuracoes/estados', icon: 'an an-map-trifold', shortLabel: 'UF', sortOrder: 67 },
-    { moduleKey: 'settings', name: 'Municípios', key: 'settings-municipios', path: '/configuracoes/municipios', icon: 'an an-map-pin', shortLabel: 'MUN', sortOrder: 68 },
-    { moduleKey: 'settings', name: 'CEPs', key: 'settings-ceps', path: '/configuracoes/ceps', icon: 'an an-mailbox', shortLabel: 'CEP', sortOrder: 69 },
-    { moduleKey: 'settings', name: 'Países', key: 'settings-paises', path: '/configuracoes/paises', icon: 'an an-globe', shortLabel: 'PAI', sortOrder: 70 },
+    { moduleKey: 'dashboard', name: 'Dashboard', key: 'dashboard-home', path: '/dashboard', icon: 'an an-gauge', shortLabel: 'DSH', sortOrder: 2 },
+    { moduleKey: 'basicos', name: 'Estados', key: 'configuracoes-estados', path: '/configuracoes/estados', icon: 'an an-map-trifold', shortLabel: 'UF', sortOrder: 21 },
+    { moduleKey: 'basicos', name: 'Municípios', key: 'configuracoes-municipios', path: '/configuracoes/municipios', icon: 'an an-map-pin', shortLabel: 'MUN', sortOrder: 22 },
+    { moduleKey: 'basicos', name: 'CEP', key: 'configuracoes-ceps', path: '/configuracoes/ceps', icon: 'an an-mailbox', shortLabel: 'CEP', sortOrder: 23 },
+    { moduleKey: 'basicos', name: 'Países', key: 'configuracoes-paises', path: '/configuracoes/paises', icon: 'an an-globe', shortLabel: 'PAI', sortOrder: 24 },
+    { moduleKey: 'cadastros', name: 'Cadastro', key: 'cadastros-home', path: '/cadastros', icon: 'an an-folders', shortLabel: 'CAD', sortOrder: 10 },
+    { moduleKey: 'cadastros', name: 'Clientes', key: 'clientes-list', path: '/clientes', icon: 'an an-buildings', shortLabel: 'CLI', sortOrder: 11 },
+    { moduleKey: 'cadastros', name: 'Profissionais', key: 'profissionais-list', path: '/profissionais', icon: 'an an-user', shortLabel: 'PRO', sortOrder: 12 },
+    { moduleKey: 'cadastros', name: 'Contratos', key: 'contratos-list', path: '/contratos', icon: 'an an-file-text', shortLabel: 'CON', sortOrder: 13 },
+    { moduleKey: 'cadastros', name: 'Feriados', key: 'feriados-list', path: '/feriados', icon: 'an an-calendar-x', shortLabel: 'FER', sortOrder: 14 },
+    { moduleKey: 'cadastros', name: 'Atributos', key: 'atributos-list', path: '/atributos', icon: 'an an-list-checks', shortLabel: 'ATR', sortOrder: 15 },
+    { moduleKey: 'atendimentos', name: 'Atendimentos', key: 'agendamentos-list', path: '/agendamentos/lista', icon: 'an an-list-dashes', shortLabel: 'LST', sortOrder: 40 },
+    { moduleKey: 'atendimentos', name: 'Calendário', key: 'agendamentos-calendario', path: '/agendamentos/calendario', icon: 'an an-calendar-blank', shortLabel: 'CAL', sortOrder: 41 },
+    { moduleKey: 'configuracoes', name: 'Configuração', key: 'configuracoes-home', path: '/configuracoes', icon: 'an an-gear', shortLabel: 'CFG', sortOrder: 60 },
+    { moduleKey: 'configuracoes', name: 'Empresas', key: 'configuracoes-empresas', path: '/configuracoes/empresas', icon: 'an an-buildings', shortLabel: 'EMP', sortOrder: 61 },
+    { moduleKey: 'configuracoes', name: 'Módulos', key: 'configuracoes-modulos', path: '/configuracoes/modulos', icon: 'an an-squares-four', shortLabel: 'MOD', sortOrder: 62 },
+    { moduleKey: 'configuracoes', name: 'Rotinas', key: 'configuracoes-rotinas', path: '/configuracoes/rotinas', icon: 'an an-list-checks', shortLabel: 'ROT', sortOrder: 63 },
+    { moduleKey: 'configuracoes', name: 'Menu', key: 'configuracoes-menus', path: '/configuracoes/menus', icon: 'an an-tree-structure', shortLabel: 'MNU', sortOrder: 64 },
+    { moduleKey: 'usuarios', name: 'Perfil', key: 'configuracoes-perfis', path: '/configuracoes/perfis', icon: 'an an-identification-card', shortLabel: 'PRF', sortOrder: 80 },
+    { moduleKey: 'usuarios', name: 'Usuário', key: 'configuracoes-usuarios', path: '/configuracoes/usuarios', icon: 'an an-users-three', shortLabel: 'USR', sortOrder: 81 },
   ];
 
   for (const routine of defaultRoutines) {
@@ -105,24 +104,26 @@ async function main() {
     return prisma.menu.create({ data });
   };
 
+  const dashboardRoutine = allRoutines.find((item) => item.key === 'dashboard-home');
   const cadastrosHomeRoutine = allRoutines.find((item) => item.key === 'cadastros-home');
-  const companiesRoutine = allRoutines.find((item) => item.key === 'companies-list');
-  const professionalsRoutine = allRoutines.find((item) => item.key === 'professionals-list');
-  const contractsRoutine = allRoutines.find((item) => item.key === 'contracts-list');
-  const holidaysRoutine = allRoutines.find((item) => item.key === 'holidays-list');
-  const appointmentsListRoutine = allRoutines.find((item) => item.key === 'appointments-list');
-  const appointmentsCalendarRoutine = allRoutines.find((item) => item.key === 'appointments-calendar');
-  const settingsHomeRoutine = allRoutines.find((item) => item.key === 'settings-home');
-  const settingsEmpresasRoutine = allRoutines.find((item) => item.key === 'settings-empresas');
-  const settingsModulesRoutine = allRoutines.find((item) => item.key === 'settings-modules');
-  const settingsRoutinesRoutine = allRoutines.find((item) => item.key === 'settings-routines');
-  const settingsProfilesRoutine = allRoutines.find((item) => item.key === 'settings-profiles');
-  const settingsMenusRoutine = allRoutines.find((item) => item.key === 'settings-menus');
-  const settingsUsersRoutine = allRoutines.find((item) => item.key === 'settings-users');
-  const settingsEstadosRoutine = allRoutines.find((item) => item.key === 'settings-estados');
-  const settingsMunicipiosRoutine = allRoutines.find((item) => item.key === 'settings-municipios');
-  const settingsCepsRoutine = allRoutines.find((item) => item.key === 'settings-ceps');
-  const settingsPaisesRoutine = allRoutines.find((item) => item.key === 'settings-paises');
+  const companiesRoutine = allRoutines.find((item) => item.key === 'clientes-list');
+  const professionalsRoutine = allRoutines.find((item) => item.key === 'profissionais-list');
+  const contractsRoutine = allRoutines.find((item) => item.key === 'contratos-list');
+  const holidaysRoutine = allRoutines.find((item) => item.key === 'feriados-list');
+  const attributesRoutine = allRoutines.find((item) => item.key === 'atributos-list');
+  const appointmentsListRoutine = allRoutines.find((item) => item.key === 'agendamentos-list');
+  const appointmentsCalendarRoutine = allRoutines.find((item) => item.key === 'agendamentos-calendario');
+  const settingsHomeRoutine = allRoutines.find((item) => item.key === 'configuracoes-home');
+  const settingsEmpresasRoutine = allRoutines.find((item) => item.key === 'configuracoes-empresas');
+  const settingsModulesRoutine = allRoutines.find((item) => item.key === 'configuracoes-modulos');
+  const settingsRoutinesRoutine = allRoutines.find((item) => item.key === 'configuracoes-rotinas');
+  const settingsMenusRoutine = allRoutines.find((item) => item.key === 'configuracoes-menus');
+  const settingsProfilesRoutine = allRoutines.find((item) => item.key === 'configuracoes-perfis');
+  const settingsUsersRoutine = allRoutines.find((item) => item.key === 'configuracoes-usuarios');
+  const settingsEstadosRoutine = allRoutines.find((item) => item.key === 'configuracoes-estados');
+  const settingsMunicipiosRoutine = allRoutines.find((item) => item.key === 'configuracoes-municipios');
+  const settingsCepsRoutine = allRoutines.find((item) => item.key === 'configuracoes-ceps');
+  const settingsPaisesRoutine = allRoutines.find((item) => item.key === 'configuracoes-paises');
 
   await ensureMenu('/', {
     label: 'Inicio',
@@ -132,6 +133,55 @@ async function main() {
     sortOrder: 1,
     isActive: true,
   });
+
+  if (dashboardRoutine) {
+    await ensureMenu(dashboardRoutine.path, {
+      moduleId: dashboardRoutine.moduleId,
+      routineId: dashboardRoutine.id,
+      label: dashboardRoutine.name,
+      shortLabel: dashboardRoutine.shortLabel,
+      icon: dashboardRoutine.icon,
+      link: dashboardRoutine.path,
+      sortOrder: dashboardRoutine.sortOrder,
+      isActive: true,
+    });
+  }
+
+  const basicosModule = allModules.find((item) => item.key === 'basicos');
+  let basicosMenuId: number | null = null;
+  if (basicosModule) {
+    const basicosMenu = await ensureMenu('Básicos', {
+      moduleId: basicosModule.id,
+      routineId: null,
+      label: 'Básicos',
+      shortLabel: 'BAS',
+      icon: 'an an-list-bullets',
+      link: null, // parent
+      sortOrder: 5,
+      isActive: true,
+    });
+    basicosMenuId = basicosMenu.id;
+  }
+
+  for (const routine of [
+    settingsEstadosRoutine,
+    settingsMunicipiosRoutine,
+    settingsCepsRoutine,
+    settingsPaisesRoutine,
+  ]) {
+    if (!routine) continue;
+    await ensureMenu(routine.path, {
+      moduleId: routine.moduleId,
+      routineId: routine.id,
+      parentId: basicosMenuId,
+      label: routine.name,
+      shortLabel: routine.shortLabel,
+      icon: routine.icon,
+      link: routine.path,
+      sortOrder: routine.sortOrder,
+      isActive: true,
+    });
+  }
 
   let cadastrosMenuId: number | null = null;
 
@@ -154,6 +204,7 @@ async function main() {
     professionalsRoutine,
     contractsRoutine,
     holidaysRoutine,
+    attributesRoutine,
   ]) {
     if (!routine) continue;
     await ensureMenu(routine.path, {
@@ -169,28 +220,33 @@ async function main() {
     });
   }
 
-  if (appointmentsListRoutine) {
-    await ensureMenu(appointmentsListRoutine.path, {
-      moduleId: appointmentsListRoutine.moduleId,
-      routineId: appointmentsListRoutine.id,
-      label: appointmentsListRoutine.name,
-      shortLabel: appointmentsListRoutine.shortLabel,
-      icon: appointmentsListRoutine.icon,
-      link: appointmentsListRoutine.path,
-      sortOrder: appointmentsListRoutine.sortOrder,
+  const atendimentosModule = allModules.find((item) => item.key === 'atendimentos');
+  let atendimentosMenuId: number | null = null;
+  if (atendimentosModule) {
+    const atendimentosMenu = await ensureMenu('Atendimentos', {
+      moduleId: atendimentosModule.id,
+      routineId: null,
+      label: 'Atendimentos',
+      shortLabel: 'ATD',
+      icon: 'an an-calendar-check',
+      link: null, // parent
+      sortOrder: 40,
       isActive: true,
     });
+    atendimentosMenuId = atendimentosMenu.id;
   }
 
-  if (appointmentsCalendarRoutine) {
-    await ensureMenu(appointmentsCalendarRoutine.path, {
-      moduleId: appointmentsCalendarRoutine.moduleId,
-      routineId: appointmentsCalendarRoutine.id,
-      label: appointmentsCalendarRoutine.name,
-      shortLabel: appointmentsCalendarRoutine.shortLabel,
-      icon: appointmentsCalendarRoutine.icon,
-      link: appointmentsCalendarRoutine.path,
-      sortOrder: appointmentsCalendarRoutine.sortOrder,
+  for (const routine of [appointmentsListRoutine, appointmentsCalendarRoutine]) {
+    if (!routine) continue;
+    await ensureMenu(routine.path, {
+      moduleId: routine.moduleId,
+      routineId: routine.id,
+      parentId: atendimentosMenuId,
+      label: routine.name,
+      shortLabel: routine.shortLabel,
+      icon: routine.icon,
+      link: routine.path,
+      sortOrder: routine.sortOrder,
       isActive: true,
     });
   }
@@ -215,13 +271,7 @@ async function main() {
     settingsEmpresasRoutine,
     settingsModulesRoutine,
     settingsRoutinesRoutine,
-    settingsProfilesRoutine,
     settingsMenusRoutine,
-    settingsUsersRoutine,
-    settingsEstadosRoutine,
-    settingsMunicipiosRoutine,
-    settingsCepsRoutine,
-    settingsPaisesRoutine,
   ]) {
     if (!routine) {
       continue;
@@ -231,6 +281,37 @@ async function main() {
       moduleId: routine.moduleId,
       routineId: routine.id,
       parentId: settingsMenuId,
+      label: routine.name,
+      shortLabel: routine.shortLabel,
+      icon: routine.icon,
+      link: routine.path,
+      sortOrder: routine.sortOrder,
+      isActive: true,
+    });
+  }
+
+  const usuariosModule = allModules.find((item) => item.key === 'usuarios');
+  let usuarioMenuId: number | null = null;
+  if (usuariosModule) {
+    const usuarioMenu = await ensureMenu('Usuário', {
+      moduleId: usuariosModule.id,
+      routineId: null,
+      label: 'Usuário',
+      shortLabel: 'USR',
+      icon: 'an an-user-circle',
+      link: null, // parent
+      sortOrder: 80,
+      isActive: true,
+    });
+    usuarioMenuId = usuarioMenu.id;
+  }
+
+  for (const routine of [settingsProfilesRoutine, settingsUsersRoutine]) {
+    if (!routine) continue;
+    await ensureMenu(routine.path, {
+      moduleId: routine.moduleId,
+      routineId: routine.id,
+      parentId: usuarioMenuId,
       label: routine.name,
       shortLabel: routine.shortLabel,
       icon: routine.icon,
@@ -250,7 +331,7 @@ async function main() {
     },
   });
 
-  // 3. Perfil Administrador
+  // 3. Perfis
   const profile = await prisma.profile.upsert({
     where: { name: 'Administrador' },
     update: {},
@@ -259,19 +340,32 @@ async function main() {
     },
   });
 
-  // Vincula o perfil a todos os módulos
-  for (const mod of allModules) {
-    await prisma.profileModule.upsert({
+  await prisma.profile.upsert({
+    where: { name: 'Analista' },
+    update: {},
+    create: { name: 'Analista' },
+  });
+
+  await prisma.profile.upsert({
+    where: { name: 'Gerente' },
+    update: {},
+    create: { name: 'Gerente' },
+  });
+
+  // Vincula o perfil Administrador a todos os menus
+  const allMenusForProfile = await prisma.menu.findMany();
+  for (const menu of allMenusForProfile) {
+    await prisma.profileMenu.upsert({
       where: {
-        profileId_moduleId: {
+        profileId_menuId: {
           profileId: profile.id,
-          moduleId: mod.id,
+          menuId: menu.id,
         },
       },
       update: { canRead: true, canWrite: true },
       create: {
         profileId: profile.id,
-        moduleId: mod.id,
+        menuId: menu.id,
         canRead: true,
         canWrite: true,
       },
@@ -318,6 +412,12 @@ async function main() {
       },
     });
   }
+
+  // Garante que o usuário ricardo@bjsoft.com.br (quando existir) use o perfil Administrador
+  await prisma.user.updateMany({
+    where: { email: 'ricardo@bjsoft.com.br' },
+    data: { profileId: profile.id },
+  });
 
   // 5. Feriados (2026 e 2027)
   const feriadosNacionais = [

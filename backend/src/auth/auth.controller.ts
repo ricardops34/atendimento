@@ -43,8 +43,8 @@ export class AuthController {
       include: {
         profile: {
           include: {
-            profileModules: {
-              include: { module: true },
+            profileMenus: {
+              include: { menu: { include: { module: true, routine: { include: { module: true } } } } },
             },
           },
         },
@@ -71,8 +71,8 @@ export class AuthController {
       include: {
         profile: {
           include: {
-            profileModules: {
-              include: { module: true },
+            profileMenus: {
+              include: { menu: { include: { module: true, routine: { include: { module: true } } } } },
             },
           },
         },

@@ -22,6 +22,7 @@ import { MunicipiosModule } from './municipios/municipios.module';
 import { CepsModule } from './ceps/ceps.module';
 import { LocalidadesModule } from './localidades/localidades.module';
 import { PaisesModule } from './paises/paises.module';
+import { AtributosModule } from './atributos/atributos.module';
 
 @Module({
   imports: [
@@ -43,7 +44,8 @@ import { PaisesModule } from './paises/paises.module';
     MunicipiosModule,
     CepsModule,
     LocalidadesModule,
-    PaisesModule
+    PaisesModule,
+    AtributosModule
   ],
   controllers: [AppController],
   providers: [

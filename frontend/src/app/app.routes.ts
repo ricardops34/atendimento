@@ -4,6 +4,11 @@ import { authGuard } from './core/auth/auth.guard';
 export const routes: Routes = [
   { path: '', redirectTo: 'agendamentos/lista', pathMatch: 'full' },
   {
+    path: 'dashboard',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/home/home.page').then((m) => m.HomePage),
+  },
+  {
     path: 'login',
     loadComponent: () => import('./features/auth/login/login.component').then((m) => m.LoginComponent),
   },
@@ -68,6 +73,21 @@ export const routes: Routes = [
     loadComponent: () => import('./features/cadastros-apoio/feriados/feriados-edit.page').then((m) => m.FeriadosEditPage),
   },
   {
+    path: 'atributos',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/cadastros-apoio/atributos/atributos.page').then((m) => m.AtributosPage),
+  },
+  {
+    path: 'atributos/novo',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/cadastros-apoio/atributos/atributos-edit.page').then((m) => m.AtributosEditPage),
+  },
+  {
+    path: 'atributos/:id/editar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/cadastros-apoio/atributos/atributos-edit.page').then((m) => m.AtributosEditPage),
+  },
+  {
     path: 'configuracoes/paises',
     canActivate: [authGuard],
     loadComponent: () => import('./features/cadastros-apoio/paises/paises.page').then((m) => m.PaisesPage),
@@ -108,9 +128,29 @@ export const routes: Routes = [
     loadComponent: () => import('./features/configuracoes/modulos/modulos.page').then((m) => m.ModulosPage),
   },
   {
+    path: 'configuracoes/modulos/novo',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/modulos/modulos-edit.page').then((m) => m.ModulosEditPage),
+  },
+  {
+    path: 'configuracoes/modulos/:id/editar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/modulos/modulos-edit.page').then((m) => m.ModulosEditPage),
+  },
+  {
     path: 'configuracoes/rotinas',
     canActivate: [authGuard],
     loadComponent: () => import('./features/configuracoes/rotinas/rotinas.page').then((m) => m.RotinasPage),
+  },
+  {
+    path: 'configuracoes/rotinas/novo',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/rotinas/rotinas-edit.page').then((m) => m.RotinasEditPage),
+  },
+  {
+    path: 'configuracoes/rotinas/:id/editar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/rotinas/rotinas-edit.page').then((m) => m.RotinasEditPage),
   },
   {
     path: 'configuracoes/perfis',
@@ -118,14 +158,44 @@ export const routes: Routes = [
     loadComponent: () => import('./features/configuracoes/perfis/perfis.page').then((m) => m.PerfisPage),
   },
   {
+    path: 'configuracoes/perfis/novo',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/perfis/perfis-edit.page').then((m) => m.PerfisEditPage),
+  },
+  {
+    path: 'configuracoes/perfis/:id/editar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/perfis/perfis-edit.page').then((m) => m.PerfisEditPage),
+  },
+  {
     path: 'configuracoes/menus',
     canActivate: [authGuard],
     loadComponent: () => import('./features/configuracoes/menus/menus.page').then((m) => m.MenusPage),
   },
   {
+    path: 'configuracoes/menus/novo',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/menus/menus-edit.page').then((m) => m.MenusEditPage),
+  },
+  {
+    path: 'configuracoes/menus/:id/editar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/menus/menus-edit.page').then((m) => m.MenusEditPage),
+  },
+  {
     path: 'configuracoes/usuarios',
     canActivate: [authGuard],
     loadComponent: () => import('./features/configuracoes/usuarios/usuarios.page').then((m) => m.UsuariosPage),
+  },
+  {
+    path: 'configuracoes/usuarios/novo',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/usuarios/usuarios-edit.page').then((m) => m.UsuariosEditPage),
+  },
+  {
+    path: 'configuracoes/usuarios/:id/editar',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/configuracoes/usuarios/usuarios-edit.page').then((m) => m.UsuariosEditPage),
   },
   {
     path: 'configuracoes/estados',

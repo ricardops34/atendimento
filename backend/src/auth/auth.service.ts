@@ -31,8 +31,8 @@ export class AuthService {
       include: {
         profile: {
           include: {
-            profileModules: {
-              include: { module: true },
+            profileMenus: {
+              include: { menu: { include: { module: true, routine: { include: { module: true } } } } },
             },
           },
         },
@@ -104,11 +104,17 @@ export class AuthService {
       throw new UnauthorizedException('Usuário sem vínculo com empresa.');
     }
 
-    const modules = (user.profile?.profileModules || [])
-      .filter((pm: any) => pm.canRead)
-      .map((pm: any) => pm.module.key);
+    const grantedMenus = (user.profile?.profileMenus || []).filter((pm: any) => pm.canRead);
 
-    const menus = await this.getMenusForModules(modules);
+    const modules = Array.from(
+      new Set(
+        grantedMenus
+          .map((pm: any) => pm.menu?.module?.key || pm.menu?.routine?.module?.key)
+          .filter(Boolean),
+      ),
+    ) as string[];
+
+    const menus = await this.getMenusForProfile(grantedMenus.map((pm: any) => pm.menuId));
 
     return {
       id: user.id,
@@ -142,8 +148,8 @@ export class AuthService {
         include: {
           profile: {
             include: {
-              profileModules: {
-                include: { module: true },
+              profileMenus: {
+                include: { menu: { include: { module: true, routine: { include: { module: true } } } } },
               },
             },
           },
@@ -168,8 +174,8 @@ export class AuthService {
       include: {
         profile: {
           include: {
-            profileModules: {
-              include: { module: true },
+            profileMenus: {
+              include: { menu: { include: { module: true, routine: { include: { module: true } } } } },
             },
           },
         },
@@ -226,31 +232,36 @@ export class AuthService {
     return null;
   }
 
-  private async getMenusForModules(moduleKeys: string[]): Promise<SessionMenuItem[]> {
-    const allowedModuleKeys = moduleKeys.filter(Boolean);
-
-    if (!allowedModuleKeys.length) {
-      return [];
-    }
-
-    const items = await this.prisma.menu.findMany({
-      where: {
-        isActive: true,
-        OR: [
-          {
-            moduleId: null,
-            routineId: null,
-          },
-          { module: { key: { in: allowedModuleKeys } } },
-          { routine: { module: { key: { in: allowedModuleKeys } } } },
-        ],
-      },
-      include: {
-        routine: true,
-      },
+  private async getMenusForProfile(grantedMenuIds: number[]): Promise<SessionMenuItem[]> {
+    const allMenus = await this.prisma.menu.findMany({
+      where: { isActive: true },
+      include: { routine: true },
       orderBy: [{ sortOrder: 'asc' }, { label: 'asc' }],
     });
 
+    const byId = new Map(allMenus.map((item: any) => [item.id, item]));
+    const visibleIds = new Set<number>();
+
+    for (const menuId of grantedMenuIds) {
+      let current = byId.get(menuId);
+      while (current) {
+        visibleIds.add(current.id);
+        current = current.parentId ? byId.get(current.parentId) : undefined;
+      }
+    }
+
+    // Itens sem módulo/rotina (ex: "Inicio") ficam sempre visíveis para quem tem sessão.
+    for (const item of allMenus) {
+      if (item.moduleId == null && item.routineId == null) {
+        visibleIds.add(item.id);
+      }
+    }
+
+    if (!visibleIds.size) {
+      return [];
+    }
+
+    const items = allMenus.filter((item: any) => visibleIds.has(item.id));
     return this.buildMenuTree(items, null);
   }
 

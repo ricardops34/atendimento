@@ -10,10 +10,17 @@ import {
   PoLoadingModule,
   PoNotificationService,
   PoPageModule,
+  PoTabsModule,
 } from '@po-ui/ng-components';
 import { ClienteService } from '../../../core/services/cliente.service';
 import { LocalidadeService } from '../../../core/services/localidade.service';
 import { PaisService } from '../../../core/services/pais.service';
+import { AtributoService } from '../../../core/services/atributo.service';
+
+interface ClienteAtributoLinha {
+  atributoId: number | null;
+  conteudo: any;
+}
 
 @Component({
   selector: 'app-clientes-edit-page',
@@ -26,21 +33,26 @@ import { PaisService } from '../../../core/services/pais.service';
     PoButtonModule,
     PoLoadingModule,
     PoDividerModule,
+    PoTabsModule,
   ],
   templateUrl: './clientes-edit.page.html',
 })
 export class ClientesEditPage implements OnInit {
-  private route    = inject(ActivatedRoute);
-  private router   = inject(Router);
-  private svc      = inject(ClienteService);
-  private localSvc = inject(LocalidadeService);
-  private paisSvc  = inject(PaisService);
-  private notify   = inject(PoNotificationService);
+  private route       = inject(ActivatedRoute);
+  private router      = inject(Router);
+  private svc         = inject(ClienteService);
+  private localSvc    = inject(LocalidadeService);
+  private paisSvc     = inject(PaisService);
+  private atributoSvc = inject(AtributoService);
+  private notify      = inject(PoNotificationService);
 
   id: number | null = null;
   loading     = false;
   saving      = false;
   buscandoCep = false;
+
+  private catalogoAtributosPronto = false;
+  private clienteAtributosProntos = false;
 
   tipoPessoaOptions: PoComboOption[] = [
     { label: 'Pessoa Jurídica (PJ)', value: 'PJ' },
@@ -51,6 +63,12 @@ export class ClientesEditPage implements OnInit {
   municipioOptions: PoComboOption[] = [];
   paisOptions: PoComboOption[] = [];
 
+  atributoCatalogo: any[] = [];
+
+  get temAtributosParaCadastro(): boolean {
+    return this.atributoCatalogo.length > 0;
+  }
+
   form: any = {
     tipoPessoa: 'PJ',
     nome: '', razaoSocial: '', cnpj: '', inscricaoEstadual: '', inscricaoMunicipal: '',
@@ -58,6 +76,7 @@ export class ClientesEditPage implements OnInit {
     telefone: '', celular: '', email: '',
     cep: '', logradouro: '', numero: '', complemento: '', bairro: '', municipioId: null, estadoId: null, paisId: null,
     cor: '',
+    atributos: [] as ClienteAtributoLinha[],
   };
 
   get isPJ(): boolean { return this.form.tipoPessoa === 'PJ'; }
@@ -66,10 +85,14 @@ export class ClientesEditPage implements OnInit {
   ngOnInit() {
     this.loadEstados();
     this.loadPaises();
+    this.loadAtributoCatalogo();
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.id = Number(idParam);
       this.loadData();
+    } else {
+      this.clienteAtributosProntos = true;
+      this.tentarMontarLinhasAtributos();
     }
   }
 
@@ -98,11 +121,15 @@ export class ClientesEditPage implements OnInit {
           estadoId:           data.estadoId           || null,
           paisId:             data.paisId             || null,
           cor:                data.cor                || '',
+          atributos:          data.atributos          || [],
         };
 
         if (this.form.estadoId) {
           this.loadMunicipios(this.form.estadoId, municipioId);
         }
+
+        this.clienteAtributosProntos = true;
+        this.tentarMontarLinhasAtributos();
 
         this.loading = false;
       },
@@ -157,6 +184,85 @@ export class ClientesEditPage implements OnInit {
     });
   }
 
+  loadAtributoCatalogo() {
+    this.atributoSvc.findAll('Cliente').subscribe({
+      next: (list: any[]) => {
+        this.atributoCatalogo = list || [];
+        this.catalogoAtributosPronto = true;
+        this.tentarMontarLinhasAtributos();
+      },
+    });
+  }
+
+  private tentarMontarLinhasAtributos() {
+    if (!this.catalogoAtributosPronto || !this.clienteAtributosProntos) return;
+
+    const existentes: ClienteAtributoLinha[] = this.form.atributos || [];
+    const valoresExistentes = new Map(existentes.map((a) => [a.atributoId, a.conteudo]));
+
+    // Form dinâmico: uma linha para cada atributo ativo do catálogo (já ordenado por sequência).
+    const linhasAtivas = this.atributoCatalogo
+      .filter((a) => a.ativo)
+      .map((a) => ({ atributoId: a.id, conteudo: valoresExistentes.get(a.id) ?? '' }));
+
+    // Preserva valores já preenchidos de atributos que foram desativados depois (não perde histórico).
+    const idsAtivos = new Set(linhasAtivas.map((l) => l.atributoId));
+    const linhasLegado = existentes.filter((a) => !idsAtivos.has(a.atributoId));
+
+    this.form.atributos = [...linhasAtivas, ...linhasLegado];
+  }
+
+  private atributoDoCatalogo(atributoId: number | null) {
+    return this.atributoCatalogo.find((a) => a.id === atributoId);
+  }
+
+  isAtributoObrigatorio(atributoId: number | null): boolean {
+    const atributo = this.atributoDoCatalogo(atributoId);
+    return !!atributo?.obrigatorio && !!atributo?.ativo;
+  }
+
+  isAtributoInativo(atributoId: number | null): boolean {
+    const atributo = this.atributoDoCatalogo(atributoId);
+    return !!atributo && !atributo.ativo;
+  }
+
+  temAtributoLegadoInativo(): boolean {
+    return (this.form.atributos as ClienteAtributoLinha[]).some((a) => this.isAtributoInativo(a.atributoId));
+  }
+
+  labelAtributo(atributoId: number | null): string {
+    const atributo = this.atributoDoCatalogo(atributoId);
+    if (!atributo) return '';
+    let label = atributo.titulo;
+    if (atributo.obrigatorio && atributo.ativo) label += ' *';
+    if (!atributo.ativo) label += ' (inativo)';
+    return label;
+  }
+
+  tipoAtributo(atributoId: number | null): string {
+    return this.atributoDoCatalogo(atributoId)?.tipo || 'Texto';
+  }
+
+  tamanhoAtributo(atributoId: number | null): number | null {
+    return this.atributoDoCatalogo(atributoId)?.tamanho ?? null;
+  }
+
+  larguraAtributo(atributoId: number | null): string {
+    const atributo = this.atributoDoCatalogo(atributoId);
+    const tipo = atributo?.tipo || 'Texto';
+    if (tipo === 'Data' || tipo === 'Numero' || tipo === 'Senha') return 'po-md-3';
+    if (tipo === 'Email') return 'po-md-4';
+
+    const tamanho = atributo?.tamanho || 255;
+    if (tamanho <= 20) return 'po-md-3';
+    if (tamanho <= 60) return 'po-md-4';
+    return 'po-md-6';
+  }
+
+  removerLinhaAtributo(index: number) {
+    this.form.atributos = this.form.atributos.filter((_: ClienteAtributoLinha, i: number) => i !== index);
+  }
+
   buscarCep() {
     const cep = this.form.cep?.replace(/\D/g, '');
     if (!cep || cep.length !== 8) { this.notify.warning('Informe um CEP com 8 dígitos.'); return; }
@@ -192,6 +298,16 @@ export class ClientesEditPage implements OnInit {
 
   save() {
     if (!this.form.nome?.trim()) { this.notify.warning('O nome é obrigatório.'); return; }
+
+    const atributos: ClienteAtributoLinha[] = this.form.atributos || [];
+    for (const item of atributos) {
+      const preenchido = item.conteudo !== null && item.conteudo !== undefined && String(item.conteudo).trim() !== '';
+      if (this.isAtributoObrigatorio(item.atributoId) && !preenchido) {
+        this.notify.warning(`Preencha o atributo obrigatório "${this.atributoDoCatalogo(item.atributoId)?.titulo}".`);
+        return;
+      }
+    }
+
     this.saving = true;
     const payload: any = {
       tipoPessoa: this.form.tipoPessoa === 'PJ' ? 'J' : 'F',
@@ -213,6 +329,11 @@ export class ClientesEditPage implements OnInit {
     if (this.form.paisId) payload.paisId = this.form.paisId;
     if (this.form.cor) payload.cor = this.form.cor;
     if (this.form.dataNascimento) payload.dataNascimento = this.form.dataNascimento;
+
+    const atributosPreenchidos = atributos
+      .filter((a) => a.atributoId && a.conteudo !== null && a.conteudo !== undefined && String(a.conteudo).trim() !== '')
+      .map((a) => ({ atributoId: a.atributoId, conteudo: a.conteudo }));
+    if (atributosPreenchidos.length) payload.atributos = atributosPreenchidos;
 
     const req$ = this.id ? this.svc.update(this.id, payload) : this.svc.create(payload);
     req$.subscribe({

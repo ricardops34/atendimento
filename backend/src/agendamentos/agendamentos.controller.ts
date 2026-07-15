@@ -21,11 +21,11 @@ import { UpdateAgendamentoDto } from './dto/update-agendamento.dto';
 import { GerarMensalDto } from './dto/gerar-mensal.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { EmpresaGuard } from '../auth/guards/empresa.guard';
-import { ModuleGuard } from '../auth/guards/module.guard';
-import { RequireModule } from '../auth/decorators/require-module.decorator';
+import { MenuGuard } from '../auth/guards/menu.guard';
+import { RequireMenu } from '../auth/decorators/require-menu.decorator';
 
-@UseGuards(JwtAuthGuard, EmpresaGuard, ModuleGuard)
-@RequireModule('appointments-list')
+@UseGuards(JwtAuthGuard, EmpresaGuard, MenuGuard)
+@RequireMenu('agendamentos-list')
 @Controller('agendamentos')
 export class AgendamentosController {
   constructor(private readonly agendamentosService: AgendamentosService) {}

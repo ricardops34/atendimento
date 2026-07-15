@@ -37,7 +37,7 @@ describe('AuthService', () => {
       password: await bcrypt.hash('admin123', 4),
       isActive: true,
       profileId: 1,
-      profile: { id: 1, name: 'Administrador', profileModules: [] },
+      profile: { id: 1, name: 'Administrador', profileMenus: [] },
       userEmpresas: [
         {
           empresaId: 1,
@@ -58,7 +58,7 @@ describe('AuthService', () => {
       password: await bcrypt.hash('admin123', 4),
       isActive: true,
       profileId: 1,
-      profile: { id: 1, name: 'Administrador', profileModules: [] },
+      profile: { id: 1, name: 'Administrador', profileMenus: [] },
       userEmpresas: [
         {
           empresaId: 1,
@@ -78,7 +78,7 @@ describe('AuthService', () => {
       email: 'admin@fallback.com',
       name: 'Admin',
       profileId: 1,
-      profile: { id: 1, name: 'Administrador', profileModules: [] },
+      profile: { id: 1, name: 'Administrador', profileMenus: [] },
       userEmpresas: [
         {
           empresaId: 1,
@@ -116,7 +116,7 @@ describe('AuthService', () => {
       profile: {
         id: 1,
         name: 'Administrador',
-        profileModules: [{ canRead: true, module: { key: 'settings' } }],
+        profileMenus: [{ canRead: true, menuId: 11 }],
       },
       userEmpresas: [
         {

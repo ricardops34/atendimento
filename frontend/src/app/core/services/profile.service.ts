@@ -38,6 +38,10 @@ export class ProfileService {
     return this.http.get<ProfileSearchResult>(`${this.apiUrl}/search`, { params: httpParams });
   }
 
+  findOne(id: number) {
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
   create(data: any) {
     return this.http.post<any>(this.apiUrl, data);
   }

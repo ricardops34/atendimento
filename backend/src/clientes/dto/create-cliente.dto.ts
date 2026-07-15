@@ -1,4 +1,14 @@
-import { IsHexColor, IsNotEmpty, IsOptional, IsString, MaxLength, IsEmail, IsNumber } from 'class-validator';
+import { IsHexColor, IsNotEmpty, IsOptional, IsString, MaxLength, IsEmail, IsNumber, IsArray, IsInt, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+export class ClienteAtributoValorDto {
+  @IsInt()
+  atributoId: number;
+
+  // Formato varia conforme o tipo do atributo (Texto/Senha/Email = string, Numero = number, Data = string ISO).
+  @IsOptional()
+  conteudo?: string | number;
+}
 
 export class CreateClienteDto {
   @IsNotEmpty({ message: 'O nome do cliente é obrigatório.' })
@@ -63,4 +73,10 @@ export class CreateClienteDto {
   @IsOptional()
   @IsNumber()
   paisId?: number;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ClienteAtributoValorDto)
+  atributos?: ClienteAtributoValorDto[];
 }

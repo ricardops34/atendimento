@@ -31,7 +31,7 @@ import { ClienteService } from '../../../core/services/cliente.service';
         <po-button
           p-label="Confirmar Exclusão"
           p-kind="danger"
-          p-icon="po-icon-delete"
+          p-icon="an an-trash"
           (p-click)="confirmar()">
         </po-button>
         <po-button

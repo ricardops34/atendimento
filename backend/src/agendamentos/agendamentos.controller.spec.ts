@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { AgendamentosController } from './agendamentos.controller';
 import { AgendamentosService } from './agendamentos.service';
-import { ModuleGuard } from '../auth/guards/module.guard';
+import { MenuGuard } from '../auth/guards/menu.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { TenantGuard } from '../auth/guards/tenant.guard';
 
@@ -34,14 +34,14 @@ describe('AgendamentosController', () => {
       controllers: [AgendamentosController],
       providers: [
         { provide: AgendamentosService, useValue: service },
-        { provide: ModuleGuard, useValue: { canActivate: () => true } },
+        { provide: MenuGuard, useValue: { canActivate: () => true } },
         { provide: JwtAuthGuard, useValue: { canActivate: () => true } },
         { provide: TenantGuard, useValue: { canActivate: () => true } },
       ],
     })
       .overrideGuard(JwtAuthGuard).useValue({ canActivate: () => true })
       .overrideGuard(TenantGuard).useValue({ canActivate: () => true })
-      .overrideGuard(ModuleGuard).useValue({ canActivate: () => true })
+      .overrideGuard(MenuGuard).useValue({ canActivate: () => true })
       .compile();
 
     controller = module.get(AgendamentosController);
