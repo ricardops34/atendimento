@@ -38,13 +38,13 @@ export class AtributosPage {
   readonly apiUrl = `${environment.apiUrl}/atributos/search`;
 
   readonly fields: Array<any> = [
-    { property: 'id', label: 'ID', key: true, width: '10%' },
+    { property: 'id', label: 'ID', key: true, width: '10%', filter: true },
     { property: 'sequencia', label: 'Sequência', width: '10%' },
-    { property: 'titulo', label: 'Título' },
-    { property: 'tipo', label: 'Tipo', width: '12%' },
-    { property: 'cadastro', label: 'Cadastro', width: '12%' },
-    { property: 'obrigatorio', label: 'Obrigatório', type: 'boolean', width: '10%' },
-    { property: 'ativo', label: 'Ativo', type: 'boolean', width: '10%' },
+    { property: 'titulo', label: 'Título', filter: true },
+    { property: 'tipo', label: 'Tipo', width: '12%', filter: true },
+    { property: 'cadastro', label: 'Cadastro', width: '12%', filter: true },
+    { property: 'obrigatorio', label: 'Obrigatório', type: 'boolean', width: '10%', filter: true },
+    { property: 'ativo', label: 'Ativo', type: 'boolean', width: '10%', filter: true },
     { property: 'emUso', label: 'Em Uso', type: 'boolean', width: '10%' },
   ];
 

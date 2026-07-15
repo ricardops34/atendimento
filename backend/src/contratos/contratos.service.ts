@@ -9,6 +9,7 @@ interface ContratoSearchQuery {
   pageSize?: string;
   search?: string;
   descricao?: string;
+  clienteNome?: string;
   clienteId?: string;
   tipo?: string;
   dtInicio?: string;
@@ -181,6 +182,14 @@ export class ContratosService {
 
     if (query.clienteId) {
       andFilters.push({ clienteId: Number(query.clienteId) });
+    }
+
+    if (query.clienteNome?.trim()) {
+      andFilters.push({
+        cliente: {
+          nome: { contains: query.clienteNome.trim(), mode: 'insensitive' },
+        },
+      });
     }
 
     if (query.tipo) {

@@ -32,19 +32,32 @@ export class PaisesService {
     return this.search({ page: 1, pageSize: 9999 });
   }
 
-  async search(query: { page?: number; pageSize?: number; search?: string }) {
+  async search(query: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    id?: string;
+    nome?: string;
+    sigla?: string;
+  }) {
     const page = Number(query.page) || 1;
     const pageSize = Number(query.pageSize) || 10;
     const skip = (page - 1) * pageSize;
 
-    const where: Prisma.PaisWhereInput = query.search
-      ? {
-          OR: [
-            { nome: { contains: query.search, mode: 'insensitive' } },
-            { sigla: { contains: query.search, mode: 'insensitive' } },
-          ],
-        }
-      : {};
+    const where: Prisma.PaisWhereInput = {};
+    if (query.search) {
+      where.OR = [
+        { nome: { contains: query.search, mode: 'insensitive' } },
+        { sigla: { contains: query.search, mode: 'insensitive' } },
+      ];
+    }
+    if (query.id) where.id = Number(query.id);
+    if (query.nome?.trim()) {
+      where.nome = { contains: query.nome.trim(), mode: 'insensitive' };
+    }
+    if (query.sigla?.trim()) {
+      where.sigla = { equals: query.sigla.trim(), mode: 'insensitive' };
+    }
 
     const [items, total] = await Promise.all([
       this.prisma.pais.findMany({

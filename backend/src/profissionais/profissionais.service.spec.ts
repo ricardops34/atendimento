@@ -66,8 +66,8 @@ describe('ProfissionaisService', () => {
       items: [{ id: 1, nome: 'Ana', user: null }],
       page: 2,
       pageSize: 10,
-      total: 5,
-      hasNext: false,
+      total: 25,
+      hasNext: true,
     });
   });
 });

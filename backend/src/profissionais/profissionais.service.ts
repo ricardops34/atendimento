@@ -9,6 +9,7 @@ interface ProfissionalSearchQuery {
   search?: string;
   id?: string;
   nome?: string;
+  userName?: string;
   sortProperty?: string;
   sortDirection?: string;
 }
@@ -85,8 +86,12 @@ export class ProfissionaisService {
       return where;
     }
     const nome = query.nome?.trim() || query.search?.trim();
-    if (!nome) return where;
-    where.nome = { contains: nome, mode: 'insensitive' as const };
+    if (nome) where.nome = { contains: nome, mode: 'insensitive' as const };
+    if (query.userName?.trim()) {
+      where.user = {
+        name: { contains: query.userName.trim(), mode: 'insensitive' as const },
+      };
+    }
     return where;
   }
 

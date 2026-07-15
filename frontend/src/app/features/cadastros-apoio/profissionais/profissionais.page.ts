@@ -21,9 +21,10 @@ export class ProfissionaisPage {
   readonly apiUrl = `${environment.apiUrl}/profissionais/search`;
 
   readonly fields: Array<any> = [
-    { property: 'id', label: 'ID', isKey: true, width: '10%' },
-    { property: 'nome', label: 'Profissional' },
+    { property: 'id', label: 'ID', key: true, width: '10%', filter: true },
+    { property: 'nome', label: 'Profissional', filter: true },
     { property: 'user.name', label: 'Usuário do Sistema' },
+    { property: 'userName', label: 'Usuário do Sistema', visible: false, filter: true, allowColumnsManager: false },
   ];
 
   readonly actions = {

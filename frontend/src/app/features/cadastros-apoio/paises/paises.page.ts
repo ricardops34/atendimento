@@ -21,9 +21,9 @@ export class PaisesPage {
   readonly apiUrl = `${environment.apiUrl}/paises/search`;
 
   readonly fields: Array<any> = [
-    { property: 'id', label: 'Código', isKey: true, width: '10%' },
-    { property: 'nome', label: 'Nome' },
-    { property: 'sigla', label: 'Sigla', width: '15%' },
+    { property: 'id', label: 'Código', key: true, width: '10%', filter: true },
+    { property: 'nome', label: 'Nome', filter: true },
+    { property: 'sigla', label: 'Sigla', width: '15%', filter: true },
   ];
 
   readonly actions = {

@@ -28,11 +28,11 @@ export class ContratosPage {
 
   readonly fields: Array<any> = [
     { property: 'id', label: 'ID', key: true, width: '10%' },
-    { property: 'descricao', label: 'Descrição' },
+    { property: 'descricao', label: 'Descrição', filter: true },
     { property: 'cliente.nome', label: 'Cliente' },
-    { property: 'tipo', label: 'Tipo' },
-    { property: 'dtInicio', label: 'Data Início', type: 'date' },
-    { property: 'dtFim', label: 'Data Fim', type: 'date' },
+    { property: 'tipo', label: 'Tipo', filter: true },
+    { property: 'dtInicio', label: 'Data Início', type: 'date', filter: true },
+    { property: 'dtFim', label: 'Data Fim', type: 'date', filter: true },
     {
       property: 'bloqueadoStatus',
       label: 'Bloqueado',
@@ -42,6 +42,8 @@ export class ContratosPage {
         { value: 'Não', label: 'Não', color: 'color-10' },
       ],
     },
+    { property: 'clienteNome', label: 'Cliente', visible: false, filter: true, allowColumnsManager: false },
+    { property: 'bloqueado', label: 'Bloqueado', type: 'boolean', visible: false, filter: true, allowColumnsManager: false },
   ];
 
   readonly actions = {

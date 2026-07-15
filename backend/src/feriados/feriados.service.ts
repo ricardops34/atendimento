@@ -12,6 +12,8 @@ interface FeriadoSearchQuery {
   ano?: string;
   dataDe?: string;
   dataAte?: string;
+  tipo?: string;
+  fixo?: string;
   sortProperty?: string;
   sortDirection?: string;
 }
@@ -112,6 +114,10 @@ export class FeriadosService {
     const descricao = query.descricao?.trim() || query.search?.trim();
     if (descricao) {
       where.descricao = { contains: descricao, mode: 'insensitive' as const };
+    }
+    if (query.tipo) where.tipo = query.tipo;
+    if (query.fixo === 'true' || query.fixo === 'false') {
+      where.fixo = query.fixo === 'true';
     }
     return where;
   }

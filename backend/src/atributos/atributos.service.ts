@@ -8,7 +8,10 @@ interface AtributoSearchQuery {
   pageSize?: string;
   search?: string;
   id?: string;
+  titulo?: string;
+  tipo?: string;
   cadastro?: string;
+  obrigatorio?: string;
   ativo?: string;
   sortProperty?: string;
   sortDirection?: string;
@@ -141,9 +144,13 @@ export class AtributosService {
     }
 
     if (query.cadastro) where.cadastro = query.cadastro;
+    if (query.tipo) where.tipo = query.tipo;
+    if (query.obrigatorio === 'true' || query.obrigatorio === 'false') {
+      where.obrigatorio = query.obrigatorio === 'true';
+    }
     if (query.ativo !== undefined) where.ativo = query.ativo === 'true';
 
-    const titulo = query.search?.trim();
+    const titulo = query.titulo?.trim() || query.search?.trim();
     if (titulo) where.titulo = { contains: titulo, mode: 'insensitive' as const };
 
     return where;

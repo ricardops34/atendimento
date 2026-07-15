@@ -44,15 +44,18 @@ export class FeriadosPage {
   gerando = false;
 
   readonly fields: Array<any> = [
-    { property: 'id', label: 'ID', isKey: true, width: '10%' },
+    { property: 'id', label: 'ID', key: true, width: '10%', filter: true },
     { property: 'data', label: 'Data', type: 'date', width: '15%' },
-    { property: 'descricao', label: 'Descrição' },
-    { property: 'tipo', label: 'Tipo', type: 'label', labels: [
+    { property: 'descricao', label: 'Descrição', filter: true },
+    { property: 'tipo', label: 'Tipo', type: 'label', filter: true, labels: [
       { value: 'N', label: 'Nacional', color: 'color-10' },
       { value: 'E', label: 'Estadual', color: 'color-08' },
       { value: 'M', label: 'Municipal', color: 'color-07' }
     ]},
-    { property: 'fixo', label: 'Fixo', type: 'boolean' }
+    { property: 'fixo', label: 'Fixo', type: 'boolean', filter: true },
+    { property: 'ano', label: 'Ano', type: 'number', visible: false, filter: true, allowColumnsManager: false },
+    { property: 'dataDe', label: 'Data de', type: 'date', visible: false, filter: true, allowColumnsManager: false },
+    { property: 'dataAte', label: 'Data até', type: 'date', visible: false, filter: true, allowColumnsManager: false },
   ];
 
   readonly actions = {
