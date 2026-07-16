@@ -18,7 +18,7 @@ import { environment } from '../../../../environments/environment';
   `,
 })
 export class PerfisPage {
-  readonly apiUrl = `${environment.apiUrl}/profiles/search`;
+  readonly apiUrl = `${environment.apiUrl}/profiles`;
 
   fields: PoPageDynamicTableField[] = [
     { property: 'id', label: 'ID', key: true, visible: true, filter: true },

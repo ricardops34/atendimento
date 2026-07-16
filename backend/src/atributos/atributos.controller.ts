@@ -22,9 +22,9 @@ export class AtributosController {
   }
 
   @Get()
-  findAll(@Query('cadastro') cadastro: string, @Query('ativo') ativo: string, @Request() req: any) {
+  findAll(@Query() query: any, @Request() req: any) {
     const tenantId = req.user.tenantId;
-    return this.atributosService.findAll(tenantId, cadastro, ativo !== undefined ? ativo === 'true' : undefined);
+    return this.atributosService.search(query, tenantId);
   }
 
   @Get(':id')

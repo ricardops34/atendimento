@@ -242,7 +242,7 @@ export class AuthService {
       .map(({ module, items: moduleItems }) => ({
         label: module.name,
         shortLabel: module.name.substring(0, 3).toUpperCase(),
-        icon: moduleItems[0]?.routine?.icon ?? 'an an-folder',
+        icon: module.icon ?? moduleItems[0]?.routine?.icon ?? 'an an-folder',
         subItems: moduleItems
           .sort((a, b) => (a.sortOrder - b.sortOrder) || a.routine.name.localeCompare(b.routine.name))
           .map((item) => ({

@@ -38,7 +38,7 @@ export class FeriadosPage {
   private feriadoService = inject(FeriadoService);
   private poNotification = inject(PoNotificationService);
 
-  readonly apiUrl = `${environment.apiUrl}/feriados/search`;
+  readonly apiUrl = `${environment.apiUrl}/feriados`;
 
   ano = new Date().getFullYear();
   gerando = false;

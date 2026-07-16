@@ -26,8 +26,8 @@ export class PaisesController {
   }
 
   @Get()
-  findAll() {
-    return this.paisesService.findAll();
+  findAll(@Query() query: any) {
+    return this.paisesService.search(query);
   }
 
   @Get('search')

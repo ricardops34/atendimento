@@ -35,7 +35,7 @@ export class AtributosPage {
   private poDialog = inject(PoDialogService);
   private poNotification = inject(PoNotificationService);
 
-  readonly apiUrl = `${environment.apiUrl}/atributos/search`;
+  readonly apiUrl = `${environment.apiUrl}/atributos`;
 
   readonly fields: Array<any> = [
     { property: 'id', label: 'ID', key: true, width: '10%', filter: true },

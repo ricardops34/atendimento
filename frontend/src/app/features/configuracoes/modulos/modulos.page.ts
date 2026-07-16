@@ -18,7 +18,7 @@ import { environment } from '../../../../environments/environment';
   `,
 })
 export class ModulosPage {
-  readonly apiUrl = `${environment.apiUrl}/modules/search`;
+  readonly apiUrl = `${environment.apiUrl}/modules`;
 
   fields: PoPageDynamicTableField[] = [
     { property: 'id', label: 'ID', key: true, visible: true, filter: true },

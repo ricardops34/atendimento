@@ -24,7 +24,7 @@ export class ContratosPage {
   private contratoService = inject(ContratoService);
   private notification = inject(PoNotificationService);
 
-  readonly apiUrl = `${environment.apiUrl}/contratos/search`;
+  readonly apiUrl = `${environment.apiUrl}/contratos`;
 
   readonly fields: Array<any> = [
     { property: 'id', label: 'ID', key: true, width: '10%' },

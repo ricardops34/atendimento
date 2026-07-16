@@ -18,7 +18,7 @@ import { environment } from '../../../../environments/environment';
   `,
 })
 export class ProfissionaisPage {
-  readonly apiUrl = `${environment.apiUrl}/profissionais/search`;
+  readonly apiUrl = `${environment.apiUrl}/profissionais`;
 
   readonly fields: Array<any> = [
     { property: 'id', label: 'ID', key: true, width: '10%', filter: true },

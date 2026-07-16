@@ -9,7 +9,7 @@ export class MenusController {
   create(@Body() data: any) { return this.service.create(data); }
 
   @Get()
-  findAll() { return this.service.findAll(); }
+  findAll(@Query() query: Record<string, string | undefined>) { return this.service.search(query); }
 
   @Get('search')
   search(@Query() query: Record<string, string | undefined>) { return this.service.search(query); }

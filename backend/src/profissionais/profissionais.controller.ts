@@ -13,8 +13,8 @@ export class ProfissionaisController {
   }
 
   @Get()
-  findAll(@Request() req: any) {
-    return this.profissionaisService.findAll(req.empresaId as number);
+  findAll(@Query() query: Record<string, string | undefined>, @Request() req: any) {
+    return this.profissionaisService.search(query, req.empresaId as number);
   }
 
   @Get('search')

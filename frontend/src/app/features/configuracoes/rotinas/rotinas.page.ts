@@ -18,7 +18,7 @@ import { environment } from '../../../../environments/environment';
   `,
 })
 export class RotinasPage {
-  readonly apiUrl = `${environment.apiUrl}/routines/search`;
+  readonly apiUrl = `${environment.apiUrl}/routines`;
 
   fields: PoPageDynamicTableField[] = [
     { property: 'id', label: 'ID', key: true, visible: true, filter: true },

@@ -13,9 +13,8 @@ export class ContratosController {
   }
 
   @Get()
-  findAll(@Request() req: any, @Query('bloqueado') bloqueado?: string) {
-    const isBloqueado = bloqueado === 'true' ? true : bloqueado === 'false' ? false : undefined;
-    return this.contratosService.findAll(req.user.empresaId as number, isBloqueado);
+  findAll(@Query() query: Record<string, string | undefined>, @Request() req: any) {
+    return this.contratosService.search(query, req.user.empresaId as number);
   }
 
   @Get('search')

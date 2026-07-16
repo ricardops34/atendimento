@@ -11,8 +11,8 @@ export class RoutinesController {
   }
 
   @Get()
-  findAll() {
-    return this.service.findAll();
+  findAll(@Query() query: Record<string, string | undefined>) {
+    return this.service.search(query);
   }
 
   @Get('search')

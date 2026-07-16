@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface ProfileSearchParams {
@@ -25,7 +26,7 @@ export class ProfileService {
   private apiUrl = `${environment.apiUrl}/profiles`;
 
   findAll() {
-    return this.http.get<any[]>(this.apiUrl);
+    return this.http.get<ProfileSearchResult>(this.apiUrl).pipe(map((res) => res.items));
   }
 
   search(params: ProfileSearchParams) {

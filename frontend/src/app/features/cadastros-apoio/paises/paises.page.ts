@@ -18,7 +18,7 @@ import { environment } from '../../../../environments/environment';
   `,
 })
 export class PaisesPage {
-  readonly apiUrl = `${environment.apiUrl}/paises/search`;
+  readonly apiUrl = `${environment.apiUrl}/paises`;
 
   readonly fields: Array<any> = [
     { property: 'id', label: 'Código', key: true, width: '10%', filter: true },

@@ -29,9 +29,9 @@ export class FeriadosController {
   }
 
   @Get()
-  findAll(@Request() req: any) {
+  findAll(@Query() query: any, @Request() req: any) {
     const tenantId = req.user.tenantId;
-    return this.feriadosService.findAll(tenantId);
+    return this.feriadosService.search(query, tenantId);
   }
 
   @Get(':id')

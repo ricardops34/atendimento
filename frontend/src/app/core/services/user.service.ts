@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface UserSearchParams {
@@ -29,7 +30,7 @@ export class UserService {
   private apiUrl = `${environment.apiUrl}/users`;
 
   findAll() {
-    return this.http.get<any[]>(this.apiUrl);
+    return this.http.get<UserSearchResult>(this.apiUrl).pipe(map((res) => res.items));
   }
 
   search(params: UserSearchParams) {
