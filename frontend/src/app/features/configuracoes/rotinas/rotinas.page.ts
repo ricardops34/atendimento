@@ -1,7 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PoPageDynamicTableModule, PoPageDynamicTableActions, PoPageDynamicTableField } from '@po-ui/ng-templates';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { PoPageDynamicTableModule, PoPageDynamicTableActions, PoPageDynamicTableField, PoPageDynamicTableComponent } from '@po-ui/ng-templates';
+import { PoDialogService, PoNotificationService } from '@po-ui/ng-components';
 import { environment } from '../../../../environments/environment';
+import { buildEditDeleteActions } from '../../../core/table-row-actions.util';
 
 @Component({
   selector: 'app-rotinas-page',
@@ -9,15 +13,24 @@ import { environment } from '../../../../environments/environment';
   imports: [CommonModule, PoPageDynamicTableModule],
   template: `
     <po-page-dynamic-table
+      #dynamicTable
       p-title="Rotinas"
       [p-service-api]="apiUrl"
       [p-fields]="fields"
       [p-actions]="actions"
+      [p-table-custom-actions]="tableCustomActions"
       [p-hide-columns-manager]="true">
     </po-page-dynamic-table>
   `,
 })
 export class RotinasPage {
+  @ViewChild('dynamicTable', { static: true }) dynamicTable!: PoPageDynamicTableComponent;
+
+  private router = inject(Router);
+  private http = inject(HttpClient);
+  private dialog = inject(PoDialogService);
+  private notification = inject(PoNotificationService);
+
   readonly apiUrl = `${environment.apiUrl}/routines`;
 
   fields: PoPageDynamicTableField[] = [
@@ -31,7 +44,17 @@ export class RotinasPage {
 
   actions: PoPageDynamicTableActions = {
     new: 'configuracoes/rotinas/novo',
-    edit: 'configuracoes/rotinas/:id/editar',
-    remove: true,
   };
+
+  readonly tableCustomActions = buildEditDeleteActions({
+    router: this.router,
+    http: this.http,
+    dialog: this.dialog,
+    notification: this.notification,
+    apiUrl: this.apiUrl,
+    entityLabel: 'Rotina',
+    editPath: (resource) => ['/configuracoes/rotinas', resource.id, 'editar'],
+    confirmLabel: (resource) => resource.name,
+    refresh: () => this.dynamicTable.updateDataTable(),
+  });
 }
