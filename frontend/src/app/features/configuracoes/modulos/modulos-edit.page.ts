@@ -18,7 +18,14 @@ import { MODULE_ICON_OPTIONS } from './module-icon-options';
         <po-number class="po-md-2" p-label="Ordem" [ngModel]="formData.sortOrder" (ngModelChange)="formData.sortOrder = $event" name="sortOrder"></po-number>
       </div>
       <div class="po-row">
-        <po-combo class="po-md-5" p-label="Icone" [p-options]="iconOptions" [ngModel]="formData.icon" (ngModelChange)="formData.icon = $event" name="icon"></po-combo>
+        <po-combo class="po-md-5" p-label="Icone" [p-options]="iconOptions" [ngModel]="formData.icon" (ngModelChange)="formData.icon = $event" name="icon">
+          <ng-template p-combo-option-template let-option>
+            <div class="modulo-icon-option">
+              <i [class]="option.value"></i>
+              <span>{{ option.label }}</span>
+            </div>
+          </ng-template>
+        </po-combo>
         <div class="po-md-2 modulo-icon-preview">
           <i *ngIf="formData.icon" [class]="formData.icon"></i>
         </div>
@@ -27,6 +34,8 @@ import { MODULE_ICON_OPTIONS } from './module-icon-options';
   `,
   styles: [`
     .modulo-icon-preview { display: flex; align-items: center; font-size: 28px; }
+    .modulo-icon-option { display: flex; align-items: center; gap: 8px; }
+    .modulo-icon-option i { font-size: 18px; width: 20px; text-align: center; }
   `],
 })
 export class ModulosEditPage implements OnInit {

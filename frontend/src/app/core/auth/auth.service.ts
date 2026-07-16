@@ -4,6 +4,14 @@ import { tap, Observable } from 'rxjs';
 import { EmpresaStateService } from './empresa-state.service';
 import { environment } from '../../../environments/environment';
 
+// O token de sessão vai só no cookie httpOnly setado pelo backend — o
+// JavaScript nunca tem acesso a ele (proteção contra roubo via XSS).
+// Esta chave de localStorage guarda só uma "dica" não sensível de UI,
+// pra rotas guardadas no frontend não precisarem esperar uma chamada de
+// rede antes de decidir se mostram a tela ou redirecionam pro login. Quem
+// garante a autorização de verdade é sempre o backend, em cada requisição.
+const LOGGED_IN_HINT = 'logged_in_hint';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -16,8 +24,8 @@ export class AuthService {
   login(credentials: any): Observable<any> {
     return this.http.post<any>(`${this.API_URL}/auth/login`, credentials).pipe(
       tap(res => {
-        if (res && res.accessToken) {
-          localStorage.setItem('access_token', res.accessToken);
+        if (res && res.user) {
+          localStorage.setItem(LOGGED_IN_HINT, '1');
           this.empresaState.setSession(res);
         }
       })
@@ -28,6 +36,7 @@ export class AuthService {
     return this.http.get<any>(`${this.API_URL}/auth/me`).pipe(
       tap(res => {
         if (res) {
+          localStorage.setItem(LOGGED_IN_HINT, '1');
           this.empresaState.setSession({ user: res });
         }
       })
@@ -37,8 +46,8 @@ export class AuthService {
   switchEmpresa(empresaId: number): Observable<any> {
     return this.http.post<any>(`${this.API_URL}/auth/switch-empresa`, { empresaId }).pipe(
       tap(res => {
-        if (res && res.accessToken) {
-          localStorage.setItem('access_token', res.accessToken);
+        if (res && res.user) {
+          localStorage.setItem(LOGGED_IN_HINT, '1');
           this.empresaState.setSession(res);
         }
       })
@@ -55,17 +64,20 @@ export class AuthService {
     );
   }
 
-  logout() {
-    localStorage.removeItem('access_token');
+  logout(): Observable<any> {
+    return this.http.post(`${this.API_URL}/auth/logout`, {}).pipe(
+      tap(() => this.clearLocalSession())
+    );
+  }
+
+  // Limpeza só do estado local (sem chamar o backend) — usada quando uma
+  // requisição já voltou 401, ou seja, o cookie já não é mais válido.
+  clearLocalSession() {
+    localStorage.removeItem(LOGGED_IN_HINT);
     this.empresaState.clearSession();
   }
 
-  getToken(): string | null {
-    return localStorage.getItem('access_token');
-  }
-
   isAuthenticated(): boolean {
-    const token = this.getToken();
-    return !!token && token !== 'null' && token !== 'undefined';
+    return localStorage.getItem(LOGGED_IN_HINT) === '1';
   }
 }

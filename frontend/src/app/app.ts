@@ -285,7 +285,7 @@ export class App {
   }
 
   logout() {
-    this.authService.logout();
+    this.authService.logout().subscribe();
     this.router.navigate(['/login']);
   }
 
