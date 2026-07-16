@@ -206,7 +206,7 @@ export class FeriadosService {
 
     if (gerados > 0) {
       try {
-        await this.prisma.$executeRawUnsafe(`SELECT setval(pg_get_serial_sequence('feriado', 'id'), coalesce(max(id),0) + 1, false) FROM feriado;`);
+        await this.prisma.$executeRaw`SELECT setval(pg_get_serial_sequence('feriado', 'id'), coalesce(max(id),0) + 1, false) FROM feriado;`;
       } catch (e) {
         // Ignorar se não for Postgres ou der erro na sequence
       }

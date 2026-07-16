@@ -4,9 +4,13 @@ import { CreateFeriadoDto } from './dto/create-feriado.dto';
 import { UpdateFeriadoDto } from './dto/update-feriado.dto';
 import { GerarNacionaisDto } from './dto/gerar-nacionais.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { EmpresaGuard } from '../auth/guards/empresa.guard';
+import { MenuGuard } from '../auth/guards/menu.guard';
+import { RequireMenu } from '../auth/decorators/require-menu.decorator';
 
 @Controller('feriados')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, EmpresaGuard, MenuGuard)
+@RequireMenu('feriados-list')
 export class FeriadosController {
   constructor(private readonly feriadosService: FeriadosService) {}
 

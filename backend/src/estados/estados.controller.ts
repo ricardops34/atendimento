@@ -1,9 +1,12 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { EstadosService } from './estados.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { MenuGuard } from '../auth/guards/menu.guard';
+import { RequireMenu } from '../auth/decorators/require-menu.decorator';
 
 @Controller('estados')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, MenuGuard)
+@RequireMenu('configuracoes-estados')
 export class EstadosController {
   constructor(private readonly estadosService: EstadosService) {}
 

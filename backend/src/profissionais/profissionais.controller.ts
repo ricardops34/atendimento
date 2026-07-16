@@ -1,8 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Put, Param, Delete, ParseIntPipe, Query, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Put, Param, Delete, ParseIntPipe, Query, Request, UseGuards } from '@nestjs/common';
 import { ProfissionaisService } from './profissionais.service';
 import { CreateProfissionalDto } from './dto/create-profissional.dto';
 import { UpdateProfissionalDto } from './dto/update-profissional.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { EmpresaGuard } from '../auth/guards/empresa.guard';
+import { MenuGuard } from '../auth/guards/menu.guard';
+import { RequireMenu } from '../auth/decorators/require-menu.decorator';
 
+@UseGuards(JwtAuthGuard, EmpresaGuard, MenuGuard)
+@RequireMenu('profissionais-list')
 @Controller('profissionais')
 export class ProfissionaisController {
   constructor(private readonly profissionaisService: ProfissionaisService) {}

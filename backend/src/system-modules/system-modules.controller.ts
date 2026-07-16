@@ -1,12 +1,19 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { SystemModulesService } from './system-modules.service';
+import { CreateModuleDto } from './dto/create-module.dto';
+import { UpdateModuleDto } from './dto/update-module.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { MenuGuard } from '../auth/guards/menu.guard';
+import { RequireMenu } from '../auth/decorators/require-menu.decorator';
 
+@UseGuards(JwtAuthGuard, MenuGuard)
+@RequireMenu('configuracoes-modulos')
 @Controller('modules')
 export class SystemModulesController {
   constructor(private readonly service: SystemModulesService) {}
 
   @Post()
-  create(@Body() data: any) {
+  create(@Body() data: CreateModuleDto) {
     return this.service.create(data);
   }
 
@@ -26,7 +33,7 @@ export class SystemModulesController {
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateModuleDto) {
     return this.service.update(id, data);
   }
 
