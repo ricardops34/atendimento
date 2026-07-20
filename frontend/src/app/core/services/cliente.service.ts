@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface ClienteSearchParams {
@@ -26,7 +27,7 @@ export class ClienteService {
   private apiUrl = `${environment.apiUrl}/clientes`;
 
   findAll() {
-    return this.http.get<any[]>(this.apiUrl);
+    return this.http.get<ClienteSearchResult>(this.apiUrl).pipe(map((res) => res.items));
   }
 
   findOne(id: number) {

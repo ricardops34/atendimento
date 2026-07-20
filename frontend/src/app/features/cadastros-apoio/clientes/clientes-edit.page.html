@@ -27,11 +27,16 @@
           [ngModel]="form.razaoSocial" (ngModelChange)="form.razaoSocial = $event">
         </po-input>
       </div>
-      <div class="po-row" *ngIf="isPJ">
-        <po-input class="po-md-4" p-label="CNPJ" name="cnpj"
+      <div class="po-row" *ngIf="isPJ" style="align-items: flex-end;">
+        <po-input class="po-md-3" p-label="CNPJ" name="cnpj"
           p-mask="99.999.999/9999-99" p-placeholder="00.000.000/0000-00"
           [ngModel]="form.cnpj" (ngModelChange)="form.cnpj = $event">
         </po-input>
+        <div class="po-md-1" style="padding-bottom: 8px;">
+          <po-button p-icon="an an-magnifying-glass" p-aria-label="Buscar CNPJ"
+            [p-loading]="buscandoCnpj" (p-click)="buscarCnpj()">
+          </po-button>
+        </div>
         <po-input class="po-md-4" p-label="Inscrição Estadual" name="inscricaoEstadual"
           [p-maxlength]="20"
           [ngModel]="form.inscricaoEstadual" (ngModelChange)="form.inscricaoEstadual = $event">
@@ -85,8 +90,8 @@
           p-mask="99999-999" p-placeholder="00000-000"
           [ngModel]="form.cep" (ngModelChange)="form.cep = $event">
         </po-input>
-        <div class="po-md-2" style="padding-bottom: 8px;">
-          <po-button p-label="Buscar CEP" p-icon="an an-magnifying-glass"
+        <div class="po-md-1" style="padding-bottom: 8px;">
+          <po-button p-icon="an an-magnifying-glass" p-aria-label="Buscar CEP"
             [p-loading]="buscandoCep" (p-click)="buscarCep()">
           </po-button>
         </div>

@@ -103,7 +103,7 @@ export class AgendamentosService {
     return andFilters.length > 0 ? { AND: andFilters } : {};
   }
 
-  async create(dto: CreateAgendamentoDto): Promise<Agendamento> {
+  async create(dto: CreateAgendamentoDto, empresaId: number): Promise<Agendamento> {
     let cor = dto.cor;
     let descricao = dto.descricao;
 
@@ -126,7 +126,7 @@ export class AgendamentosService {
 
     return this.prisma.agendamento.create({
       data: {
-        empresaId: (dto as any).empresaId ?? 1,
+        empresaId,
         contratoId: dto.contratoId ?? null,
         profissionalId: dto.profissionalId ?? null,
         descricao: descricao || 'Agendamento sem descrição',

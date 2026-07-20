@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface ProfissionalSearchParams {
@@ -26,7 +27,7 @@ export class ProfissionalService {
   private apiUrl = `${environment.apiUrl}/profissionais`;
 
   findAll() {
-    return this.http.get<any[]>(this.apiUrl);
+    return this.http.get<ProfissionalSearchResult>(this.apiUrl).pipe(map((res) => res.items));
   }
 
   findOne(id: number) {

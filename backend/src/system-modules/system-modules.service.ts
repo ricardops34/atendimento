@@ -87,6 +87,7 @@ export class SystemModulesService {
       name: data.name?.trim(),
       key: data.key?.trim(),
       sortOrder: Number(data.sortOrder) || 0,
+      icon: data.icon?.trim() || null,
     };
   }
 }

@@ -1,18 +1,25 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { RoutinesService } from './routines.service';
+import { CreateRoutineDto } from './dto/create-routine.dto';
+import { UpdateRoutineDto } from './dto/update-routine.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { MenuGuard } from '../auth/guards/menu.guard';
+import { RequireMenu } from '../auth/decorators/require-menu.decorator';
 
+@UseGuards(JwtAuthGuard, MenuGuard)
+@RequireMenu('configuracoes-rotinas')
 @Controller('routines')
 export class RoutinesController {
   constructor(private readonly service: RoutinesService) {}
 
   @Post()
-  create(@Body() data: any) {
+  create(@Body() data: CreateRoutineDto) {
     return this.service.create(data);
   }
 
   @Get()
-  findAll() {
-    return this.service.findAll();
+  findAll(@Query() query: Record<string, string | undefined>) {
+    return this.service.search(query);
   }
 
   @Get('search')
@@ -26,7 +33,7 @@ export class RoutinesController {
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
+  update(@Param('id', ParseIntPipe) id: number, @Body() data: UpdateRoutineDto) {
     return this.service.update(id, data);
   }
 

@@ -20,7 +20,7 @@ interface UserSearchQuery {
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: any) {
+  async create(data: any, empresaId: number) {
     const password = await bcrypt.hash(data.password || 'admin123', 10);
     return this.prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
@@ -34,7 +34,9 @@ export class UsersService {
         },
       });
 
-      await this.syncEmpresaLinks(tx, user.id, data.empresaLinks || []);
+      // Só é permitido vincular o usuário novo à própria empresa do administrador
+      // que está criando, mesmo que o payload tente linkar outra empresa.
+      await this.syncEmpresaLinks(tx, user.id, this.restrictLinksToOwnEmpresa(data.empresaLinks, empresaId));
 
       return tx.user.findUnique({
         where: { id: user.id },
@@ -44,18 +46,19 @@ export class UsersService {
     });
   }
 
-  findAll() {
+  findAll(empresaId: number) {
     return this.prisma.user.findMany({
+      where: { userEmpresas: { some: { empresaId } } },
       include: { profile: true, userEmpresas: { include: { empresa: true } } },
       omit: { password: true },
       orderBy: { name: 'asc' },
     });
   }
 
-  async search(query: UserSearchQuery) {
+  async search(query: UserSearchQuery, empresaId: number) {
     const page = Math.max(Number(query.page) || 1, 1);
     const pageSize = Math.max(Number(query.pageSize) || 20, 1);
-    const where = this.buildWhere(query);
+    const where = this.buildWhere(query, empresaId);
     const total = await this.prisma.user.count({ where });
     const items = await this.prisma.user.findMany({
       where,
@@ -68,9 +71,9 @@ export class UsersService {
     return { items, page, pageSize, total, hasNext: page * pageSize < total };
   }
 
-  async findOne(id: number) {
-    const item = await this.prisma.user.findUnique({
-      where: { id },
+  async findOne(id: number, empresaId: number) {
+    const item = await this.prisma.user.findFirst({
+      where: { id, userEmpresas: { some: { empresaId } } },
       include: { profile: true, userEmpresas: { include: { empresa: true } } },
       omit: { password: true },
     });
@@ -78,8 +81,8 @@ export class UsersService {
     return item;
   }
 
-  async update(id: number, data: any) {
-    await this.findOne(id);
+  async update(id: number, data: any, empresaId: number) {
+    await this.findOne(id, empresaId);
     const payload: any = {
       name: data.name,
       email: data.email,
@@ -99,7 +102,7 @@ export class UsersService {
 
       if (Array.isArray(data.empresaLinks)) {
         await tx.userEmpresa.deleteMany({ where: { userId: id } });
-        await this.syncEmpresaLinks(tx, id, data.empresaLinks);
+        await this.syncEmpresaLinks(tx, id, this.restrictLinksToOwnEmpresa(data.empresaLinks, empresaId));
       }
 
       return tx.user.findUnique({
@@ -110,9 +113,17 @@ export class UsersService {
     });
   }
 
-  async remove(id: number) {
-    await this.findOne(id);
+  async remove(id: number, empresaId: number) {
+    await this.findOne(id, empresaId);
     return this.prisma.user.delete({ where: { id } });
+  }
+
+  // Garante que um admin só consiga vincular/editar o usuário dentro da própria
+  // empresa por esta rota, mesmo que o payload contenha outros empresaId.
+  private restrictLinksToOwnEmpresa(empresaLinks: any[] | undefined, empresaId: number) {
+    const requested = (empresaLinks || []).filter((item) => item?.empresaId);
+    const ownLink = requested.find((item) => Number(item.empresaId) === Number(empresaId));
+    return [{ empresaId, isDefault: ownLink?.isDefault ?? true }];
   }
 
   private async syncEmpresaLinks(tx: any, userId: number, empresaLinks: any[]) {
@@ -137,20 +148,18 @@ export class UsersService {
     }
   }
 
-  private buildWhere(query: UserSearchQuery) {
-    const andFilters: object[] = [];
+  private buildWhere(query: UserSearchQuery, empresaId: number) {
+    const andFilters: object[] = [{ userEmpresas: { some: { empresaId } } }];
     const search = query.search?.trim();
     if (search) {
       andFilters.push({
         OR: [
           { name: { contains: search, mode: 'insensitive' } },
           { email: { contains: search, mode: 'insensitive' } },
-          { userEmpresas: { some: { empresa: { name: { contains: search, mode: 'insensitive' } } } } },
           { profile: { name: { contains: search, mode: 'insensitive' } } },
         ],
       });
     }
-    if (query.empresaId) andFilters.push({ userEmpresas: { some: { empresaId: Number(query.empresaId) } } });
     if (query.profileId) andFilters.push({ profileId: Number(query.profileId) });
     if (query.name?.trim()) andFilters.push({ name: { contains: query.name.trim(), mode: 'insensitive' } });
     if (query.email?.trim()) andFilters.push({ email: { contains: query.email.trim(), mode: 'insensitive' } });

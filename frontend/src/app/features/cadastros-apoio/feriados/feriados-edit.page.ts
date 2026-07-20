@@ -32,14 +32,13 @@ const TIPO_OPTIONS: PoComboOption[] = [
           (ngModelChange)="formData.descricao = $event"
           name="descricao">
         </po-input>
-        <po-input
+        <po-datepicker
           class="po-md-6"
           p-label="Data *"
-          p-type="date"
           [ngModel]="formData.data"
           (ngModelChange)="formData.data = $event"
           name="data">
-        </po-input>
+        </po-datepicker>
       </div>
       <div class="po-row">
         <po-combo

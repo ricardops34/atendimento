@@ -7,13 +7,14 @@ import { FecharLoteDto } from './dto/fechar-lote.dto';
 export class RealizadosService {
   constructor(private prisma: PrismaService) {}
 
-  async fecharLote(dto: FecharLoteDto) {
+  async fecharLote(dto: FecharLoteDto, empresaId: number) {
     // BR-MIGRAR-008: Fechamento de Apontamentos em Lote
-    
-    // 1. Busca os agendamentos pendentes
+
+    // 1. Busca os agendamentos pendentes (só da própria empresa do usuário autenticado)
     const agendamentos = await this.prisma.agendamento.findMany({
       where: {
         id: { in: dto.agendamentoIds },
+        empresaId,
         tipo: 'A', // Só permite fechar os que estão Agendados
       },
     });
@@ -56,8 +57,9 @@ export class RealizadosService {
     };
   }
 
-  findAll() {
+  findAll(empresaId: number) {
     return this.prisma.realizado.findMany({
+      where: { agendamento: { empresaId } },
       include: { agendamento: true },
     });
   }

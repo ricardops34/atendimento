@@ -1,9 +1,12 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards } from '@nestjs/common';
 import { CepsService } from './ceps.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { MenuGuard } from '../auth/guards/menu.guard';
+import { RequireMenu } from '../auth/decorators/require-menu.decorator';
 
 @Controller('ceps')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, MenuGuard)
+@RequireMenu('configuracoes-ceps')
 export class CepsController {
   constructor(private readonly cepsService: CepsService) {}
 

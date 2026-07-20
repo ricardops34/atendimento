@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface RoutineSearchParams {
@@ -29,7 +30,7 @@ export class RoutineService {
   private apiUrl = `${environment.apiUrl}/routines`;
 
   findAll() {
-    return this.http.get<any[]>(this.apiUrl);
+    return this.http.get<RoutineSearchResult>(this.apiUrl).pipe(map((res) => res.items));
   }
 
   search(params: RoutineSearchParams) {

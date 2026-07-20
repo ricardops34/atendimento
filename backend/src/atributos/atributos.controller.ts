@@ -3,11 +3,12 @@ import { AtributosService } from './atributos.service';
 import { CreateAtributoDto } from './dto/create-atributo.dto';
 import { UpdateAtributoDto } from './dto/update-atributo.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { EmpresaGuard } from '../auth/guards/empresa.guard';
 import { MenuGuard } from '../auth/guards/menu.guard';
 import { RequireMenu } from '../auth/decorators/require-menu.decorator';
 
 @Controller('atributos')
-@UseGuards(JwtAuthGuard, MenuGuard)
+@UseGuards(JwtAuthGuard, EmpresaGuard, MenuGuard)
 @RequireMenu('atributos-list')
 export class AtributosController {
   constructor(private readonly atributosService: AtributosService) {}
@@ -25,9 +26,9 @@ export class AtributosController {
   }
 
   @Get()
-  findAll(@Query('cadastro') cadastro: string, @Query('ativo') ativo: string, @Request() req: any) {
+  findAll(@Query() query: any, @Request() req: any) {
     const tenantId = req.user.tenantId;
-    return this.atributosService.findAll(tenantId, cadastro, ativo !== undefined ? ativo === 'true' : undefined);
+    return this.atributosService.search(query, tenantId);
   }
 
   @Get(':id')

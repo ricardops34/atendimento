@@ -31,14 +31,14 @@ export class AgendamentosController {
   constructor(private readonly agendamentosService: AgendamentosService) {}
 
   @Post()
-  create(@Body() createAgendamentoDto: CreateAgendamentoDto) {
-    return this.agendamentosService.create(createAgendamentoDto);
+  create(@Body() createAgendamentoDto: CreateAgendamentoDto, @Request() req: any) {
+    return this.agendamentosService.create(createAgendamentoDto, req.empresaId as number);
   }
 
   @Post('gerar-mensal')
   async gerarMensal(@Body() body: GerarMensalDto, @Request() req: any) {
     try {
-      return await this.agendamentosService.gerarMensal(body.mes, body.ano, body.contratoId, body.profissionalId, req.tenantId as number);
+      return await this.agendamentosService.gerarMensal(body.mes, body.ano, body.contratoId, body.profissionalId, req.empresaId as number);
     } catch (e: any) {
       throw new HttpException(e.stack || e.message || 'Erro ao gerar', HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -126,7 +126,7 @@ export class AgendamentosController {
       dataInicial: query.dataInicial,
       dataFinal: query.dataFinal,
       tipoExtrato: query.tipoExtrato as 'sintetico' | 'analitico' | 'calendario' | undefined,
-      tenantId: req.tenantId as number,
+      empresaId: req.empresaId as number,
     };
 
     try {

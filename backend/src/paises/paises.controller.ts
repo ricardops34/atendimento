@@ -14,8 +14,11 @@ import { PaisesService } from './paises.service';
 import { CreatePaisDto } from './dto/create-pais.dto';
 import { UpdatePaisDto } from './dto/update-pais.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { MenuGuard } from '../auth/guards/menu.guard';
+import { RequireMenu } from '../auth/decorators/require-menu.decorator';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, MenuGuard)
+@RequireMenu('configuracoes-paises')
 @Controller('paises')
 export class PaisesController {
   constructor(private readonly paisesService: PaisesService) {}
@@ -26,8 +29,8 @@ export class PaisesController {
   }
 
   @Get()
-  findAll() {
-    return this.paisesService.findAll();
+  findAll(@Query() query: any) {
+    return this.paisesService.search(query);
   }
 
   @Get('search')

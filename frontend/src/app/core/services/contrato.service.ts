@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface ContratoSearchParams {
@@ -34,7 +35,7 @@ export class ContratoService {
     if (bloqueado !== undefined) {
       params = params.set('bloqueado', String(bloqueado));
     }
-    return this.http.get<any[]>(this.apiUrl, { params });
+    return this.http.get<ContratoSearchResult>(this.apiUrl, { params }).pipe(map((res) => res.items));
   }
 
   findOne(id: number) {

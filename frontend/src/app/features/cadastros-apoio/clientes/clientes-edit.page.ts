@@ -23,6 +23,10 @@ interface ClienteAtributoLinha {
   conteudo: any;
 }
 
+// Faixa Unicode das marcas de acentuação combinantes (usada para remover
+// acento ao comparar nomes de município ignorando maiúsculas/acentos).
+const NFD_MARKS_RE = new RegExp(String.fromCharCode(91, 92, 117, 48, 51, 48, 48, 45, 92, 117, 48, 51, 54, 102, 93), 'g');
+
 @Component({
   selector: 'app-clientes-edit-page',
   standalone: true,
@@ -50,9 +54,10 @@ export class ClientesEditPage implements OnInit {
   private notify      = inject(PoNotificationService);
 
   id: number | null = null;
-  loading     = false;
-  saving      = false;
-  buscandoCep = false;
+  loading      = false;
+  saving       = false;
+  buscandoCep  = false;
+  buscandoCnpj = false;
 
   private catalogoAtributosPronto = false;
   private clienteAtributosProntos = false;
@@ -311,6 +316,43 @@ export class ClientesEditPage implements OnInit {
         this.buscandoCep = false;
       },
       error: () => { this.notify.error('Erro ao buscar CEP na ViaCEP.'); this.buscandoCep = false; },
+    });
+  }
+
+  buscarCnpj() {
+    const cnpj = this.form.cnpj?.replace(/\D/g, '');
+    if (!cnpj || cnpj.length !== 14) { this.notify.warning('Informe um CNPJ com 14 dígitos.'); return; }
+    this.buscandoCnpj = true;
+    this.localSvc.buscarCnpj(cnpj).subscribe({
+      next: (res: any) => {
+        this.form.razaoSocial = res.razao_social || this.form.razaoSocial;
+        this.form.nome        = res.nome_fantasia || res.razao_social || this.form.nome;
+        this.form.telefone    = res.ddd_telefone_1 || this.form.telefone;
+        this.form.email       = res.email || this.form.email;
+        this.form.cep         = res.cep || this.form.cep;
+        this.form.logradouro  = res.logradouro || this.form.logradouro;
+        this.form.numero      = res.numero || this.form.numero;
+        this.form.complemento = res.complemento || this.form.complemento;
+        this.form.bairro      = res.bairro || this.form.bairro;
+
+        if (res.uf) {
+          const estadoObj = this.estadoOptions.find(e => (e as any).sigla === res.uf);
+          if (estadoObj) {
+            this.form.estadoId = estadoObj.value;
+            this.localSvc.findMunicipios(estadoObj.value).subscribe(list => {
+              this.municipioOptions = list.map((m) => ({ label: m.nome, value: m.id }));
+              const normalize = (str: string) => str ? str.normalize('NFD').replace(NFD_MARKS_RE, '').toLowerCase() : '';
+              const munMatch = list.find(m => normalize(m.nome) === normalize(res.municipio));
+              if (munMatch) {
+                this.form.municipioId = munMatch.id;
+              }
+            });
+          }
+        }
+        this.notify.success('Dados preenchidos pelo CNPJ.');
+        this.buscandoCnpj = false;
+      },
+      error: () => { this.notify.error('CNPJ não encontrado ou erro ao consultar a BrasilAPI.'); this.buscandoCnpj = false; },
     });
   }
 

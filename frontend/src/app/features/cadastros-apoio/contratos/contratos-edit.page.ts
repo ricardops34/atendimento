@@ -43,14 +43,11 @@ const TIPO_OPTIONS: PoComboOption[] = [
           (ngModelChange)="formData.clienteId = $event"
           name="clienteId">
         </po-combo>
-        <po-input
-          class="po-md-4"
-          p-label="Cor (hex)"
-          [ngModel]="formData.cor"
-          (ngModelChange)="formData.cor = $event"
-          name="cor"
-          p-placeholder="#333333">
-        </po-input>
+        <div class="po-md-4 contrato-color-field">
+          <label for="contratoCor">Cor (hex)</label>
+          <input id="contratoCor" class="contrato-color-picker" type="color" name="cor"
+            [(ngModel)]="formData.cor" aria-label="Selecionar cor do contrato">
+        </div>
       </div>
 
       <div class="po-row">
@@ -64,22 +61,20 @@ const TIPO_OPTIONS: PoComboOption[] = [
       </div>
 
       <div class="po-row">
-        <po-input
+        <po-datepicker
           class="po-md-3"
           p-label="Data de Início *"
-          p-type="date"
           [ngModel]="formData.dtInicio"
           (ngModelChange)="formData.dtInicio = $event"
           name="dtInicio">
-        </po-input>
-        <po-input
+        </po-datepicker>
+        <po-datepicker
           class="po-md-3"
           p-label="Data de Fim *"
-          p-type="date"
           [ngModel]="formData.dtFim"
           (ngModelChange)="formData.dtFim = $event"
           name="dtFim">
-        </po-input>
+        </po-datepicker>
         <po-combo
           class="po-md-3"
           p-label="Tipo *"
@@ -254,14 +249,13 @@ const TIPO_OPTIONS: PoComboOption[] = [
             (ngModelChange)="novoAdiantamento.parcelas = $event"
             name="novoAdiantamentoParcelas">
           </po-number>
-          <po-input
+          <po-datepicker
             class="po-md-2"
             p-label="Data Início"
-            p-type="date"
             [ngModel]="novoAdiantamento.dataInicio"
             (ngModelChange)="novoAdiantamento.dataInicio = $event"
             name="novoAdiantamentoDataInicio">
-          </po-input>
+          </po-datepicker>
           <div class="po-md-2" style="display: flex; align-items: flex-end; padding-bottom: 4px;">
             <po-button p-label="Adicionar" p-icon="an an-plus" (p-click)="addAdiantamento()"></po-button>
           </div>
@@ -296,6 +290,19 @@ const TIPO_OPTIONS: PoComboOption[] = [
       </div>
     </po-page-edit>
   `,
+  styles: [`
+    .contrato-color-field { display: flex; flex-direction: column; gap: 4px; }
+    .contrato-color-field label { font-size: 14px; font-weight: 700; line-height: 24px; }
+    .contrato-color-picker {
+      width: 100%;
+      height: 44px;
+      padding: 4px;
+      border: 1px solid var(--color-neutral-mid-40, #9da7a9);
+      border-radius: 3px;
+      background: var(--color-neutral-light-00, #fff);
+      cursor: pointer;
+    }
+  `],
 })
 export class ContratosEditPage implements OnInit {
   private route = inject(ActivatedRoute);
