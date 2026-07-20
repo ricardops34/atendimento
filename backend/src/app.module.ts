@@ -23,6 +23,7 @@ import { CepsModule } from './ceps/ceps.module';
 import { LocalidadesModule } from './localidades/localidades.module';
 import { PaisesModule } from './paises/paises.module';
 import { AtributosModule } from './atributos/atributos.module';
+import { PortalClienteModule } from './portal-cliente/portal-cliente.module';
 
 @Module({
   imports: [
@@ -45,7 +46,8 @@ import { AtributosModule } from './atributos/atributos.module';
     CepsModule,
     LocalidadesModule,
     PaisesModule,
-    AtributosModule
+    AtributosModule,
+    PortalClienteModule
   ],
   controllers: [AppController],
   providers: [

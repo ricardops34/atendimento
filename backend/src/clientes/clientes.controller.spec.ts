@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ClientesController } from './clientes.controller';
 import { ClientesService } from './clientes.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 describe('ClientesController', () => {
   let controller: ClientesController;
@@ -16,7 +17,10 @@ describe('ClientesController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ClientesController],
-      providers: [{ provide: ClientesService, useValue: service }],
+      providers: [
+        { provide: ClientesService, useValue: service },
+        { provide: PrismaService, useValue: {} },
+      ],
     }).compile();
 
     controller = module.get(ClientesController);
@@ -38,5 +42,11 @@ describe('ClientesController', () => {
   it('delegates search query to service', () => {
     controller.search({ page: '1', pageSize: '20', search: 'acme' } as any, { user: { empresaId: 1 } } as any);
     expect(service.search).toHaveBeenCalledWith({ page: '1', pageSize: '20', search: 'acme' }, 1);
+  });
+
+  it('update delegates usuarioId (vínculo do Portal do Cliente) to service', () => {
+    const dto = { usuarioId: 88 } as any;
+    controller.update(15, dto, { user: { empresaId: 1 } } as any);
+    expect(service.update).toHaveBeenCalledWith(15, dto, 1);
   });
 });

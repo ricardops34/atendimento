@@ -1,6 +1,11 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { EmpresasService } from './empresas.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { MenuGuard } from '../auth/guards/menu.guard';
+import { RequireMenu } from '../auth/decorators/require-menu.decorator';
 
+@UseGuards(JwtAuthGuard, MenuGuard)
+@RequireMenu('configuracoes-empresas')
 @Controller('empresas')
 export class EmpresasController {
   constructor(private readonly service: EmpresasService) {}

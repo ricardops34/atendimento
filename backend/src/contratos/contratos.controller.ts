@@ -1,8 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, Query, Request, UseGuards } from '@nestjs/common';
 import { ContratosService } from './contratos.service';
 import { CreateContratoDto } from './dto/create-contrato.dto';
 import { UpdateContratoDto } from './dto/update-contrato.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { EmpresaGuard } from '../auth/guards/empresa.guard';
+import { MenuGuard } from '../auth/guards/menu.guard';
+import { RequireMenu } from '../auth/decorators/require-menu.decorator';
 
+@UseGuards(JwtAuthGuard, EmpresaGuard, MenuGuard)
+@RequireMenu('contratos-list')
 @Controller('contratos')
 export class ContratosController {
   constructor(private readonly contratosService: ContratosService) {}

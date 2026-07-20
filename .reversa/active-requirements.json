@@ -1,10 +1,10 @@
 {
   "schema-version": 1,
-  "feature-dir": "_reversa_forward/002-agendamento-list",
-  "feature-id": "002",
-  "short-name": "agendamento-list",
-  "started-at": "2026-06-17T18:00:00Z",
-  "current-stage": "completed",
-  "stages-completed": ["requirements", "clarify", "plan", "to-do", "coding"],
+  "feature-dir": "_reversa_forward/003-acesso-cliente-atendimentos",
+  "feature-id": "003",
+  "short-name": "acesso-cliente-atendimentos",
+  "started-at": "2026-07-20T00:00:00Z",
+  "current-stage": "coding",
+  "stages-completed": ["requirements", "clarify", "plan", "to-do"],
   "paused-features": []
 }

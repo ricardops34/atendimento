@@ -74,6 +74,12 @@ export class CreateClienteDto {
   @IsNumber()
   paisId?: number;
 
+  // Vínculo com o usuário de login do Portal do Cliente (feature 003-acesso-cliente-atendimentos).
+  // Aceita null explícito para desvincular.
+  @IsOptional()
+  @IsNumber()
+  usuarioId?: number | null;
+
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })

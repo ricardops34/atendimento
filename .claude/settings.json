@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-Command node -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-Command npx -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-Command npm -ErrorAction SilentlyContinue)",
+      "Read(//tmp/**)",
+      "Bash(docker run *)",
+      "Read(//c/Users/ricardo.e2/AppData/Local/Temp/**)",
+      "Bash(docker compose *)",
+      "Bash(curl -s -X POST http://localhost:3000/auth/login -H \"Content-Type: application/json\" -d '{\"email\":\"qa-teste-portal@local.test\",\"password\":\"admin123\"}')",
+      "Bash(docker compose -f docker-compose.local.yml exec db psql -U postgres -d atendimento -c ' *)"
+    ]
+  }
+}

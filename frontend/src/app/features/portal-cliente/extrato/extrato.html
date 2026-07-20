@@ -1,0 +1,26 @@
+<po-page-default p-title="Extrato de Atendimentos">
+
+  <div class="po-row">
+    <po-datepicker class="po-md-4" name="dataInicial" p-label="Data inicial" [(ngModel)]="dataInicial">
+    </po-datepicker>
+
+    <po-datepicker class="po-md-4" name="dataFinal" p-label="Data final" [(ngModel)]="dataFinal">
+    </po-datepicker>
+  </div>
+
+  <div class="po-row">
+    <po-radio-group class="po-md-12" name="tipoExtrato" p-label="Tipo de Extrato" [p-options]="tipoExtratoOptions"
+      [ngModel]="tipoExtrato" (ngModelChange)="tipoExtrato = $event">
+    </po-radio-group>
+  </div>
+
+  <div class="po-row" style="margin-top: 16px; gap: 8px;">
+    <po-button p-label="Gerar Extrato (PDF)" p-icon="po-icon-document" [p-loading]="gerando"
+      (p-click)="gerarExtrato('pdf')">
+    </po-button>
+    <po-button p-label="Gerar Extrato (XLS)" p-kind="secondary" p-icon="po-icon-export" [p-loading]="gerando"
+      (p-click)="gerarExtrato('xls')">
+    </po-button>
+  </div>
+
+</po-page-default>

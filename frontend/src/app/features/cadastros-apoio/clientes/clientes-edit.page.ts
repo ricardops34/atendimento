@@ -16,6 +16,7 @@ import { ClienteService } from '../../../core/services/cliente.service';
 import { LocalidadeService } from '../../../core/services/localidade.service';
 import { PaisService } from '../../../core/services/pais.service';
 import { AtributoService } from '../../../core/services/atributo.service';
+import { UserService } from '../../../core/services/user.service';
 
 interface ClienteAtributoLinha {
   atributoId: number | null;
@@ -45,6 +46,7 @@ export class ClientesEditPage implements OnInit {
   private localSvc    = inject(LocalidadeService);
   private paisSvc     = inject(PaisService);
   private atributoSvc = inject(AtributoService);
+  private userSvc     = inject(UserService);
   private notify      = inject(PoNotificationService);
 
   id: number | null = null;
@@ -70,6 +72,10 @@ export class ClientesEditPage implements OnInit {
     return this.atributoCatalogo.length > 0;
   }
 
+  // Vínculo com o usuário de login do Portal do Cliente (feature 003-acesso-cliente-atendimentos).
+  // O usuário em si é cadastrado/gerenciado na tela de Usuários; aqui só selecionamos qual já existe.
+  usuarioOptions: PoComboOption[] = [];
+
   form: any = {
     tipoPessoa: 'PJ',
     nome: '', razaoSocial: '', cnpj: '', inscricaoEstadual: '', inscricaoMunicipal: '',
@@ -77,6 +83,7 @@ export class ClientesEditPage implements OnInit {
     telefone: '', celular: '', email: '',
     cep: '', logradouro: '', numero: '', complemento: '', bairro: '', municipioId: null, estadoId: null, paisId: null,
     cor: '',
+    usuarioId: null,
     atributos: [] as ClienteAtributoLinha[],
   };
 
@@ -87,6 +94,7 @@ export class ClientesEditPage implements OnInit {
     this.loadEstados();
     this.loadPaises();
     this.loadAtributoCatalogo();
+    this.loadUsuarios();
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.id = Number(idParam);
@@ -122,6 +130,7 @@ export class ClientesEditPage implements OnInit {
           estadoId:           data.estadoId           || null,
           paisId:             data.paisId             || null,
           cor:                data.cor                || '',
+          usuarioId:          data.usuario?.id         ?? null,
           atributos:          data.atributos          || [],
         };
 
@@ -191,6 +200,14 @@ export class ClientesEditPage implements OnInit {
         this.atributoCatalogo = list || [];
         this.catalogoAtributosPronto = true;
         this.tentarMontarLinhasAtributos();
+      },
+    });
+  }
+
+  loadUsuarios() {
+    this.userSvc.findAll().subscribe({
+      next: (list: any[]) => {
+        this.usuarioOptions = (list || []).map((u) => ({ label: `${u.name} (${u.email})`, value: u.id }));
       },
     });
   }
@@ -330,6 +347,8 @@ export class ClientesEditPage implements OnInit {
     if (this.form.paisId) payload.paisId = this.form.paisId;
     if (this.form.cor) payload.cor = this.form.cor;
     if (this.form.dataNascimento) payload.dataNascimento = this.form.dataNascimento;
+    // Sempre enviado (mesmo null), para permitir desvincular o usuário do portal.
+    payload.usuarioId = this.form.usuarioId ?? null;
 
     const atributosPreenchidos = atributos
       .filter((a) => a.atributoId && a.conteudo !== null && a.conteudo !== undefined && String(a.conteudo).trim() !== '')
@@ -343,7 +362,7 @@ export class ClientesEditPage implements OnInit {
         this.saving = false;
         this.router.navigate(['/clientes']);
       },
-      error: () => { this.notify.error('Erro ao salvar cliente.'); this.saving = false; },
+      error: (err) => { this.notify.error(err?.error?.message || 'Erro ao salvar cliente.'); this.saving = false; },
     });
   }
 

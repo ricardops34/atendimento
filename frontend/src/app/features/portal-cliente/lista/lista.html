@@ -1,0 +1,47 @@
+<po-page-list p-title="Meus Atendimentos" [p-disclaimer-group]="disclaimerGroup">
+
+  <div class="po-row" style="align-items: end; margin-bottom: 16px; row-gap: 12px;">
+    <div class="po-md-6 po-sm-12">
+      <po-search p-placeholder="Pesquisar" [(ngModel)]="quickSearch" (p-filter)="onQuickSearch($event)"
+        (p-change-model)="quickSearch = $event">
+      </po-search>
+    </div>
+  </div>
+
+  <div class="po-row" style="margin-bottom: 16px;">
+    <po-datepicker class="po-md-3" name="dataInicial" p-label="Data inicial" [(ngModel)]="filters.dataInicial"
+      (ngModelChange)="applyFilters()">
+    </po-datepicker>
+    <po-datepicker class="po-md-3" name="dataFinal" p-label="Data final" [(ngModel)]="filters.dataFinal"
+      (ngModelChange)="applyFilters()">
+    </po-datepicker>
+    <po-combo class="po-md-3" name="tipo" p-label="Status" [p-options]="statusOptions" [ngModel]="filters.tipo"
+      (ngModelChange)="filters.tipo = $event; applyFilters()">
+    </po-combo>
+    <po-combo class="po-md-3" name="contratoId" p-label="Contrato" [p-options]="contratos"
+      [ngModel]="filters.contratoId" (ngModelChange)="filters.contratoId = $event; applyFilters()">
+    </po-combo>
+  </div>
+
+  <po-table [p-items]="agendamentos" [p-columns]="columns" [p-actions]="actions" [p-loading]="loading"
+    [p-loading-show-more]="loadingShowMore" [p-show-more-disabled]="!hasNext" [p-sort]="true" [p-striped]="true"
+    [p-hide-detail]="true" [p-hide-table-search]="true" (p-show-more)="onShowMore()">
+  </po-table>
+
+</po-page-list>
+
+<po-modal p-title="Detalhes do Atendimento" #detalheModal p-size="md" [p-hide-close]="false">
+  <div *ngIf="detalheSelecionado" class="po-row">
+    <div class="po-md-6"><strong>Data:</strong> {{ detalheSelecionado.dataAgenda | date: 'dd/MM/yyyy' : 'UTC' }}</div>
+    <div class="po-md-6"><strong>Status:</strong> {{ detalheSelecionado.tipoFormatado }}</div>
+    <div class="po-md-6"><strong>Horário:</strong> {{ detalheSelecionado.horaInicio }} - {{ detalheSelecionado.horaFim }}</div>
+    <div class="po-md-6"><strong>Modalidade:</strong> {{ detalheSelecionado.localFormatado }}</div>
+    <div class="po-md-6"><strong>Contrato:</strong> {{ detalheSelecionado.contrato?.descricao || '-' }}</div>
+    <div class="po-md-6"><strong>Profissional:</strong> {{ detalheSelecionado.profissional?.nome || '-' }}</div>
+    <div class="po-md-12"><strong>Descrição:</strong> {{ detalheSelecionado.descricao || '-' }}</div>
+    <div class="po-md-12" *ngIf="detalheSelecionado.observacao">
+      <strong>Observações:</strong>
+      <span [innerHTML]="detalheSelecionado.observacao"></span>
+    </div>
+  </div>
+</po-modal>

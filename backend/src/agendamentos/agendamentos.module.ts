@@ -8,5 +8,6 @@ import { MenuGuard } from '../auth/guards/menu.guard';
   imports: [PrismaModule],
   controllers: [AgendamentosController],
   providers: [AgendamentosService, MenuGuard],
+  exports: [AgendamentosService],
 })
 export class AgendamentosModule {}

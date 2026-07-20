@@ -242,9 +242,25 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./features/agendamentos/lista/lista').then((m) => m.Lista),
   },
-  { 
-    path: 'agendamentos/calendario', 
+  {
+    path: 'agendamentos/calendario',
     canActivate: [authGuard],
     loadComponent: () => import('./features/agendamentos/calendario/calendario').then((m) => m.Calendario),
+  },
+  {
+    path: 'portal/calendario',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/portal-cliente/calendario/calendario').then((m) => m.PortalClienteCalendario),
+  },
+  {
+    path: 'portal/lista',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/portal-cliente/lista/lista').then((m) => m.PortalClienteLista),
+  },
+  {
+    path: 'portal/extrato',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/portal-cliente/extrato/extrato').then((m) => m.PortalClienteExtrato),
   }
 ];

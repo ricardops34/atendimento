@@ -3,9 +3,12 @@ import { AtributosService } from './atributos.service';
 import { CreateAtributoDto } from './dto/create-atributo.dto';
 import { UpdateAtributoDto } from './dto/update-atributo.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { MenuGuard } from '../auth/guards/menu.guard';
+import { RequireMenu } from '../auth/decorators/require-menu.decorator';
 
 @Controller('atributos')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, MenuGuard)
+@RequireMenu('atributos-list')
 export class AtributosController {
   constructor(private readonly atributosService: AtributosService) {}
 

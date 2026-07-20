@@ -126,6 +126,15 @@
           [ngModel]="form.paisId" (ngModelChange)="form.paisId = $event">
         </po-combo>
       </div>
+
+      <po-divider p-label="Acesso ao Portal do Cliente"></po-divider>
+
+      <div class="po-row">
+        <po-combo class="po-md-6" p-label="Usuário" name="usuarioId" p-help="Usuário cadastrado em Configurações → Usuários que terá acesso ao Portal do Cliente."
+          [p-options]="usuarioOptions"
+          [ngModel]="form.usuarioId" (ngModelChange)="form.usuarioId = $event">
+        </po-combo>
+      </div>
     </po-tab>
 
     <po-tab p-label="Atributos" *ngIf="temAtributosParaCadastro">

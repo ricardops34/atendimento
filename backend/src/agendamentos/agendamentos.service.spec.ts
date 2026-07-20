@@ -207,4 +207,38 @@ describe('AgendamentosService', () => {
       hasNext: false,
     });
   });
+
+  it('search without clienteId keeps current behavior (no contrato.clienteId filter)', async () => {
+    prisma.agendamento.count.mockResolvedValue(0);
+    prisma.agendamento.findMany.mockResolvedValue([]);
+
+    await service.search({}, 1);
+
+    const where = prisma.agendamento.findMany.mock.calls[0][0].where;
+    const andFilters = where.AND ?? [];
+    expect(andFilters).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ contrato: expect.objectContaining({ clienteId: expect.anything() }) })]),
+    );
+  });
+
+  it('search with clienteId scopes results to that cliente (portal do cliente)', async () => {
+    prisma.agendamento.count.mockResolvedValue(0);
+    prisma.agendamento.findMany.mockResolvedValue([]);
+
+    await service.search({}, 1, 15);
+
+    const where = prisma.agendamento.findMany.mock.calls[0][0].where;
+    expect(where.AND).toEqual(expect.arrayContaining([{ contrato: { clienteId: 15 } }]));
+  });
+
+  it('findAll with clienteId scopes results to that cliente', async () => {
+    prisma.agendamento.findMany.mockResolvedValue([]);
+
+    await service.findAll(1, 15);
+
+    expect(prisma.agendamento.findMany).toHaveBeenCalledWith({
+      where: { empresaId: 1, contrato: { clienteId: 15 } },
+      include: { contrato: true, profissional: true },
+    });
+  });
 });

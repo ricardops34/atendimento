@@ -20,6 +20,9 @@ interface AgendamentoExportFilters {
   dataFinal?: string;
   empresaId?: number;
   tipoExtrato?: 'sintetico' | 'analitico' | 'calendario';
+  // Escopa os resultados aos contratos de um Cliente (portal do cliente, feature 003).
+  // Nunca deve ser preenchido a partir de input do próprio cliente, só a partir do JWT.
+  clienteId?: number;
 }
 
 interface SearchQuery {
@@ -83,6 +86,8 @@ export class AgendamentosService {
     if (filters.local) andFilters.push({ local: filters.local });
     if (filters.contratoId) andFilters.push({ contratoId: filters.contratoId });
     if (filters.profissionalId) andFilters.push({ profissionalId: filters.profissionalId });
+    // Agendamento não tem clienteId direto: o vínculo é via Contrato.clienteId.
+    if (filters.clienteId) andFilters.push({ contrato: { clienteId: filters.clienteId } });
 
     const dataInicial = this.parseDate(filters.dataInicial);
     const dataFinal = this.parseDate(filters.dataFinal, true);
@@ -252,9 +257,14 @@ export class AgendamentosService {
     return { gerados: novosAgendamentos.length };
   }
 
-  async findAll(empresaId: number): Promise<Agendamento[]> {
+  // `clienteId` nunca vem de query/body do cliente, só de argumento explícito a partir do JWT
+  // (ver PortalClienteService).
+  async findAll(empresaId: number, clienteId?: number): Promise<Agendamento[]> {
+    const where: any = { empresaId };
+    if (clienteId) where.contrato = { clienteId };
+
     const items = await this.prisma.agendamento.findMany({
-      where: { empresaId },
+      where,
       include: { contrato: true, profissional: true },
     });
     return items.map(item => ({
@@ -263,7 +273,9 @@ export class AgendamentosService {
     }));
   }
 
-  async search(query: SearchQuery, empresaId: number): Promise<{
+  // `clienteId` nunca vem de `query` (nunca é confiável vindo do cliente/HTTP),
+  // é sempre passado explicitamente pelo chamador a partir do JWT (ver PortalClienteService).
+  async search(query: SearchQuery, empresaId: number, clienteId?: number): Promise<{
     items: Agendamento[];
     page: number;
     pageSize: number;
@@ -282,6 +294,7 @@ export class AgendamentosService {
       dataInicial: query.dataInicial,
       dataFinal: query.dataFinal,
       empresaId,
+      clienteId,
     };
 
     const where = this.buildWhereFromFilters(filters);

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
@@ -13,21 +13,27 @@ interface ClienteSearchQuery {
   sortDirection?: string;
 }
 
+const UNIQUE_CONSTRAINT_ERROR_CODE = 'P2002';
+
 @Injectable()
 export class ClientesService {
   constructor(private prisma: PrismaService) {}
 
-  create(dto: CreateClienteDto, empresaId: number) {
+  async create(dto: CreateClienteDto, empresaId: number) {
     const data: any = { ...dto, empresaId };
     if (data.dataNascimento) {
       data.dataNascimento = new Date(data.dataNascimento);
     }
-    return this.prisma.cliente.create({ data });
+    try {
+      return await this.prisma.cliente.create({ data });
+    } catch (e) {
+      throw this.mapUsuarioIdConflict(e);
+    }
   }
 
   findAll(empresaId: number) {
-    return this.prisma.cliente.findMany({ 
-      where: { empresaId }, 
+    return this.prisma.cliente.findMany({
+      where: { empresaId },
       orderBy: { nome: 'asc' },
       include: { municipio: true, estadoRel: true, paisRel: true }
     });
@@ -73,9 +79,15 @@ export class ClientesService {
     const where: any = { id };
     if (empresaId) where.empresaId = empresaId;
 
-    const cliente = await this.prisma.cliente.findFirst({ 
+    const cliente = await this.prisma.cliente.findFirst({
       where,
-      include: { municipio: true, estadoRel: true, paisRel: true }
+      include: {
+        municipio: true,
+        estadoRel: true,
+        paisRel: true,
+        // Vínculo com o usuário de login do Portal do Cliente (feature 003-acesso-cliente-atendimentos).
+        usuario: { select: { id: true, name: true, email: true, isActive: true } },
+      }
     });
     if (!cliente) throw new NotFoundException('Cliente não encontrado.');
     return cliente;
@@ -87,12 +99,26 @@ export class ClientesService {
     if (data.dataNascimento) {
       data.dataNascimento = new Date(data.dataNascimento);
     }
-    return this.prisma.cliente.update({ where: { id }, data });
+    try {
+      return await this.prisma.cliente.update({ where: { id }, data });
+    } catch (e) {
+      throw this.mapUsuarioIdConflict(e);
+    }
   }
 
   async remove(id: number, empresaId?: number) {
     await this.findOne(id, empresaId);
     return this.prisma.cliente.delete({ where: { id } });
+  }
+
+  // usuarioId é único (vínculo 1:1, RN-03): se o usuário escolhido já estiver vinculado
+  // a outro Cliente, o Postgres rejeita com violação de unique constraint (P2002).
+  // Convertido aqui numa mensagem amigável em vez de vazar o erro cru do Prisma.
+  private mapUsuarioIdConflict(e: any) {
+    if (e?.code === UNIQUE_CONSTRAINT_ERROR_CODE && e?.meta?.target?.includes?.('usuario_id')) {
+      return new ConflictException('Este usuário já está vinculado a outro cliente.');
+    }
+    return e;
   }
 
   private buildWhere(query: ClienteSearchQuery, empresaId?: number) {

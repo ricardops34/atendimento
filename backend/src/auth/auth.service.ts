@@ -39,6 +39,7 @@ export class AuthService {
             empresa: true,
           },
         },
+        cliente: true,
       },
     });
 
@@ -82,6 +83,8 @@ export class AuthService {
       email: user.email,
       empresaId: selectedEmpresa.empresaId,
       profileId: user.profileId,
+      // Cliente.usuarioId é a FK (vive em Cliente, não em User); aqui só lemos a relação inversa.
+      clienteId: user.cliente?.id ?? null,
     };
 
     const sessionUser = await this.buildSessionUser(user, selectedEmpresa.empresaId);

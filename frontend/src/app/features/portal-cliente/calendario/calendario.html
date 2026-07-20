@@ -1,0 +1,21 @@
+<po-page-default p-title="Calendário de Atendimentos">
+
+  <full-calendar [options]="calendarOptions"></full-calendar>
+
+</po-page-default>
+
+<po-modal p-title="Detalhes do Atendimento" #detalheModal p-size="md" [p-hide-close]="false">
+  <div *ngIf="detalheSelecionado" class="po-row">
+    <div class="po-md-6"><strong>Data:</strong> {{ detalheSelecionado.dataAgenda | date: 'dd/MM/yyyy' : 'UTC' }}</div>
+    <div class="po-md-6"><strong>Status:</strong> {{ formatTipo(detalheSelecionado.tipo) }}</div>
+    <div class="po-md-6"><strong>Horário:</strong> {{ detalheSelecionado.horaInicio }} - {{ detalheSelecionado.horaFim }}</div>
+    <div class="po-md-6"><strong>Modalidade:</strong> {{ formatLocal(detalheSelecionado.local) }}</div>
+    <div class="po-md-6"><strong>Contrato:</strong> {{ detalheSelecionado.contrato?.descricao || '-' }}</div>
+    <div class="po-md-6"><strong>Profissional:</strong> {{ detalheSelecionado.profissional?.nome || '-' }}</div>
+    <div class="po-md-12"><strong>Descrição:</strong> {{ detalheSelecionado.descricao || '-' }}</div>
+    <div class="po-md-12" *ngIf="detalheSelecionado.observacao">
+      <strong>Observações:</strong>
+      <span [innerHTML]="detalheSelecionado.observacao"></span>
+    </div>
+  </div>
+</po-modal>
