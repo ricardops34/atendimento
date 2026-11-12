@@ -37,7 +37,6 @@ export class BancoHorasPage {
 
   readonly actions = {
     remove: false,
-    new: false,
     custom: [
       {
         label: 'Ver extrato / lançar baixa',

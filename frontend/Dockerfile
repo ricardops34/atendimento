@@ -2,6 +2,13 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Confia em uma CA de inspeção SSL local (ex: antivírus corporativo), se presente no
+# contexto de build. Em máquinas/CI sem esse arquivo, o COPY glob não copia nada e o build
+# segue normalmente com o bundle padrão do sistema.
+COPY *.cr[t] ./
+RUN for f in *.crt; do [ -f "$f" ] && cat "$f" >> /etc/ssl/certs/ca-certificates.crt; done 2>/dev/null; true
+ENV NODE_OPTIONS=--use-openssl-ca
+
 # Copia arquivos de dependência e instala
 COPY package*.json ./
 RUN npm ci
