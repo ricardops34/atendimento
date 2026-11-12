@@ -198,6 +198,11 @@ model Profissional {
   user         User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
   nome         String                 @db.VarChar(255)
   atributos    Json?
+  // Gerente responsável (RBAC): define o grupo de analistas que um Gerente enxerga/administra.
+  // Nulo = sem gerente definido (ex: o próprio Gerente, ou Administrador).
+  gerenteId    Int?                   @map("gerente_id")
+  gerente      Profissional?          @relation("ProfissionalGerente", fields: [gerenteId], references: [id], onDelete: SetNull)
+  analistas    Profissional[]         @relation("ProfissionalGerente")
   agendamentos Agendamento[]
   escalas      ContratoItem[]
   contratos    ContratoProfissional[]
@@ -246,14 +251,53 @@ model ContratoAdiantamento {
 
 /// Pivô many-to-many entre Contrato e Profissional (escala contratual de profissionais habilitados)
 model ContratoProfissional {
-  id             Int          @id @default(autoincrement())
-  contratoId     Int          @map("contrato_id")
-  contrato       Contrato     @relation(fields: [contratoId], references: [id], onDelete: Cascade)
-  profissionalId Int          @map("profissional_id")
-  profissional   Profissional @relation(fields: [profissionalId], references: [id], onDelete: Cascade)
+  id              Int          @id @default(autoincrement())
+  contratoId      Int          @map("contrato_id")
+  contrato        Contrato     @relation(fields: [contratoId], references: [id], onDelete: Cascade)
+  profissionalId  Int          @map("profissional_id")
+  profissional    Profissional @relation(fields: [profissionalId], references: [id], onDelete: Cascade)
+  // Sobrepõe o valor do contrato apenas para este profissional, quando preenchido.
+  valorHora       Decimal?     @map("valor_hora") @db.Decimal(10, 2)
+  valorFixo       Decimal?     @map("valor_fixo") @db.Decimal(10, 2)
+  // Limite de horas/mês do profissional neste contrato. Nulo = sem limite.
+  maxHorasMes     Decimal?     @map("max_horas_mes") @db.Decimal(6, 2)
+  // Comportamento ao ultrapassar maxHorasMes: 'BANCO' acumula em saldoBancoHoras, 'BLOQUEIO' impede o lançamento.
+  modoExcedente   String?      @map("modo_excedente") @db.VarChar(10)
+  // Saldo acumulado (não zera por mês) de horas excedentes já autorizadas em modo banco de horas.
+  saldoBancoHoras Decimal      @default(0) @map("saldo_banco_horas") @db.Decimal(8, 2)
+  apontamentos    ContratoProfissionalApontamentoMensal[]
+  movimentos      BancoHorasMovimento[]
 
   @@unique([contratoId, profissionalId])
   @@map("contrato_profissional")
+}
+
+/// Extrato de movimentações do banco de horas: créditos automáticos (excedente do mês) e débitos manuais (compensação).
+model BancoHorasMovimento {
+  id                     Int                  @id @default(autoincrement())
+  contratoProfissionalId Int                  @map("contrato_profissional_id")
+  contratoProfissional   ContratoProfissional @relation(fields: [contratoProfissionalId], references: [id], onDelete: Cascade)
+  tipo                   String               @db.VarChar(10) // 'CREDITO' (excedente lançado) | 'DEBITO' (compensação manual)
+  horas                  Decimal              @db.Decimal(8, 2) // sempre positivo; o efeito no saldo depende de `tipo`
+  data                   DateTime             @db.Date
+  descricao              String?              @db.VarChar(255)
+  agendamentoId          Int?                 @map("agendamento_id")
+  createdAt              DateTime             @default(now()) @map("created_at")
+
+  @@map("banco_horas_movimento")
+}
+
+/// Fechamento mensal de horas lançadas por profissional/contrato, usado para apurar o excedente do banco de horas.
+model ContratoProfissionalApontamentoMensal {
+  id                     Int                  @id @default(autoincrement())
+  contratoProfissionalId Int                  @map("contrato_profissional_id")
+  contratoProfissional   ContratoProfissional @relation(fields: [contratoProfissionalId], references: [id], onDelete: Cascade)
+  competencia            String               @db.VarChar(7) // 'YYYY-MM'
+  horasLancadas          Decimal              @default(0) @map("horas_lancadas") @db.Decimal(8, 2)
+  horasExcedente         Decimal              @default(0) @map("horas_excedente") @db.Decimal(8, 2)
+
+  @@unique([contratoProfissionalId, competencia])
+  @@map("contrato_profissional_apontamento_mensal")
 }
 
 /// Representa a escala semanal recorrente do profissional no contrato (Cadastros de Apoio)

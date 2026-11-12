@@ -25,6 +25,7 @@ import { LocalidadesModule } from './localidades/localidades.module';
 import { PaisesModule } from './paises/paises.module';
 import { AtributosModule } from './atributos/atributos.module';
 import { PortalClienteModule } from './portal-cliente/portal-cliente.module';
+import { BancoHorasModule } from './banco-horas/banco-horas.module';
 
 @Module({
   imports: [
@@ -49,7 +50,8 @@ import { PortalClienteModule } from './portal-cliente/portal-cliente.module';
     LocalidadesModule,
     PaisesModule,
     AtributosModule,
-    PortalClienteModule
+    PortalClienteModule,
+    BancoHorasModule
   ],
   controllers: [AppController],
   providers: [

@@ -14,6 +14,7 @@ export interface AgendamentoSearchParams {
   dataInicial?: string;
   dataFinal?: string;
   tipoExtrato?: 'sintetico' | 'analitico' | 'calendario';
+  ocultarValor?: boolean;
 }
 
 

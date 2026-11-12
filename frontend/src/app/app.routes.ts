@@ -78,6 +78,16 @@ export const routes: Routes = [
     loadComponent: () => import('./features/cadastros-apoio/atributos/atributos.page').then((m) => m.AtributosPage),
   },
   {
+    path: 'banco-horas',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/cadastros-apoio/banco-horas/banco-horas.page').then((m) => m.BancoHorasPage),
+  },
+  {
+    path: 'banco-horas/:id',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/cadastros-apoio/banco-horas/banco-horas-detalhe.page').then((m) => m.BancoHorasDetalhePage),
+  },
+  {
     path: 'atributos/novo',
     canActivate: [authGuard],
     loadComponent: () => import('./features/cadastros-apoio/atributos/atributos-edit.page').then((m) => m.AtributosEditPage),

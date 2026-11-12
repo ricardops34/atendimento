@@ -40,6 +40,30 @@ export class EscalaItemDto {
   intervaloFim: string;
 }
 
+export class ProfissionalHabilitadoDto {
+  @IsInt()
+  profissionalId: number;
+
+  // Sobrepõe o valor do contrato apenas para este profissional, quando preenchido.
+  @IsOptional()
+  @IsNumber()
+  valorHora?: number;
+
+  @IsOptional()
+  @IsNumber()
+  valorFixo?: number;
+
+  // Limite de horas/mês deste profissional neste contrato. Vazio = sem limite.
+  @IsOptional()
+  @IsNumber()
+  maxHorasMes?: number;
+
+  // Como tratar o excedente quando maxHorasMes é ultrapassado.
+  @IsOptional()
+  @IsIn(['BANCO', 'BLOQUEIO'])
+  modoExcedente?: string;
+}
+
 export class AdiantamentoItemDto {
   @IsNotEmpty()
   @IsString()
@@ -59,8 +83,7 @@ export class AdiantamentoItemDto {
   valorParcela: number;
 
   @IsNotEmpty()
-  @IsString()
-  dataInicio: string;
+  dataInicio: string | Date;
 }
 
 export class CreateContratoDto {
@@ -77,12 +100,10 @@ export class CreateContratoDto {
   cor?: string;
 
   @IsNotEmpty({ message: 'Data de início é obrigatória.' })
-  @IsString()
-  dtInicio: string;
+  dtInicio: string | Date;
 
   @IsNotEmpty({ message: 'Data de fim é obrigatória.' })
-  @IsString()
-  dtFim: string;
+  dtFim: string | Date;
 
   @IsNotEmpty({ message: 'Tipo de contrato é obrigatório.' })
   @IsIn(['F', 'H'], { message: 'Tipo deve ser F (Fixo) ou H (Hora).' })
@@ -106,8 +127,9 @@ export class CreateContratoDto {
 
   @IsOptional()
   @IsArray()
-  @IsInt({ each: true })
-  profissionalIds?: number[];
+  @ValidateNested({ each: true })
+  @Type(() => ProfissionalHabilitadoDto)
+  profissionais?: ProfissionalHabilitadoDto[];
 
   @IsOptional()
   @IsArray()

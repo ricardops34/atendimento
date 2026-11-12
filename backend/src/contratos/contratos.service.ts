@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateContratoDto } from './dto/create-contrato.dto';
@@ -25,7 +25,7 @@ export class ContratosService {
   constructor(private prisma: PrismaService) {}
 
   async create(dto: CreateContratoDto, empresaId: number) {
-    const { profissionalIds, escalas, adiantamentos, ...contratoData } = dto as any;
+    const { profissionais, escalas, adiantamentos, ...contratoData } = dto as any;
     return this.prisma.$transaction(async (tx) => {
       const contrato = await tx.contrato.create({
         data: {
@@ -37,9 +37,16 @@ export class ContratosService {
           empresaId,
         },
       });
-      if (profissionalIds?.length) {
+      if (profissionais?.length) {
         await tx.contratoProfissional.createMany({
-          data: profissionalIds.map((id: number) => ({ contratoId: contrato.id, profissionalId: id })),
+          data: profissionais.map((p: any) => ({
+            contratoId: contrato.id,
+            profissionalId: p.profissionalId,
+            valorHora: p.valorHora ?? null,
+            valorFixo: p.valorFixo ?? null,
+            maxHorasMes: p.maxHorasMes ?? null,
+            modoExcedente: p.modoExcedente ?? null,
+          })),
           skipDuplicates: true,
         });
       }
@@ -61,18 +68,21 @@ export class ContratosService {
     });
   }
 
-  findAll(empresaId: number, bloqueado?: boolean) {
+  findAll(empresaId: number, bloqueado?: boolean, profissionalScope?: number[] | null) {
     const where: any = { empresaId };
     if (bloqueado !== undefined) {
       where.bloqueado = bloqueado;
     }
+    if (profissionalScope) {
+      where.profissionais = { some: { profissionalId: { in: profissionalScope } } };
+    }
     return this.prisma.contrato.findMany({ where, include: { cliente: true } });
   }
 
-  async search(query: ContratoSearchQuery, empresaId: number) {
+  async search(query: ContratoSearchQuery, empresaId: number, profissionalScope?: number[] | null) {
     const page = Math.max(Number(query.page) || 1, 1);
     const pageSize = Math.max(Number(query.pageSize) || 20, 1);
-    const where = this.buildWhere(query, empresaId);
+    const where = this.buildWhere(query, empresaId, profissionalScope);
     const total = await this.prisma.contrato.count({ where });
     const items = await this.prisma.contrato.findMany({
       where,
@@ -94,7 +104,7 @@ export class ContratosService {
     return { items: mappedItems, page, pageSize, total, hasNext: page * pageSize < total };
   }
 
-  async findOne(id: number, empresaId?: number) {
+  async findOne(id: number, empresaId?: number, profissionalScope?: number[] | null) {
     const where: any = { id };
     if (empresaId) where.empresaId = empresaId;
 
@@ -108,23 +118,51 @@ export class ContratosService {
       },
     });
     if (!contrato) throw new NotFoundException('Contrato não encontrado.');
+    if (
+      profissionalScope &&
+      !contrato.profissionais.some((p) => profissionalScope.includes(p.profissionalId))
+    ) {
+      throw new ForbiddenException('Você não tem acesso a este contrato.');
+    }
     return contrato;
   }
 
-  async update(id: number, dto: UpdateContratoDto, empresaId?: number) {
-    await this.findOne(id, empresaId);
-    const { profissionalIds, escalas, adiantamentos, ...contratoData } = dto as any;
+  async update(id: number, dto: UpdateContratoDto, empresaId?: number, profissionalScope?: number[] | null) {
+    await this.findOne(id, empresaId, profissionalScope);
+    const { profissionais, escalas, adiantamentos, ...contratoData } = dto as any;
     return this.prisma.$transaction(async (tx) => {
       if (contratoData.dtInicio) contratoData.dtInicio = new Date(contratoData.dtInicio);
       if (contratoData.dtFim) contratoData.dtFim = new Date(contratoData.dtFim);
-      
+
       const contrato = await tx.contrato.update({ where: { id }, data: contratoData });
-      if (profissionalIds !== undefined) {
-        await tx.contratoProfissional.deleteMany({ where: { contratoId: id } });
-        if (profissionalIds.length) {
-          await tx.contratoProfissional.createMany({
-            data: profissionalIds.map((pid: number) => ({ contratoId: id, profissionalId: pid })),
-            skipDuplicates: true,
+      if (profissionais !== undefined) {
+        // Upsert em vez de deleteMany+createMany: preserva o saldoBancoHoras e o histórico
+        // dos profissionais mantidos. Só remove (e cascateia o histórico) quem saiu da lista.
+        const existentes = await tx.contratoProfissional.findMany({ where: { contratoId: id } });
+        const idsInformados = new Set(profissionais.map((p: any) => p.profissionalId));
+        const removidos = existentes.filter((e) => !idsInformados.has(e.profissionalId));
+        if (removidos.length) {
+          await tx.contratoProfissional.deleteMany({
+            where: { id: { in: removidos.map((r) => r.id) } },
+          });
+        }
+        for (const p of profissionais) {
+          await tx.contratoProfissional.upsert({
+            where: { contratoId_profissionalId: { contratoId: id, profissionalId: p.profissionalId } },
+            create: {
+              contratoId: id,
+              profissionalId: p.profissionalId,
+              valorHora: p.valorHora ?? null,
+              valorFixo: p.valorFixo ?? null,
+              maxHorasMes: p.maxHorasMes ?? null,
+              modoExcedente: p.modoExcedente ?? null,
+            },
+            update: {
+              valorHora: p.valorHora ?? null,
+              valorFixo: p.valorFixo ?? null,
+              maxHorasMes: p.maxHorasMes ?? null,
+              modoExcedente: p.modoExcedente ?? null,
+            },
           });
         }
       }
@@ -152,8 +190,8 @@ export class ContratosService {
     });
   }
 
-  async remove(id: number, empresaId?: number) {
-    await this.findOne(id, empresaId);
+  async remove(id: number, empresaId?: number, profissionalScope?: number[] | null) {
+    await this.findOne(id, empresaId, profissionalScope);
     const totalAgendamentos = await this.prisma.agendamento.count({
       where: { contratoId: id },
     });
@@ -165,9 +203,12 @@ export class ContratosService {
     return this.prisma.contrato.delete({ where: { id } });
   }
 
-  private buildWhere(query: ContratoSearchQuery, empresaId?: number) {
+  private buildWhere(query: ContratoSearchQuery, empresaId?: number, profissionalScope?: number[] | null) {
     const andFilters: object[] = [];
     if (empresaId) andFilters.push({ empresaId });
+    if (profissionalScope) {
+      andFilters.push({ profissionais: { some: { profissionalId: { in: profissionalScope } } } });
+    }
 
     const search = query.search?.trim() || query.descricao?.trim();
 

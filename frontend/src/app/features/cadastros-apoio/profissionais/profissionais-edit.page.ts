@@ -29,13 +29,23 @@ import { UserService } from '../../../core/services/user.service';
       </div>
       <div class="po-row">
         <po-combo
-          class="po-md-12"
+          class="po-md-6"
           p-label="Usuário do Sistema"
           [p-options]="usuarios"
           [ngModel]="formData.userId"
           (ngModelChange)="formData.userId = $event"
           name="userId"
           p-placeholder="Selecione o usuário vinculado">
+        </po-combo>
+        <po-combo
+          class="po-md-6"
+          p-label="Gerente Responsável"
+          p-help="Se este profissional for um Analista, selecione o Gerente que administra seu time."
+          [p-options]="gerentesDisponiveis"
+          [ngModel]="formData.gerenteId"
+          (ngModelChange)="formData.gerenteId = $event"
+          name="gerenteId"
+          p-placeholder="Nenhum">
         </po-combo>
       </div>
     </po-page-edit>
@@ -53,10 +63,12 @@ export class ProfissionaisEditPage implements OnInit {
   id: number | null = null;
   title = 'Novo';
   usuarios: PoComboOption[] = [];
+  gerentesDisponiveis: PoComboOption[] = [];
 
   formData: any = {
     nome: '',
     userId: null,
+    gerenteId: null,
   };
 
   ngOnInit() {
@@ -68,6 +80,20 @@ export class ProfissionaisEditPage implements OnInit {
       this.title = 'Editar';
       this.loadRecord();
     }
+    this.loadGerentesDisponiveis();
+  }
+
+  loadGerentesDisponiveis() {
+    this.profissionalService.findAll().subscribe({
+      next: (data) => {
+        this.gerentesDisponiveis = (data || [])
+          .filter((p: any) => !this.id || p.id !== this.id)
+          .map((p: any) => ({ label: p.nome, value: p.id }));
+      },
+      error: () => {
+        this.gerentesDisponiveis = [];
+      },
+    });
   }
 
   loadUsuarios() {
@@ -87,6 +113,7 @@ export class ProfissionaisEditPage implements OnInit {
         this.formData = {
           nome: data.nome || '',
           userId: data.user?.id ?? null,
+          gerenteId: data.gerente?.id ?? null,
         };
       },
       error: () => {
@@ -105,6 +132,7 @@ export class ProfissionaisEditPage implements OnInit {
     this.saving = true;
     const payload: any = { nome: this.formData.nome.trim() };
     if (this.formData.userId) payload.userId = Number(this.formData.userId);
+    payload.gerenteId = this.formData.gerenteId ? Number(this.formData.gerenteId) : null;
 
     const request$ = this.isEdit
       ? this.profissionalService.update(this.id!, payload)

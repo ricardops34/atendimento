@@ -8,4 +8,9 @@ export class CreateProfissionalDto {
   @IsOptional()
   @IsInt()
   userId?: number;
+
+  // RBAC: Gerente responsável (outro Profissional). Define o time que o Gerente enxerga/administra.
+  @IsOptional()
+  @IsInt()
+  gerenteId?: number;
 }

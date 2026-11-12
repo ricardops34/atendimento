@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException, HttpException, HttpStatus } from '@nestjs/common';
 import { Agendamento } from '@prisma/client';
 import * as ExcelJS from 'exceljs';
 import PDFDocument from 'pdfkit';
@@ -7,6 +7,7 @@ import { CreateAgendamentoDto } from './dto/create-agendamento.dto';
 import { UpdateAgendamentoDto } from './dto/update-agendamento.dto';
 import { composeDateTime, calculateDuration, stripHtml } from './agendamentos.utils';
 import { buildPdfCalendario } from './buildPdfCalendario';
+import { BancoHorasService } from '../banco-horas/banco-horas.service';
 
 type ExportFormat = 'csv' | 'xls' | 'pdf' | 'xml';
 
@@ -23,6 +24,11 @@ interface AgendamentoExportFilters {
   // Escopa os resultados aos contratos de um Cliente (portal do cliente, feature 003).
   // Nunca deve ser preenchido a partir de input do próprio cliente, só a partir do JWT.
   clienteId?: number;
+  // RBAC: lista de profissionalId visíveis para o usuário logado (null = sem restrição,
+  // ex: Administrador). Nunca vem de input do usuário, só do ProfissionalScopeGuard.
+  profissionalScope?: number[] | null;
+  // Extrato: quando true, omite valor hora/valores financeiros do relatório gerado.
+  ocultarValor?: boolean;
 }
 
 interface SearchQuery {
@@ -39,7 +45,10 @@ interface SearchQuery {
 
 @Injectable()
 export class AgendamentosService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private bancoHorasService: BancoHorasService,
+  ) {}
 
   private parseNumber(value?: string): number | undefined {
     if (!value) return undefined;
@@ -88,6 +97,11 @@ export class AgendamentosService {
     if (filters.profissionalId) andFilters.push({ profissionalId: filters.profissionalId });
     // Agendamento não tem clienteId direto: o vínculo é via Contrato.clienteId.
     if (filters.clienteId) andFilters.push({ contrato: { clienteId: filters.clienteId } });
+    // RBAC: Administrador tem profissionalScope null (sem filtro); os demais perfis só
+    // enxergam agendamentos dos profissionais do seu escopo (ele mesmo, e seu time se Gerente).
+    if (filters.profissionalScope) {
+      andFilters.push({ profissionalId: { in: filters.profissionalScope } });
+    }
 
     const dataInicial = this.parseDate(filters.dataInicial);
     const dataFinal = this.parseDate(filters.dataFinal, true);
@@ -103,7 +117,15 @@ export class AgendamentosService {
     return andFilters.length > 0 ? { AND: andFilters } : {};
   }
 
-  async create(dto: CreateAgendamentoDto, empresaId: number): Promise<Agendamento> {
+  async create(
+    dto: CreateAgendamentoDto,
+    empresaId: number,
+    profissionalScope?: number[] | null,
+  ): Promise<Agendamento> {
+    if (profissionalScope && (!dto.profissionalId || !profissionalScope.includes(dto.profissionalId))) {
+      throw new ForbiddenException('Você só pode lançar atividades para o seu próprio profissional.');
+    }
+
     let cor = dto.cor;
     let descricao = dto.descricao;
 
@@ -115,6 +137,7 @@ export class AgendamentosService {
       }
     }
 
+    const dataAgenda = new Date(dto.dataAgenda);
     const horarioInicial = composeDateTime(dto.dataAgenda, dto.horaInicio);
     const horarioFinal = composeDateTime(dto.dataAgenda, dto.horaFim);
     const duracaoMinutos = calculateDuration(
@@ -124,29 +147,56 @@ export class AgendamentosService {
       dto.horaIntervaloFinal || '00:00',
     );
 
-    return this.prisma.agendamento.create({
-      data: {
-        empresaId,
-        contratoId: dto.contratoId ?? null,
-        profissionalId: dto.profissionalId ?? null,
-        descricao: descricao || 'Agendamento sem descrição',
-        dataAgenda: new Date(dto.dataAgenda),
-        horaInicio: dto.horaInicio,
-        horaFim: dto.horaFim,
-        horaIntervaloInicial: dto.horaIntervaloInicial || '00:00',
-        horaIntervaloFinal: dto.horaIntervaloFinal || '00:00',
-        duracaoMinutos,
-        horarioInicial,
-        horarioFinal,
-        local: dto.local || 'P',
-        tipo: dto.tipo || 'A',
-        cor: cor || '#333333',
-        observacao: dto.observacao,
-      },
+    return this.prisma.$transaction(async (tx) => {
+      if (dto.contratoId && dto.profissionalId) {
+        await this.bancoHorasService.aplicarHorasENotificarExcedente(tx, {
+          contratoId: dto.contratoId,
+          profissionalId: dto.profissionalId,
+          dataAgenda,
+          horasAdicionais: duracaoMinutos / 60,
+        });
+      }
+
+      return tx.agendamento.create({
+        data: {
+          empresaId,
+          contratoId: dto.contratoId ?? null,
+          profissionalId: dto.profissionalId ?? null,
+          descricao: descricao || 'Agendamento sem descrição',
+          dataAgenda,
+          horaInicio: dto.horaInicio,
+          horaFim: dto.horaFim,
+          horaIntervaloInicial: dto.horaIntervaloInicial || '00:00',
+          horaIntervaloFinal: dto.horaIntervaloFinal || '00:00',
+          duracaoMinutos,
+          horarioInicial,
+          horarioFinal,
+          local: dto.local || 'P',
+          tipo: dto.tipo || 'A',
+          cor: cor || '#333333',
+          observacao: dto.observacao,
+        },
+      });
     });
   }
 
-  async gerarMensal(mes: number, ano: number, contratoId?: number, profissionalId?: number, empresaId?: number): Promise<{ gerados: number }> {
+  async gerarMensal(
+    mes: number,
+    ano: number,
+    contratoId?: number,
+    profissionalId?: number,
+    empresaId?: number,
+    profissionalScope?: number[] | null,
+  ): Promise<{ gerados: number }> {
+    if (profissionalScope) {
+      if (profissionalId && !profissionalScope.includes(profissionalId)) {
+        throw new ForbiddenException('Você só pode gerar agendamentos para o seu próprio profissional.');
+      }
+      if (!profissionalId && profissionalScope.length === 0) {
+        return { gerados: 0, bloqueadosPorLimite: 0 } as any;
+      }
+    }
+
     const dataInicio = new Date(ano, mes - 1, 1);
     const dataFim = new Date(ano, mes, 0, 23, 59, 59, 999);
     
@@ -210,6 +260,7 @@ export class AgendamentosService {
         const escalasDia = contrato.escalas.filter((e: any) => {
           if (e.diaSemana !== diaSemana) return false;
           if (profissionalId && e.profissionalId !== profissionalId) return false;
+          if (profissionalScope && !profissionalScope.includes(e.profissionalId)) return false;
           return true;
         });
         
@@ -250,18 +301,45 @@ export class AgendamentosService {
       }
     }
 
+    let gerados = 0;
+    let bloqueadosPorLimite = 0;
+
     if (novosAgendamentos.length > 0) {
-      await this.prisma.agendamento.createMany({ data: novosAgendamentos });
+      // Ordenado cronologicamente pelo loop acima: cada item é checado contra o total
+      // já lançado no mês antes de criar o próximo, para o excedente/bloqueio ficar correto.
+      await this.prisma.$transaction(async (tx) => {
+        for (const item of novosAgendamentos) {
+          if (item.contratoId && item.profissionalId) {
+            try {
+              await this.bancoHorasService.aplicarHorasENotificarExcedente(tx, {
+                contratoId: item.contratoId,
+                profissionalId: item.profissionalId,
+                dataAgenda: item.dataAgenda,
+                horasAdicionais: item.duracaoMinutos / 60,
+              });
+            } catch (error) {
+              if (error instanceof ConflictException) {
+                bloqueadosPorLimite += 1;
+                continue;
+              }
+              throw error;
+            }
+          }
+          await tx.agendamento.create({ data: item });
+          gerados += 1;
+        }
+      });
     }
 
-    return { gerados: novosAgendamentos.length };
+    return { gerados, bloqueadosPorLimite } as any;
   }
 
   // `clienteId` nunca vem de query/body do cliente, só de argumento explícito a partir do JWT
   // (ver PortalClienteService).
-  async findAll(empresaId: number, clienteId?: number): Promise<Agendamento[]> {
+  async findAll(empresaId: number, clienteId?: number, profissionalScope?: number[] | null): Promise<Agendamento[]> {
     const where: any = { empresaId };
     if (clienteId) where.contrato = { clienteId };
+    if (profissionalScope) where.profissionalId = { in: profissionalScope };
 
     const items = await this.prisma.agendamento.findMany({
       where,
@@ -275,7 +353,12 @@ export class AgendamentosService {
 
   // `clienteId` nunca vem de `query` (nunca é confiável vindo do cliente/HTTP),
   // é sempre passado explicitamente pelo chamador a partir do JWT (ver PortalClienteService).
-  async search(query: SearchQuery, empresaId: number, clienteId?: number): Promise<{
+  async search(
+    query: SearchQuery,
+    empresaId: number,
+    clienteId?: number,
+    profissionalScope?: number[] | null,
+  ): Promise<{
     items: Agendamento[];
     page: number;
     pageSize: number;
@@ -295,6 +378,7 @@ export class AgendamentosService {
       dataFinal: query.dataFinal,
       empresaId,
       clienteId,
+      profissionalScope,
     };
 
     const where = this.buildWhereFromFilters(filters);
@@ -315,7 +399,7 @@ export class AgendamentosService {
     return { items: itemsMapped, page, pageSize, total, hasNext: page * pageSize < total };
   }
 
-  async findOne(id: number, empresaId?: number): Promise<Agendamento> {
+  async findOne(id: number, empresaId?: number, profissionalScope?: number[] | null): Promise<Agendamento> {
     const where: any = { id };
     if (empresaId) where.empresaId = empresaId;
 
@@ -324,14 +408,22 @@ export class AgendamentosService {
       include: { contrato: true, profissional: true },
     });
     if (!agendamento) throw new NotFoundException('Agendamento não encontrado.');
-    
+    if (profissionalScope && !profissionalScope.includes(agendamento.profissionalId as number)) {
+      throw new ForbiddenException('Você não tem acesso a este agendamento.');
+    }
+
     agendamento.duracaoMinutos = agendamento.duracaoMinutos || calculateDuration(agendamento.horaInicio, agendamento.horaFim, agendamento.horaIntervaloInicial, agendamento.horaIntervaloFinal);
 
     return agendamento;
   }
 
-  async update(id: number, dto: UpdateAgendamentoDto, empresaId?: number): Promise<Agendamento> {
-    const current = await this.findOne(id, empresaId);
+  async update(
+    id: number,
+    dto: UpdateAgendamentoDto,
+    empresaId?: number,
+    profissionalScope?: number[] | null,
+  ): Promise<Agendamento> {
+    const current = await this.findOne(id, empresaId, profissionalScope);
 
     const dataAgenda = dto.dataAgenda ? new Date(dto.dataAgenda) : current.dataAgenda;
     const horaInicio = dto.horaInicio || current.horaInicio;
@@ -355,18 +447,21 @@ export class AgendamentosService {
     });
   }
 
-  async remove(id: number, empresaId?: number): Promise<Agendamento> {
-    await this.findOne(id, empresaId);
+  async remove(id: number, empresaId?: number, profissionalScope?: number[] | null): Promise<Agendamento> {
+    await this.findOne(id, empresaId, profissionalScope);
     return this.prisma.agendamento.delete({ where: { id } });
   }
 
-  async confirmar(id: number, empresaId: number): Promise<Agendamento> {
+  async confirmar(id: number, empresaId: number, profissionalScope?: number[] | null): Promise<Agendamento> {
     return this.prisma.$transaction(async (tx) => {
       const agendamento = await tx.agendamento.findUnique({
         where: { id, empresaId } as any, // Temporary fix for Prisma types if composite unique is not defined properly
         include: { contrato: true, profissional: true },
       });
       if (!agendamento) throw new NotFoundException('Agendamento não encontrado.');
+      if (profissionalScope && !profissionalScope.includes(agendamento.profissionalId as number)) {
+        throw new ForbiddenException('Você não tem acesso a este agendamento.');
+      }
       if (agendamento.tipo !== 'A') {
         throw new HttpException(
           `Registro não pode ser alterado. Status atual: ${agendamento.tipo}.`,
@@ -623,13 +718,15 @@ export class AgendamentosService {
     const isAnalitico = filters.tipoExtrato === 'analitico';
     const isCalendario = filters.tipoExtrato === 'calendario';
 
-    if (format === 'xls') return this.buildXlsxExtrato(rows, isAnalitico);
+    const ocultarValor = !!filters.ocultarValor;
+
+    if (format === 'xls') return this.buildXlsxExtrato(rows, isAnalitico, ocultarValor);
     if (isCalendario) return buildPdfCalendario(items, filters, getHorasPrevistasContrato);
-    
-    return this.buildPdfExtrato(rows, isAnalitico);
+
+    return this.buildPdfExtrato(rows, isAnalitico, ocultarValor);
   }
 
-  private async buildXlsxExtrato(rows: any[], isAnalitico: boolean): Promise<Buffer> {
+  private async buildXlsxExtrato(rows: any[], isAnalitico: boolean, ocultarValor = false): Promise<Buffer> {
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('Extrato');
     
@@ -639,9 +736,14 @@ export class AgendamentosService {
       { header: 'Profissional', key: 'profissional', width: 25 },
       { header: 'Tipo', key: 'status', width: 15 },
       { header: 'Horas Cobradas', key: 'horasRealizadas', width: 15 },
-      { header: 'Valor Hora', key: 'valorHora', width: 15 },
-      { header: 'Total (R$)', key: 'valorTotal', width: 15 },
     ];
+
+    if (!ocultarValor) {
+      columns.push(
+        { header: 'Valor Hora', key: 'valorHora', width: 15 },
+        { header: 'Total (R$)', key: 'valorTotal', width: 15 },
+      );
+    }
 
     if (isAnalitico) {
       columns.push({ header: 'Observações', key: 'observacao', width: 50 });
@@ -680,7 +782,7 @@ export class AgendamentosService {
     return Buffer.from(arrayBuffer);
   }
 
-  private buildPdfExtrato(rows: any[], isAnalitico: boolean): Promise<Buffer> {
+  private buildPdfExtrato(rows: any[], isAnalitico: boolean, ocultarValor = false): Promise<Buffer> {
     return new Promise((resolve) => {
       const doc = new PDFDocument({ margin: 30, size: 'A4', layout: 'portrait' });
       const chunks: Buffer[] = [];
@@ -717,8 +819,12 @@ export class AgendamentosService {
         }
 
         doc.fontSize(12).font('Helvetica-Bold').fillColor('#333333');
-        doc.text(`Cliente: ${contrato}`, startX, doc.y, { continued: true });
-        doc.fillColor('#555555').font('Helvetica').text(`    Valor Hora: ${formatCurrency(valorHora)}`);
+        if (ocultarValor) {
+          doc.text(`Cliente: ${contrato}`);
+        } else {
+          doc.text(`Cliente: ${contrato}`, startX, doc.y, { continued: true });
+          doc.fillColor('#555555').font('Helvetica').text(`    Valor Hora: ${formatCurrency(valorHora)}`);
+        }
         doc.moveDown(0.5);
 
         for (const profissional of Object.keys(grouped[contrato])) {
@@ -877,7 +983,9 @@ export class AgendamentosService {
 
           // Table Data
           drawRow('Horas Mês', formatHoursClock(hrBase), '#000000', '#000000');
-          drawRow('Vlr Hora', formatNumber(valorHora), '#000000', '#000000');
+          if (!ocultarValor) {
+            drawRow('Vlr Hora', formatNumber(valorHora), '#000000', '#000000');
+          }
 
           if (hrExtra > 0) {
             drawRow('Horas Ext', formatHoursClock(hrExtra), '#4285F4', '#4285F4'); // Blue
@@ -886,18 +994,20 @@ export class AgendamentosService {
             drawRow('Hrs Falta', formatHoursClock(Math.abs(hrFalta)), '#EA4335', '#EA4335'); // Red
           }
 
-          drawRow('Valor Base', formatNumber(valBase), '#000000', '#000000');
-          
-          if (valExtra > 0) {
-            drawRow('Extras', formatNumber(valExtra), '#4285F4', '#4285F4');
+          if (!ocultarValor) {
+            drawRow('Valor Base', formatNumber(valBase), '#000000', '#000000');
+
+            if (valExtra > 0) {
+              drawRow('Extras', formatNumber(valExtra), '#4285F4', '#4285F4');
+            }
+            if (valFalta > 0) {
+              drawRow('Falta', formatNumber(valFalta), '#EA4335', '#EA4335');
+            }
+            if (adiantamentoVal > 0) {
+              drawRow(adiantamentoLabel || 'Adiantamento', formatNumber(adiantamentoVal), '#EA4335', '#EA4335');
+            }
+            drawRow('Valor Total', formatNumber(totalFinal), '#000000', '#000000');
           }
-          if (valFalta > 0) {
-            drawRow('Falta', formatNumber(valFalta), '#EA4335', '#EA4335');
-          }
-          if (adiantamentoVal > 0) {
-            drawRow(adiantamentoLabel || 'Adiantamento', formatNumber(adiantamentoVal), '#EA4335', '#EA4335');
-          }
-          drawRow('Valor Total', formatNumber(totalFinal), '#000000', '#000000');
           
           // Linha final inferior
           doc.moveTo(boxX, boxY).lineTo(boxX + 180, boxY).stroke();

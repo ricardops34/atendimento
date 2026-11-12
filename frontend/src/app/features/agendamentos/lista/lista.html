@@ -93,6 +93,12 @@
     </po-radio-group>
   </div>
 
+  <div class="po-row">
+    <po-checkbox class="po-md-12" name="extratoOcultarValor" p-label="Ocultar valores financeiros do extrato"
+      [ngModel]="extratoFilters.ocultarValor" (ngModelChange)="extratoFilters.ocultarValor = $event">
+    </po-checkbox>
+  </div>
+
   <po-modal-footer>
     <po-button p-label="Cancelar" (p-click)="extratoModal.close()"></po-button>
     <po-button p-label="Gerar Extrato" p-kind="primary" (p-click)="generateExtrato()"></po-button>

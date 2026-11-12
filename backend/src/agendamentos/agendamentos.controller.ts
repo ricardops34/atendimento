@@ -22,9 +22,10 @@ import { GerarMensalDto } from './dto/gerar-mensal.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { EmpresaGuard } from '../auth/guards/empresa.guard';
 import { MenuGuard } from '../auth/guards/menu.guard';
+import { ProfissionalScopeGuard } from '../auth/guards/profissional-scope.guard';
 import { RequireMenu } from '../auth/decorators/require-menu.decorator';
 
-@UseGuards(JwtAuthGuard, EmpresaGuard, MenuGuard)
+@UseGuards(JwtAuthGuard, EmpresaGuard, MenuGuard, ProfissionalScopeGuard)
 @RequireMenu('agendamentos-list')
 @Controller('agendamentos')
 export class AgendamentosController {
@@ -32,13 +33,20 @@ export class AgendamentosController {
 
   @Post()
   create(@Body() createAgendamentoDto: CreateAgendamentoDto, @Request() req: any) {
-    return this.agendamentosService.create(createAgendamentoDto, req.empresaId as number);
+    return this.agendamentosService.create(createAgendamentoDto, req.empresaId as number, req.profissionalScope);
   }
 
   @Post('gerar-mensal')
   async gerarMensal(@Body() body: GerarMensalDto, @Request() req: any) {
     try {
-      return await this.agendamentosService.gerarMensal(body.mes, body.ano, body.contratoId, body.profissionalId, req.empresaId as number);
+      return await this.agendamentosService.gerarMensal(
+        body.mes,
+        body.ano,
+        body.contratoId,
+        body.profissionalId,
+        req.empresaId as number,
+        req.profissionalScope,
+      );
     } catch (e: any) {
       throw new HttpException(e.stack || e.message || 'Erro ao gerar', HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -46,12 +54,12 @@ export class AgendamentosController {
 
   @Get()
   findAll(@Request() req: any) {
-    return this.agendamentosService.findAll(req.empresaId as number);
+    return this.agendamentosService.findAll(req.empresaId as number, undefined, req.profissionalScope);
   }
 
   @Get('search')
   search(@Query() query: Record<string, string | undefined>, @Request() req: any) {
-    return this.agendamentosService.search(query, req.empresaId as number);
+    return this.agendamentosService.search(query, req.empresaId as number, undefined, req.profissionalScope);
   }
 
   @Get('export')
@@ -84,6 +92,7 @@ export class AgendamentosController {
       dataInicial: query.dataInicial,
       dataFinal: query.dataFinal,
       empresaId: req.empresaId as number,
+      profissionalScope: req.profissionalScope,
     };
 
     try {
@@ -127,6 +136,8 @@ export class AgendamentosController {
       dataFinal: query.dataFinal,
       tipoExtrato: query.tipoExtrato as 'sintetico' | 'analitico' | 'calendario' | undefined,
       empresaId: req.empresaId as number,
+      profissionalScope: req.profissionalScope,
+      ocultarValor: query.ocultarValor === 'true',
     };
 
     try {
@@ -143,21 +154,21 @@ export class AgendamentosController {
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
-    return this.agendamentosService.findOne(id, req.empresaId as number);
+    return this.agendamentosService.findOne(id, req.empresaId as number, req.profissionalScope);
   }
 
   @Patch(':id/confirmar')
   confirmar(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
-    return this.agendamentosService.confirmar(id, req.empresaId as number);
+    return this.agendamentosService.confirmar(id, req.empresaId as number, req.profissionalScope);
   }
 
   @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() updateAgendamentoDto: UpdateAgendamentoDto, @Request() req: any) {
-    return this.agendamentosService.update(id, updateAgendamentoDto, req.empresaId as number);
+    return this.agendamentosService.update(id, updateAgendamentoDto, req.empresaId as number, req.profissionalScope);
   }
 
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
-    return this.agendamentosService.remove(id, req.empresaId as number);
+    return this.agendamentosService.remove(id, req.empresaId as number, req.profissionalScope);
   }
 }

@@ -5,9 +5,10 @@ import { UpdateContratoDto } from './dto/update-contrato.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { EmpresaGuard } from '../auth/guards/empresa.guard';
 import { MenuGuard } from '../auth/guards/menu.guard';
+import { ProfissionalScopeGuard } from '../auth/guards/profissional-scope.guard';
 import { RequireMenu } from '../auth/decorators/require-menu.decorator';
 
-@UseGuards(JwtAuthGuard, EmpresaGuard, MenuGuard)
+@UseGuards(JwtAuthGuard, EmpresaGuard, MenuGuard, ProfissionalScopeGuard)
 @RequireMenu('contratos-list')
 @Controller('contratos')
 export class ContratosController {
@@ -20,26 +21,26 @@ export class ContratosController {
 
   @Get()
   findAll(@Query() query: Record<string, string | undefined>, @Request() req: any) {
-    return this.contratosService.search(query, req.user.empresaId as number);
+    return this.contratosService.search(query, req.user.empresaId as number, req.profissionalScope);
   }
 
   @Get('search')
   search(@Query() query: Record<string, string | undefined>, @Request() req: any) {
-    return this.contratosService.search(query, req.user.empresaId as number);
+    return this.contratosService.search(query, req.user.empresaId as number, req.profissionalScope);
   }
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
-    return this.contratosService.findOne(id, req.user.empresaId as number);
+    return this.contratosService.findOne(id, req.user.empresaId as number, req.profissionalScope);
   }
 
   @Patch(':id')
   update(@Param('id', ParseIntPipe) id: number, @Body() updateContratoDto: UpdateContratoDto, @Request() req: any) {
-    return this.contratosService.update(id, updateContratoDto, req.user.empresaId as number);
+    return this.contratosService.update(id, updateContratoDto, req.user.empresaId as number, req.profissionalScope);
   }
 
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
-    return this.contratosService.remove(id, req.user.empresaId as number);
+    return this.contratosService.remove(id, req.user.empresaId as number, req.profissionalScope);
   }
 }
