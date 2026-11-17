@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import {
   PoButtonModule,
   PoComboOption,
@@ -52,6 +53,7 @@ export class Lista implements OnInit {
   private contratoService = inject(ContratoService);
   private profissionalService = inject(ProfissionalService);
   private poNotification = inject(PoNotificationService);
+  private router = inject(Router);
 
   agendamentos: any[] = [];
   loading = false;
@@ -74,7 +76,8 @@ export class Lista implements OnInit {
 
   extratoActions: PoDropdownAction[] = [
     { label: 'Extrato (XLS)', action: () => this.openExtratoModal('xls') },
-    { label: 'Extrato (PDF)', action: () => this.openExtratoModal('pdf') }
+    { label: 'Extrato (PDF)', action: () => this.openExtratoModal('pdf') },
+    { label: 'Banco de Horas', action: () => this.router.navigate(['/banco-horas']) }
   ];
 
   readonly statusOptions: PoComboOption[] = [
