@@ -733,7 +733,12 @@ export class ContratosEditPage implements OnInit {
         modoExcedente: p.modoExcedente ?? undefined,
       })),
       escalas: this.formData.escalas || [],
-      adiantamentos: this.formData.adiantamentos || [],
+      adiantamentos: (this.formData.adiantamentos || []).map((a: any) => ({
+        ...a,
+        valorTotal: Number(a.valorTotal),
+        parcelas: Number(a.parcelas),
+        valorParcela: Number(a.valorParcela),
+      })),
     };
     if (this.formData.valorHora !== null && this.formData.valorHora !== '') {
       payload.valorHora = Number(this.formData.valorHora);
