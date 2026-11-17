@@ -13,6 +13,7 @@ export interface AgendamentoSearchParams {
   profissionalId?: number;
   dataInicial?: string;
   dataFinal?: string;
+  bancoHorasTipo?: string;
   tipoExtrato?: 'sintetico' | 'analitico' | 'calendario';
   ocultarValor?: boolean;
 }

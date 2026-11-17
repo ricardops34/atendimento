@@ -19,6 +19,7 @@ interface AgendamentoExportFilters {
   profissionalId?: number;
   dataInicial?: string;
   dataFinal?: string;
+  bancoHorasTipo?: string;
   empresaId?: number;
   tipoExtrato?: 'sintetico' | 'analitico' | 'calendario';
   // Escopa os resultados aos contratos de um Cliente (portal do cliente, feature 003).
@@ -93,6 +94,7 @@ export class AgendamentosService {
 
     if (filters.tipo) andFilters.push({ tipo: filters.tipo });
     if (filters.local) andFilters.push({ local: filters.local });
+    if (filters.bancoHorasTipo) andFilters.push({ bancoHorasTipo: filters.bancoHorasTipo });
     if (filters.contratoId) andFilters.push({ contratoId: filters.contratoId });
     if (filters.profissionalId) andFilters.push({ profissionalId: filters.profissionalId });
     // Agendamento não tem clienteId direto: o vínculo é via Contrato.clienteId.

@@ -134,6 +134,7 @@ export class AgendamentosController {
       profissionalId: query.profissionalId ? Number(query.profissionalId) : undefined,
       dataInicial: query.dataInicial,
       dataFinal: query.dataFinal,
+      bancoHorasTipo: query.bancoHorasTipo?.trim(),
       tipoExtrato: query.tipoExtrato as 'sintetico' | 'analitico' | 'calendario' | undefined,
       empresaId: req.empresaId as number,
       profissionalScope: req.profissionalScope,

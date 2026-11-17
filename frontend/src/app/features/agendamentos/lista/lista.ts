@@ -395,6 +395,7 @@ export class Lista implements OnInit {
       dataFinal: this.extratoFilters.dataFinal,
       contratoId: this.extratoFilters.contratoId,
       profissionalId: this.extratoFilters.profissionalId,
+      bancoHorasTipo: this.extratoFilters.bancoHorasTipo,
       tipoExtrato: this.extratoFilters.tipoExtrato,
       ocultarValor: this.extratoFilters.ocultarValor
     };
