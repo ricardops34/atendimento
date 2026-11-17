@@ -105,6 +105,7 @@ export class Lista implements OnInit {
     dataFinal?: string;
     contratoId?: number;
     profissionalId?: number;
+    bancoHorasTipo?: string;
     tipoExtrato?: 'sintetico' | 'analitico' | 'calendario';
     ocultarValor?: boolean;
   } = { tipoExtrato: 'sintetico', ocultarValor: false };
@@ -113,6 +114,13 @@ export class Lista implements OnInit {
     { label: 'Sintético (Resumo)', value: 'sintetico' },
     { label: 'Analítico (Com Observações)', value: 'analitico' },
     { label: 'Calendário', value: 'calendario' }
+  ];
+
+  bancoHorasTipoOptions: PoComboOption[] = [
+    { label: 'Todos', value: '' },
+    { label: 'Normal', value: 'NORMAL' },
+    { label: 'Crédito (Hora Extra)', value: 'CREDITO' },
+    { label: 'Débito (Banco de Horas)', value: 'DEBITO' }
   ];
 
   gerarMensalFilters: {
@@ -162,6 +170,17 @@ export class Lista implements OnInit {
         { value: 'Realizada', color: 'color-10', label: 'Realizada' },
         { value: 'Cancelada', color: 'color-07', label: 'Cancelada' },
         { value: 'Feriado', color: 'color-08', label: 'Feriado' }
+      ]
+    },
+    {
+      property: 'bancoHorasFormatado',
+      label: 'Banco de Horas',
+      type: 'label',
+      sortable: true,
+      labels: [
+        { value: 'Normal', color: 'color-11', label: 'Normal' },
+        { value: 'Crédito', color: 'color-10', label: 'Crédito' },
+        { value: 'Débito', color: 'color-07', label: 'Débito' }
       ]
     }
   ];
@@ -357,6 +376,7 @@ export class Lista implements OnInit {
         dataFinal: this.filters.dataFinal,
         contratoId: this.filters.contratoId,
         profissionalId: this.filters.profissionalId,
+        bancoHorasTipo: this.extratoFilters.bancoHorasTipo,
         tipoExtrato: this.extratoFilters.tipoExtrato || 'sintetico',
         ocultarValor: this.extratoFilters.ocultarValor || false
       };
@@ -515,13 +535,19 @@ export class Lista implements OnInit {
       dataAgenda: localDate,
       localFormatado: this.formatLocal(a.local),
       duracaoFormatada: this.formatMinutesToHours(a.duracaoMinutos),
-      tipoFormatado: this.formatTipo(a.tipo)
+      tipoFormatado: this.formatTipo(a.tipo),
+      bancoHorasFormatado: this.formatBancoHoras(a.bancoHorasTipo)
     };
   }
 
   private formatLocal(local: string) {
     const map: Record<string, string> = { P: 'Presencial', R: 'Remoto', F: 'Falta', E: 'Extra' };
     return map[local] || local;
+  }
+
+  private formatBancoHoras(bancoHorasTipo: string) {
+    const map: Record<string, string> = { NORMAL: 'Normal', CREDITO: 'Crédito', DEBITO: 'Débito' };
+    return map[bancoHorasTipo] || 'Normal';
   }
 
   private formatTipo(tipo: string) {
