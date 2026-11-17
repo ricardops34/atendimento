@@ -6,6 +6,7 @@ import { Injectable, signal } from '@angular/core';
 export class EmpresaStateService {
   public empresaId = signal<number | null>(null);
   public profileId = signal<number | null>(null);
+  public profissionalId = signal<number | null>(null);
   public modules = signal<string[]>([]);
   public user = signal<any>(null);
 
@@ -13,6 +14,7 @@ export class EmpresaStateService {
     this.user.set(data.user);
     this.empresaId.set(data.user.empresaId || data.user.empresa?.id || null);
     this.profileId.set(data.user.profileId || null);
+    this.profissionalId.set(data.user.profissionalId || null);
     this.modules.set(data.user.modules || []);
   }
 
@@ -20,6 +22,7 @@ export class EmpresaStateService {
     this.user.set(null);
     this.empresaId.set(null);
     this.profileId.set(null);
+    this.profissionalId.set(null);
     this.modules.set([]);
   }
 

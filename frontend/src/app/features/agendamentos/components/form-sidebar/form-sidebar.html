@@ -16,6 +16,7 @@
       name="profissionalId"
       p-label="Profissional"
       [p-options]="profissionais"
+      [p-disabled]="!podeApontarParaOutro"
       [ngModel]="formData.profissionalId"
       (ngModelChange)="formData.profissionalId = $event">
     </po-combo>
@@ -101,7 +102,7 @@
     </po-input>
   </div>
 
-  <!-- Row 4: Tipo de Atividade (status - read-only) -->
+  <!-- Row 4: Tipo de Atividade (status - read-only) | Banco de Horas -->
   <div class="po-row">
     <po-combo
       class="po-md-3"
@@ -110,6 +111,14 @@
       [p-options]="tipoOptions"
       [p-disabled]="true"
       [ngModel]="formData.tipo">
+    </po-combo>
+    <po-combo
+      class="po-md-6"
+      name="bancoHorasTipo"
+      p-label="Banco de Horas"
+      [p-options]="bancoHorasTipoOptions"
+      [ngModel]="formData.bancoHorasTipo"
+      (ngModelChange)="formData.bancoHorasTipo = $event">
     </po-combo>
   </div>
 

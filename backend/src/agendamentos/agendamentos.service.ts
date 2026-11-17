@@ -147,8 +147,10 @@ export class AgendamentosService {
       dto.horaIntervaloFinal || '00:00',
     );
 
+    const bancoHorasTipo = dto.bancoHorasTipo || 'NORMAL';
+
     return this.prisma.$transaction(async (tx) => {
-      if (dto.contratoId && dto.profissionalId) {
+      if (dto.contratoId && dto.profissionalId && bancoHorasTipo === 'NORMAL') {
         await this.bancoHorasService.aplicarHorasENotificarExcedente(tx, {
           contratoId: dto.contratoId,
           profissionalId: dto.profissionalId,
@@ -157,7 +159,7 @@ export class AgendamentosService {
         });
       }
 
-      return tx.agendamento.create({
+      const agendamento = await tx.agendamento.create({
         data: {
           empresaId,
           contratoId: dto.contratoId ?? null,
@@ -173,10 +175,25 @@ export class AgendamentosService {
           horarioFinal,
           local: dto.local || 'P',
           tipo: dto.tipo || 'A',
+          bancoHorasTipo,
           cor: cor || '#333333',
           observacao: dto.observacao,
         },
       });
+
+      if (dto.contratoId && dto.profissionalId && (bancoHorasTipo === 'CREDITO' || bancoHorasTipo === 'DEBITO')) {
+        await this.bancoHorasService.aplicarAtividadeBancoHoras(tx, {
+          contratoId: dto.contratoId,
+          profissionalId: dto.profissionalId,
+          tipo: bancoHorasTipo,
+          horas: duracaoMinutos / 60,
+          data: dataAgenda,
+          descricao: descricao || agendamento.descricao,
+          agendamentoId: agendamento.id,
+        });
+      }
+
+      return agendamento;
     });
   }
 
@@ -435,21 +452,55 @@ export class AgendamentosService {
     const horarioFinal = composeDateTime(dataAgenda, horaFim);
     const duracaoMinutos = calculateDuration(horaInicio, horaFim, horaIntervaloInicial, horaIntervaloFinal);
 
-    return this.prisma.agendamento.update({
-      where: { id },
-      data: {
-        ...dto,
-        dataAgenda: dto.dataAgenda ? new Date(dto.dataAgenda) : undefined,
-        horarioInicial,
-        horarioFinal,
-        duracaoMinutos,
-      },
+    const contratoId = dto.contratoId !== undefined ? dto.contratoId : current.contratoId;
+    const profissionalId = dto.profissionalId !== undefined ? dto.profissionalId : current.profissionalId;
+    const bancoHorasTipo = dto.bancoHorasTipo || current.bancoHorasTipo || 'NORMAL';
+
+    // Só Gerente/Administrador (profissionalScope null ou com mais de um profissional) pode
+    // apontar atividade para outra pessoa; os demais só podem manter a atividade no próprio nome.
+    if (profissionalScope && (!profissionalId || !profissionalScope.includes(profissionalId))) {
+      throw new ForbiddenException('Você só pode lançar atividades para o seu próprio profissional.');
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      // Desfaz o movimento de banco de horas anterior (se houver) antes de reaplicar,
+      // já que contrato/profissional/horas/tipo podem ter mudado na edição.
+      await this.bancoHorasService.reverterMovimentoDoAgendamento(tx, id);
+
+      const agendamento = await tx.agendamento.update({
+        where: { id },
+        data: {
+          ...dto,
+          dataAgenda: dto.dataAgenda ? new Date(dto.dataAgenda) : undefined,
+          horarioInicial,
+          horarioFinal,
+          duracaoMinutos,
+          bancoHorasTipo,
+        },
+      });
+
+      if (contratoId && profissionalId && (bancoHorasTipo === 'CREDITO' || bancoHorasTipo === 'DEBITO')) {
+        await this.bancoHorasService.aplicarAtividadeBancoHoras(tx, {
+          contratoId,
+          profissionalId,
+          tipo: bancoHorasTipo,
+          horas: duracaoMinutos / 60,
+          data: dataAgenda,
+          descricao: agendamento.descricao,
+          agendamentoId: agendamento.id,
+        });
+      }
+
+      return agendamento;
     });
   }
 
   async remove(id: number, empresaId?: number, profissionalScope?: number[] | null): Promise<Agendamento> {
     await this.findOne(id, empresaId, profissionalScope);
-    return this.prisma.agendamento.delete({ where: { id } });
+    return this.prisma.$transaction(async (tx) => {
+      await this.bancoHorasService.reverterMovimentoDoAgendamento(tx, id);
+      return tx.agendamento.delete({ where: { id } });
+    });
   }
 
   async confirmar(id: number, empresaId: number, profissionalScope?: number[] | null): Promise<Agendamento> {

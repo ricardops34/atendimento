@@ -336,6 +336,9 @@ model Agendamento {
   horarioFinal         DateTime      @map("horario_final") @db.Timestamptz // Datetime composto formatado
   local                String        @default("P") @db.VarChar(1) // P (Presencial), R (Remoto), F (Falta)
   tipo                 String        @default("A") @db.VarChar(1) // A (Agendada), R (Realizada), C (Cancelada), F (Feriado)
+  // Controle de banco de horas deste atendimento: NORMAL (dentro do previsto, não mexe no saldo),
+  // CREDITO (hora extra apontada, soma no saldo) ou DEBITO (hora executada usando o saldo, desconta).
+  bancoHorasTipo       String        @default("NORMAL") @map("banco_horas_tipo") @db.VarChar(10)
   cor                  String        @default("#333333") @db.VarChar(7)
   observacao           String?       @db.Text
   realizados           Realizado[]

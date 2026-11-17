@@ -112,6 +112,7 @@ export class AuthService {
       new Set(menuItems.map((item: any) => item.routine?.module?.key).filter(Boolean)),
     ) as string[];
     const menus = this.buildSessionMenus(menuItems);
+    const profissional = await this.prisma.profissional.findFirst({ where: { userId: user.id } });
 
     return {
       id: user.id,
@@ -120,6 +121,9 @@ export class AuthService {
       avatar: user.avatar || 'avatar_01.png',
       empresaId: empresaLink.empresaId,
       profileId: user.profileId,
+      // Profissional vinculado a este login (Cadastros de Apoio > Profissionais). Nulo quando o
+      // usuário não tem um Profissional associado (ex: Administrador puro).
+      profissionalId: profissional?.id ?? null,
       empresa: empresaLink.empresa,
       profile: user.profile?.name,
       modules,

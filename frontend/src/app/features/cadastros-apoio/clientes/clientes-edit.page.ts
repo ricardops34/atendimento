@@ -84,7 +84,7 @@ export class ClientesEditPage implements OnInit {
   form: any = {
     tipoPessoa: 'PJ',
     nome: '', razaoSocial: '', cnpj: '', inscricaoEstadual: '', inscricaoMunicipal: '',
-    cpf: '', rg: '', dataNascimento: '',
+    cpf: '', rg: '', dataNascimento: null,
     telefone: '', celular: '', email: '',
     cep: '', logradouro: '', numero: '', complemento: '', bairro: '', municipioId: null, estadoId: null, paisId: null,
     cor: '',
@@ -122,7 +122,7 @@ export class ClientesEditPage implements OnInit {
           razaoSocial:        data.razao                || '',
           cnpj:               data.tipoPessoa === 'J' ? data.documento : '',
           cpf:                data.tipoPessoa === 'F' ? data.documento : '',
-          dataNascimento:     data.dataNascimento ? data.dataNascimento.substring(0, 10) : '',
+          dataNascimento:     data.dataNascimento ? this.parseDateLocal(data.dataNascimento.substring(0, 10)) : null,
           telefone:           data.telefone           || '',
           email:              data.email              || '',
           cep:                data.cep                || '',
@@ -410,5 +410,10 @@ export class ClientesEditPage implements OnInit {
 
   cancel() {
     this.router.navigate(['/clientes']);
+  }
+
+  private parseDateLocal(dateStr: string): Date {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    return new Date(y, m - 1, d);
   }
 }

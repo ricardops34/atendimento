@@ -163,6 +163,74 @@ export class BancoHorasService {
     });
   }
 
+  /**
+   * Aplica um lançamento manual de banco de horas (CREDITO = hora extra apontada,
+   * DEBITO = hora executada usando o saldo) originado de um agendamento. Deve rodar
+   * dentro da mesma transação do agendamento, para que um rollback desfaça também
+   * a movimentação do saldo.
+   */
+  async aplicarAtividadeBancoHoras(
+    tx: TxClient,
+    params: {
+      contratoId: number;
+      profissionalId: number;
+      tipo: 'CREDITO' | 'DEBITO';
+      horas: number;
+      data: Date;
+      descricao?: string;
+      agendamentoId?: number;
+    },
+  ): Promise<void> {
+    const { contratoId, profissionalId, tipo, horas, data, descricao, agendamentoId } = params;
+    if (!horas) return;
+
+    const contratoProfissional = await tx.contratoProfissional.findUnique({
+      where: { contratoId_profissionalId: { contratoId, profissionalId } },
+    });
+    if (!contratoProfissional) {
+      throw new NotFoundException(
+        'Este profissional não está habilitado neste contrato (cadastre-o em Profissionais Habilitados antes de lançar banco de horas).',
+      );
+    }
+
+    if (tipo === 'DEBITO') {
+      const saldoAtual = Number(contratoProfissional.saldoBancoHoras);
+      if (horas > saldoAtual) {
+        throw new ConflictException(
+          `Saldo insuficiente de banco de horas: o profissional tem ${saldoAtual}h disponíveis neste contrato.`,
+        );
+      }
+    }
+
+    await tx.contratoProfissional.update({
+      where: { id: contratoProfissional.id },
+      data: { saldoBancoHoras: { [tipo === 'CREDITO' ? 'increment' : 'decrement']: horas } },
+    });
+    await tx.bancoHorasMovimento.create({
+      data: {
+        contratoProfissionalId: contratoProfissional.id,
+        tipo,
+        horas,
+        data,
+        descricao,
+        agendamentoId,
+      },
+    });
+  }
+
+  /** Desfaz (e remove) o movimento de banco de horas gerado por um agendamento, se houver. */
+  async reverterMovimentoDoAgendamento(tx: TxClient, agendamentoId: number): Promise<void> {
+    const movimento = await tx.bancoHorasMovimento.findFirst({ where: { agendamentoId } });
+    if (!movimento) return;
+
+    const delta = movimento.tipo === 'CREDITO' ? -Number(movimento.horas) : Number(movimento.horas);
+    await tx.contratoProfissional.update({
+      where: { id: movimento.contratoProfissionalId },
+      data: { saldoBancoHoras: { increment: delta } },
+    });
+    await tx.bancoHorasMovimento.delete({ where: { id: movimento.id } });
+  }
+
   async lancarDebito(
     contratoProfissionalId: number,
     dto: LancarDebitoDto,

@@ -85,7 +85,7 @@ export class FeriadosEditPage implements OnInit {
 
   formData: any = {
     descricao: '',
-    data: '',
+    data: null,
     tipo: 'N',
     fixo: true,
     municipio: '',
@@ -106,7 +106,7 @@ export class FeriadosEditPage implements OnInit {
       next: (data) => {
         this.formData = {
           descricao: data.descricao || '',
-          data: data.data ? data.data.substring(0, 10) : '',
+          data: data.data ? this.parseDateLocal(data.data.substring(0, 10)) : null,
           tipo: data.tipo || 'N',
           fixo: data.fixo !== false,
           municipio: data.municipio || '',
@@ -164,5 +164,10 @@ export class FeriadosEditPage implements OnInit {
 
   cancel() {
     this.router.navigate(['/feriados']);
+  }
+
+  private parseDateLocal(dateStr: string): Date {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    return new Date(y, m - 1, d);
   }
 }

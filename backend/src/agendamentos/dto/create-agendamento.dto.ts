@@ -1,4 +1,4 @@
-import { IsDateString, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsIn, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateAgendamentoDto {
   @IsOptional()
@@ -40,6 +40,12 @@ export class CreateAgendamentoDto {
   @IsOptional()
   @IsString()
   tipo?: string;
+
+  // Controle de banco de horas: NORMAL (dentro do previsto), CREDITO (hora extra apontada)
+  // ou DEBITO (hora executada usando o saldo do banco de horas).
+  @IsOptional()
+  @IsIn(['NORMAL', 'CREDITO', 'DEBITO'])
+  bancoHorasTipo?: string;
 
   @IsOptional()
   @IsString()

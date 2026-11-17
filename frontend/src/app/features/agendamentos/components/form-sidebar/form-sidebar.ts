@@ -13,6 +13,7 @@ import {
 import { AgendamentoService } from '../../../../core/services/agendamento.service';
 import { ContratoService } from '../../../../core/services/contrato.service';
 import { ProfissionalService } from '../../../../core/services/profissional.service';
+import { EmpresaStateService } from '../../../../core/auth/empresa-state.service';
 
 @Component({
   selector: 'app-form-sidebar',
@@ -29,6 +30,14 @@ export class FormSidebar implements OnInit {
   private profissionalService = inject(ProfissionalService);
   private poNotification = inject(PoNotificationService);
   private poDialog = inject(PoDialogService);
+  private empresaState = inject(EmpresaStateService);
+
+  // Só Gerente/Administrador podem apontar atividade para outro profissional;
+  // os demais perfis (ex: Analista) só enxergam/lançam no próprio nome.
+  get podeApontarParaOutro(): boolean {
+    const perfil = this.empresaState.user()?.profile;
+    return perfil === 'Administrador' || perfil === 'Gerente';
+  }
 
   contratos: PoComboOption[] = [];
   contratosRaw: any[] = [];
@@ -46,6 +55,12 @@ export class FormSidebar implements OnInit {
     { label: 'Realizada', value: 'R' },
     { label: 'Cancelada', value: 'C' },
     { label: 'Feriado', value: 'F' }
+  ];
+
+  readonly bancoHorasTipoOptions: PoComboOption[] = [
+    { label: 'Normal', value: 'NORMAL' },
+    { label: 'Crédito (Hora Extra)', value: 'CREDITO' },
+    { label: 'Débito (Banco de Horas)', value: 'DEBITO' }
   ];
 
   formData: any = {};
@@ -82,8 +97,10 @@ export class FormSidebar implements OnInit {
       this.isEdit = false;
       this.formData = {
         dataAgenda: initialDate ? initialDate.toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        profissionalId: this.empresaState.profissionalId(),
         local: 'P',
         tipo: 'A',
+        bancoHorasTipo: 'NORMAL',
         cor: '#3a87ad',
         horaIntervaloInicial: '00:00',
         horaIntervaloFinal: '00:00',

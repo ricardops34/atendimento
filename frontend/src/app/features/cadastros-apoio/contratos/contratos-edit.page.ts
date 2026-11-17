@@ -225,8 +225,8 @@ const MODO_EXCEDENTE_OPTIONS: PoComboOption[] = [
                 <td style="padding: 4px 8px;">{{ getModoExcedenteLabel(p.modoExcedente) }}</td>
                 <td style="padding: 4px 8px; text-align: center;">{{ p.saldoBancoHoras ?? 0 }}</td>
                 <td style="padding: 4px 8px; text-align: center; white-space: nowrap;">
-                  <po-button p-icon="po-icon-edit" p-kind="tertiary" (p-click)="editProfissionalHabilitado(i)"></po-button>
-                  <po-button p-icon="po-icon-delete" p-kind="tertiary" (p-click)="removeProfissionalHabilitado(i)"></po-button>
+                  <po-button p-icon="an an-pencil-simple" p-kind="tertiary" (p-click)="editProfissionalHabilitado(i)"></po-button>
+                  <po-button p-icon="an an-trash" p-kind="tertiary" (p-click)="removeProfissionalHabilitado(i)"></po-button>
                 </td>
               </tr>
             </tbody>
@@ -324,8 +324,8 @@ const MODO_EXCEDENTE_OPTIONS: PoComboOption[] = [
                 <td style="padding: 4px 8px; text-align: center;">{{ e.intervaloFim }}</td>
                 <td style="padding: 4px 8px; text-align: center;">{{ e.horaFim }}</td>
                 <td style="padding: 4px 8px; text-align: center; white-space: nowrap;">
-                  <po-button p-icon="po-icon-edit" p-kind="tertiary" (p-click)="editEscala(i)"></po-button>
-                  <po-button p-icon="po-icon-delete" p-kind="tertiary" (p-click)="removeEscala(i)"></po-button>
+                  <po-button p-icon="an an-pencil-simple" p-kind="tertiary" (p-click)="editEscala(i)"></po-button>
+                  <po-button p-icon="an an-trash" p-kind="tertiary" (p-click)="removeEscala(i)"></po-button>
                 </td>
               </tr>
             </tbody>
@@ -393,7 +393,7 @@ const MODO_EXCEDENTE_OPTIONS: PoComboOption[] = [
                 <td style="padding: 4px 8px; text-align: center;">{{ a.valorParcela }}</td>
                 <td style="padding: 4px 8px; text-align: center;">{{ a.dataInicio | date:'dd/MM/yyyy' }}</td>
                 <td style="padding: 4px 8px; text-align: center;">
-                  <po-button p-icon="po-icon-delete" p-kind="tertiary" (p-click)="removeAdiantamento(i)"></po-button>
+                  <po-button p-icon="an an-trash" p-kind="tertiary" (p-click)="removeAdiantamento(i)"></po-button>
                 </td>
               </tr>
             </tbody>
@@ -520,8 +520,8 @@ export class ContratosEditPage implements OnInit {
           gerenteId: contrato.gerenteId ?? null,
           descricao: contrato.descricao,
           cor: contrato.cor || '#333333',
-          dtInicio: contrato.dtInicio ? new Date(contrato.dtInicio) : null,
-          dtFim: contrato.dtFim ? new Date(contrato.dtFim) : null,
+          dtInicio: contrato.dtInicio ? this.parseDateLocal(contrato.dtInicio.substring(0, 10)) : null,
+          dtFim: contrato.dtFim ? this.parseDateLocal(contrato.dtFim.substring(0, 10)) : null,
           tipo: contrato.tipo || 'F',
           valorHora: contrato.valorHora ?? null,
           valorFixo: contrato.valorFixo ?? null,
@@ -548,7 +548,7 @@ export class ContratosEditPage implements OnInit {
             valorTotal: a.valorTotal,
             parcelas: a.parcelas,
             valorParcela: a.valorParcela,
-            dataInicio: a.dataInicio ? new Date(a.dataInicio) : null,
+            dataInicio: a.dataInicio ? this.parseDateLocal(a.dataInicio.substring(0, 10)) : null,
           })),
         };
         this.resetNovaEscala();
@@ -724,9 +724,12 @@ export class ContratosEditPage implements OnInit {
       bloqueado: !!this.formData.bloqueado,
       profissionais: (this.formData.profissionais || []).map((p: any) => ({
         profissionalId: Number(p.profissionalId),
-        valorHora: p.valorHora ?? undefined,
-        valorFixo: p.valorFixo ?? undefined,
-        maxHorasMes: p.maxHorasMes ?? undefined,
+        valorHora: p.valorHora !== null && p.valorHora !== undefined && p.valorHora !== ''
+          ? Number(p.valorHora) : undefined,
+        valorFixo: p.valorFixo !== null && p.valorFixo !== undefined && p.valorFixo !== ''
+          ? Number(p.valorFixo) : undefined,
+        maxHorasMes: p.maxHorasMes !== null && p.maxHorasMes !== undefined && p.maxHorasMes !== ''
+          ? Number(p.maxHorasMes) : undefined,
         modoExcedente: p.modoExcedente ?? undefined,
       })),
       escalas: this.formData.escalas || [],
@@ -758,6 +761,11 @@ export class ContratosEditPage implements OnInit {
 
   cancel() {
     this.router.navigate(['/contratos']);
+  }
+
+  private parseDateLocal(dateStr: string): Date {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    return new Date(y, m - 1, d);
   }
 
   private resetNovaEscala() {
