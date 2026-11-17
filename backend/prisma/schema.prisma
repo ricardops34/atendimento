@@ -198,14 +198,10 @@ model Profissional {
   user         User?                  @relation(fields: [userId], references: [id], onDelete: SetNull)
   nome         String                 @db.VarChar(255)
   atributos    Json?
-  // Gerente responsável (RBAC): define o grupo de analistas que um Gerente enxerga/administra.
-  // Nulo = sem gerente definido (ex: o próprio Gerente, ou Administrador).
-  gerenteId    Int?                   @map("gerente_id")
-  gerente      Profissional?          @relation("ProfissionalGerente", fields: [gerenteId], references: [id], onDelete: SetNull)
-  analistas    Profissional[]         @relation("ProfissionalGerente")
   agendamentos Agendamento[]
   escalas      ContratoItem[]
   contratos    ContratoProfissional[]
+  contratosGerenciados Contrato[]     @relation("ContratoGerente")
 
   @@map("profissional")
 }
@@ -217,6 +213,10 @@ model Contrato {
   empresa       Empresa                @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   clienteId     Int                    @map("cliente_id")
   cliente       Cliente                @relation(fields: [clienteId], references: [id], onDelete: Restrict)
+  // Gerente responsável pelo contrato (RBAC): gerencia/acompanha os profissionais
+  // (Analistas) alocados neste contrato via ContratoProfissional. Nulo = sem gerente definido.
+  gerenteId     Int?                   @map("gerente_id")
+  gerente       Profissional?          @relation("ContratoGerente", fields: [gerenteId], references: [id], onDelete: SetNull)
   descricao     String                 @db.VarChar(255)
   cor           String                 @default("#333333") @db.VarChar(7)
   dtInicio      DateTime               @map("dt_inicio") @db.Date

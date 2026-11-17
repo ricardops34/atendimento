@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProfissionalDto } from './dto/create-profissional.dto';
 import { UpdateProfissionalDto } from './dto/update-profissional.dto';
@@ -15,7 +15,6 @@ interface ProfissionalSearchQuery {
 }
 
 const userSelect = { select: { id: true, name: true } } as const;
-const gerenteSelect = { select: { id: true, nome: true } } as const;
 
 @Injectable()
 export class ProfissionaisService {
@@ -24,7 +23,7 @@ export class ProfissionaisService {
   create(dto: CreateProfissionalDto, empresaId: number) {
     return this.prisma.profissional.create({
       data: { ...dto, empresaId },
-      include: { user: userSelect, gerente: gerenteSelect },
+      include: { user: userSelect },
     });
   }
 
@@ -32,7 +31,7 @@ export class ProfissionaisService {
     return this.prisma.profissional.findMany({
       where: { empresaId },
       orderBy: { nome: 'asc' },
-      include: { user: userSelect, gerente: gerenteSelect },
+      include: { user: userSelect },
     });
   }
 
@@ -43,7 +42,7 @@ export class ProfissionaisService {
     const total = await this.prisma.profissional.count({ where });
     const items = await this.prisma.profissional.findMany({
       where,
-      include: { user: userSelect, gerente: gerenteSelect },
+      include: { user: userSelect },
       orderBy: this.buildOrderBy(query.sortProperty, query.sortDirection),
       skip: (page - 1) * pageSize,
       take: pageSize,
@@ -58,21 +57,18 @@ export class ProfissionaisService {
 
     const profissional = await this.prisma.profissional.findFirst({
       where,
-      include: { user: userSelect, gerente: gerenteSelect },
+      include: { user: userSelect },
     });
     if (!profissional) throw new NotFoundException('Profissional não encontrado.');
     return profissional;
   }
 
   async update(id: number, dto: UpdateProfissionalDto, empresaId?: number) {
-    const atual = await this.findOne(id, empresaId);
-    if (dto.gerenteId && dto.gerenteId === atual.id) {
-      throw new ConflictException('Um profissional não pode ser gerente de si mesmo.');
-    }
+    await this.findOne(id, empresaId);
     return this.prisma.profissional.update({
       where: { id },
       data: dto,
-      include: { user: userSelect, gerente: gerenteSelect },
+      include: { user: userSelect },
     });
   }
 

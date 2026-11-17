@@ -112,6 +112,7 @@ export class ContratosService {
       where,
       include: {
         cliente: true,
+        gerente: true,
         profissionais: { include: { profissional: true } },
         escalas: { include: { profissional: true } },
         adiantamentos: true,

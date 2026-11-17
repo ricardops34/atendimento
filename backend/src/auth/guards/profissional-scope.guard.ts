@@ -5,7 +5,8 @@ import { PrismaService } from '../../prisma/prisma.service';
  * Resolve o escopo de profissionais que o usuário logado pode ver/alterar, de acordo com o
  * perfil (RBAC):
  * - Administrador: sem restrição (request.profissionalScope = null).
- * - Gerente: ele mesmo + os profissionais (Analistas) que apontam para ele via `gerenteId`.
+ * - Gerente: ele mesmo + os profissionais (Analistas) alocados (via ContratoProfissional) nos
+ *   contratos em que ele é o Gerente responsável (`Contrato.gerenteId`).
  * - Qualquer outro perfil (ex: Analista) ou usuário sem Profissional vinculado: só ele mesmo,
  *   ou lista vazia se não houver Profissional vinculado ao login.
  *
@@ -40,11 +41,12 @@ export class ProfissionalScopeGuard implements CanActivate {
     }
 
     if (profile?.name === 'Gerente') {
-      const analistas = await this.prisma.profissional.findMany({
-        where: { gerenteId: profissional.id },
-        select: { id: true },
+      const analistas = await this.prisma.contratoProfissional.findMany({
+        where: { contrato: { gerenteId: profissional.id } },
+        select: { profissionalId: true },
+        distinct: ['profissionalId'],
       });
-      request.profissionalScope = [profissional.id, ...analistas.map((a) => a.id)];
+      request.profissionalScope = [profissional.id, ...analistas.map((a) => a.profissionalId)];
       return true;
     }
 

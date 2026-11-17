@@ -91,6 +91,11 @@ export class CreateContratoDto {
   @IsInt()
   clienteId: number;
 
+  // Gerente responsável pelo contrato (RBAC): gerencia/acompanha os Analistas alocados.
+  @IsOptional()
+  @IsInt()
+  gerenteId?: number;
+
   @IsNotEmpty({ message: 'A descrição do contrato é obrigatória.' })
   @IsString()
   descricao: string;

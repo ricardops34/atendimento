@@ -56,6 +56,19 @@ const MODO_EXCEDENTE_OPTIONS: PoComboOption[] = [
       </div>
 
       <div class="po-row">
+        <po-combo
+          class="po-md-6"
+          p-label="Gerente Responsável"
+          p-help="Gerencia e acompanha os profissionais (Analistas) habilitados neste contrato."
+          [p-options]="profissionais"
+          [ngModel]="formData.gerenteId"
+          (ngModelChange)="formData.gerenteId = $event"
+          name="gerenteId"
+          p-placeholder="Nenhum">
+        </po-combo>
+      </div>
+
+      <div class="po-row">
         <po-input
           class="po-md-12"
           p-label="Descrição *"
@@ -425,6 +438,7 @@ export class ContratosEditPage implements OnInit {
 
   formData: any = {
     clienteId: null,
+    gerenteId: null,
     descricao: '',
     cor: '#333333',
     dtInicio: '',
@@ -503,6 +517,7 @@ export class ContratosEditPage implements OnInit {
         this.formData = {
           id: contrato.id,
           clienteId: contrato.clienteId,
+          gerenteId: contrato.gerenteId ?? null,
           descricao: contrato.descricao,
           cor: contrato.cor || '#333333',
           dtInicio: contrato.dtInicio ? new Date(contrato.dtInicio) : null,
@@ -699,6 +714,7 @@ export class ContratosEditPage implements OnInit {
     this.saving = true;
     const payload: any = {
       clienteId: Number(this.formData.clienteId),
+      gerenteId: this.formData.gerenteId ? Number(this.formData.gerenteId) : null,
       descricao: this.formData.descricao.trim(),
       cor: this.formData.cor || '#333333',
       dtInicio: this.formData.dtInicio,
