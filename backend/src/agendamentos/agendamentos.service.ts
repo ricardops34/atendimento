@@ -819,15 +819,18 @@ export class AgendamentosService {
     const totalHoras = rows.reduce((acc, r) => acc + Number(r.horasRealizadas), 0);
     const totalFinanceiro = rows.reduce((acc, r) => acc + r.valorTotal, 0);
 
-    const totalRow = sheet.addRow({
+    const totais: Record<string, any> = {
       data: 'TOTAIS',
       contrato: '',
       profissional: '',
       status: '',
       horasRealizadas: totalHoras.toFixed(2),
-      valorHora: '',
-      valorTotal: totalFinanceiro,
-    });
+    };
+    if (!ocultarValor) {
+      totais.valorHora = '';
+      totais.valorTotal = totalFinanceiro;
+    }
+    const totalRow = sheet.addRow(totais);
     totalRow.font = { bold: true };
     sheet.getRow(1).font = { bold: true };
 
