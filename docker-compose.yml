@@ -13,11 +13,6 @@ services:
       - DATABASE_URL=${DATABASE_URL}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
-      - LEGACY_DB_HOST=${LEGACY_DB_HOST}
-      - LEGACY_DB_PORT=${LEGACY_DB_PORT}
-      - LEGACY_DB_USER=${LEGACY_DB_USER}
-      - LEGACY_DB_PASSWORD=${LEGACY_DB_PASSWORD}
-      - LEGACY_DB_NAME=${LEGACY_DB_NAME}
       - TZ=${TZ:-UTC}
     deploy:
       replicas: 1
