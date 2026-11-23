@@ -18,6 +18,7 @@ export function buildPdfCalendario(items: any[], filters: any, getHorasPrevistas
     doc.on('data', (c: Buffer) => chunks.push(c));
     doc.on('end', () => resolve(Buffer.concat(chunks)));
 
+    const ocultarValor = !!filters?.ocultarValor;
     const formatCurrency = (val: number) => `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
     // Group items
@@ -247,7 +248,9 @@ export function buildPdfCalendario(items: any[], filters: any, getHorasPrevistas
 
         // Table Data
         drawRow('Horas Mês', formatHoursClock(hrBase), '#000000', '#000000');
-        drawRow('Vlr Hora', formatNumber(valorHora), '#000000', '#000000');
+        if (!ocultarValor) {
+          drawRow('Vlr Hora', formatNumber(valorHora), '#000000', '#000000');
+        }
 
         if (hrExtra > 0) {
           drawRow('Horas Ext', formatHoursClock(hrExtra), '#4285F4', '#4285F4'); // Blue
@@ -256,18 +259,20 @@ export function buildPdfCalendario(items: any[], filters: any, getHorasPrevistas
           drawRow('Hrs Falta', formatHoursClock(hrFalta), '#EA4335', '#EA4335'); // Red
         }
 
-        drawRow('Valor Base', formatNumber(valBase), '#000000', '#000000');
-        
-        if (valExtra > 0) {
-          drawRow('Extras', formatNumber(valExtra), '#4285F4', '#4285F4');
+        if (!ocultarValor) {
+          drawRow('Valor Base', formatNumber(valBase), '#000000', '#000000');
+
+          if (valExtra > 0) {
+            drawRow('Extras', formatNumber(valExtra), '#4285F4', '#4285F4');
+          }
+          if (valFalta > 0) {
+            drawRow('Falta', formatNumber(valFalta), '#EA4335', '#EA4335');
+          }
+          if (adiantamentoVal > 0) {
+            drawRow(adiantamentoLabel || 'Adiantamento', formatNumber(adiantamentoVal), '#EA4335', '#EA4335');
+          }
+          drawRow('Valor Total', formatNumber(totalFinal), '#000000', '#000000');
         }
-        if (valFalta > 0) {
-          drawRow('Falta', formatNumber(valFalta), '#EA4335', '#EA4335');
-        }
-        if (adiantamentoVal > 0) {
-          drawRow(adiantamentoLabel || 'Adiantamento', formatNumber(adiantamentoVal), '#EA4335', '#EA4335');
-        }
-        drawRow('Valor Total', formatNumber(totalFinal), '#000000', '#000000');
         
         // Linha final inferior
         doc.moveTo(boxX, boxY).lineTo(boxX + 180, boxY).stroke();

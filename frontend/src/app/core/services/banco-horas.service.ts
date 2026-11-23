@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
 
 export interface BancoHorasItem {
@@ -23,6 +23,43 @@ export interface BancoHorasMovimento {
   createdAt: string;
 }
 
+export interface BancoHorasExtratoLinha {
+  id: number;
+  data: string;
+  tipo: 'CREDITO' | 'DEBITO';
+  descricao?: string | null;
+  agendamentoId?: number | null;
+  credito: number;
+  debito: number;
+  saldo: number;
+  valorCredito: number;
+  valorDebito: number;
+  valorSaldo: number;
+}
+
+export interface BancoHorasExtrato {
+  contrato?: string;
+  profissional?: string;
+  dataInicial: string | null;
+  dataFinal: string | null;
+  valorHora: number;
+  saldoAnterior: number;
+  totalCreditos: number;
+  totalDebitos: number;
+  saldoFinal: number;
+  valorSaldoAnterior: number;
+  valorTotalCreditos: number;
+  valorTotalDebitos: number;
+  valorSaldoFinal: number;
+  saldoAtual: number;
+  movimentos: BancoHorasExtratoLinha[];
+}
+
+export interface BancoHorasPeriodo {
+  dataInicial?: string | null;
+  dataFinal?: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class BancoHorasService {
   private http = inject(HttpClient);
@@ -36,8 +73,22 @@ export class BancoHorasService {
     return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 
-  extrato(id: number) {
-    return this.http.get<BancoHorasMovimento[]>(`${this.apiUrl}/${id}/movimentos`);
+  extrato(id: number, periodo: BancoHorasPeriodo = {}) {
+    return this.http.get<BancoHorasExtrato>(`${this.apiUrl}/${id}/movimentos`, {
+      params: this.periodoParams(periodo),
+    });
+  }
+
+  exportarExtrato(id: number, format: 'pdf' | 'xls', periodo: BancoHorasPeriodo = {}, ocultarValor = false) {
+    const params = this.periodoParams(periodo).set('format', format).set('ocultarValor', String(ocultarValor));
+    return this.http.get(`${this.apiUrl}/${id}/movimentos/export`, { params, responseType: 'blob' });
+  }
+
+  private periodoParams(periodo: BancoHorasPeriodo): HttpParams {
+    let params = new HttpParams();
+    if (periodo.dataInicial) params = params.set('dataInicial', periodo.dataInicial);
+    if (periodo.dataFinal) params = params.set('dataFinal', periodo.dataFinal);
+    return params;
   }
 
   lancarDebito(id: number, data: { data: string; horas: number; descricao?: string }) {

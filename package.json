@@ -15,7 +15,6 @@
     "prisma:migrate": "cd backend && npx prisma migrate dev --schema prisma/schema.prisma",
     "prisma:generate": "cd backend && npx prisma generate --schema prisma/schema.prisma",
     "seed:backend": "cd backend && npx prisma db seed --schema prisma/schema.prisma",
-    "import:legacy": "cd backend && npx ts-node src/modules/import/import-legacy.command.ts",
     "bootstrap:local": "npm run db:up && npm run prisma:generate && npm run prisma:migrate && npm run seed:backend"
   },
   "dependencies": {

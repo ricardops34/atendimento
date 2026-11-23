@@ -2,6 +2,7 @@ import { ConflictException, ForbiddenException, Injectable, NotFoundException } 
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { LancarDebitoDto } from './dto/lancar-debito.dto';
+import { buildPdfExtratoBancoHoras, buildXlsxExtratoBancoHoras } from './build-extrato-banco-horas';
 
 type TxClient = Prisma.TransactionClient;
 
@@ -155,12 +156,114 @@ export class BancoHorasService {
     return contratoProfissional;
   }
 
-  async extrato(contratoProfissionalId: number, empresaId: number, profissionalScope?: number[] | null) {
-    await this.findOne(contratoProfissionalId, empresaId, profissionalScope);
-    return this.prisma.bancoHorasMovimento.findMany({
-      where: { contratoProfissionalId },
-      orderBy: { data: 'desc' },
+  /**
+   * Extrato do banco de horas no período: saldo anterior (movimentos antes de dataInicial),
+   * movimentos em ordem cronológica com saldo acumulado, totais de créditos/débitos e saldo final.
+   * Sem período, cobre todo o histórico (saldo anterior = 0).
+   */
+  async extrato(
+    contratoProfissionalId: number,
+    empresaId: number,
+    profissionalScope?: number[] | null,
+    periodo: { dataInicial?: string; dataFinal?: string } = {},
+  ) {
+    const registro = await this.findOne(contratoProfissionalId, empresaId, profissionalScope);
+    const dataInicial = this.parseData(periodo.dataInicial);
+    const dataFinal = this.parseData(periodo.dataFinal);
+
+    const efeito = (m: { tipo: string; horas: Prisma.Decimal | number }) =>
+      m.tipo === 'CREDITO' ? Number(m.horas) : -Number(m.horas);
+
+    let saldoAnterior = 0;
+    if (dataInicial) {
+      const anteriores = await this.prisma.bancoHorasMovimento.groupBy({
+        by: ['tipo'],
+        where: { contratoProfissionalId, data: { lt: dataInicial } },
+        _sum: { horas: true },
+      });
+      saldoAnterior = anteriores.reduce((acc, g) => acc + efeito({ tipo: g.tipo, horas: g._sum.horas ?? 0 }), 0);
+    }
+
+    const dataFilter: Prisma.DateTimeFilter = {};
+    if (dataInicial) dataFilter.gte = dataInicial;
+    if (dataFinal) dataFilter.lte = dataFinal;
+
+    const movimentos = await this.prisma.bancoHorasMovimento.findMany({
+      where: { contratoProfissionalId, ...(dataInicial || dataFinal ? { data: dataFilter } : {}) },
+      orderBy: [{ data: 'asc' }, { id: 'asc' }],
     });
+
+    // Valor da hora: o do profissional neste contrato sobrepõe o do contrato.
+    const valorHora = Number(registro.valorHora ?? (registro.contrato as any)?.valorHora ?? 0);
+    const valor = (h: number) => this.round(h * valorHora);
+
+    let saldo = saldoAnterior;
+    let totalCreditos = 0;
+    let totalDebitos = 0;
+    const linhas = movimentos.map((m) => {
+      const horas = Number(m.horas);
+      const credito = m.tipo === 'CREDITO' ? horas : 0;
+      const debito = m.tipo === 'DEBITO' ? horas : 0;
+      totalCreditos += credito;
+      totalDebitos += debito;
+      saldo += credito - debito;
+      return {
+        id: m.id,
+        data: m.data,
+        tipo: m.tipo,
+        descricao: m.descricao,
+        agendamentoId: m.agendamentoId,
+        credito: this.round(credito),
+        debito: this.round(debito),
+        saldo: this.round(saldo),
+        valorCredito: valor(credito),
+        valorDebito: valor(debito),
+        valorSaldo: valor(saldo),
+      };
+    });
+
+    return {
+      contratoProfissionalId,
+      contrato: registro.contrato?.descricao,
+      profissional: registro.profissional?.nome,
+      dataInicial: periodo.dataInicial || null,
+      dataFinal: periodo.dataFinal || null,
+      valorHora: this.round(valorHora),
+      saldoAnterior: this.round(saldoAnterior),
+      totalCreditos: this.round(totalCreditos),
+      totalDebitos: this.round(totalDebitos),
+      saldoFinal: this.round(saldo),
+      valorSaldoAnterior: valor(saldoAnterior),
+      valorTotalCreditos: valor(totalCreditos),
+      valorTotalDebitos: valor(totalDebitos),
+      valorSaldoFinal: valor(saldo),
+      saldoAtual: this.round(Number(registro.saldoBancoHoras)),
+      movimentos: linhas,
+    };
+  }
+
+  async exportarExtrato(
+    contratoProfissionalId: number,
+    empresaId: number,
+    profissionalScope: number[] | null | undefined,
+    periodo: { dataInicial?: string; dataFinal?: string },
+    format: 'pdf' | 'xls',
+    ocultarValor: boolean,
+  ): Promise<Buffer> {
+    const ext = await this.extrato(contratoProfissionalId, empresaId, profissionalScope, periodo);
+    return format === 'xls'
+      ? buildXlsxExtratoBancoHoras(ext, ocultarValor)
+      : buildPdfExtratoBancoHoras(ext, ocultarValor);
+  }
+
+  private parseData(value?: string): Date | undefined {
+    if (!value) return undefined;
+    const d = new Date(value.length === 10 ? `${value}T00:00:00.000Z` : value);
+    return isNaN(d.getTime()) ? undefined : d;
+  }
+
+  private round(v: number): number {
+    return Math.round(v * 100) / 100;
   }
 
   /**
