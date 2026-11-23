@@ -111,7 +111,8 @@ export class Lista implements OnInit {
     bancoHorasTipo?: string;
     tipoExtrato?: 'sintetico' | 'analitico' | 'calendario';
     ocultarValor?: boolean;
-  } = { tipoExtrato: 'sintetico', ocultarValor: false };
+    exibirBancoHoras?: boolean;
+  } = { tipoExtrato: 'sintetico', ocultarValor: false, exibirBancoHoras: false };
 
   tipoExtratoOptions: Array<PoRadioGroupOption> = [
     { label: 'Sintético (Resumo)', value: 'sintetico' },
@@ -381,7 +382,8 @@ export class Lista implements OnInit {
         profissionalId: this.filters.profissionalId,
         bancoHorasTipo: this.extratoFilters.bancoHorasTipo,
         tipoExtrato: this.extratoFilters.tipoExtrato || 'sintetico',
-        ocultarValor: this.extratoFilters.ocultarValor || false
+        ocultarValor: this.extratoFilters.ocultarValor || false,
+        exibirBancoHoras: this.extratoFilters.exibirBancoHoras || false
       };
     }
     this.extratoModal.open();
@@ -400,7 +402,8 @@ export class Lista implements OnInit {
       profissionalId: this.extratoFilters.profissionalId,
       bancoHorasTipo: this.extratoFilters.bancoHorasTipo,
       tipoExtrato: this.extratoFilters.tipoExtrato,
-      ocultarValor: this.extratoFilters.ocultarValor
+      ocultarValor: this.extratoFilters.ocultarValor,
+      exibirBancoHoras: this.extratoFilters.exibirBancoHoras
     };
 
     this.agendamentoService.exportExtrato(params, this.extratoFormat).subscribe({

@@ -30,6 +30,8 @@ interface AgendamentoExportFilters {
   profissionalScope?: number[] | null;
   // Extrato: quando true, omite valor hora/valores financeiros do relatório gerado.
   ocultarValor?: boolean;
+  // Extrato: quando true, inclui a coluna "Banco de Horas" (Normal/Crédito/Débito) no relatório gerado.
+  exibirBancoHoras?: boolean;
 }
 
 interface SearchQuery {
@@ -754,17 +756,24 @@ export class AgendamentosService {
         valorTotal = -Math.abs(valorTotal);
       }
 
+      let bancoHorasFormatado = 'Normal';
+      if (a.bancoHorasTipo === 'CREDITO') bancoHorasFormatado = 'Crédito';
+      else if (a.bancoHorasTipo === 'DEBITO') bancoHorasFormatado = 'Débito';
+
       return {
         data: a.dataAgenda ? new Date(a.dataAgenda).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : '',
         contrato: a.contrato?.descricao || 'Sem Cliente',
         contratoObj: a.contrato,
+        contratoId: a.contrato?.id,
         profissional: a.profissional?.nome || 'Sem Profissional',
+        profissionalId: a.profissional?.id,
         status: statusFormatado,
         horasRealizadas: horasDecimais,
         valorHora: valorHora,
         valorTotal: valorTotal,
         observacao: stripHtml(a.observacao || ''),
-        dataOrigem: a.dataAgenda
+        dataOrigem: a.dataAgenda,
+        bancoHoras: bancoHorasFormatado
       };
     });
 
@@ -772,14 +781,51 @@ export class AgendamentosService {
     const isCalendario = filters.tipoExtrato === 'calendario';
 
     const ocultarValor = !!filters.ocultarValor;
+    const exibirBancoHoras = !!filters.exibirBancoHoras;
 
-    if (format === 'xls') return this.buildXlsxExtrato(rows, isAnalitico, ocultarValor);
+    const saldoAnteriorMap = new Map<string, number>();
+    if (exibirBancoHoras && !isCalendario) {
+      const pares = new Map<string, { contratoId: number; profissionalId: number }>();
+      items.forEach((a: any) => {
+        if (a.contrato?.id && a.profissional?.id) {
+          pares.set(`${a.contrato.id}_${a.profissional.id}`, { contratoId: a.contrato.id, profissionalId: a.profissional.id });
+        }
+      });
+
+      let dataInicioPeriodo: Date | null = null;
+      if (filters.dataInicial) {
+        dataInicioPeriodo = new Date(filters.dataInicial);
+        dataInicioPeriodo.setHours(0, 0, 0, 0);
+      }
+
+      for (const { contratoId, profissionalId } of pares.values()) {
+        const contratoProfissional = await this.prisma.contratoProfissional.findUnique({
+          where: { contratoId_profissionalId: { contratoId, profissionalId } },
+        });
+        if (!contratoProfissional) continue;
+
+        const movimentosAnteriores = dataInicioPeriodo
+          ? await this.prisma.bancoHorasMovimento.findMany({
+              where: { contratoProfissionalId: contratoProfissional.id, data: { lt: dataInicioPeriodo } },
+            })
+          : [];
+
+        const saldoAnterior = movimentosAnteriores.reduce(
+          (acc, m) => acc + (m.tipo === 'CREDITO' ? Number(m.horas) : -Number(m.horas)),
+          0,
+        );
+
+        saldoAnteriorMap.set(`${contratoId}_${profissionalId}`, saldoAnterior);
+      }
+    }
+
+    if (format === 'xls') return this.buildXlsxExtrato(rows, isAnalitico, ocultarValor, exibirBancoHoras);
     if (isCalendario) return buildPdfCalendario(items, filters, getHorasPrevistasContrato);
 
-    return this.buildPdfExtrato(rows, isAnalitico, ocultarValor);
+    return this.buildPdfExtrato(rows, isAnalitico, ocultarValor, exibirBancoHoras, saldoAnteriorMap);
   }
 
-  private async buildXlsxExtrato(rows: any[], isAnalitico: boolean, ocultarValor = false): Promise<Buffer> {
+  private async buildXlsxExtrato(rows: any[], isAnalitico: boolean, ocultarValor = false, exibirBancoHoras = false): Promise<Buffer> {
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet('Extrato');
     
@@ -796,6 +842,10 @@ export class AgendamentosService {
         { header: 'Valor Hora', key: 'valorHora', width: 15 },
         { header: 'Total (R$)', key: 'valorTotal', width: 15 },
       );
+    }
+
+    if (exibirBancoHoras) {
+      columns.push({ header: 'Banco de Horas', key: 'bancoHoras', width: 15 });
     }
 
     if (isAnalitico) {
@@ -835,7 +885,13 @@ export class AgendamentosService {
     return Buffer.from(arrayBuffer);
   }
 
-  private buildPdfExtrato(rows: any[], isAnalitico: boolean, ocultarValor = false): Promise<Buffer> {
+  private buildPdfExtrato(
+    rows: any[],
+    isAnalitico: boolean,
+    ocultarValor = false,
+    exibirBancoHoras = false,
+    saldoAnteriorMap: Map<string, number> = new Map(),
+  ): Promise<Buffer> {
     return new Promise((resolve) => {
       const doc = new PDFDocument({ margin: 30, size: 'A4', layout: 'portrait' });
       const chunks: Buffer[] = [];
@@ -859,9 +915,11 @@ export class AgendamentosService {
         grouped[r.contrato][r.profissional].push(r);
       });
 
-      const colWidths = isAnalitico ? [290, 80, 80, 80] : [120, 120, 120];
+      const colWidths = isAnalitico
+        ? (exibirBancoHoras ? [250, 70, 70, 70, 70] : [290, 80, 80, 80])
+        : (exibirBancoHoras ? [100, 100, 90, 90] : [120, 120, 120]);
       const startX = 30;
-      const rowWidth = isAnalitico ? 530 : 360;
+      const rowWidth = isAnalitico ? 530 : (exibirBancoHoras ? 380 : 360);
 
       for (const contrato of Object.keys(grouped)) {
         // Find valorHora from the first available row
@@ -893,11 +951,21 @@ export class AgendamentosService {
             doc.text('Observações', startX + 15, y + 3, { width: colWidths[0], align: 'left' });
             doc.text('Data', startX + 15 + colWidths[0], y + 3, { width: colWidths[1], align: 'left' });
             doc.text('Tipo', startX + 15 + colWidths[0] + colWidths[1], y + 3, { width: colWidths[2], align: 'left' });
-            doc.text('Horas', startX + 15 + colWidths[0] + colWidths[1] + colWidths[2], y + 3, { width: colWidths[3], align: 'right' });
+            if (exibirBancoHoras) {
+              doc.text('Banco de Horas', startX + 15 + colWidths[0] + colWidths[1] + colWidths[2], y + 3, { width: colWidths[3], align: 'left' });
+              doc.text('Horas', startX + 15 + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y + 3, { width: colWidths[4], align: 'right' });
+            } else {
+              doc.text('Horas', startX + 15 + colWidths[0] + colWidths[1] + colWidths[2], y + 3, { width: colWidths[3], align: 'right' });
+            }
           } else {
             doc.text('Data', startX + 15, y + 3, { width: colWidths[0], align: 'left' });
             doc.text('Tipo', startX + 15 + colWidths[0], y + 3, { width: colWidths[1], align: 'left' });
-            doc.text('Horas', startX + 15 + colWidths[0] + colWidths[1], y + 3, { width: colWidths[2], align: 'right' });
+            if (exibirBancoHoras) {
+              doc.text('Banco de Horas', startX + 15 + colWidths[0] + colWidths[1], y + 3, { width: colWidths[2], align: 'left' });
+              doc.text('Horas', startX + 15 + colWidths[0] + colWidths[1] + colWidths[2], y + 3, { width: colWidths[3], align: 'right' });
+            } else {
+              doc.text('Horas', startX + 15 + colWidths[0] + colWidths[1], y + 3, { width: colWidths[2], align: 'right' });
+            }
           }
           
           doc.y = y + 15;
@@ -906,6 +974,8 @@ export class AgendamentosService {
           let minNormal = 0;
           let minExtra = 0;
           let minFalta = 0;
+          let minCredito = 0;
+          let minDebito = 0;
 
           grouped[contrato][profissional].forEach(r => {
             doc.font('Helvetica').fontSize(9);
@@ -939,17 +1009,32 @@ export class AgendamentosService {
               minNormal += (r.horasRealizadas * 60);
             }
 
+            if (exibirBancoHoras) {
+              if (r.bancoHoras === 'Crédito') minCredito += (r.horasRealizadas * 60);
+              else if (r.bancoHoras === 'Débito') minDebito += (r.horasRealizadas * 60);
+            }
+
             doc.fillColor(textColor);
             
             if (isAnalitico) {
               doc.text(r.observacao || '', startX + 15, y + 3, { width: colWidths[0], align: 'left' });
               doc.text(r.data, startX + 15 + colWidths[0], y + 3, { width: colWidths[1], align: 'left' });
               doc.text(r.status, startX + 15 + colWidths[0] + colWidths[1], y + 3, { width: colWidths[2], align: 'left' });
-              doc.text(formatNumber(r.horasRealizadas), startX + 15 + colWidths[0] + colWidths[1] + colWidths[2], y + 3, { width: colWidths[3], align: 'right' });
+              if (exibirBancoHoras) {
+                doc.text(r.bancoHoras, startX + 15 + colWidths[0] + colWidths[1] + colWidths[2], y + 3, { width: colWidths[3], align: 'left' });
+                doc.text(formatNumber(r.horasRealizadas), startX + 15 + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3], y + 3, { width: colWidths[4], align: 'right' });
+              } else {
+                doc.text(formatNumber(r.horasRealizadas), startX + 15 + colWidths[0] + colWidths[1] + colWidths[2], y + 3, { width: colWidths[3], align: 'right' });
+              }
             } else {
               doc.text(r.data, startX + 15, y + 3, { width: colWidths[0], align: 'left' });
               doc.text(r.status, startX + 15 + colWidths[0], y + 3, { width: colWidths[1], align: 'left' });
-              doc.text(formatNumber(r.horasRealizadas), startX + 15 + colWidths[0] + colWidths[1], y + 3, { width: colWidths[2], align: 'right' });
+              if (exibirBancoHoras) {
+                doc.text(r.bancoHoras, startX + 15 + colWidths[0] + colWidths[1], y + 3, { width: colWidths[2], align: 'left' });
+                doc.text(formatNumber(r.horasRealizadas), startX + 15 + colWidths[0] + colWidths[1] + colWidths[2], y + 3, { width: colWidths[3], align: 'right' });
+              } else {
+                doc.text(formatNumber(r.horasRealizadas), startX + 15 + colWidths[0] + colWidths[1], y + 3, { width: colWidths[2], align: 'right' });
+              }
             }
             
             doc.y = y + rowHeight;
@@ -964,6 +1049,8 @@ export class AgendamentosService {
           let hrExtra = minExtra / 60;
           let hrFalta = minFalta / 60; // negative
           let hrBase = hrNormal + Math.abs(hrFalta);
+          let hrCredito = minCredito / 60;
+          let hrDebito = minDebito / 60;
 
           let valBase = hrBase * valorHora;
           let valExtra = hrExtra * valorHora;
@@ -982,7 +1069,12 @@ export class AgendamentosService {
           let adiantamentoVal = 0;
           
           const primeiraLinha = grouped[contrato][profissional][0];
-          
+
+          const saldoAnteriorBH = exibirBancoHoras
+            ? (saldoAnteriorMap.get(`${primeiraLinha?.contratoId}_${primeiraLinha?.profissionalId}`) || 0)
+            : 0;
+          const saldoFinalBH = saldoAnteriorBH + hrCredito - hrDebito;
+
           if (primeiraLinha?.contratoObj?.adiantamentos?.length) {
             const dataExtrato = primeiraLinha.dataOrigem ? new Date(primeiraLinha.dataOrigem) : new Date();
             const extratoYear = dataExtrato.getFullYear();
@@ -1009,6 +1101,7 @@ export class AgendamentosService {
 
           let boxX = 350;
           let boxY = doc.y;
+          const resumoStartY = boxY;
 
           // Cabeçalho Resumo
           doc.lineWidth(1).strokeColor('#000000');
@@ -1065,8 +1158,48 @@ export class AgendamentosService {
           // Linha final inferior
           doc.moveTo(boxX, boxY).lineTo(boxX + 180, boxY).stroke();
 
-          doc.y = boxY + 30;
-          
+          // Resumo separado do Banco de Horas
+          let boxY2 = resumoStartY;
+          if (exibirBancoHoras && (saldoAnteriorBH !== 0 || hrCredito !== 0 || hrDebito !== 0)) {
+            const boxX2 = 150;
+
+            doc.lineWidth(1).strokeColor('#000000');
+            doc.moveTo(boxX2, boxY2).lineTo(boxX2 + 180, boxY2).stroke();
+            doc.fillColor('#000000').font('Helvetica-Bold');
+            doc.text('Banco de Horas', boxX2 + 5, boxY2 + 4, { width: 170, align: 'center' });
+            boxY2 += 17;
+            doc.moveTo(boxX2, boxY2).lineTo(boxX2 + 180, boxY2).stroke();
+
+            let zebraRow2 = 0;
+            const drawRow2 = (lbl: string, val: string, lblColor: string, valColor: string) => {
+              if (zebraRow2 % 2 === 0) {
+                doc.rect(boxX2, boxY2, 180, 15).fill('#F0F0F0');
+              }
+              zebraRow2++;
+
+              doc.fillColor(lblColor).font('Helvetica-Bold');
+              doc.text(lbl, boxX2 + 5, boxY2 + 4, { width: 85, align: 'left' });
+
+              doc.fillColor(valColor).font('Helvetica');
+              doc.text(val, boxX2 + 90, boxY2 + 4, { width: 85, align: 'right' });
+
+              boxY2 += 15;
+            };
+
+            drawRow2('Saldo Ant.', formatHoursClock(saldoAnteriorBH), '#000000', '#000000');
+            if (hrCredito !== 0) {
+              drawRow2('Créd. BH', formatHoursClock(hrCredito), '#0F9D58', '#0F9D58'); // Green
+            }
+            if (hrDebito !== 0) {
+              drawRow2('Déb. BH', formatHoursClock(hrDebito), '#EA4335', '#EA4335'); // Red
+            }
+            drawRow2('Saldo Final', formatHoursClock(saldoFinalBH), '#000000', '#000000');
+
+            doc.moveTo(boxX2, boxY2).lineTo(boxX2 + 180, boxY2).stroke();
+          }
+
+          doc.y = Math.max(boxY, boxY2) + 30;
+
           totalGeralHoras += totalExecutado;
           totalGeralFinanceiro += totalFinal;
         }

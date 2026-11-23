@@ -16,6 +16,7 @@ export interface AgendamentoSearchParams {
   bancoHorasTipo?: string;
   tipoExtrato?: 'sintetico' | 'analitico' | 'calendario';
   ocultarValor?: boolean;
+  exibirBancoHoras?: boolean;
 }
 
 

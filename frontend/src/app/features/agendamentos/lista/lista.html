@@ -106,6 +106,12 @@
     </po-checkbox>
   </div>
 
+  <div class="po-row">
+    <po-checkbox class="po-md-12" name="extratoExibirBancoHoras" p-label="Exibir coluna Banco de Horas"
+      [ngModel]="extratoFilters.exibirBancoHoras" (ngModelChange)="extratoFilters.exibirBancoHoras = $event">
+    </po-checkbox>
+  </div>
+
   <po-modal-footer>
     <po-button p-label="Cancelar" (p-click)="extratoModal.close()"></po-button>
     <po-button p-label="Gerar Extrato" p-kind="primary" (p-click)="generateExtrato()"></po-button>

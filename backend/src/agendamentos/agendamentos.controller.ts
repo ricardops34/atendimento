@@ -139,6 +139,7 @@ export class AgendamentosController {
       empresaId: req.empresaId as number,
       profissionalScope: req.profissionalScope,
       ocultarValor: query.ocultarValor === 'true',
+      exibirBancoHoras: query.exibirBancoHoras === 'true',
     };
 
     try {
