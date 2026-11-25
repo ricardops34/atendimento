@@ -62,6 +62,11 @@ export class ProfissionalHabilitadoDto {
   @IsOptional()
   @IsIn(['BANCO', 'BLOQUEIO'])
   modoExcedente?: string;
+
+  // Código do projeto TOTVS/Protheus associado a este Analista neste contrato (ex: D000087309001).
+  @IsOptional()
+  @IsString()
+  codigoProjeto?: string;
 }
 
 export class AdiantamentoItemDto {
@@ -129,6 +134,14 @@ export class CreateContratoDto {
   @IsOptional()
   @IsBoolean()
   bloqueado?: boolean;
+
+  @IsOptional()
+  @IsString()
+  coordenadorTotvs?: string;
+
+  @IsOptional()
+  @IsString()
+  coordenadorCliente?: string;
 
   @IsOptional()
   @IsArray()

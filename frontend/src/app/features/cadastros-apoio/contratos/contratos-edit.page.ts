@@ -140,6 +140,25 @@ const MODO_EXCEDENTE_OPTIONS: PoComboOption[] = [
         </po-decimal>
       </div>
 
+      <div class="po-row">
+        <po-input
+          class="po-md-6"
+          p-label="Coordenador TOTVS"
+          [ngModel]="formData.coordenadorTotvs"
+          (ngModelChange)="formData.coordenadorTotvs = $event"
+          name="coordenadorTotvs"
+          [p-maxlength]="100">
+        </po-input>
+        <po-input
+          class="po-md-6"
+          p-label="Coordenador Cliente"
+          [ngModel]="formData.coordenadorCliente"
+          (ngModelChange)="formData.coordenadorCliente = $event"
+          name="coordenadorCliente"
+          [p-maxlength]="100">
+        </po-input>
+      </div>
+
       <!-- Profissionais habilitados -->
       <div style="margin-top: 16px; border-top: 1px solid #ddd; padding-top: 12px;">
         <p style="font-weight: 600; margin-bottom: 8px;">Profissionais Habilitados</p>
@@ -188,6 +207,14 @@ const MODO_EXCEDENTE_OPTIONS: PoComboOption[] = [
             (ngModelChange)="novoProfissional.modoExcedente = $event"
             name="novoProfissionalModoExcedente">
           </po-combo>
+          <po-input
+            class="po-md-2"
+            p-label="Código do Projeto"
+            [ngModel]="novoProfissional.codigoProjeto"
+            (ngModelChange)="novoProfissional.codigoProjeto = $event"
+            name="novoProfissionalCodigoProjeto"
+            p-placeholder="Ex: D000087309001">
+          </po-input>
           <div class="po-md-1" style="display: flex; align-items: flex-end; gap: 4px; padding-bottom: 4px;">
             <po-button
               [p-label]="editandoProfissionalIndex === null ? 'Adicionar' : 'Salvar'"
@@ -212,6 +239,7 @@ const MODO_EXCEDENTE_OPTIONS: PoComboOption[] = [
                 <th style="padding: 4px 8px;">Valor Fixo</th>
                 <th style="padding: 4px 8px;">Máx. Horas/Mês</th>
                 <th style="padding: 4px 8px; text-align: left;">Excedente</th>
+                <th style="padding: 4px 8px; text-align: left;">Código do Projeto</th>
                 <th style="padding: 4px 8px;">Saldo Banco Horas</th>
                 <th style="padding: 4px 8px;"></th>
               </tr>
@@ -223,6 +251,7 @@ const MODO_EXCEDENTE_OPTIONS: PoComboOption[] = [
                 <td style="padding: 4px 8px; text-align: center;">{{ p.valorFixo ?? '—' }}</td>
                 <td style="padding: 4px 8px; text-align: center;">{{ p.maxHorasMes ?? '—' }}</td>
                 <td style="padding: 4px 8px;">{{ getModoExcedenteLabel(p.modoExcedente) }}</td>
+                <td style="padding: 4px 8px;">{{ p.codigoProjeto || '—' }}</td>
                 <td style="padding: 4px 8px; text-align: center;">{{ p.saldoBancoHoras ?? 0 }}</td>
                 <td style="padding: 4px 8px; text-align: center; white-space: nowrap;">
                   <po-button p-icon="an an-pencil-simple" p-kind="tertiary" (p-click)="editProfissionalHabilitado(i)"></po-button>
@@ -448,6 +477,8 @@ export class ContratosEditPage implements OnInit {
     valorFixo: null,
     isFeriado: false,
     bloqueado: false,
+    coordenadorTotvs: null,
+    coordenadorCliente: null,
     profissionais: [],
     escalas: [],
     adiantamentos: [],
@@ -469,6 +500,7 @@ export class ContratosEditPage implements OnInit {
     valorFixo: null,
     maxHorasMes: null,
     modoExcedente: null,
+    codigoProjeto: null,
   };
   editandoProfissionalIndex: number | null = null;
 
@@ -527,12 +559,15 @@ export class ContratosEditPage implements OnInit {
           valorFixo: contrato.valorFixo ?? null,
           isFeriado: !!contrato.isFeriado,
           bloqueado: !!contrato.bloqueado,
+          coordenadorTotvs: contrato.coordenadorTotvs ?? null,
+          coordenadorCliente: contrato.coordenadorCliente ?? null,
           profissionais: (contrato.profissionais || []).map((p: any) => ({
             profissionalId: p.profissionalId,
             valorHora: p.valorHora ?? null,
             valorFixo: p.valorFixo ?? null,
             maxHorasMes: p.maxHorasMes ?? null,
             modoExcedente: p.modoExcedente ?? null,
+            codigoProjeto: p.codigoProjeto ?? null,
             saldoBancoHoras: p.saldoBancoHoras ?? 0,
           })),
           escalas: (contrato.escalas || []).map((e: any) => ({
@@ -629,6 +664,7 @@ export class ContratosEditPage implements OnInit {
       maxHorasMes: this.novoProfissional.maxHorasMes !== null && this.novoProfissional.maxHorasMes !== ''
         ? Number(this.novoProfissional.maxHorasMes) : null,
       modoExcedente: this.novoProfissional.modoExcedente || null,
+      codigoProjeto: this.novoProfissional.codigoProjeto?.trim() || null,
       saldoBancoHoras: this.editandoProfissionalIndex !== null
         ? this.formData.profissionais[this.editandoProfissionalIndex].saldoBancoHoras ?? 0
         : 0,
@@ -722,6 +758,8 @@ export class ContratosEditPage implements OnInit {
       tipo: this.formData.tipo,
       isFeriado: !!this.formData.isFeriado,
       bloqueado: !!this.formData.bloqueado,
+      coordenadorTotvs: this.formData.coordenadorTotvs?.trim() || null,
+      coordenadorCliente: this.formData.coordenadorCliente?.trim() || null,
       profissionais: (this.formData.profissionais || []).map((p: any) => ({
         profissionalId: Number(p.profissionalId),
         valorHora: p.valorHora !== null && p.valorHora !== undefined && p.valorHora !== ''
@@ -731,6 +769,7 @@ export class ContratosEditPage implements OnInit {
         maxHorasMes: p.maxHorasMes !== null && p.maxHorasMes !== undefined && p.maxHorasMes !== ''
           ? Number(p.maxHorasMes) : undefined,
         modoExcedente: p.modoExcedente ?? undefined,
+        codigoProjeto: p.codigoProjeto ?? undefined,
       })),
       escalas: this.formData.escalas || [],
       adiantamentos: (this.formData.adiantamentos || []).map((a: any) => ({
@@ -793,6 +832,7 @@ export class ContratosEditPage implements OnInit {
       valorFixo: null,
       maxHorasMes: null,
       modoExcedente: null,
+      codigoProjeto: null,
     };
   }
 

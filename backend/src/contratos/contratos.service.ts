@@ -46,6 +46,7 @@ export class ContratosService {
             valorFixo: p.valorFixo ?? null,
             maxHorasMes: p.maxHorasMes ?? null,
             modoExcedente: p.modoExcedente ?? null,
+            codigoProjeto: p.codigoProjeto ?? null,
           })),
           skipDuplicates: true,
         });
@@ -157,12 +158,14 @@ export class ContratosService {
               valorFixo: p.valorFixo ?? null,
               maxHorasMes: p.maxHorasMes ?? null,
               modoExcedente: p.modoExcedente ?? null,
+              codigoProjeto: p.codigoProjeto ?? null,
             },
             update: {
               valorHora: p.valorHora ?? null,
               valorFixo: p.valorFixo ?? null,
               maxHorasMes: p.maxHorasMes ?? null,
               modoExcedente: p.modoExcedente ?? null,
+              codigoProjeto: p.codigoProjeto ?? null,
             },
           });
         }

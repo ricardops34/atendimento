@@ -226,6 +226,8 @@ model Contrato {
   valorFixo     Decimal?               @map("valor_fixo") @db.Decimal(10, 2)
   isFeriado     Boolean                @default(false) @map("is_feriado") // Flag para identificar dinamicamente o contrato de feriados
   bloqueado     Boolean                @default(false)
+  coordenadorTotvs    String?          @map("coordenador_totvs") @db.VarChar(100)
+  coordenadorCliente  String?          @map("coordenador_cliente") @db.VarChar(100)
   atributos     Json?
   agendamentos  Agendamento[]
   escalas       ContratoItem[]
@@ -263,6 +265,8 @@ model ContratoProfissional {
   maxHorasMes     Decimal?     @map("max_horas_mes") @db.Decimal(6, 2)
   // Comportamento ao ultrapassar maxHorasMes: 'BANCO' acumula em saldoBancoHoras, 'BLOQUEIO' impede o lançamento.
   modoExcedente   String?      @map("modo_excedente") @db.VarChar(10)
+  // Código do projeto TOTVS/Protheus associado a este Analista neste contrato (ex: D000087309001).
+  codigoProjeto   String?      @map("codigo_projeto") @db.VarChar(20)
   // Saldo acumulado (não zera por mês) de horas excedentes já autorizadas em modo banco de horas.
   saldoBancoHoras Decimal      @default(0) @map("saldo_banco_horas") @db.Decimal(8, 2)
   apontamentos    ContratoProfissionalApontamentoMensal[]
