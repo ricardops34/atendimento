@@ -127,7 +127,13 @@ export class Lista implements OnInit {
     dataFinal?: string;
     contratoId?: number;
     profissionalId?: number;
-  } = {};
+    format?: 'pdf' | 'docx';
+  } = { format: 'pdf' };
+
+  termoValidacaoFormatOptions: PoComboOption[] = [
+    { label: 'PDF', value: 'pdf' },
+    { label: 'Word (DOCX)', value: 'docx' }
+  ];
 
   bancoHorasTipoOptions: PoComboOption[] = [
     { label: 'Todos', value: '' },
@@ -445,7 +451,8 @@ export class Lista implements OnInit {
         dataInicial: this.filters.dataInicial,
         dataFinal: this.filters.dataFinal,
         contratoId: this.filters.contratoId,
-        profissionalId: this.filters.profissionalId
+        profissionalId: this.filters.profissionalId,
+        format: this.termoValidacaoFilters.format || 'pdf'
       };
     }
     this.termoValidacaoModal.open();
@@ -466,12 +473,14 @@ export class Lista implements OnInit {
       profissionalId: this.termoValidacaoFilters.profissionalId
     };
 
-    this.agendamentoService.exportTermoValidacao(params, 'pdf').subscribe({
+    const format = this.termoValidacaoFilters.format || 'pdf';
+
+    this.agendamentoService.exportTermoValidacao(params, format).subscribe({
       next: (blob) => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'termo_validacao.pdf';
+        a.download = `termo_validacao.${format}`;
         a.click();
         URL.revokeObjectURL(url);
       },

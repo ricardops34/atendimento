@@ -121,14 +121,17 @@ export function buildPdfTermoValidacao(dto: TermoValidacaoDto): Promise<Buffer> 
       doc.y = y0 + rowHeight;
     };
 
-    const formatDataGeracao = dto.dataGeracao.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
+    // "Data" do Termo é a data do último atendimento lançado no período, não a data de geração do PDF.
+    const ultimoApontamento = dto.itens.length
+      ? dto.itens[dto.itens.length - 1].data
+      : dto.dataGeracao.toLocaleDateString('pt-BR', { timeZone: 'UTC' });
 
     drawPageHeader();
     sectionTitle('Ambientação');
     drawAmbientacaoRow('Nome do cliente', dto.clienteNome, 'Código de cliente', dto.codigoCliente || '');
     drawAmbientacaoRow('Nome do projeto', dto.nomeProjeto || '', 'Código do projeto', dto.codigoProjeto || '');
     drawAmbientacaoRow('Segmento cliente', dto.segmento || '', 'Unidade TOTVS', dto.unidadeTotvs || '');
-    drawAmbientacaoRow('Data', formatDataGeracao, 'Analista de Serviços', dto.profissionalNome || '');
+    drawAmbientacaoRow('Data', ultimoApontamento, 'Analista de Serviços', dto.profissionalNome || '');
     drawAmbientacaoRow('Gerente/Coordenador TOTVS', dto.coordenadorTotvs || '', null, null);
     drawAmbientacaoRow('Gerente/Coordenador cliente', dto.coordenadorCliente || '', null, null);
 
@@ -255,7 +258,6 @@ export function buildPdfTermoValidacao(dto: TermoValidacaoDto): Promise<Buffer> 
       colX += c.width;
     });
 
-    const ultimoApontamento = dto.itens.length ? dto.itens[dto.itens.length - 1].data : '';
     doc.font('Helvetica').fontSize(9).fillColor(PRETO)
       .text(dto.coordenadorCliente || '', startX + 4, y0 + 8, { width: aceiteCols[0].width - 8 });
     doc.text(ultimoApontamento, startX + aceiteCols[0].width + aceiteCols[1].width + 4, y0 + 8, { width: aceiteCols[2].width - 8 });

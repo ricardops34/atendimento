@@ -141,6 +141,12 @@
     </po-datepicker>
   </div>
 
+  <div class="po-row">
+    <po-combo class="po-md-6" name="termoFormat" p-label="Formato" [p-options]="termoValidacaoFormatOptions"
+      [ngModel]="termoValidacaoFilters.format" (ngModelChange)="termoValidacaoFilters.format = $event">
+    </po-combo>
+  </div>
+
   <po-modal-footer>
     <po-button p-label="Cancelar" (p-click)="termoValidacaoModal.close()"></po-button>
     <po-button p-label="Gerar Termo" p-kind="primary" (p-click)="generateTermoValidacao()"></po-button>

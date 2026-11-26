@@ -81,7 +81,7 @@ export class AgendamentoService {
     return this.http.get(`${this.apiUrl}/export-extrato`, { params: httpParams, responseType: 'blob' });
   }
 
-  exportTermoValidacao(params: AgendamentoSearchParams, format: 'pdf'): Observable<Blob> {
+  exportTermoValidacao(params: AgendamentoSearchParams, format: 'pdf' | 'docx'): Observable<Blob> {
     let httpParams = new HttpParams().set('format', format);
     Object.entries(params).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {

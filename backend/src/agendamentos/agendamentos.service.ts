@@ -8,6 +8,7 @@ import { UpdateAgendamentoDto } from './dto/update-agendamento.dto';
 import { composeDateTime, calculateDuration, stripHtml } from './agendamentos.utils';
 import { buildPdfCalendario } from './buildPdfCalendario';
 import { buildPdfTermoValidacao } from './build-termo-validacao';
+import { buildDocxTermoValidacao } from './build-termo-validacao-docx';
 import { BancoHorasService } from '../banco-horas/banco-horas.service';
 
 type ExportFormat = 'csv' | 'xls' | 'pdf' | 'xml';
@@ -838,7 +839,7 @@ export class AgendamentosService {
     return this.buildPdfExtrato(rows, isAnalitico, ocultarValor, exibirBancoHoras, saldoAnteriorMap);
   }
 
-  async generateTermoValidacao(filters: AgendamentoExportFilters): Promise<Buffer> {
+  async generateTermoValidacao(filters: AgendamentoExportFilters, format: 'pdf' | 'docx' = 'pdf'): Promise<Buffer> {
     if (!filters.contratoId || !filters.profissionalId) {
       throw new HttpException('Informe o Contrato e o Analista para gerar o Termo de Validação.', HttpStatus.BAD_REQUEST);
     }
@@ -874,7 +875,7 @@ export class AgendamentosService {
       };
     });
 
-    return buildPdfTermoValidacao({
+    const termoDto = {
       clienteNome: contrato.cliente?.nomeDocumento || contrato.cliente?.nome || '',
       codigoCliente: contrato.codigoCliente,
       segmento: contrato.segmento,
@@ -886,7 +887,9 @@ export class AgendamentosService {
       coordenadorCliente: contrato.coordenadorCliente,
       dataGeracao: new Date(),
       itens,
-    });
+    };
+
+    return format === 'docx' ? buildDocxTermoValidacao(termoDto) : buildPdfTermoValidacao(termoDto);
   }
 
   private async buildXlsxExtrato(rows: any[], isAnalitico: boolean, ocultarValor = false, exibirBancoHoras = false): Promise<Buffer> {

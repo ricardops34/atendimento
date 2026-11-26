@@ -161,8 +161,9 @@ export class AgendamentosController {
     @Request() req: any,
     @Res() res: Response,
   ) {
-    if (!format || format !== 'pdf') {
-      res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro format inválido para o Termo de Validação. Use: pdf.' });
+    const validFormats = ['pdf', 'docx'];
+    if (!format || !validFormats.includes(format)) {
+      res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro format inválido para o Termo de Validação. Use: pdf ou docx.' });
       return;
     }
 
@@ -175,10 +176,15 @@ export class AgendamentosController {
       profissionalScope: req.profissionalScope,
     };
 
+    const contentTypeMap: Record<string, string> = {
+      pdf: 'application/pdf',
+      docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    };
+
     try {
-      const buffer = await this.agendamentosService.generateTermoValidacao(filters);
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', 'attachment; filename="termo_validacao.pdf"');
+      const buffer = await this.agendamentosService.generateTermoValidacao(filters, format as 'pdf' | 'docx');
+      res.setHeader('Content-Type', contentTypeMap[format]);
+      res.setHeader('Content-Disposition', `attachment; filename="termo_validacao.${format}"`);
       res.send(buffer);
     } catch (e: any) {
       const status = e?.status || 500;

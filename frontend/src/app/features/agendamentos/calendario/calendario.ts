@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PoPageModule } from '@po-ui/ng-components';
+import { FormsModule } from '@angular/forms';
+import { PoComboOption, PoFieldModule, PoPageModule } from '@po-ui/ng-components';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { CalendarOptions } from '@fullcalendar/core';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -10,12 +11,19 @@ import interactionPlugin from '@fullcalendar/interaction';
 import ptBrLocale from '@fullcalendar/core/locales/pt-br';
 import { AgendamentoService } from '../../../core/services/agendamento.service';
 import { FeriadoService } from '../../../core/services/feriado.service';
+import { ProfissionalService } from '../../../core/services/profissional.service';
+import { EmpresaStateService } from '../../../core/auth/empresa-state.service';
 import { FormSidebar } from '../components/form-sidebar/form-sidebar';
+
+// Perfis que enxergam mais de um Profissional (e por isso precisam do filtro por Analista).
+// Um Analista comum já é restrito a si mesmo pelo backend (profissionalScope), então o filtro
+// não agrega valor para ele.
+const PERFIS_COM_FILTRO_ANALISTA = ['Administrador', 'Gerente'];
 
 @Component({
   selector: 'app-calendario',
   standalone: true,
-  imports: [CommonModule, PoPageModule, FullCalendarModule, FormSidebar],
+  imports: [CommonModule, FormsModule, PoPageModule, PoFieldModule, FullCalendarModule, FormSidebar],
   templateUrl: './calendario.html',
   styles: [`
     :host ::ng-deep .fc-feriado-bg { background: #ffcdd2 !important; opacity: 0.6; }
@@ -26,6 +34,16 @@ export class Calendario implements OnInit {
   @ViewChild(FormSidebar) formSidebar!: FormSidebar;
   private agendamentoService = inject(AgendamentoService);
   private feriadoService = inject(FeriadoService);
+  private profissionalService = inject(ProfissionalService);
+  private empresaState = inject(EmpresaStateService);
+
+  profissionais: PoComboOption[] = [];
+  profissionalIdFiltro: number | null = null;
+
+  get exibeFiltroAnalista(): boolean {
+    const perfil = this.empresaState.user()?.profile;
+    return PERFIS_COM_FILTRO_ANALISTA.includes(perfil);
+  }
 
   // Mapa "YYYY-MM-DD" -> descrição do feriado, já expandido para os feriados fixos
   // (recorrentes todo ano, ex: Natal) ao longo de uma janela de anos.
@@ -56,6 +74,20 @@ export class Calendario implements OnInit {
 
   ngOnInit() {
     this.loadFeriados();
+    this.loadEvents();
+    if (this.exibeFiltroAnalista) {
+      this.loadProfissionais();
+    }
+  }
+
+  loadProfissionais() {
+    this.profissionalService.findAll().subscribe((data) => {
+      this.profissionais = data.map((p: any) => ({ label: p.nome, value: p.id }));
+    });
+  }
+
+  onProfissionalFiltroChange(profissionalId: number | null) {
+    this.profissionalIdFiltro = profissionalId;
     this.loadEvents();
   }
 
@@ -103,7 +135,11 @@ export class Calendario implements OnInit {
   }
 
   loadEvents() {
-    this.agendamentoService.findAll().subscribe((data: any[]) => {
+    this.agendamentoService.search({
+      profissionalId: this.profissionalIdFiltro ?? undefined,
+      pageSize: 2000
+    }).subscribe((res) => {
+      const data = res.items;
       this.rawAgendamentos = data;
       this.calendarOptions = {
         ...this.calendarOptions,

@@ -1,5 +1,11 @@
 <po-page-default p-title="Calendário de Atendimentos">
-  
+
+  <div class="po-row" *ngIf="exibeFiltroAnalista">
+    <po-combo class="po-md-4" name="profissionalIdFiltro" p-label="Analista" p-clean [p-options]="profissionais"
+      [ngModel]="profissionalIdFiltro" (ngModelChange)="onProfissionalFiltroChange($event)">
+    </po-combo>
+  </div>
+
   <full-calendar [options]="calendarOptions"></full-calendar>
 
 </po-page-default>
