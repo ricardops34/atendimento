@@ -27,9 +27,10 @@ const cellBorders = () => ({
 
 const cellMargins = { top: 80, bottom: 80, left: 100, right: 100 };
 
-function labelValueCell(label: string, value: string, widthPercent: number) {
+function labelValueCell(label: string, value: string, widthPercent: number, columnSpan?: number) {
   return new TableCell({
     width: { size: widthPercent, type: WidthType.PERCENTAGE },
+    ...(columnSpan ? { columnSpan } : {}),
     borders: cellBorders(),
     margins: cellMargins,
     children: [
@@ -44,7 +45,10 @@ function labelValueCell(label: string, value: string, widthPercent: number) {
 }
 
 function ambientacaoRow(leftLabel: string, leftVal: string, rightLabel?: string | null, rightVal?: string | null) {
-  const cells = [labelValueCell(leftLabel, leftVal, rightLabel ? 50 : 100)];
+  // A tabela tem 2 colunas de grid (definidas pela 1ª linha, 50/50). Uma linha com uma única
+  // célula precisa declarar columnSpan: 2 explicitamente, senão o Word deixa uma coluna vazia
+  // e sem borda à direita (bug visto nos testes: "caixa fantasma" ao lado de linhas solteiras).
+  const cells = [labelValueCell(leftLabel, leftVal, rightLabel ? 50 : 100, rightLabel ? undefined : 2)];
   if (rightLabel) cells.push(labelValueCell(rightLabel, rightVal || '', 50));
   return new TableRow({ children: cells });
 }

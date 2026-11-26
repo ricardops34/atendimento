@@ -78,7 +78,7 @@ export class Lista implements OnInit {
   extratoActions: PoDropdownAction[] = [
     { label: 'Extrato (XLS)', action: () => this.openExtratoModal('xls') },
     { label: 'Extrato (PDF)', action: () => this.openExtratoModal('pdf') },
-    { label: 'Termo de Validação (PDF)', action: () => this.openTermoValidacaoModal() },
+    { label: 'Termo de Validação', action: () => this.openTermoValidacaoModal() },
     { label: 'Banco de Horas', action: () => this.router.navigate(['/banco-horas']) }
   ];
 
