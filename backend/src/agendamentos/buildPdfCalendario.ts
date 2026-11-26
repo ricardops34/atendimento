@@ -53,11 +53,17 @@ export function buildPdfCalendario(items: any[], filters: any, getHorasPrevistas
 
         // Calculate valor hora
         const primeiroContrato = profItems[0].contrato;
-        let valorHora = Number(primeiroContrato?.valorHora || 0);
+        // Sobrepõe o valor do contrato pelo valor específico deste profissional neste
+        // contrato (ContratoProfissional.valorHora/valorFixo), quando houver.
+        const contratoProfissional = (primeiroContrato?.profissionais || []).find(
+          (p: any) => p.profissionalId === profItems[0].profissional?.id,
+        );
+        let valorHora = Number(contratoProfissional?.valorHora ?? primeiroContrato?.valorHora ?? 0);
         let valorBase = 0;
 
-        if (primeiroContrato?.tipo === 'F' && primeiroContrato?.valorFixo) {
-          valorBase = Number(primeiroContrato.valorFixo);
+        const valorFixoEfetivo = contratoProfissional?.valorFixo ?? primeiroContrato?.valorFixo;
+        if (primeiroContrato?.tipo === 'F' && valorFixoEfetivo) {
+          valorBase = Number(valorFixoEfetivo);
           let totalMinutosBase = 0;
           profItems.forEach(item => {
             const d = item.duracaoMinutos || calculateDuration(item.horaInicio, item.horaFim, item.horaIntervaloInicial, item.horaIntervaloFinal);

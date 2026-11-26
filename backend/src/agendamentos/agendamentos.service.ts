@@ -989,24 +989,22 @@ export class AgendamentosService {
       const rowWidth = isAnalitico ? 530 : (exibirBancoHoras ? 380 : 360);
 
       for (const contrato of Object.keys(grouped)) {
-        // Find valorHora from the first available row
-        let valorHora = 0;
-        const firstProf = Object.keys(grouped[contrato])[0];
-        if (firstProf && grouped[contrato][firstProf].length > 0) {
-          valorHora = grouped[contrato][firstProf][0].valorHora;
-        }
-
         doc.fontSize(12).font('Helvetica-Bold').fillColor('#333333');
-        if (ocultarValor) {
-          doc.text(`Cliente: ${contrato}`);
-        } else {
-          doc.text(`Cliente: ${contrato}`, startX, doc.y, { continued: true });
-          doc.fillColor('#555555').font('Helvetica').text(`    Valor Hora: ${formatCurrency(valorHora)}`);
-        }
+        doc.text(`Cliente: ${contrato}`);
         doc.moveDown(0.5);
 
         for (const profissional of Object.keys(grouped[contrato])) {
-          doc.fontSize(11).font('Helvetica-Bold').fillColor('#555555').text(`Profissional: ${profissional}`, startX + 10);
+          // Valor hora específico deste profissional neste contrato (pode variar entre
+          // profissionais do mesmo contrato, por isso é obtido aqui, não no nível do contrato).
+          const valorHora = grouped[contrato][profissional][0]?.valorHora || 0;
+
+          doc.fontSize(11).font('Helvetica-Bold').fillColor('#555555');
+          if (ocultarValor) {
+            doc.text(`Profissional: ${profissional}`, startX + 10);
+          } else {
+            doc.text(`Profissional: ${profissional}`, startX + 10, doc.y, { continued: true });
+            doc.font('Helvetica').text(`    Valor Hora: ${formatCurrency(valorHora)}`);
+          }
           doc.moveDown(0.5);
 
           // Header da tabela
