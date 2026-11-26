@@ -27,18 +27,20 @@ export class ProfissionaisService {
     });
   }
 
-  findAll(empresaId: number) {
+  findAll(empresaId: number, profissionalScope?: number[] | null) {
+    const where: any = { empresaId };
+    if (profissionalScope) where.id = { in: profissionalScope };
     return this.prisma.profissional.findMany({
-      where: { empresaId },
+      where,
       orderBy: { nome: 'asc' },
       include: { user: userSelect },
     });
   }
 
-  async search(query: ProfissionalSearchQuery, empresaId: number) {
+  async search(query: ProfissionalSearchQuery, empresaId: number, profissionalScope?: number[] | null) {
     const page = Math.max(Number(query.page) || 1, 1);
     const pageSize = Math.max(Number(query.pageSize) || 20, 1);
-    const where = this.buildWhere(query, empresaId);
+    const where = this.buildWhere(query, empresaId, profissionalScope);
     const total = await this.prisma.profissional.count({ where });
     const items = await this.prisma.profissional.findMany({
       where,
@@ -51,7 +53,7 @@ export class ProfissionaisService {
     return { items, page, pageSize, total, hasNext: page * pageSize < total };
   }
 
-  async findOne(id: number, empresaId?: number) {
+  async findOne(id: number, empresaId?: number, profissionalScope?: number[] | null) {
     const where: any = { id };
     if (empresaId) where.empresaId = empresaId;
 
@@ -60,6 +62,9 @@ export class ProfissionaisService {
       include: { user: userSelect },
     });
     if (!profissional) throw new NotFoundException('Profissional não encontrado.');
+    if (profissionalScope && !profissionalScope.includes(profissional.id)) {
+      throw new NotFoundException('Profissional não encontrado.');
+    }
     return profissional;
   }
 
@@ -77,12 +82,18 @@ export class ProfissionaisService {
     return this.prisma.profissional.delete({ where: { id } });
   }
 
-  private buildWhere(query: ProfissionalSearchQuery, empresaId?: number) {
+  private buildWhere(query: ProfissionalSearchQuery, empresaId?: number, profissionalScope?: number[] | null) {
     const where: any = {};
     if (empresaId) where.empresaId = empresaId;
+    if (profissionalScope) where.id = { in: profissionalScope };
 
     if (query.id) {
-      where.id = Number(query.id);
+      const requestedId = Number(query.id);
+      if (profissionalScope && !profissionalScope.includes(requestedId)) {
+        where.id = -1; // fora do escopo: nenhum resultado
+      } else {
+        where.id = requestedId;
+      }
       return where;
     }
     const nome = query.nome?.trim() || query.search?.trim();
