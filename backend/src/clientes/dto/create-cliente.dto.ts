@@ -70,6 +70,11 @@ export class CreateClienteDto {
   @IsEmail({}, { message: 'Informe um email válido.' })
   email?: string;
 
+  // Nome do cliente a ser impresso em documentos/relatórios (ex: Termo de Validação).
+  @IsOptional()
+  @IsString()
+  nomeDocumento?: string;
+
   @IsOptional()
   @IsNumber()
   paisId?: number;

@@ -67,6 +67,10 @@ export class ProfissionalHabilitadoDto {
   @IsOptional()
   @IsString()
   codigoProjeto?: string;
+
+  @IsOptional()
+  @IsString()
+  nomeProjeto?: string;
 }
 
 export class AdiantamentoItemDto {
@@ -142,6 +146,19 @@ export class CreateContratoDto {
   @IsOptional()
   @IsString()
   coordenadorCliente?: string;
+
+  // Dados usados em relatórios TOTVS (ex: Termo de Validação): código do cliente, segmento e unidade.
+  @IsOptional()
+  @IsString()
+  codigoCliente?: string;
+
+  @IsOptional()
+  @IsString()
+  segmento?: string;
+
+  @IsOptional()
+  @IsString()
+  unidadeTotvs?: string;
 
   @IsOptional()
   @IsArray()

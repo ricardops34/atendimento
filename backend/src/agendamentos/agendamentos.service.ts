@@ -7,6 +7,7 @@ import { CreateAgendamentoDto } from './dto/create-agendamento.dto';
 import { UpdateAgendamentoDto } from './dto/update-agendamento.dto';
 import { composeDateTime, calculateDuration, stripHtml } from './agendamentos.utils';
 import { buildPdfCalendario } from './buildPdfCalendario';
+import { buildPdfTermoValidacao } from './build-termo-validacao';
 import { BancoHorasService } from '../banco-horas/banco-horas.service';
 
 type ExportFormat = 'csv' | 'xls' | 'pdf' | 'xml';
@@ -823,6 +824,57 @@ export class AgendamentosService {
     if (isCalendario) return buildPdfCalendario(items, filters, getHorasPrevistasContrato);
 
     return this.buildPdfExtrato(rows, isAnalitico, ocultarValor, exibirBancoHoras, saldoAnteriorMap);
+  }
+
+  async generateTermoValidacao(filters: AgendamentoExportFilters): Promise<Buffer> {
+    if (!filters.contratoId || !filters.profissionalId) {
+      throw new HttpException('Informe o Contrato e o Analista para gerar o Termo de Validação.', HttpStatus.BAD_REQUEST);
+    }
+
+    const contrato = await this.prisma.contrato.findFirst({
+      where: { id: filters.contratoId, ...(filters.empresaId ? { empresaId: filters.empresaId } : {}) },
+      include: {
+        cliente: true,
+        profissionais: { where: { profissionalId: filters.profissionalId } },
+      },
+    });
+    if (!contrato) throw new HttpException('Contrato não encontrado.', HttpStatus.NOT_FOUND);
+
+    const profissional = await this.prisma.profissional.findUnique({ where: { id: filters.profissionalId } });
+    if (!profissional) throw new HttpException('Analista não encontrado.', HttpStatus.NOT_FOUND);
+
+    const contratoProfissional = contrato.profissionais[0];
+
+    const baseWhere = this.buildWhereFromFilters(filters) as { AND?: object[] };
+    const where = { AND: [...(baseWhere.AND || []), { tipo: { not: 'C' } }] };
+    const agendamentos = await this.prisma.agendamento.findMany({
+      where,
+      orderBy: [{ dataAgenda: 'asc' }, { horaInicio: 'asc' }],
+      take: 2000,
+    });
+
+    const itens = agendamentos.map((a) => {
+      const duracaoMin = a.duracaoMinutos || calculateDuration(a.horaInicio, a.horaFim, a.horaIntervaloInicial, a.horaIntervaloFinal);
+      return {
+        data: a.dataAgenda ? new Date(a.dataAgenda).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : '',
+        tempo: this.formatMinutes(duracaoMin),
+        observacao: stripHtml(a.observacao || ''),
+      };
+    });
+
+    return buildPdfTermoValidacao({
+      clienteNome: contrato.cliente?.nomeDocumento || contrato.cliente?.nome || '',
+      codigoCliente: contrato.codigoCliente,
+      segmento: contrato.segmento,
+      unidadeTotvs: contrato.unidadeTotvs,
+      nomeProjeto: contratoProfissional?.nomeProjeto,
+      codigoProjeto: contratoProfissional?.codigoProjeto,
+      profissionalNome: profissional.nome,
+      coordenadorTotvs: contrato.coordenadorTotvs,
+      coordenadorCliente: contrato.coordenadorCliente,
+      dataGeracao: new Date(),
+      itens,
+    });
   }
 
   private async buildXlsxExtrato(rows: any[], isAnalitico: boolean, ocultarValor = false, exibirBancoHoras = false): Promise<Buffer> {

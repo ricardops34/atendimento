@@ -118,6 +118,35 @@
   </po-modal-footer>
 </po-modal>
 
+<po-modal p-title="Gerar Termo de Validação" #termoValidacaoModal>
+  <div class="po-row">
+    <po-combo class="po-md-12" name="termoContratoId" p-label="Contrato *" [p-options]="contratos"
+      [ngModel]="termoValidacaoFilters.contratoId" (ngModelChange)="termoValidacaoFilters.contratoId = $event">
+    </po-combo>
+  </div>
+
+  <div class="po-row">
+    <po-combo class="po-md-12" name="termoProfissionalId" p-label="Analista *" [p-options]="profissionais"
+      [ngModel]="termoValidacaoFilters.profissionalId" (ngModelChange)="termoValidacaoFilters.profissionalId = $event">
+    </po-combo>
+  </div>
+
+  <div class="po-row">
+    <po-datepicker class="po-md-6" name="termoDataInicial" p-label="Data inicial"
+      [ngModel]="termoValidacaoFilters.dataInicial" (ngModelChange)="termoValidacaoFilters.dataInicial = $event">
+    </po-datepicker>
+
+    <po-datepicker class="po-md-6" name="termoDataFinal" p-label="Data final"
+      [ngModel]="termoValidacaoFilters.dataFinal" (ngModelChange)="termoValidacaoFilters.dataFinal = $event">
+    </po-datepicker>
+  </div>
+
+  <po-modal-footer>
+    <po-button p-label="Cancelar" (p-click)="termoValidacaoModal.close()"></po-button>
+    <po-button p-label="Gerar Termo" p-kind="primary" (p-click)="generateTermoValidacao()"></po-button>
+  </po-modal-footer>
+</po-modal>
+
 <po-modal p-title="Gerar Previsão Mensal" #gerarMensalModal>
   <div class="po-row">
     <po-combo class="po-md-6" name="gerarMes" p-label="Mês" [p-options]="mesesOptions"

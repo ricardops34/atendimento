@@ -168,6 +168,8 @@ model Cliente {
   complemento    String?    @db.VarChar(255)
   telefone       String?    @db.VarChar(20)
   email          String?    @db.VarChar(255)
+  // Nome do cliente a ser impresso em documentos/relatórios (ex: Termo de Validação), quando diferente do nome/razão cadastrado.
+  nomeDocumento  String?    @map("nome_documento") @db.VarChar(255)
   cor            String?    @db.VarChar(7) // cor padrão na agenda (hex)
   endereco       String?    @db.VarChar(500)
   cidade         String?    @db.VarChar(255)
@@ -228,6 +230,10 @@ model Contrato {
   bloqueado     Boolean                @default(false)
   coordenadorTotvs    String?          @map("coordenador_totvs") @db.VarChar(100)
   coordenadorCliente  String?          @map("coordenador_cliente") @db.VarChar(100)
+  // Dados usados em relatórios TOTVS (ex: Termo de Validação): código do cliente, segmento e unidade.
+  codigoCliente String?                @map("codigo_cliente") @db.VarChar(20)
+  segmento      String?                @db.VarChar(100)
+  unidadeTotvs  String?                @map("unidade_totvs") @db.VarChar(100)
   atributos     Json?
   agendamentos  Agendamento[]
   escalas       ContratoItem[]
@@ -267,6 +273,7 @@ model ContratoProfissional {
   modoExcedente   String?      @map("modo_excedente") @db.VarChar(10)
   // Código do projeto TOTVS/Protheus associado a este Analista neste contrato (ex: D000087309001).
   codigoProjeto   String?      @map("codigo_projeto") @db.VarChar(20)
+  nomeProjeto     String?      @map("nome_projeto") @db.VarChar(100)
   // Saldo acumulado (não zera por mês) de horas excedentes já autorizadas em modo banco de horas.
   saldoBancoHoras Decimal      @default(0) @map("saldo_banco_horas") @db.Decimal(8, 2)
   apontamentos    ContratoProfissionalApontamentoMensal[]

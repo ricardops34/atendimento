@@ -47,6 +47,7 @@ export class Lista implements OnInit {
   @ViewChild(FormSidebar) formSidebar!: FormSidebar;
   @ViewChild('advancedFilterModal', { static: true }) advancedFilterModal!: PoModalComponent;
   @ViewChild('extratoModal', { static: true }) extratoModal!: PoModalComponent;
+  @ViewChild('termoValidacaoModal', { static: true }) termoValidacaoModal!: PoModalComponent;
   @ViewChild('gerarMensalModal', { static: true }) gerarMensalModal!: PoModalComponent;
 
   private agendamentoService = inject(AgendamentoService);
@@ -77,6 +78,7 @@ export class Lista implements OnInit {
   extratoActions: PoDropdownAction[] = [
     { label: 'Extrato (XLS)', action: () => this.openExtratoModal('xls') },
     { label: 'Extrato (PDF)', action: () => this.openExtratoModal('pdf') },
+    { label: 'Termo de Validação (PDF)', action: () => this.openTermoValidacaoModal() },
     { label: 'Banco de Horas', action: () => this.router.navigate(['/banco-horas']) }
   ];
 
@@ -119,6 +121,13 @@ export class Lista implements OnInit {
     { label: 'Analítico (Com Observações)', value: 'analitico' },
     { label: 'Calendário', value: 'calendario' }
   ];
+
+  termoValidacaoFilters: {
+    dataInicial?: string;
+    dataFinal?: string;
+    contratoId?: number;
+    profissionalId?: number;
+  } = {};
 
   bancoHorasTipoOptions: PoComboOption[] = [
     { label: 'Todos', value: '' },
@@ -418,6 +427,56 @@ export class Lista implements OnInit {
       },
       error: async (err) => {
         let message = 'Erro ao exportar extrato.';
+        if (err.error instanceof Blob) {
+          try {
+            const text = await err.error.text();
+            const json = JSON.parse(text);
+            message = json.message || message;
+          } catch { }
+        }
+        this.poNotification.error(message);
+      }
+    });
+  }
+
+  openTermoValidacaoModal() {
+    if (!this.termoValidacaoFilters.dataInicial && !this.termoValidacaoFilters.dataFinal) {
+      this.termoValidacaoFilters = {
+        dataInicial: this.filters.dataInicial,
+        dataFinal: this.filters.dataFinal,
+        contratoId: this.filters.contratoId,
+        profissionalId: this.filters.profissionalId
+      };
+    }
+    this.termoValidacaoModal.open();
+  }
+
+  generateTermoValidacao() {
+    if (!this.termoValidacaoFilters.contratoId || !this.termoValidacaoFilters.profissionalId) {
+      this.poNotification.warning('Selecione o Contrato e o Analista para gerar o Termo de Validação.');
+      return;
+    }
+
+    this.termoValidacaoModal.close();
+
+    const params: AgendamentoSearchParams = {
+      dataInicial: this.termoValidacaoFilters.dataInicial,
+      dataFinal: this.termoValidacaoFilters.dataFinal,
+      contratoId: this.termoValidacaoFilters.contratoId,
+      profissionalId: this.termoValidacaoFilters.profissionalId
+    };
+
+    this.agendamentoService.exportTermoValidacao(params, 'pdf').subscribe({
+      next: (blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'termo_validacao.pdf';
+        a.click();
+        URL.revokeObjectURL(url);
+      },
+      error: async (err) => {
+        let message = 'Erro ao gerar o Termo de Validação.';
         if (err.error instanceof Blob) {
           try {
             const text = await err.error.text();

@@ -159,6 +159,34 @@ const MODO_EXCEDENTE_OPTIONS: PoComboOption[] = [
         </po-input>
       </div>
 
+      <div class="po-row">
+        <po-input
+          class="po-md-4"
+          p-label="Código do Cliente"
+          p-placeholder="Ex: T7438600"
+          [ngModel]="formData.codigoCliente"
+          (ngModelChange)="formData.codigoCliente = $event"
+          name="codigoCliente"
+          [p-maxlength]="20">
+        </po-input>
+        <po-input
+          class="po-md-4"
+          p-label="Segmento Cliente"
+          [ngModel]="formData.segmento"
+          (ngModelChange)="formData.segmento = $event"
+          name="segmento"
+          [p-maxlength]="100">
+        </po-input>
+        <po-input
+          class="po-md-4"
+          p-label="Unidade TOTVS"
+          [ngModel]="formData.unidadeTotvs"
+          (ngModelChange)="formData.unidadeTotvs = $event"
+          name="unidadeTotvs"
+          [p-maxlength]="100">
+        </po-input>
+      </div>
+
       <!-- Profissionais habilitados -->
       <div style="margin-top: 16px; border-top: 1px solid #ddd; padding-top: 12px;">
         <p style="font-weight: 600; margin-bottom: 8px;">Profissionais Habilitados</p>
@@ -230,6 +258,17 @@ const MODO_EXCEDENTE_OPTIONS: PoComboOption[] = [
           </div>
         </div>
 
+        <div class="po-row">
+          <po-input
+            class="po-md-4"
+            p-label="Nome do Projeto"
+            [ngModel]="novoProfissional.nomeProjeto"
+            (ngModelChange)="novoProfissional.nomeProjeto = $event"
+            name="novoProfissionalNomeProjeto"
+            [p-maxlength]="100">
+          </po-input>
+        </div>
+
         <div *ngIf="formData.profissionais?.length" style="margin-top: 8px;">
           <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
             <thead>
@@ -240,6 +279,7 @@ const MODO_EXCEDENTE_OPTIONS: PoComboOption[] = [
                 <th style="padding: 4px 8px;">Máx. Horas/Mês</th>
                 <th style="padding: 4px 8px; text-align: left;">Excedente</th>
                 <th style="padding: 4px 8px; text-align: left;">Código do Projeto</th>
+                <th style="padding: 4px 8px; text-align: left;">Nome do Projeto</th>
                 <th style="padding: 4px 8px;">Saldo Banco Horas</th>
                 <th style="padding: 4px 8px;"></th>
               </tr>
@@ -252,6 +292,7 @@ const MODO_EXCEDENTE_OPTIONS: PoComboOption[] = [
                 <td style="padding: 4px 8px; text-align: center;">{{ p.maxHorasMes ?? '—' }}</td>
                 <td style="padding: 4px 8px;">{{ getModoExcedenteLabel(p.modoExcedente) }}</td>
                 <td style="padding: 4px 8px;">{{ p.codigoProjeto || '—' }}</td>
+                <td style="padding: 4px 8px;">{{ p.nomeProjeto || '—' }}</td>
                 <td style="padding: 4px 8px; text-align: center;">{{ p.saldoBancoHoras ?? 0 }}</td>
                 <td style="padding: 4px 8px; text-align: center; white-space: nowrap;">
                   <po-button p-icon="an an-pencil-simple" p-kind="tertiary" (p-click)="editProfissionalHabilitado(i)"></po-button>
@@ -479,6 +520,9 @@ export class ContratosEditPage implements OnInit {
     bloqueado: false,
     coordenadorTotvs: null,
     coordenadorCliente: null,
+    codigoCliente: null,
+    segmento: null,
+    unidadeTotvs: null,
     profissionais: [],
     escalas: [],
     adiantamentos: [],
@@ -501,6 +545,7 @@ export class ContratosEditPage implements OnInit {
     maxHorasMes: null,
     modoExcedente: null,
     codigoProjeto: null,
+    nomeProjeto: null,
   };
   editandoProfissionalIndex: number | null = null;
 
@@ -561,6 +606,9 @@ export class ContratosEditPage implements OnInit {
           bloqueado: !!contrato.bloqueado,
           coordenadorTotvs: contrato.coordenadorTotvs ?? null,
           coordenadorCliente: contrato.coordenadorCliente ?? null,
+          codigoCliente: contrato.codigoCliente ?? null,
+          segmento: contrato.segmento ?? null,
+          unidadeTotvs: contrato.unidadeTotvs ?? null,
           profissionais: (contrato.profissionais || []).map((p: any) => ({
             profissionalId: p.profissionalId,
             valorHora: p.valorHora ?? null,
@@ -568,6 +616,7 @@ export class ContratosEditPage implements OnInit {
             maxHorasMes: p.maxHorasMes ?? null,
             modoExcedente: p.modoExcedente ?? null,
             codigoProjeto: p.codigoProjeto ?? null,
+            nomeProjeto: p.nomeProjeto ?? null,
             saldoBancoHoras: p.saldoBancoHoras ?? 0,
           })),
           escalas: (contrato.escalas || []).map((e: any) => ({
@@ -665,6 +714,7 @@ export class ContratosEditPage implements OnInit {
         ? Number(this.novoProfissional.maxHorasMes) : null,
       modoExcedente: this.novoProfissional.modoExcedente || null,
       codigoProjeto: this.novoProfissional.codigoProjeto?.trim() || null,
+      nomeProjeto: this.novoProfissional.nomeProjeto?.trim() || null,
       saldoBancoHoras: this.editandoProfissionalIndex !== null
         ? this.formData.profissionais[this.editandoProfissionalIndex].saldoBancoHoras ?? 0
         : 0,
@@ -760,6 +810,9 @@ export class ContratosEditPage implements OnInit {
       bloqueado: !!this.formData.bloqueado,
       coordenadorTotvs: this.formData.coordenadorTotvs?.trim() || null,
       coordenadorCliente: this.formData.coordenadorCliente?.trim() || null,
+      codigoCliente: this.formData.codigoCliente?.trim() || null,
+      segmento: this.formData.segmento?.trim() || null,
+      unidadeTotvs: this.formData.unidadeTotvs?.trim() || null,
       profissionais: (this.formData.profissionais || []).map((p: any) => ({
         profissionalId: Number(p.profissionalId),
         valorHora: p.valorHora !== null && p.valorHora !== undefined && p.valorHora !== ''
@@ -770,6 +823,7 @@ export class ContratosEditPage implements OnInit {
           ? Number(p.maxHorasMes) : undefined,
         modoExcedente: p.modoExcedente ?? undefined,
         codigoProjeto: p.codigoProjeto ?? undefined,
+        nomeProjeto: p.nomeProjeto ?? undefined,
       })),
       escalas: this.formData.escalas || [],
       adiantamentos: (this.formData.adiantamentos || []).map((a: any) => ({
@@ -833,6 +887,7 @@ export class ContratosEditPage implements OnInit {
       maxHorasMes: null,
       modoExcedente: null,
       codigoProjeto: null,
+      nomeProjeto: null,
     };
   }
 

@@ -154,6 +154,39 @@ export class AgendamentosController {
     }
   }
 
+  @Get('export-termo-validacao')
+  async exportTermoValidacao(
+    @Query('format') format: string,
+    @Query() query: Record<string, string | undefined>,
+    @Request() req: any,
+    @Res() res: Response,
+  ) {
+    if (!format || format !== 'pdf') {
+      res.status(HttpStatus.BAD_REQUEST).json({ message: 'Parâmetro format inválido para o Termo de Validação. Use: pdf.' });
+      return;
+    }
+
+    const filters = {
+      contratoId: query.contratoId ? Number(query.contratoId) : undefined,
+      profissionalId: query.profissionalId ? Number(query.profissionalId) : undefined,
+      dataInicial: query.dataInicial,
+      dataFinal: query.dataFinal,
+      empresaId: req.empresaId as number,
+      profissionalScope: req.profissionalScope,
+    };
+
+    try {
+      const buffer = await this.agendamentosService.generateTermoValidacao(filters);
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="termo_validacao.pdf"');
+      res.send(buffer);
+    } catch (e: any) {
+      const status = e?.status || 500;
+      const message = e?.message || 'Erro interno ao gerar o Termo de Validação.';
+      res.status(status).json({ message });
+    }
+  }
+
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number, @Request() req: any) {
     return this.agendamentosService.findOne(id, req.empresaId as number, req.profissionalScope);

@@ -85,7 +85,7 @@ export class ClientesEditPage implements OnInit {
     tipoPessoa: 'PJ',
     nome: '', razaoSocial: '', cnpj: '', inscricaoEstadual: '', inscricaoMunicipal: '',
     cpf: '', rg: '', dataNascimento: null,
-    telefone: '', celular: '', email: '',
+    telefone: '', celular: '', email: '', nomeDocumento: '',
     cep: '', logradouro: '', numero: '', complemento: '', bairro: '', municipioId: null, estadoId: null, paisId: null,
     cor: '',
     usuarioId: null,
@@ -125,6 +125,7 @@ export class ClientesEditPage implements OnInit {
           dataNascimento:     data.dataNascimento ? this.parseDateLocal(data.dataNascimento.substring(0, 10)) : null,
           telefone:           data.telefone           || '',
           email:              data.email              || '',
+          nomeDocumento:      data.nomeDocumento      || '',
           cep:                data.cep                || '',
           logradouro:         data.endereco         || '',
           numero:             data.numero             || '',
@@ -379,6 +380,7 @@ export class ClientesEditPage implements OnInit {
     if (this.form.tipoPessoa === 'PF' && this.form.cpf) payload.documento = this.form.cpf;
     if (this.form.telefone) payload.telefone = this.form.telefone;
     if (this.form.email) payload.email = this.form.email;
+    if (this.form.nomeDocumento) payload.nomeDocumento = this.form.nomeDocumento;
     if (this.form.cep) payload.cep = this.form.cep.replace(/\D/g, '');
     if (this.form.logradouro) payload.endereco = this.form.logradouro;
     if (this.form.numero) payload.numero = this.form.numero;

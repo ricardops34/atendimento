@@ -83,6 +83,14 @@
         </po-email>
       </div>
 
+      <div class="po-row">
+        <po-input class="po-md-12" p-label="Nome do Cliente (em documentos)" name="nomeDocumento"
+          p-help="Nome impresso em documentos/relatórios (ex: Termo de Validação). Se vazio, usa o Nome Fantasia."
+          [p-maxlength]="255"
+          [ngModel]="form.nomeDocumento" (ngModelChange)="form.nomeDocumento = $event">
+        </po-input>
+      </div>
+
       <po-divider p-label="Endereço"></po-divider>
 
       <div class="po-row" style="align-items: flex-end;">
