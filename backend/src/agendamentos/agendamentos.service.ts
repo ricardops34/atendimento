@@ -666,12 +666,12 @@ export class AgendamentosService {
     
     const items = await this.prisma.agendamento.findMany({
       where,
-      include: { 
+      include: {
         contrato: {
-          include: { escalas: true, adiantamentos: true }
-        }, 
-        profissional: true, 
-        realizados: true 
+          include: { escalas: true, adiantamentos: true, profissionais: true }
+        },
+        profissional: true,
+        realizados: true
       },
       orderBy: [
         { contrato: { descricao: 'asc' } },
@@ -721,29 +721,41 @@ export class AgendamentosService {
     };
 
     const baseMinutesPerContract: Record<string, number> = {};
+    const baseMinutesPerContratoProfissional: Record<string, number> = {};
     items.forEach((a: any) => {
       const duracaoMin = a.duracaoMinutos || calculateDuration(a.horaInicio, a.horaFim, a.horaIntervaloInicial, a.horaIntervaloFinal);
       if (a.local !== 'E') {
         const key = a.contrato?.id || 'SemContrato';
         baseMinutesPerContract[key] = (baseMinutesPerContract[key] || 0) + duracaoMin;
+        const keyProf = `${key}_${a.profissional?.id || 'SemProfissional'}`;
+        baseMinutesPerContratoProfissional[keyProf] = (baseMinutesPerContratoProfissional[keyProf] || 0) + duracaoMin;
       }
     });
 
     const rows = items.map((a: any) => {
       const duracaoMin = a.duracaoMinutos || calculateDuration(a.horaInicio, a.horaFim, a.horaIntervaloInicial, a.horaIntervaloFinal);
       let horasDecimais = duracaoMin / 60;
-      
+
+      // Sobrepõe o valor do contrato pelo valor específico configurado para este
+      // profissional neste contrato (ContratoProfissional.valorHora/valorFixo), quando houver.
+      const contratoProfissional = (a.contrato?.profissionais || []).find(
+        (p: any) => p.profissionalId === a.profissional?.id,
+      );
+
       let valorHora = 0;
-      if (a.contrato?.tipo === 'F' && a.contrato?.valorFixo) {
+      const valorFixoEfetivo = contratoProfissional?.valorFixo ?? a.contrato?.valorFixo;
+      if (a.contrato?.tipo === 'F' && valorFixoEfetivo) {
         const key = a.contrato?.id || 'SemContrato';
-        const horasMes = (baseMinutesPerContract[key] || 0) / 60;
+        const horasMes = contratoProfissional?.valorFixo != null
+          ? (baseMinutesPerContratoProfissional[`${key}_${a.profissional?.id || 'SemProfissional'}`] || 0) / 60
+          : (baseMinutesPerContract[key] || 0) / 60;
         if (horasMes > 0) {
-          valorHora = Number(a.contrato.valorFixo) / horasMes;
+          valorHora = Number(valorFixoEfetivo) / horasMes;
         }
       } else {
-        valorHora = Number(a.contrato?.valorHora || 0);
+        valorHora = Number(contratoProfissional?.valorHora ?? a.contrato?.valorHora ?? 0);
       }
-      
+
       let valorTotal = horasDecimais * valorHora;
 
       let statusFormatado = a.local || '';
