@@ -13,6 +13,7 @@ services:
       - DATABASE_URL=${DATABASE_URL}
       - JWT_SECRET=${JWT_SECRET}
       - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - CERT_ENCRYPTION_KEY=${CERT_ENCRYPTION_KEY}
       - TZ=${TZ:-UTC}
     deploy:
       replicas: 1
