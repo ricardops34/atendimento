@@ -71,6 +71,11 @@ export class ProfissionalHabilitadoDto {
   @IsOptional()
   @IsString()
   nomeProjeto?: string;
+
+  // Responsável (usuário chave do cliente) por validar a atividade deste Analista neste contrato.
+  @IsOptional()
+  @IsString()
+  responsavelValidacao?: string;
 }
 
 export class AdiantamentoItemDto {

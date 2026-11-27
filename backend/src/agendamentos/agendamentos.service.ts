@@ -885,6 +885,7 @@ export class AgendamentosService {
       profissionalNome: profissional.nome,
       coordenadorTotvs: contrato.coordenadorTotvs,
       coordenadorCliente: contrato.coordenadorCliente,
+      responsavelValidacao: contratoProfissional?.responsavelValidacao,
       dataGeracao: new Date(),
       itens,
     };

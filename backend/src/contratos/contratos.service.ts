@@ -48,6 +48,7 @@ export class ContratosService {
             modoExcedente: p.modoExcedente ?? null,
             codigoProjeto: p.codigoProjeto ?? null,
             nomeProjeto: p.nomeProjeto ?? null,
+            responsavelValidacao: p.responsavelValidacao ?? null,
           })),
           skipDuplicates: true,
         });
@@ -161,6 +162,7 @@ export class ContratosService {
               modoExcedente: p.modoExcedente ?? null,
               codigoProjeto: p.codigoProjeto ?? null,
               nomeProjeto: p.nomeProjeto ?? null,
+              responsavelValidacao: p.responsavelValidacao ?? null,
             },
             update: {
               valorHora: p.valorHora ?? null,
@@ -169,6 +171,7 @@ export class ContratosService {
               modoExcedente: p.modoExcedente ?? null,
               codigoProjeto: p.codigoProjeto ?? null,
               nomeProjeto: p.nomeProjeto ?? null,
+              responsavelValidacao: p.responsavelValidacao ?? null,
             },
           });
         }

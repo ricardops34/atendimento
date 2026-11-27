@@ -274,6 +274,9 @@ model ContratoProfissional {
   // Código do projeto TOTVS/Protheus associado a este Analista neste contrato (ex: D000087309001).
   codigoProjeto   String?      @map("codigo_projeto") @db.VarChar(20)
   nomeProjeto     String?      @map("nome_projeto") @db.VarChar(100)
+  // Responsável (usuário chave do cliente) por validar a atividade deste Analista neste contrato.
+  // Usado no Termo de Validação, coluna "Nome / Assinatura do Usuário Chave".
+  responsavelValidacao String? @map("responsavel_validacao") @db.VarChar(100)
   // Saldo acumulado (não zera por mês) de horas excedentes já autorizadas em modo banco de horas.
   saldoBancoHoras Decimal      @default(0) @map("saldo_banco_horas") @db.Decimal(8, 2)
   apontamentos    ContratoProfissionalApontamentoMensal[]

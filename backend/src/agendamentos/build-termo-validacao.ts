@@ -16,6 +16,8 @@ export interface TermoValidacaoDto {
   profissionalNome?: string | null;
   coordenadorTotvs?: string | null;
   coordenadorCliente?: string | null;
+  // Responsável (usuário chave do cliente) por validar a atividade do Analista neste contrato.
+  responsavelValidacao?: string | null;
   dataGeracao: Date;
   itens: TermoValidacaoItem[];
 }
@@ -199,7 +201,7 @@ export function buildPdfTermoValidacao(dto: TermoValidacaoDto): Promise<Buffer> 
       const col3X = col2X + itemCols[2].width;
       doc.font('Helvetica').fontSize(9).fillColor(PRETO)
         .text(item.data, col1X + 4, y0 + 6, { width: itemCols[1].width - 8 });
-      doc.text(dto.coordenadorCliente || '', col2X + 4, y0 + 6, { width: itemCols[2].width - 8 });
+      doc.text(dto.responsavelValidacao || '', col2X + 4, y0 + 6, { width: itemCols[2].width - 8 });
       doc.text(dto.profissionalNome || '', col3X + 4, y0 + 6, { width: itemCols[3].width - 8 });
 
       doc.y = y0 + rowHeight;

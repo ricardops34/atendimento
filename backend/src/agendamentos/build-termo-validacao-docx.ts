@@ -124,7 +124,7 @@ export async function buildDocxTermoValidacao(dto: TermoValidacaoDto): Promise<B
                 ],
               }),
               textCell(item.data, 16),
-              textCell(dto.coordenadorCliente || '', 22),
+              textCell(dto.responsavelValidacao || '', 22),
               textCell(dto.profissionalNome || '', 22),
             ],
           }),

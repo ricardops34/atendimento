@@ -267,6 +267,15 @@ const MODO_EXCEDENTE_OPTIONS: PoComboOption[] = [
             name="novoProfissionalNomeProjeto"
             [p-maxlength]="100">
           </po-input>
+          <po-input
+            class="po-md-4"
+            p-label="Responsável pela Validação"
+            p-help="Usuário chave do cliente que valida a atividade deste Analista (Termo de Validação)."
+            [ngModel]="novoProfissional.responsavelValidacao"
+            (ngModelChange)="novoProfissional.responsavelValidacao = $event"
+            name="novoProfissionalResponsavelValidacao"
+            [p-maxlength]="100">
+          </po-input>
         </div>
 
         <div *ngIf="formData.profissionais?.length" style="margin-top: 8px;">
@@ -280,6 +289,7 @@ const MODO_EXCEDENTE_OPTIONS: PoComboOption[] = [
                 <th style="padding: 4px 8px; text-align: left;">Excedente</th>
                 <th style="padding: 4px 8px; text-align: left;">Código do Projeto</th>
                 <th style="padding: 4px 8px; text-align: left;">Nome do Projeto</th>
+                <th style="padding: 4px 8px; text-align: left;">Responsável pela Validação</th>
                 <th style="padding: 4px 8px;">Saldo Banco Horas</th>
                 <th style="padding: 4px 8px;"></th>
               </tr>
@@ -293,6 +303,7 @@ const MODO_EXCEDENTE_OPTIONS: PoComboOption[] = [
                 <td style="padding: 4px 8px;">{{ getModoExcedenteLabel(p.modoExcedente) }}</td>
                 <td style="padding: 4px 8px;">{{ p.codigoProjeto || '—' }}</td>
                 <td style="padding: 4px 8px;">{{ p.nomeProjeto || '—' }}</td>
+                <td style="padding: 4px 8px;">{{ p.responsavelValidacao || '—' }}</td>
                 <td style="padding: 4px 8px; text-align: center;">{{ p.saldoBancoHoras ?? 0 }}</td>
                 <td style="padding: 4px 8px; text-align: center; white-space: nowrap;">
                   <po-button p-icon="an an-pencil-simple" p-kind="tertiary" (p-click)="editProfissionalHabilitado(i)"></po-button>
@@ -546,6 +557,7 @@ export class ContratosEditPage implements OnInit {
     modoExcedente: null,
     codigoProjeto: null,
     nomeProjeto: null,
+    responsavelValidacao: null,
   };
   editandoProfissionalIndex: number | null = null;
 
@@ -617,6 +629,7 @@ export class ContratosEditPage implements OnInit {
             modoExcedente: p.modoExcedente ?? null,
             codigoProjeto: p.codigoProjeto ?? null,
             nomeProjeto: p.nomeProjeto ?? null,
+            responsavelValidacao: p.responsavelValidacao ?? null,
             saldoBancoHoras: p.saldoBancoHoras ?? 0,
           })),
           escalas: (contrato.escalas || []).map((e: any) => ({
@@ -715,6 +728,7 @@ export class ContratosEditPage implements OnInit {
       modoExcedente: this.novoProfissional.modoExcedente || null,
       codigoProjeto: this.novoProfissional.codigoProjeto?.trim() || null,
       nomeProjeto: this.novoProfissional.nomeProjeto?.trim() || null,
+      responsavelValidacao: this.novoProfissional.responsavelValidacao?.trim() || null,
       saldoBancoHoras: this.editandoProfissionalIndex !== null
         ? this.formData.profissionais[this.editandoProfissionalIndex].saldoBancoHoras ?? 0
         : 0,
@@ -824,6 +838,7 @@ export class ContratosEditPage implements OnInit {
         modoExcedente: p.modoExcedente ?? undefined,
         codigoProjeto: p.codigoProjeto ?? undefined,
         nomeProjeto: p.nomeProjeto ?? undefined,
+        responsavelValidacao: p.responsavelValidacao ?? undefined,
       })),
       escalas: this.formData.escalas || [],
       adiantamentos: (this.formData.adiantamentos || []).map((a: any) => ({
@@ -888,6 +903,7 @@ export class ContratosEditPage implements OnInit {
       modoExcedente: null,
       codigoProjeto: null,
       nomeProjeto: null,
+      responsavelValidacao: null,
     };
   }
 
