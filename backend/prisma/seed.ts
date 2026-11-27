@@ -39,6 +39,10 @@ async function main() {
     { moduleKey: 'cadastros', name: 'Atributos', key: 'atributos-list', path: '/atributos', icon: 'an an-list-checks', shortLabel: 'ATR', sortOrder: 15 },
     { moduleKey: 'atendimentos', name: 'Atendimentos', key: 'agendamentos-list', path: '/agendamentos/lista', icon: 'an an-list-dashes', shortLabel: 'LST', sortOrder: 40 },
     { moduleKey: 'atendimentos', name: 'Calendário', key: 'agendamentos-calendario', path: '/agendamentos/calendario', icon: 'an an-calendar-blank', shortLabel: 'CAL', sortOrder: 41 },
+    // Autoatendimento do Analista: dados de PJ/NFS-e e certificado A1, mantidos pelo próprio
+    // Analista (ver ProfissionalFiscalModule). Fica fora do módulo "Cadastro" de propósito,
+    // que é administrado por gerente/administrador; aqui cada Analista só vê/edita os dados dele.
+    { moduleKey: 'atendimentos', name: 'Dados Fiscais (NFS-e)', key: 'meus-dados-fiscais', path: '/meus-dados-fiscais', icon: 'an an-identification-badge', shortLabel: 'NFS', sortOrder: 42 },
     { moduleKey: 'configuracoes', name: 'Configuração', key: 'configuracoes-home', path: '/configuracoes', icon: 'an an-gear', shortLabel: 'CFG', sortOrder: 60 },
     { moduleKey: 'configuracoes', name: 'Empresas', key: 'configuracoes-empresas', path: '/configuracoes/empresas', icon: 'an an-buildings', shortLabel: 'EMP', sortOrder: 61 },
     { moduleKey: 'configuracoes', name: 'Módulos', key: 'configuracoes-modulos', path: '/configuracoes/modulos', icon: 'an an-squares-four', shortLabel: 'MOD', sortOrder: 62 },
@@ -113,6 +117,7 @@ async function main() {
   const attributesRoutine = allRoutines.find((item) => item.key === 'atributos-list');
   const appointmentsListRoutine = allRoutines.find((item) => item.key === 'agendamentos-list');
   const appointmentsCalendarRoutine = allRoutines.find((item) => item.key === 'agendamentos-calendario');
+  const meusDadosFiscaisRoutine = allRoutines.find((item) => item.key === 'meus-dados-fiscais');
   const settingsHomeRoutine = allRoutines.find((item) => item.key === 'configuracoes-home');
   const settingsEmpresasRoutine = allRoutines.find((item) => item.key === 'configuracoes-empresas');
   const settingsModulesRoutine = allRoutines.find((item) => item.key === 'configuracoes-modulos');
@@ -236,7 +241,7 @@ async function main() {
     atendimentosMenuId = atendimentosMenu.id;
   }
 
-  for (const routine of [appointmentsListRoutine, appointmentsCalendarRoutine]) {
+  for (const routine of [appointmentsListRoutine, appointmentsCalendarRoutine, meusDadosFiscaisRoutine]) {
     if (!routine) continue;
     await ensureMenu(routine.path, {
       moduleId: routine.moduleId,

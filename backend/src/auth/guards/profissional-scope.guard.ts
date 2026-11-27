@@ -29,12 +29,16 @@ export class ProfissionalScopeGuard implements CanActivate {
       ? await this.prisma.profile.findUnique({ where: { id: user.profileId } })
       : null;
 
+    // Profissional (Analista) vinculado ao login, quando houver. Usado por rotas de
+    // "autoatendimento" (ex: dados fiscais/NFS-e do próprio Analista), independente do perfil.
+    const profissional = await this.prisma.profissional.findFirst({ where: { userId: user.userId } });
+    request.ownProfissionalId = profissional?.id ?? null;
+
     if (profile?.name === 'Administrador') {
       request.profissionalScope = null;
       return true;
     }
 
-    const profissional = await this.prisma.profissional.findFirst({ where: { userId: user.userId } });
     if (!profissional) {
       request.profissionalScope = [];
       return true;

@@ -204,8 +204,59 @@ model Profissional {
   escalas      ContratoItem[]
   contratos    ContratoProfissional[]
   contratosGerenciados Contrato[]     @relation("ContratoGerente")
+  dadosFiscais ProfissionalFiscal?
 
   @@map("profissional")
+}
+
+/// Cadastro acessório (1:1) com os dados de Pessoa Jurídica do Analista usados para emissão
+/// da NFS-e Nacional, e o certificado digital A1 (.pfx) usado para assinar a emissão.
+/// O próprio Analista mantém esses dados (autoatendimento); gerente/administrador também
+/// podem consultar/ajustar, conforme o escopo de profissionalScope (ver ProfissionalScopeGuard).
+/// O arquivo do certificado e a senha ficam gravados criptografados (AES-256-GCM) — nunca em
+/// texto puro — e nunca são devolvidos pela API (só metadados: nome do arquivo e validade).
+model ProfissionalFiscal {
+  id             Int          @id @default(autoincrement())
+  profissionalId Int          @unique @map("profissional_id")
+  profissional   Profissional @relation(fields: [profissionalId], references: [id], onDelete: Cascade)
+
+  // Pessoa Jurídica / Regime tributário
+  cnpj                    String?  @db.VarChar(18)
+  razaoSocial             String?  @map("razao_social") @db.VarChar(255)
+  nomeFantasia            String?  @map("nome_fantasia") @db.VarChar(255)
+  inscricaoMunicipal      String?  @map("inscricao_municipal") @db.VarChar(20)
+  regimeTributario        String?  @map("regime_tributario") @db.VarChar(30) // MEI | SIMPLES_NACIONAL | LUCRO_PRESUMIDO | LUCRO_REAL
+  optanteSimplesNacional  Boolean? @default(false) @map("optante_simples_nacional")
+  cnae                    String?  @db.VarChar(10)
+  codigoServico           String?  @map("codigo_servico") @db.VarChar(20) // item da lista de serviços (LC 116/2003)
+  aliquotaIss             Decimal? @map("aliquota_iss") @db.Decimal(5, 2)
+
+  // Endereço fiscal (NFS-e Nacional exige município pelo código IBGE)
+  cep         String?    @db.VarChar(8)
+  logradouro  String?    @db.VarChar(255)
+  numero      String?    @db.VarChar(50)
+  complemento String?    @db.VarChar(255)
+  bairro      String?    @db.VarChar(255)
+  municipioId Int?       @map("municipio_id")
+  municipio   Municipio? @relation(fields: [municipioId], references: [id], onDelete: SetNull)
+  estadoId    Int?       @map("estado_id")
+  estado      Estado?    @relation(fields: [estadoId], references: [id], onDelete: SetNull)
+
+  // Contato usado na emissão da NFS-e
+  emailNfse    String? @map("email_nfse") @db.VarChar(255)
+  telefoneNfse String? @map("telefone_nfse") @db.VarChar(20)
+
+  // Certificado digital A1 (.pfx), criptografado em repouso
+  certificadoArquivo      Bytes?    @map("certificado_arquivo")
+  certificadoSenha        Bytes?    @map("certificado_senha")
+  certificadoNomeArquivo  String?   @map("certificado_nome_arquivo") @db.VarChar(255)
+  certificadoValidade     DateTime? @map("certificado_validade") @db.Date
+  certificadoAtualizadoEm DateTime? @map("certificado_atualizado_em")
+
+  criadoEm     DateTime @default(now()) @map("criado_em")
+  atualizadoEm DateTime @updatedAt @map("atualizado_em")
+
+  @@map("profissional_fiscal")
 }
 
 /// Representa o contrato de serviço (Cadastros de Apoio)
@@ -412,6 +463,7 @@ model Estado {
   municipios Municipio[]
   ceps       Cep[]
   clientes   Cliente[]
+  profissionaisFiscais ProfissionalFiscal[]
 
   @@map("estado")
 }
@@ -424,6 +476,7 @@ model Municipio {
 
   ceps     Cep[]
   clientes Cliente[]
+  profissionaisFiscais ProfissionalFiscal[]
 
   @@map("municipio")
 }

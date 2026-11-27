@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { ClientesModule } from './clientes/clientes.module';
 import { ProfissionaisModule } from './profissionais/profissionais.module';
+import { ProfissionalFiscalModule } from './profissionais/fiscal/profissional-fiscal.module';
 import { ContratosModule } from './contratos/contratos.module';
 import { AgendamentosModule } from './agendamentos/agendamentos.module';
 import { RealizadosModule } from './realizados/realizados.module';
@@ -33,8 +34,9 @@ import { BancoHorasModule } from './banco-horas/banco-horas.module';
     PrismaModule,
     AuthModule,
     ClientesModule, 
-    ProfissionaisModule, 
-    ContratosModule, 
+    ProfissionaisModule,
+    ProfissionalFiscalModule,
+    ContratosModule,
     AgendamentosModule, 
     RealizadosModule,
     EmpresasModule,

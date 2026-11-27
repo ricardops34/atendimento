@@ -43,6 +43,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/cadastros-apoio/profissionais/profissionais-edit.page').then((m) => m.ProfissionaisEditPage),
   },
   {
+    path: 'meus-dados-fiscais',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/meus-dados-fiscais/meus-dados-fiscais.page').then((m) => m.MeusDadosFiscaisPage),
+  },
+  {
     path: 'contratos',
     canActivate: [authGuard],
     loadComponent: () => import('./features/cadastros-apoio/contratos/contratos.page').then((m) => m.ContratosPage),
